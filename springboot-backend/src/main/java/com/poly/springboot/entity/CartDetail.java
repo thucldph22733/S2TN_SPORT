@@ -31,8 +31,8 @@ public class CartDetail {
     private ProductDetail productDetail;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
     @Column(name = "quantity")
     private Integer quantity;

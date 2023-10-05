@@ -68,7 +68,7 @@ public class ShipperServiceImpl implements ShipperService {
     }
 
     @Override
-    public String delete(Long id) {
+    public String deleteShipper(Long id) {
         // Kiem tra xem co ton tai id chuyen vao ko
         if (shipperRepository.existsById(id)){
             //Neu tim thay xoa va tra ve thong bao

@@ -14,7 +14,7 @@ public interface ShipperService {
 
     Shipper updateShipper(ShipperRequestDto requestDto,Long id);
 
-    String delete(Long id);
+    String deleteShipper(Long id);
 
     Shipper findShipperById(Long id);
 

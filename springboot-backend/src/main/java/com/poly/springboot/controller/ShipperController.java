@@ -4,7 +4,6 @@ import com.poly.springboot.dto.requestDto.ShipperRequestDto;
 import com.poly.springboot.dto.responseDto.ShipperResponseDto;
 import com.poly.springboot.entity.Shipper;
 import com.poly.springboot.service.ShipperService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,7 +26,7 @@ public class ShipperController {
     @Autowired
     private ShipperService shipperService;
 
-    // get all shippers
+    // get all shippers rest api
     @GetMapping("shippers")
     public ResponseEntity<List<ShipperResponseDto>> getShippers(){
 
@@ -67,7 +66,7 @@ public class ShipperController {
     @DeleteMapping("delete-shipper/{id}")
     public ResponseEntity<String> deleteShipper(@PathVariable Long id){
 
-        String message =  shipperService.delete(id);
+        String message =  shipperService.deleteShipper(id);
         return ResponseEntity.ok(message);
 
     }

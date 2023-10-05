@@ -3,7 +3,9 @@ package com.poly.springboot.service.impl;
 import com.poly.springboot.dto.requestDto.StaffRequestDto;
 import com.poly.springboot.dto.responseDto.StaffResponseDto;
 import com.poly.springboot.entity.Staff;
+import com.poly.springboot.repository.PositionRepository;
 import com.poly.springboot.repository.StaffRepository;
+import com.poly.springboot.repository.StoreRepository;
 import com.poly.springboot.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,21 +21,27 @@ public class StaffServiceImpl implements StaffService {
     @Autowired
     private StaffRepository staffRepository;
 
+    @Autowired
+    private StoreRepository storeRepository;
+
+    @Autowired
+    private PositionRepository positionRepository;
+
     @Override
-    public List<StaffResponseDto> getStaff() {
+    public List<StaffResponseDto> getStaffs() {
         return staffRepository.findAll().stream().map(
                 staff -> new StaffResponseDto(
                         staff.getId(),
-                        staff.getStore(),
-                        staff.getPosition(),
+                        staff.getStore().getStoreName(),
+                        staff.getPosition().getPositionName(),
                         staff.getFirstName(),
                         staff.getLastName(),
+                        staff.getAvatar(),
                         staff.getNumberPhone(),
-                        staff.getAddress(),
+                        staff.getEmail(),
                         staff.getGender(),
                         staff.getBirthOfDay(),
-                        staff.getAvatar(),
-                        staff.getEmail(),
+                        staff.getAddress(),
                         staff.getCity(),
                         staff.getCountry(),
                         staff.getPassword())
@@ -44,11 +52,11 @@ public class StaffServiceImpl implements StaffService {
     public Staff saveStaff(StaffRequestDto requestDto) {
         Staff staff = new Staff();
 
-        staff.setStore(requestDto.getStore());
-        staff.setPosition(requestDto.getPosition());
+        staff.setStore(storeRepository.findById(requestDto.getIdStore()).orElse(null));
+        staff.setPosition(positionRepository.findById(requestDto.getIdPosition()).orElse(null));
         staff.setFirstName(requestDto.getFirstName());
         staff.setLastName(requestDto.getLastName());
-        staff.setAvatar(requestDto.getAvata());
+        staff.setAvatar(requestDto.getAvatar());
         staff.setNumberPhone(requestDto.getNumberPhone());
         staff.setEmail(requestDto.getEmail());
         staff.setGender(requestDto.getGender());
@@ -68,11 +76,11 @@ public class StaffServiceImpl implements StaffService {
 
         Staff staff = staffRepository.findById(id).get();
 
-        staff.setStore(requestDto.getStore());
-        staff.setPosition(requestDto.getPosition());
+        staff.setStore(storeRepository.findById(requestDto.getIdStore()).orElse(null));
+        staff.setPosition(positionRepository.findById(requestDto.getIdPosition()).orElse(null));
         staff.setFirstName(requestDto.getFirstName());
         staff.setLastName(requestDto.getLastName());
-        staff.setAvatar(requestDto.getAvata());
+        staff.setAvatar(requestDto.getAvatar());
         staff.setNumberPhone(requestDto.getNumberPhone());
         staff.setEmail(requestDto.getEmail());
         staff.setGender(requestDto.getGender());

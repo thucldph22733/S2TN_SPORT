@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface StaffService {
 
-    List<StaffResponseDto> getStaff();
+    List<StaffResponseDto> getStaffs();
 
     Staff saveStaff(StaffRequestDto requestDto);
 

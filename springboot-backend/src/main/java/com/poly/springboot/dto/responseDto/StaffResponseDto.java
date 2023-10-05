@@ -17,15 +17,15 @@ public class StaffResponseDto {
 
     private Long id;
 
-    private Store store;
+    private String storeName;
 
-    private Position position;
+    private String positionName;
 
     private String firstName;
 
     private String lastName;
 
-    private String avata;
+    private String avatar;
 
     private String numberPhone;
 
@@ -33,7 +33,7 @@ public class StaffResponseDto {
 
     private Boolean gender;
 
-    private Date birthOfDate;
+    private Date birthOfDay;
 
     private String address;
 

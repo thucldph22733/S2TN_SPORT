@@ -16,9 +16,9 @@ import java.util.Date;
 @NoArgsConstructor
 public class StaffRequestDto {
 
-    private Store store;
+    private Long idStore;
 
-    private Position position;
+    private Long idPosition;
 
     @NotBlank(message = "Vui lòng nhập họ!")
     private String firstName;
@@ -26,7 +26,7 @@ public class StaffRequestDto {
     @NotBlank(message = "Vui lòng nhập tên!")
     private String lastName;
 
-    private String avata;
+    private String avatar;
 
     @NotBlank(message = "Vui lòng nhập số điện thoại!")
     private String numberPhone;

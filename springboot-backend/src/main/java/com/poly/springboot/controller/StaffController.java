@@ -26,9 +26,9 @@ public class StaffController {
     @Autowired
     private StaffService staffService;
 
-    @GetMapping("staff")
+    @GetMapping("staffs")
     public ResponseEntity<List<StaffResponseDto>> getStaff(){
-        List<StaffResponseDto> staffResponseDtoList = staffService.getStaff();
+        List<StaffResponseDto> staffResponseDtoList = staffService.getStaffs();
         return ResponseEntity.ok(staffResponseDtoList);
     }
 

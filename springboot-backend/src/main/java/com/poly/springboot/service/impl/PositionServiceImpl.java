@@ -7,12 +7,13 @@ import com.poly.springboot.repository.PositionRepository;
 import com.poly.springboot.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Repository
+@Service
 public class PositionServiceImpl implements PositionService {
     @Autowired
     private PositionRepository positionRepository;
@@ -43,11 +44,11 @@ public class PositionServiceImpl implements PositionService {
     @Override
     public Position updatePosition(PositionRequestDto requestDto, Long id) {
         Position position = positionRepository.findById(id).get();
-
+        System.out.println(position);
         position.setPositionName(requestDto.getPositionName());
         position.setPositionDescribe(requestDto.getPositionDescribe());
 
-
+        positionRepository.save(position);
 
         return position;
     }

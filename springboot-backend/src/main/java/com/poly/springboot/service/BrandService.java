@@ -13,9 +13,9 @@ public interface BrandService {
 
     Brand saveBrand(BrandRequestDto brandRequestDto);
 
-    String deletBrand(Long id);
+    String deleteBrand(Long id);
 
-    Brand getBrand(Long id);
+    Brand findBrandById(Long id);
 
     Brand updateBrand(BrandRequestDto brandRequestDto,Long id);
 

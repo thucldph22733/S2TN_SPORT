@@ -3,6 +3,7 @@ package com.poly.springboot.service.impl;
 import com.poly.springboot.dto.requestDto.BrandRequestDto;
 import com.poly.springboot.dto.responseDto.BrandResponseDto;
 import com.poly.springboot.entity.Brand;
+import com.poly.springboot.entity.Shipper;
 import com.poly.springboot.repository.BrandRepository;
 import com.poly.springboot.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,12 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public List<BrandResponseDto> getBrands() {
-        return brandRepository.findAll().stream().map(brand -> {
-            BrandResponseDto brandResponseDto = new BrandResponseDto();
-            brandResponseDto.setId(brand.getId());
-            brandResponseDto.setBrandName(brand.getBrandName());
-            brandResponseDto.setBrandDescribe(brand.getBrandDescribe());
-            return brandResponseDto;
-        }).collect(Collectors.toList());
+        return brandRepository.findAll().stream().map(
+                brand -> new BrandResponseDto(
+                        brand.getId(),
+                        brand.getBrandName(),
+                        brand.getBrandDescribe())
+        ).collect(Collectors.toList());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public String deletBrand(Long id) {
+    public String deleteBrand(Long id) {
         if (brandRepository.existsById(id)) {
             brandRepository.deleteById(id);
             return "Delete Success!";
@@ -63,16 +63,23 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public Brand getBrand(Long id) {
+    public Brand findBrandById(Long id) {
+
+        //Tim id chuyen vao
         Optional<Brand> result = brandRepository.findById(id);
+
+        //Neu thay tra ve brand do
+        //Neu ko tra ve null
         return result.isPresent() ? result.get() : null;
     }
 
     @Override
     public Brand updateBrand(BrandRequestDto brandRequestDto, Long id) {
         Brand newBrand = brandRepository.findById(id).get();
-        newBrand.setBrandDescribe(brandRequestDto.getBrandDescribe());
+
         newBrand.setBrandName(brandRequestDto.getBrandName());
-        return brandRepository.save(newBrand);
+        newBrand.setBrandDescribe(brandRequestDto.getBrandDescribe());
+        brandRepository.save(newBrand);
+        return newBrand;
     }
 }

@@ -26,7 +26,7 @@ public class BrandController {
     }
 
     @GetMapping("brand/{id}")
-    public ResponseEntity<Brand> getBrand(@PathVariable Long id) {
+    public ResponseEntity<Brand> findById(@PathVariable Long id) {
         Brand brand = brandService.findBrandById(id);
         return ResponseEntity.ok(brand);
     }
@@ -37,13 +37,13 @@ public class BrandController {
         return ResponseEntity.ok(brand);
     }
 
-    @PostMapping("update-brand/{id}")
+    @PutMapping("update-brand/{id}")
     public ResponseEntity<Brand> updateBrand(@RequestBody BrandRequestDto brandRequestDto, @PathVariable Long id) {
         Brand brand = brandService.updateBrand(brandRequestDto, id);
         return ResponseEntity.ok(brand);
     }
 
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("delete-brand/{id}")
     public ResponseEntity<String> deleteBrand(@PathVariable Long id) {
         String messege = brandService.deleteBrand(id);
         return ResponseEntity.ok(messege);

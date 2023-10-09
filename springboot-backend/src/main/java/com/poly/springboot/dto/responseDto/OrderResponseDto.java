@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -30,9 +30,9 @@ public class OrderResponseDto {
 
     private String StatusName;
 
-    private String deliveryDate;
+    private Date deliveryDate;
 
-    private String receivedDate;
+    private Date receivedDate;
 
     private String note;
 }

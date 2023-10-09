@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -59,10 +59,10 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Column(name = "delivery_date")
-    private String deliveryDate;
+    private Date deliveryDate;
 
     @Column(name = "received_date")
-    private String receivedDate;
+    private Date receivedDate;
 
     @Column(name = "note")
     private String note;

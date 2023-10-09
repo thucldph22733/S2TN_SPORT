@@ -12,7 +12,6 @@ import java.sql.Date;
 @NoArgsConstructor
 public class CustomerRequestDto {
 
-    private Long id;
 
     private String firstName;
 

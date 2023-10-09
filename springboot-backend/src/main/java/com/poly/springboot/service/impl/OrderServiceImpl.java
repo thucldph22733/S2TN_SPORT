@@ -116,7 +116,13 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(orderStatus);
         order.setAddress(address);
         order.setNote(orderRequestDto.getNote());
-        order.setDeliveryDate(String.valueOf(new Date()));
+        //Kiem tra trang thai
+        //Neu trang thai co id = 1001 thi cap nhat ngay giao
+        if(orderStatus.getId() == 1001){
+            order.setDeliveryDate(new Date());
+        }else  if(orderStatus.getId() == 1002){  //Neu trang thai co id = 1002 thi cap nhat ngay nhan
+            order.setReceivedDate(new Date());
+        }
         return orderRepository.save(order);
     }
 }

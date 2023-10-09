@@ -1,6 +1,5 @@
 package com.poly.springboot.dto.requestDto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

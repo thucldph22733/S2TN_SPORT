@@ -14,10 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Setter
 @Getter
@@ -48,8 +47,8 @@ public class Order {
     private PaymentMethod paymentMethod;
 
     @ManyToOne
-    @JoinColumn(name = "shipper_id")
-    private Shipper shipper;
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     @ManyToOne
     @JoinColumn(name = "status_id")

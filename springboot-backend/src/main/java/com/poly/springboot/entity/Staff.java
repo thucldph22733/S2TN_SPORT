@@ -29,11 +29,7 @@ public class Staff {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "store_id")
-    private Store store;
-
+    
     @ManyToOne
     @JoinColumn(name = "position_id")
     private Position position;

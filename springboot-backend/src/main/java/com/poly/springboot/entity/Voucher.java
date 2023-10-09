@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +30,10 @@ public class Voucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "category_voucher_id")
+    private CategoryVoucher categoryVoucher;
+
     @Column(name = "voucher_name")
     private String voucherName;
 
@@ -50,7 +56,7 @@ public class Voucher {
     private String voucherDescribe;
 
     @Column(name = "voucher_status")
-    private String voucherStatus;
+    private Boolean voucherStatus;
 
     @CreationTimestamp
     @Column(name = "create_date")

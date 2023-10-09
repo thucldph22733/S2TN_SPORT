@@ -39,4 +39,7 @@ public class OrderDetail {
     @Column(name = "price")
     private Double price;
 
+    @Column(name = "order_status")
+    private Integer status;
+
 }

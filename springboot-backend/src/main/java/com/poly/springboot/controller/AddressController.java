@@ -30,7 +30,7 @@ public class AddressController {
         return ResponseEntity.ok(address);
     }
 
-    @DeleteMapping("delete-address")
+    @DeleteMapping("delete-address/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
         String message = addressService.delete(id);
         return ResponseEntity.ok(message);

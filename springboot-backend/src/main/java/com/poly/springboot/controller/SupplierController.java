@@ -17,36 +17,36 @@ import java.util.List;
 public class SupplierController {
 
     @Autowired
-    private SupplierService supplier;
+    private SupplierService supplierService;
 
-    @GetMapping("supplier")
+    @GetMapping("suppliers")
     public ResponseEntity<List<Supplier>> getAll() {
-        List<Supplier> a = supplier.findAll();
+        List<Supplier> a = supplierService.findAll();
         return ResponseEntity.ok(a);
 
     }
 
     @GetMapping("supplier/{id}")
     public ResponseEntity<Supplier> findById(@PathVariable Long id){
-        Supplier a = supplier.findById(id);
+        Supplier a = supplierService.findById(id);
         return ResponseEntity.ok(a);
     }
 
     @PostMapping("create-supplier")
     public ResponseEntity<Supplier>crate(@RequestBody SupplierRequestDto supplierRequestDto){
-        Supplier a = supplier.save(supplierRequestDto);
+        Supplier a = supplierService.save(supplierRequestDto);
         return ResponseEntity.ok(a);
     }
 
     @PutMapping("update-supplier/{id}")
     public ResponseEntity<Supplier> update(@RequestBody SupplierRequestDto supplierRequestDto,@PathVariable Long id){
-        Supplier a = supplier.update(supplierRequestDto,id);
+        Supplier a = supplierService.update(supplierRequestDto,id);
         return ResponseEntity.ok(a);
     }
 
     @DeleteMapping("delete-supplier/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
-        String mes = supplier.delete(id);
+        String mes = supplierService.delete(id);
         return ResponseEntity.ok(mes);
     }
 

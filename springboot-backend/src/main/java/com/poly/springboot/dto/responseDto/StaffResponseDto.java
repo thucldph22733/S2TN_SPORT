@@ -1,7 +1,6 @@
 package com.poly.springboot.dto.responseDto;
 
-import com.poly.springboot.entity.Position;
-import com.poly.springboot.entity.Store;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +15,6 @@ import java.util.Date;
 public class StaffResponseDto {
 
     private Long id;
-
-    private String storeName;
 
     private String positionName;
 

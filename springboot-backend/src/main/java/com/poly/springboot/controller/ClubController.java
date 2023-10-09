@@ -14,36 +14,36 @@ import java.util.List;
 public class ClubController {
 
     @Autowired
-    private ClubService club;
+    private ClubService clubService;
 
-    @GetMapping("club")
+    @GetMapping("clubs")
     public ResponseEntity<List<Club>> getAll() {
-        List<Club> a = club.findAll();
+        List<Club> a = clubService.findAll();
         return ResponseEntity.ok(a);
 
     }
 
     @GetMapping("club/{id}")
     public ResponseEntity<Club> findById(@PathVariable Long id){
-        Club a = club.findById(id);
+        Club a = clubService.findById(id);
         return ResponseEntity.ok(a);
     }
 
     @PostMapping("create-club")
     public ResponseEntity<Club>crate(@RequestBody ClubRequestDto clubRequestDto){
-        Club a = club.save(clubRequestDto);
+        Club a = clubService.save(clubRequestDto);
         return ResponseEntity.ok(a);
     }
 
     @PutMapping("update-club/{id}")
     public ResponseEntity<Club> update(@RequestBody ClubRequestDto clubRequestDto,@PathVariable Long id){
-        Club a = club.update(clubRequestDto,id);
+        Club a = clubService.update(clubRequestDto,id);
         return ResponseEntity.ok(a);
     }
 
     @DeleteMapping("delete-club/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
-        String mes = club.delete(id);
+        String mes = clubService.delete(id);
         return ResponseEntity.ok(mes);
     }
 }

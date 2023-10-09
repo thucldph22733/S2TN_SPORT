@@ -27,7 +27,7 @@ public class StaffController {
     private StaffService staffService;
 
     @GetMapping("staffs")
-    public ResponseEntity<List<StaffResponseDto>> getStaff(){
+    public ResponseEntity<List<StaffResponseDto>> getStaffs(){
         List<StaffResponseDto> staffResponseDtoList = staffService.getStaffs();
         return ResponseEntity.ok(staffResponseDtoList);
     }

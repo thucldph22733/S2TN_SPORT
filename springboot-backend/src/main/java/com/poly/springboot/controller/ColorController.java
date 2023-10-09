@@ -15,37 +15,37 @@ import java.util.List;
 @RequestMapping("/api/")
 public class ColorController {
     @Autowired
-    private ColorService color;
+    private ColorService colorService;
 
 
-    @GetMapping("color")
+    @GetMapping("colors")
     public ResponseEntity<List<Color>> getAll() {
-        List<Color> a = color.findAll();
+        List<Color> a = colorService.findAll();
         return ResponseEntity.ok(a);
 
     }
 
     @GetMapping("color/{id}")
     public ResponseEntity<Color> findById(@PathVariable Long id){
-        Color a = color.findById(id);
+        Color a = colorService.findById(id);
         return ResponseEntity.ok(a);
     }
 
     @PostMapping("create-color")
     public ResponseEntity<Color>crate(@RequestBody ColorRequestDto colorRequestDto){
-        Color a = color.sava(colorRequestDto);
+        Color a = colorService.sava(colorRequestDto);
         return ResponseEntity.ok(a);
     }
 
     @PutMapping("update-color/{id}")
     public ResponseEntity<Color> update(@RequestBody ColorRequestDto colorRequestDto,@PathVariable Long id){
-        Color a = color.update(colorRequestDto,id);
+        Color a = colorService.update(colorRequestDto,id);
         return ResponseEntity.ok(a);
     }
 
     @DeleteMapping("delete-color/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
-        String mes = color.delete(id);
+        String mes = colorService.delete(id);
         return ResponseEntity.ok(mes);
     }
 

@@ -21,9 +21,6 @@ public class StaffServiceImpl implements StaffService {
     private StaffRepository staffRepository;
 
     @Autowired
-    private StoreRepository storeRepository;
-
-    @Autowired
     private PositionRepository positionRepository;
 
     @Override
@@ -31,7 +28,6 @@ public class StaffServiceImpl implements StaffService {
         return staffRepository.findAll().stream().map(
                 staff -> new StaffResponseDto(
                         staff.getId(),
-                        staff.getStore().getStoreName(),
                         staff.getPosition().getPositionName(),
                         staff.getFirstName(),
                         staff.getLastName(),
@@ -51,7 +47,6 @@ public class StaffServiceImpl implements StaffService {
     public Staff saveStaff(StaffRequestDto requestDto) {
         Staff staff = new Staff();
 
-        staff.setStore(storeRepository.findById(requestDto.getIdStore()).orElse(null));
         staff.setPosition(positionRepository.findById(requestDto.getIdPosition()).orElse(null));
         staff.setFirstName(requestDto.getFirstName());
         staff.setLastName(requestDto.getLastName());
@@ -75,7 +70,6 @@ public class StaffServiceImpl implements StaffService {
 
         Staff staff = staffRepository.findById(id).get();
 
-        staff.setStore(storeRepository.findById(requestDto.getIdStore()).orElse(null));
         staff.setPosition(positionRepository.findById(requestDto.getIdPosition()).orElse(null));
         staff.setFirstName(requestDto.getFirstName());
         staff.setLastName(requestDto.getLastName());

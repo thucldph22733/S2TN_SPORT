@@ -1,12 +1,10 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.dto.requestDto.BrandRequestDto;
-import com.poly.springboot.dto.requestDto.ShipperRequestDto;
 import com.poly.springboot.dto.responseDto.BrandResponseDto;
 import com.poly.springboot.entity.Brand;
 import com.poly.springboot.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +17,8 @@ public class BrandController {
     @Autowired
     private BrandService brandService;
 
-    @GetMapping("brand")
-    public ResponseEntity<List<BrandResponseDto>> getBrand() {
+    @GetMapping("brands")
+    public ResponseEntity<List<BrandResponseDto>> getBrands() {
         List<BrandResponseDto> brandResponseDtoList = brandService.getBrands();
         return ResponseEntity.ok(brandResponseDtoList);
     }
@@ -45,7 +43,7 @@ public class BrandController {
 
     @DeleteMapping("delete-brand/{id}")
     public ResponseEntity<String> deleteBrand(@PathVariable Long id) {
-        String messege = brandService.deleteBrand(id);
-        return ResponseEntity.ok(messege);
+        String message = brandService.deleteBrand(id);
+        return ResponseEntity.ok(message);
     }
 }

@@ -24,15 +24,15 @@ public class OrderResponseDto {
 
     private String shippingName;
 
-    private String paymentName;
+    private String payment;
 
-    private String shipperName;
+    private String address;
 
     private String StatusName;
 
-    private Date deliveryDate;
+    private String deliveryDate;
 
-    private Date receivedDate;
+    private String receivedDate;
 
     private String note;
 }

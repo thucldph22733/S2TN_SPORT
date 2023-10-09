@@ -23,35 +23,35 @@ import java.util.List;
 @RequestMapping("/api/")
 public class VoucherController {
     @Autowired
-    private VoucherService service;
+    private VoucherService voucherService;
 
     @PostMapping("create-voucher")
     public ResponseEntity<Voucher> create(@RequestBody VoucherRequestDto requestDto) {
-        Voucher voucher = service.saveVoucher(requestDto);
+        Voucher voucher = voucherService.saveVoucher(requestDto);
         return ResponseEntity.ok(voucher);
     }
 
-    @GetMapping("voucher")
+    @GetMapping("vouchers")
     public ResponseEntity<List<VoucherResponseDto>> getPosition() {
-        List<VoucherResponseDto> responseDtoList = service.getVoucher();
+        List<VoucherResponseDto> responseDtoList = voucherService.getVoucher();
         return ResponseEntity.ok(responseDtoList);
     }
 
     @GetMapping("voucher/{id}")
     public ResponseEntity<Voucher> getPosition(@PathVariable Long id) {
-        Voucher voucher = service.findVoucherById(id);
+        Voucher voucher = voucherService.findVoucherById(id);
         return ResponseEntity.ok(voucher);
     }
 
     @PutMapping("update-voucher/{id}")
     public ResponseEntity<Voucher> updatePosition(@RequestBody VoucherRequestDto positionRequestDto, @PathVariable Long id) {
-        Voucher voucher = service.updateVoucher(positionRequestDto, id);
+        Voucher voucher = voucherService.updateVoucher(positionRequestDto, id);
         return ResponseEntity.ok(voucher);
     }
 
     @DeleteMapping("delete-voucher/{id}")
     public ResponseEntity<String> deletePosition(@PathVariable Long id) {
-        String message = service.delete(id);
+        String message = voucherService.delete(id);
         return ResponseEntity.ok(message);
     }
 

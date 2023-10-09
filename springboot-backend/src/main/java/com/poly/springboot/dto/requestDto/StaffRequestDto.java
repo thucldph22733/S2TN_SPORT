@@ -1,7 +1,5 @@
 package com.poly.springboot.dto.requestDto;
 
-import com.poly.springboot.entity.Position;
-import com.poly.springboot.entity.Store;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +14,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class StaffRequestDto {
 
-    private Long idStore;
 
     private Long idPosition;
 

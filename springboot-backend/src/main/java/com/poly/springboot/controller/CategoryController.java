@@ -16,36 +16,36 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    private CategoryService category;
+    private CategoryService categoryService;
 
-    @GetMapping("category")
-    public ResponseEntity<List<Category>> getCate() {
-        List<Category> categories = category.getCategory();
+    @GetMapping("categories")
+    public ResponseEntity<List<Category>> getCategories() {
+        List<Category> categories = categoryService.getCategory();
         return ResponseEntity.ok(categories);
 
     }
 
     @GetMapping("category/{id}")
     public ResponseEntity<Category> findById(@PathVariable Long id){
-        Category category1 = category.findById(id);
-        return ResponseEntity.ok(category1);
+        Category category = categoryService.findById(id);
+        return ResponseEntity.ok(category);
     }
 
     @PostMapping("create-category")
-    public ResponseEntity<Category>crateCategory(@RequestBody CategoryRequestDto categoryRequestDto){
-        Category category1 = category.savaCate(categoryRequestDto);
+    public ResponseEntity<Category>createCategory(@RequestBody CategoryRequestDto categoryRequestDto){
+        Category category1 = categoryService.savaCate(categoryRequestDto);
         return ResponseEntity.ok(category1);
     }
 
     @PutMapping("update-category/{id}")
     public ResponseEntity<Category> updateCategory(@RequestBody CategoryRequestDto categoryRequestDto,@PathVariable Long id){
-        Category category1 = category.updateCate(categoryRequestDto,id);
-        return ResponseEntity.ok(category1);
+        Category category = categoryService.updateCate(categoryRequestDto,id);
+        return ResponseEntity.ok(category);
     }
 
     @DeleteMapping("delete-category/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long id){
-        String mes = category.deleteCate(id);
+        String mes = categoryService.deleteCate(id);
         return ResponseEntity.ok(mes);
     }
 }

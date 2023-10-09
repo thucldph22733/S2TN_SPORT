@@ -21,7 +21,7 @@ public class OrderRequestDto {
 
     private Long paymentId;
 
-    private Long shipperId;
+    private Long addressId;
 
     private Long StatusId;
 

@@ -33,13 +33,13 @@ public class PositionController {
     }
 
     @GetMapping("positions")
-    public ResponseEntity<List<PositionResponseDto>> getPosition(){
+    public ResponseEntity<List<PositionResponseDto>> getPositions(){
         List<PositionResponseDto> responseDtoList = positionService.getPositions();
         return ResponseEntity.ok(responseDtoList);
     }
 
     @GetMapping("position/{id}")
-    public ResponseEntity<Position> getPosition (@PathVariable Long id){
+    public ResponseEntity<Position> getPosition(@PathVariable Long id){
         Position position = positionService.findPositionById(id);
         return ResponseEntity.ok(position);
     }

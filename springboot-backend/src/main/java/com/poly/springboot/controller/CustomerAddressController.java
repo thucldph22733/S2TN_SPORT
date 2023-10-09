@@ -1,8 +1,6 @@
 package com.poly.springboot.controller;
 
-import com.poly.springboot.dto.requestDto.AddressRequestDto;
 import com.poly.springboot.dto.requestDto.CustomerAddressRequestDto;
-import com.poly.springboot.entity.Address;
 import com.poly.springboot.entity.CustomerAddress;
 import com.poly.springboot.service.CustomerAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ public class CustomerAddressController {
         return ResponseEntity.ok(customerAddressService.getAll());
     }
 
-    @PostMapping("create-customer-address")
+    @PostMapping("create-customerAddress")
     public ResponseEntity<?> add(CustomerAddressRequestDto customerAddressRequestDto) {
         return ResponseEntity.ok(customerAddressService.add(customerAddressRequestDto));
     }
@@ -33,7 +31,7 @@ public class CustomerAddressController {
         return ResponseEntity.ok(customerAddress);
     }
 
-    @DeleteMapping("delete-customer-address")
+    @DeleteMapping("delete-customerAddress/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id){
         String message = customerAddressService.delete(id);
         return ResponseEntity.ok(message);

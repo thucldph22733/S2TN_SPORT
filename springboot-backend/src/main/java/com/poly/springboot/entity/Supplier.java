@@ -30,6 +30,15 @@ public class Supplier {
     @Column(name = "supplier_name")
     private String supplierName;
 
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "phone_number")
+    private String phone_number;
+
+    @Column(name = "address")
+    private String address;
+
     @Column(name = "supplier_describe")
     private String supplierDescribe;
 

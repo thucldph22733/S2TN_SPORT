@@ -48,8 +48,8 @@ public class Order {
     private PaymentMethod paymentMethod;
 
     @ManyToOne
-    @JoinColumn(name = "shipper_id")
-    private Shipper shipper;
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     @ManyToOne
     @JoinColumn(name = "status_id")

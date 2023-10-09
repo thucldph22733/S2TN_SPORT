@@ -1,5 +1,6 @@
 package com.poly.springboot.dto.requestDto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,9 +10,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderStatusRequestDto {
+public class UserReviewRequestDto {
 
-    private String statusName;
+    private Long orderDetailId;
 
-    private String statusDescribe;
+    private Long customerId;
+
+    private  Integer ratingValue;
+
+    private  String userComment;
 }

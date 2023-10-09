@@ -9,9 +9,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderStatusRequestDto {
+public class OrderDetailRequestDto {
 
-    private String statusName;
+    private Long productDetailId;
 
-    private String statusDescribe;
+    private Long orderId;
+
+    private Integer quantity;
+
+    private Double price;
 }

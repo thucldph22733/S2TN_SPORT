@@ -5,13 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddressResponeDto {
+public class AddressResponseDto {
 
     private  Long id;
 
@@ -27,7 +25,7 @@ public class AddressResponeDto {
     private String city;
 
 
-    private String coutry;
+    private String country;
 
 
 }

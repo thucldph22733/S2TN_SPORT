@@ -43,9 +43,8 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                         productDetail.getSize().getSizeName(),
                         productDetail.getQuantity(),
                         productDetail.getPrice(),
-                        productDetail.getPromotionPrice(),
-                        productDetail.getCreateBy(),
-                        productDetail.getUpdateBy())
+                        productDetail.getPromotionPrice())
+
         ).collect(Collectors.toList());
     }
 

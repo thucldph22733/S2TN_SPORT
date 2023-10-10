@@ -2,7 +2,9 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 import com.poly.springboot.dto.responseDto.VoucherResponseDto;
+import com.poly.springboot.entity.CategoryVoucher;
 import com.poly.springboot.entity.Voucher;
+import com.poly.springboot.repository.CategoryVoucherRepository;
 import com.poly.springboot.repository.VoucherRepository;
 import com.poly.springboot.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +17,16 @@ import java.util.stream.Collectors;
 @Service
 public class VoucherServiceImpl implements VoucherService {
     @Autowired
-    private VoucherRepository repository;
+    private VoucherRepository voucherRepository;
 
+    @Autowired
+    private CategoryVoucherRepository categoryVoucherRepository;
     @Override
-    public List<VoucherResponseDto> getVoucher() {
-        return repository.findAll().stream().map(
+    public List<VoucherResponseDto> getVouchers() {
+        return voucherRepository.findAll().stream().map(
                 voucher -> new VoucherResponseDto(
                         voucher.getId(),
-                        voucher.getCategoryVoucher(),
+                        voucher.getCategoryVoucher().getCategoryName(),
                         voucher.getVoucherName(),
                         voucher.getStartDate(),
                         voucher.getEndDate(),
@@ -39,9 +43,10 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher saveVoucher(VoucherRequestDto requestDto) {
+
         System.out.println(requestDto);
         Voucher voucher = new Voucher();
-        voucher.setCategoryVoucher(requestDto.getCategoryVoucher());
+        voucher.setCategoryVoucher(categoryVoucherRepository.findById(requestDto.getCategoryVoucherId()).orElse(null));
         voucher.setVoucherName(requestDto.getVoucherName());
         voucher.setStartDate(requestDto.getStartDate());
         voucher.setEndDate(requestDto.getEndDate());
@@ -50,17 +55,15 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setDiscountRate(requestDto.getDiscountRate());
         voucher.setVoucherDescribe(requestDto.getVoucherDescribe());
         voucher.setVoucherStatus(requestDto.getVoucherStatus());
-        voucher.setCreateDate(requestDto.getCreateDate());
-        voucher.setUpdateDate(requestDto.getUpdateDate());
         System.out.println(voucher);
-        return repository.save(voucher);
+        return voucherRepository.save(voucher);
     }
 
     @Override
     public Voucher updateVoucher(VoucherRequestDto requestDto, Long id) {
-        Voucher voucher = repository.findById(id).get();
+        Voucher voucher = voucherRepository.findById(id).get();
         System.out.println(voucher);
-        voucher.setCategoryVoucher(requestDto.getCategoryVoucher());
+        voucher.setCategoryVoucher(categoryVoucherRepository.findById(requestDto.getCategoryVoucherId()).orElse(null));
         voucher.setVoucherName(requestDto.getVoucherName());
         voucher.setStartDate(requestDto.getStartDate());
         voucher.setEndDate(requestDto.getEndDate());
@@ -69,16 +72,14 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setDiscountRate(requestDto.getDiscountRate());
         voucher.setVoucherDescribe(requestDto.getVoucherDescribe());
         voucher.setVoucherStatus(requestDto.getVoucherStatus());
-        voucher.setCreateDate(requestDto.getCreateDate());
-        voucher.setUpdateDate(requestDto.getUpdateDate());
-        repository.save(voucher);
+        voucherRepository.save(voucher);
         return voucher;
     }
 
     @Override
-    public String delete(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
+    public String deleteVoucher(Long id) {
+        if (voucherRepository.existsById(id)) {
+            voucherRepository.deleteById(id);
             return "Xoá Thành Công";
         } else {
             return "Không tìm thấy id" + id;
@@ -87,7 +88,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher findVoucherById(Long id) {
-        Optional<Voucher> result = repository.findById(id);
+        Optional<Voucher> result = voucherRepository.findById(id);
         return result.isPresent() ? result.get() : null;
     }
 }

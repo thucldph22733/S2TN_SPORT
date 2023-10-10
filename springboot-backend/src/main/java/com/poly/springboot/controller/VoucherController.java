@@ -20,38 +20,38 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1/")
 public class VoucherController {
     @Autowired
     private VoucherService voucherService;
 
     @PostMapping("create-voucher")
-    public ResponseEntity<Voucher> create(@RequestBody VoucherRequestDto requestDto) {
+    public ResponseEntity<Voucher> createVoucher(@RequestBody VoucherRequestDto requestDto) {
         Voucher voucher = voucherService.saveVoucher(requestDto);
         return ResponseEntity.ok(voucher);
     }
 
     @GetMapping("vouchers")
-    public ResponseEntity<List<VoucherResponseDto>> getPosition() {
-        List<VoucherResponseDto> responseDtoList = voucherService.getVoucher();
+    public ResponseEntity<List<VoucherResponseDto>> getVouchers() {
+        List<VoucherResponseDto> responseDtoList = voucherService.getVouchers();
         return ResponseEntity.ok(responseDtoList);
     }
 
     @GetMapping("voucher/{id}")
-    public ResponseEntity<Voucher> getPosition(@PathVariable Long id) {
+    public ResponseEntity<Voucher> getVoucher(@PathVariable Long id) {
         Voucher voucher = voucherService.findVoucherById(id);
         return ResponseEntity.ok(voucher);
     }
 
     @PutMapping("update-voucher/{id}")
-    public ResponseEntity<Voucher> updatePosition(@RequestBody VoucherRequestDto positionRequestDto, @PathVariable Long id) {
+    public ResponseEntity<Voucher> updateVoucher(@RequestBody VoucherRequestDto positionRequestDto, @PathVariable Long id) {
         Voucher voucher = voucherService.updateVoucher(positionRequestDto, id);
         return ResponseEntity.ok(voucher);
     }
 
     @DeleteMapping("delete-voucher/{id}")
-    public ResponseEntity<String> deletePosition(@PathVariable Long id) {
-        String message = voucherService.delete(id);
+    public ResponseEntity<String> deleteVoucher(@PathVariable Long id) {
+        String message = voucherService.deleteVoucher(id);
         return ResponseEntity.ok(message);
     }
 

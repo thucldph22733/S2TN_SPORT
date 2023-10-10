@@ -1,7 +1,6 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ShippingMethodRequestDto;
-import com.poly.springboot.dto.responseDto.ShippingMethodResponseDto;
 import com.poly.springboot.entity.ShippingMethod;
 import com.poly.springboot.repository.ShippingMethodRepository;
 import com.poly.springboot.service.ShippingMethodService;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ShippingMethodServiceImpl implements ShippingMethodService {
@@ -19,16 +17,9 @@ public class ShippingMethodServiceImpl implements ShippingMethodService {
     private ShippingMethodRepository shippingMethodRepository;
 
     @Override   //Phuong thuoc lay du lieu ShippingMethod
-    public List<ShippingMethodResponseDto> getShippingMethods() {
+    public List<ShippingMethod> getShippingMethods() {
 
-        return shippingMethodRepository.findAll().stream().map(
-                shippingMethod -> new ShippingMethodResponseDto(
-                        shippingMethod.getId(),
-                        shippingMethod.getShippingName(),
-                        shippingMethod.getPrice(),
-                        shippingMethod.getShippingDescribe()
-                )
-        ).collect(Collectors.toList());
+        return shippingMethodRepository.findAll();
 
     }
 

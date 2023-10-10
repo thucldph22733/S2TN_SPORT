@@ -18,9 +18,7 @@ public class StaffResponseDto {
 
     private String positionName;
 
-    private String firstName;
-
-    private String lastName;
+    private String staffName;
 
     private String avatar;
 
@@ -38,6 +36,5 @@ public class StaffResponseDto {
 
     private String country;
 
-    private String password;
 
 }

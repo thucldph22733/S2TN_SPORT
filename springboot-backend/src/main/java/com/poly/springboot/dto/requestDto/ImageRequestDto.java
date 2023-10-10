@@ -1,20 +1,22 @@
 package com.poly.springboot.dto.requestDto;
 
+import com.poly.springboot.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-@Setter
+
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class CategoryVoucherRequestDto {
+public class ImageRequestDto {
 
-    private String categoryName;
+    private Long productId;
 
-    private String categoryDescribe;
+    private String imageName;
+
+    private String imageDescribe;
 
 }

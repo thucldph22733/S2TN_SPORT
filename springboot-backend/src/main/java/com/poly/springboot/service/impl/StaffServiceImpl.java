@@ -9,7 +9,6 @@ import com.poly.springboot.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,8 +28,7 @@ public class StaffServiceImpl implements StaffService {
                 staff -> new StaffResponseDto(
                         staff.getId(),
                         staff.getPosition().getPositionName(),
-                        staff.getFirstName(),
-                        staff.getLastName(),
+                        staff.getFirstName() + " " +staff.getLastName(),
                         staff.getAvatar(),
                         staff.getNumberPhone(),
                         staff.getEmail(),
@@ -38,8 +36,7 @@ public class StaffServiceImpl implements StaffService {
                         staff.getBirthOfDay(),
                         staff.getAddress(),
                         staff.getCity(),
-                        staff.getCountry(),
-                        staff.getPassword())
+                        staff.getCountry())
         ).collect(Collectors.toList());
     }
 
@@ -54,7 +51,7 @@ public class StaffServiceImpl implements StaffService {
         staff.setNumberPhone(requestDto.getNumberPhone());
         staff.setEmail(requestDto.getEmail());
         staff.setGender(requestDto.getGender());
-        staff.setBirthOfDay((Date) requestDto.getBirthOfDate());
+        staff.setBirthOfDay(requestDto.getBirthOfDate());
         staff.setAddress(requestDto.getAddress());
         staff.setCity(requestDto.getCity());
         staff.setCountry(requestDto.getCountry());
@@ -77,7 +74,7 @@ public class StaffServiceImpl implements StaffService {
         staff.setNumberPhone(requestDto.getNumberPhone());
         staff.setEmail(requestDto.getEmail());
         staff.setGender(requestDto.getGender());
-        staff.setBirthOfDay((Date) requestDto.getBirthOfDate());
+        staff.setBirthOfDay(requestDto.getBirthOfDate());
         staff.setAddress(requestDto.getAddress());
         staff.setCity(requestDto.getCity());
         staff.setCountry(requestDto.getCountry());
@@ -89,7 +86,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
-    public String delete(Long id) {
+    public String deleteStaff(Long id) {
 
         if(staffRepository.existsById(id)){
 

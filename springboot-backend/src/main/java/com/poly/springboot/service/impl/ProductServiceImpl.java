@@ -46,10 +46,7 @@ public class ProductServiceImpl implements ProductService {
                 product.getProductSale(),
                 product.getProductNew(),
                 product.getViewCount(),
-                product.getProductDescribe(),
-                product.getIsDefault(),
-                product.getCreateBy(),
-                product.getUpdateBy())
+                product.getProductDescribe())
         ).collect(Collectors.toList());
     }
 

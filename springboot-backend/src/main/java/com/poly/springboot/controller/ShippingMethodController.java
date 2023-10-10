@@ -1,7 +1,6 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.dto.requestDto.ShippingMethodRequestDto;
-import com.poly.springboot.dto.responseDto.ShippingMethodResponseDto;
 import com.poly.springboot.entity.ShippingMethod;
 import com.poly.springboot.service.ShippingMethodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1/")
 public class ShippingMethodController {
 
     @Autowired
@@ -28,10 +27,10 @@ public class ShippingMethodController {
 
     // get all Shipping Method rest api
     @GetMapping("shippingMethods")
-    public ResponseEntity<List<ShippingMethodResponseDto>> getShippingMethods(){
+    public ResponseEntity<List<ShippingMethod>> getShippingMethods(){
 
-        List<ShippingMethodResponseDto> responseDtoList = shippingMethodService.getShippingMethods();
-        return ResponseEntity.ok(responseDtoList);
+        List<ShippingMethod> shippingMethods = shippingMethodService.getShippingMethods();
+        return ResponseEntity.ok(shippingMethods);
     }
 
     //get Shipping Method by id rest api

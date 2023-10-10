@@ -1,12 +1,10 @@
 package com.poly.springboot.dto.requestDto;
 
-import com.poly.springboot.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,7 +24,7 @@ public class AddressRequestDto {
     private String city;
 
 
-    private String coutry;
+    private String country;
 
 
 }

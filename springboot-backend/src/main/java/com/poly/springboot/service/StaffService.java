@@ -16,7 +16,7 @@ public interface StaffService {
 
     Staff updateStaff(StaffRequestDto requestDto,Long id);
 
-    String delete(Long id);
+    String deleteStaff(Long id);
 
     Staff findStaffById(Long id);
 

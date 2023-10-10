@@ -20,7 +20,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1/")
 public class StaffController {
 
     @Autowired
@@ -52,7 +52,7 @@ public class StaffController {
 
     @DeleteMapping("delete-staff/{id}")
     public ResponseEntity<String> deleteStaff(@PathVariable Long id){
-        String message = staffService.delete(id);
+        String message = staffService.deleteStaff(id);
         return ResponseEntity.ok(message);
     }
 }

@@ -29,7 +29,7 @@ public class ShiftServiceImpl implements ShiftService {
                         shifts.getStaff().getLastName(),
                         shifts.getStartDate(),
                         shifts.getEndDate(),
-                        shifts.getInitiaAmount(),
+                        shifts.getInitialAmount(),
                         shifts.getTotalRevenue(),
                         shifts.getCash(),
                         shifts.getTransferMoney(),
@@ -51,9 +51,7 @@ public class ShiftServiceImpl implements ShiftService {
         Shifts shifts = new Shifts();
 
         shifts.setStaff(staffRepository.findById(requestDto.getStaffId()).orElse(null));
-        shifts.setStartDate(requestDto.getStartDate());
-        shifts.setEndDate(requestDto.getEndDate());
-        shifts.setInitiaAmount(requestDto.getInitiaAmount());
+        shifts.setInitialAmount(requestDto.getInitialAmount());
         shifts.setTotalRevenue(requestDto.getTotalRevenue());
         shifts.setCash(requestDto.getCash());
         shifts.setTransferMoney(requestDto.getTransferMoney());
@@ -71,9 +69,7 @@ public class ShiftServiceImpl implements ShiftService {
         Shifts shifts = shiftRepository.findById(id).get();
 
         shifts.setStaff(staffRepository.findById(requestDto.getStaffId()).orElse(null));
-        shifts.setStartDate(requestDto.getStartDate());
-        shifts.setEndDate(requestDto.getEndDate());
-        shifts.setInitiaAmount(requestDto.getInitiaAmount());
+        shifts.setInitialAmount(requestDto.getInitialAmount());
         shifts.setTotalRevenue(requestDto.getTotalRevenue());
         shifts.setCash(requestDto.getCash());
         shifts.setTransferMoney(requestDto.getTransferMoney());

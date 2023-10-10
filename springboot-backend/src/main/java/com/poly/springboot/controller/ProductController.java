@@ -12,13 +12,13 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1/")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @GetMapping("product")
+    @GetMapping("products")
     public ResponseEntity<List<ProductResponseDto>> getProductDetail() {
         List<ProductResponseDto> a = productService.findAll();
         return ResponseEntity.ok(a);

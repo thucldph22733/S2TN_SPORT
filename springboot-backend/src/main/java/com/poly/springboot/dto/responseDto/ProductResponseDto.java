@@ -1,6 +1,5 @@
 package com.poly.springboot.dto.responseDto;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,9 +35,4 @@ public class ProductResponseDto {
 
     private String productDescribe;
 
-    private Integer isDefault;
-
-    private String createBy;
-
-    private  String updateBy;
 }

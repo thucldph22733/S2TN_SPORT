@@ -1,7 +1,6 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.dto.requestDto.CategoryVoucherRequestDto;
-import com.poly.springboot.dto.responseDto.CategoryVoucherResponseDto;
 import com.poly.springboot.entity.CategoryVoucher;
 import com.poly.springboot.service.CategoryVoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,38 +19,38 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1/")
 public class CategoryVoucherController {
     @Autowired
     private CategoryVoucherService categoryVoucherService;
 
     @PostMapping("create-categoryVoucher")
-    public ResponseEntity<CategoryVoucher> create(@RequestBody CategoryVoucherRequestDto requestDto){
+    public ResponseEntity<CategoryVoucher> createCategoryVoucher(@RequestBody CategoryVoucherRequestDto requestDto){
         CategoryVoucher categoryVoucher = categoryVoucherService.saveCategoryVoucher(requestDto);
         return ResponseEntity.ok(categoryVoucher);
     }
 
     @GetMapping("categoryVouchers")
-    public ResponseEntity<List<CategoryVoucherResponseDto>> getPosition(){
-        List<CategoryVoucherResponseDto> responseDtoList = categoryVoucherService.getCategoryVoucher();
+    public ResponseEntity<List<CategoryVoucher>> getCategoryVouchers(){
+        List<CategoryVoucher> responseDtoList = categoryVoucherService.getCategoryVouchers();
         return ResponseEntity.ok(responseDtoList);
     }
 
     @GetMapping("categoryVoucher/{id}")
-    public ResponseEntity<CategoryVoucher> getPosition (@PathVariable Long id){
+    public ResponseEntity<CategoryVoucher> getCategoryVoucher(@PathVariable Long id){
         CategoryVoucher categoryVoucher = categoryVoucherService.findCategoryVoucherById(id);
         return ResponseEntity.ok(categoryVoucher);
     }
 
     @PutMapping("update-categoryVoucher/{id}")
-    public ResponseEntity<CategoryVoucher> updatePosition(@RequestBody CategoryVoucherRequestDto positionRequestDto,@PathVariable Long id){
+    public ResponseEntity<CategoryVoucher> updateCategoryVoucher(@RequestBody CategoryVoucherRequestDto positionRequestDto,@PathVariable Long id){
         CategoryVoucher categoryVoucher = categoryVoucherService.updateCategoryVoucher(positionRequestDto,id);
         return ResponseEntity.ok(categoryVoucher);
     }
 
     @DeleteMapping("delete-categoryVoucher/{id}")
-    public ResponseEntity<String> deletePosition(@PathVariable Long id){
-        String message = categoryVoucherService.delete(id);
+    public ResponseEntity<String> deleteCategoryVoucher(@PathVariable Long id){
+        String message = categoryVoucherService.deleteCategoryVoucher(id);
         return ResponseEntity.ok(message);
     }
 

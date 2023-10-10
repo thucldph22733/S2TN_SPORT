@@ -14,17 +14,29 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VoucherResponseDto {
+
     private Long id;
-    private CategoryVoucher categoryVoucher;
+
+    private String categoryVoucher;
+
     private String voucherName;
+
     private Date startDate;
+
     private Date endDate;
+
     private Integer quantity;
+
     private Integer reductionLevel;
+
     private Integer discountRate;
+
     private String voucherDescribe;
+
     private Boolean voucherStatus;
+
     private LocalDateTime createDate;
+
     private LocalDateTime updateDate;
 
 }

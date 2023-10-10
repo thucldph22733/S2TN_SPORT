@@ -1,7 +1,6 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.dto.requestDto.PositionRequestDto;
-import com.poly.springboot.dto.responseDto.PositionResponseDto;
 import com.poly.springboot.entity.Position;
 import com.poly.springboot.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1/")
 public class PositionController {
 
     @Autowired
@@ -33,9 +32,9 @@ public class PositionController {
     }
 
     @GetMapping("positions")
-    public ResponseEntity<List<PositionResponseDto>> getPositions(){
-        List<PositionResponseDto> responseDtoList = positionService.getPositions();
-        return ResponseEntity.ok(responseDtoList);
+    public ResponseEntity<List<Position>> getPositions(){
+        List<Position> positionList = positionService.getPositions();
+        return ResponseEntity.ok(positionList);
     }
 
     @GetMapping("position/{id}")
@@ -52,7 +51,7 @@ public class PositionController {
 
     @DeleteMapping("delete-position/{id}")
     public ResponseEntity<String> deletePosition(@PathVariable Long id){
-        String message = positionService.delete(id);
+        String message = positionService.deletePosition(id);
         return ResponseEntity.ok(message);
     }
 

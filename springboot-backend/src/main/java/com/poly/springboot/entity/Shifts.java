@@ -42,7 +42,7 @@ public class Shifts {
     private LocalDateTime endDate;
 
     @Column(name = "initia_amount")  //so tien ban dau;
-    private Double initiaAmount;
+    private Double initialAmount;
 
     @Column(name = "total_revenue")  //tong doanh thu
     private Double totalRevenue;

@@ -73,7 +73,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer findAddressById(Long id) {
+    public Customer findCustomerById(Long id) {
         Optional<Customer> result = customerRepository.findById(id);
         return result.isPresent() ? result.get() :null;
     }

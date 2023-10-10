@@ -18,6 +18,6 @@ public interface CustomerService {
 
     String delete(Long id);
 
-    Customer findAddressById(Long id);
+    Customer findCustomerById(Long id);
 
 }

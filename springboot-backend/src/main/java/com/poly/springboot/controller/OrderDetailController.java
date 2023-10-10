@@ -27,17 +27,20 @@ public class OrderDetailController {
     @Autowired
     private OrderDetailService orderDetailService;
 
+    // get all order detail rest api
     @GetMapping("orderDetails")
     public ResponseEntity<List<OrderDetailResponseDto>> getOrderDetails(){
         List<OrderDetailResponseDto> orderDetailResponseDtoList = orderDetailService.getOrderDetails();
         return ResponseEntity.ok( orderDetailResponseDtoList);
     }
+    // create order detail rest api
     @PostMapping("create-orderDetail")
     public ResponseEntity<OrderDetail> saveOrderDetail(@RequestBody OrderDetailRequestDto orderDetailRequestDto){
         OrderDetail orderDetail = orderDetailService.saveOrderDetail(orderDetailRequestDto);
         return ResponseEntity.ok(orderDetail);
     }
 
+    //update order detail rest api
     @PutMapping ("update-orderDetail/{id}")
     public ResponseEntity<OrderDetail> updateOrderDetail(@RequestBody OrderDetailRequestDto orderDetailRequestDto, @PathVariable Long id){
         OrderDetail orderDetail = orderDetailService.updateOrderDetail(orderDetailRequestDto,id);

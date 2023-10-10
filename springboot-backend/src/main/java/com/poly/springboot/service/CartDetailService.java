@@ -1,13 +1,14 @@
 package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.CartDetailRequestDto;
+import com.poly.springboot.dto.responseDto.CartDetailResponseDto;
 import com.poly.springboot.entity.CartDetail;
 
 import java.util.List;
 
 public interface CartDetailService {
 
-    List<CartDetailRequestDto> getCartDetails();
+    List<CartDetailResponseDto> getCartDetails();
 
     CartDetail saveCartDetail(CartDetailRequestDto cartDetailRequestDto);
 

@@ -1,7 +1,7 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.AddressRequestDto;
-import com.poly.springboot.dto.responseDto.AddressResponeDto;
+import com.poly.springboot.dto.responseDto.AddressResponseDto;
 import com.poly.springboot.entity.Address;
 import com.poly.springboot.repository.AddressRepository;
 import com.poly.springboot.service.AddressService;
@@ -19,9 +19,9 @@ public class AddressServiceImpl implements AddressService {
     private AddressRepository addressRepository;
 
     @Override
-    public List<AddressResponeDto> getAll() {
+    public List<AddressResponseDto> getAll() {
         return addressRepository.findAll().stream().map(
-        address -> new AddressResponeDto(
+        address -> new AddressResponseDto(
                 address.getId(),
                 address.getAddress(),
                 address.getStreet(),

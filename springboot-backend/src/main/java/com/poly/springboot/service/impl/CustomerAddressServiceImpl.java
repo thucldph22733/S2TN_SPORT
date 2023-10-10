@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerAddressServiceImpl implements CustomerAddressService {
@@ -28,14 +29,14 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Override
     public List<CustomerAddressResponeDto> getAll() {
-        return (List<CustomerAddressResponeDto>) customerAddressRepository.findAll().stream().map(
+        return  customerAddressRepository.findAll().stream().map(
                 customerAddress -> new CustomerAddressResponeDto(
                         customerAddress.getId(),
-                        customerAddress.getCustomer().getFirstName() + customerAddress.getCustomer().getLastName(),
                         customerAddress.getAddress().getAddress(),
+                        customerAddress.getCustomer().getFirstName() + " " + customerAddress.getCustomer().getLastName(),
                         customerAddress.getIsDefault()
                 )
-        );
+        ).collect(Collectors.toList());
     }
 
     @Override

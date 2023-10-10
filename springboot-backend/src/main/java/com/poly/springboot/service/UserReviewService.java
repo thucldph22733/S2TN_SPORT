@@ -13,6 +13,8 @@ public interface UserReviewService {
 
     UserReview saveUserReview(UserReviewRequestDto userReviewRequestDto);
 
-    UserReview updateUserReview(UserReviewRequestDto userReviewRequestDto);
+    UserReview updateUserReview(UserReviewRequestDto userReviewRequestDto,Long id);
+
+    String deleteUserReview(Long id);
 
 }

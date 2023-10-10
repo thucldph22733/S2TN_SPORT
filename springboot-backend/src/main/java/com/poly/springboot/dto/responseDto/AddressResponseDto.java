@@ -25,7 +25,7 @@ public class AddressResponseDto {
     private String city;
 
 
-    private String coutry;
+    private String country;
 
 
 }

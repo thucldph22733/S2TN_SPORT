@@ -37,7 +37,7 @@ public class AddressServiceImpl implements AddressService {
         address.setAddress(addressRequestDto.getAddress());
         address.setCity(addressRequestDto.getCity());
         address.setRegion(addressRequestDto.getRegion());
-        address.setCoutry(addressRequestDto.getCoutry());
+        address.setCoutry(addressRequestDto.getCountry());
         address.setStreet(addressRequestDto.getStreet());
         return addressRepository.save(address);
     }
@@ -48,7 +48,7 @@ public class AddressServiceImpl implements AddressService {
         address.setAddress(addressRequestDto.getAddress());
         address.setCity(addressRequestDto.getCity());
         address.setRegion(addressRequestDto.getRegion());
-        address.setCoutry(addressRequestDto.getCoutry());
+        address.setCoutry(addressRequestDto.getCountry());
         address.setStreet(addressRequestDto.getStreet());
         return addressRepository.save(address);
     }

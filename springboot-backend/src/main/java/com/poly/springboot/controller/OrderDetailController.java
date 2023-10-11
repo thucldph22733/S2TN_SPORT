@@ -30,8 +30,8 @@ public class OrderDetailController {
     // get all order detail rest api
     @GetMapping("orderDetails")
     public ResponseEntity<List<OrderDetailResponseDto>> getOrderDetails(){
-        List<OrderDetailResponseDto> orderDetailResponseDtoList = orderDetailService.getOrderDetails();
-        return ResponseEntity.ok( orderDetailResponseDtoList);
+        List<OrderDetailResponseDto> orderDetailList = orderDetailService.getOrderDetails();
+        return ResponseEntity.ok( orderDetailList);
     }
     // create order detail rest api
     @PostMapping("create-orderDetail")

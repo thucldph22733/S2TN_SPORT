@@ -28,7 +28,7 @@ public class StaffServiceImpl implements StaffService {
                 staff -> new StaffResponseDto(
                         staff.getId(),
                         staff.getPosition().getPositionName(),
-                        staff.getFirstName() + " " +staff.getLastName(),
+                        (staff.getFirstName() + " " +staff.getLastName()),
                         staff.getAvatar(),
                         staff.getNumberPhone(),
                         staff.getEmail(),

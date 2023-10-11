@@ -45,8 +45,11 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public Supplier save(SupplierRequestDto supplierRequestDto) {
         Supplier supplier = new Supplier();
-        supplier.setSupplierDescribe(supplier.getSupplierDescribe());
-        supplier.setSupplierName(supplier.getSupplierName());
+        supplier.setSupplierDescribe(supplierRequestDto.getSupplierDescribe());
+        supplier.setSupplierName(supplierRequestDto.getSupplierName());
+        supplier.setEmail(supplierRequestDto.getEmail());
+        supplier.setAddress(supplierRequestDto.getAddress());
+        supplier.setPhoneNumber(supplierRequestDto.getPhoneNumber());
         supplierReppsitory.save(supplier);
         return supplier;
     }
@@ -55,9 +58,12 @@ public class SupplierServiceImpl implements SupplierService {
     public Supplier update(SupplierRequestDto supplierRequestDto, Long id) {
         Supplier supplier = supplierReppsitory.findById(id).get();
 
-        supplier.setSupplierDescribe(supplier.getSupplierDescribe());
-        supplier.setSupplierName(supplier.getSupplierName());
-        supplierReppsitory.save(supplier);
-        return supplier;
+        supplier.setSupplierDescribe(supplierRequestDto.getSupplierDescribe());
+        supplier.setSupplierName(supplierRequestDto.getSupplierName());
+        supplier.setEmail(supplierRequestDto.getEmail());
+        supplier.setAddress(supplierRequestDto.getAddress());
+        supplier.setPhoneNumber(supplierRequestDto.getPhoneNumber());
+
+        return supplierReppsitory.save(supplier);
     }
 }

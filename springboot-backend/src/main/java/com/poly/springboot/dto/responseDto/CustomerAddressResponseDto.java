@@ -1,6 +1,5 @@
 package com.poly.springboot.dto.responseDto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,19 +9,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDetailResponseDto {
+public class CustomerAddressResponseDto {
 
     private Long id;
 
-    private String productAvatar;
+    private String customerName;
 
-    private String colorName;
+    private String addressName;
 
-    private String sizeName;
-
-    private String productName;
-
-    private Integer quantity;
-
-    private Double price;
+    private Integer isDefault;
 }

@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ShiftRequestDto {
 
-    private Long id;
-
     private Long staffId;
 
     private Double initialAmount;

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CartDetailServiceImpl implements CartDetailService {
@@ -34,7 +35,16 @@ public class CartDetailServiceImpl implements CartDetailService {
 
     @Override
     public List<CartDetailResponseDto> getCartDetails() {
-        return cartDetailRepository.getCartDetails();
+        return cartDetailRepository.findAll().stream().map(
+                cartDetail -> new CartDetailResponseDto(
+                        cartDetail.getId(),
+                        cartDetail.getProductDetail().getProduct().getProductAvatar(),
+                        cartDetail.getProductDetail().getColor().getColorName(),
+                        cartDetail.getProductDetail().getSize().getSizeName(),
+                        cartDetail.getProductDetail().getProduct().getProductName(),
+                        cartDetail.getQuantity(),
+                        cartDetail.getProductDetail().getPrice())
+        ).collect(Collectors.toList());
     }
 
     @Override

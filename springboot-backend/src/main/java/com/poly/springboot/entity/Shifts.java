@@ -34,12 +34,12 @@ public class Shifts {
     private Staff staff;
 
     @CreationTimestamp
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
+    @Column(name = "start_time")
+    private LocalDateTime startTime;
 
     @UpdateTimestamp
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
 
     @Column(name = "initia_amount")  //so tien ban dau;
     private Double initialAmount;

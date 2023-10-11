@@ -11,13 +11,11 @@ import java.sql.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerResponeDto {
+public class CustomerResponseDto {
 
     private  Long id;
 
-    private String firstName;
-
-    private String lastName;
+    private String customerName;
 
     private String avatar;
 
@@ -29,5 +27,4 @@ public class CustomerResponeDto {
 
     private Date birthOfDay;
 
-    private String password;
 }

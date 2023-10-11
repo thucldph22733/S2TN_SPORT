@@ -14,7 +14,7 @@ public class OrderDetailResponseDto {
 
     private Long id;
 
-    private String productImage;
+    private String productAvatar;
 
     private String colorName;
 

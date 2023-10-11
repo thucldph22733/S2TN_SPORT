@@ -32,7 +32,7 @@ public class VoucherOrderServiceImpl implements VoucherOrderService {
         System.out.println(requestDto);
         VoucherOrder voucherOrder = new VoucherOrder();
         voucherOrder.setVoucher(voucherRepository.findById(requestDto.getVoucherId()).orElse(null));
-        voucherOrder.setOrder(orderRepository.findById(requestDto.getVoucherId()).orElse(null));
+        voucherOrder.setOrder(orderRepository.findById(requestDto.getOrderId()).orElse(null));
         System.out.println(voucherOrder);
         return voucherOrderRepository.save(voucherOrder);
     }
@@ -42,7 +42,7 @@ public class VoucherOrderServiceImpl implements VoucherOrderService {
         VoucherOrder voucherOrder = voucherOrderRepository.findById(id).get();
         System.out.println(voucherOrder);
         voucherOrder.setVoucher(voucherRepository.findById(requestDto.getVoucherId()).orElse(null));
-        voucherOrder.setOrder(orderRepository.findById(requestDto.getVoucherId()).orElse(null));
+        voucherOrder.setOrder(orderRepository.findById(requestDto.getOrderId()).orElse(null));
         voucherOrderRepository.save(voucherOrder);
         return voucherOrder;
     }

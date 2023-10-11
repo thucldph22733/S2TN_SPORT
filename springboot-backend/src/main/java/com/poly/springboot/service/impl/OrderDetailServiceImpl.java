@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -34,7 +35,17 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     public List<OrderDetailResponseDto> getOrderDetails() {
-        return orderDetailRepository.getOrderDetails();
+        return orderDetailRepository.findAll()
+        .stream().map(
+                orderDetail -> new OrderDetailResponseDto(
+                        orderDetail.getId(),
+                        orderDetail.getProductDetail().getProduct().getProductAvatar(),
+                        orderDetail.getProductDetail().getColor().getColorName(),
+                        orderDetail.getProductDetail().getSize().getSizeName(),
+                        orderDetail.getProductDetail().getProduct().getProductName(),
+                        orderDetail.getQuantity(),
+                        orderDetail.getPrice())
+        ).collect(Collectors.toList());
     }
 
     @Override
@@ -48,7 +59,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         orderDetail.setOrder(order);
         orderDetail.setProductDetail(productDetail);
         orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
-        orderDetail.setPrice(orderDetail.getPrice());
+        orderDetail.setPrice(orderDetailRequestDto.getPrice());
 
         orderDetailRepository.save(orderDetail);
         return orderDetail;
@@ -65,7 +76,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         orderDetail.setOrder(order);
         orderDetail.setProductDetail(productDetail);
         orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
-        orderDetail.setPrice(orderDetail.getPrice());
+        orderDetail.setPrice(orderDetailRequestDto.getPrice());
 
         orderDetailRepository.save(orderDetail);
         return orderDetail;

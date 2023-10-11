@@ -21,12 +21,12 @@ public class AddressController {
     }
 
     @PostMapping("create-address")
-    public ResponseEntity<?>createAddress(AddressRequestDto addressRequestDto){
+    public ResponseEntity<?>createAddress(@RequestBody AddressRequestDto addressRequestDto){
         return ResponseEntity.ok(addressService.add(addressRequestDto));
     }
 
     @PutMapping("update-address/{id}")
-    public ResponseEntity<Address>updateAddress(AddressRequestDto addressRequestDto, @PathVariable Long id){
+    public ResponseEntity<Address>updateAddress(@RequestBody AddressRequestDto addressRequestDto, @PathVariable Long id){
         return ResponseEntity.ok(addressService.update(addressRequestDto,id));
     }
 

@@ -1,7 +1,7 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CustomerAddressRequestDto;
-import com.poly.springboot.dto.responseDto.CustomerAddressResponeDto;
+import com.poly.springboot.dto.responseDto.CustomerAddressResponseDto;
 import com.poly.springboot.entity.Customer;
 import com.poly.springboot.entity.CustomerAddress;
 import com.poly.springboot.repository.AddressRepository;
@@ -28,9 +28,9 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
     private AddressRepository addressRepository;
 
     @Override
-    public List<CustomerAddressResponeDto> getAll() {
+    public List<CustomerAddressResponseDto> getAll() {
         return  customerAddressRepository.findAll().stream().map(
-                customerAddress -> new CustomerAddressResponeDto(
+                customerAddress -> new CustomerAddressResponseDto(
                         customerAddress.getId(),
                         customerAddress.getAddress().getAddress(),
                         customerAddress.getCustomer().getFirstName() + " " + customerAddress.getCustomer().getLastName(),

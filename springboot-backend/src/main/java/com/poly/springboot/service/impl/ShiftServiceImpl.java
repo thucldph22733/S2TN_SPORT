@@ -26,9 +26,9 @@ public class ShiftServiceImpl implements ShiftService {
         return shiftRepository.findAll().stream().map(
                 shifts -> new ShiftResponseDto(
                         shifts.getId(),
-                        shifts.getStaff().getLastName(),
-                        shifts.getStartDate(),
-                        shifts.getEndDate(),
+                        shifts.getStaff().getLastName() + " " + shifts.getStaff().getFirstName(),
+                        shifts.getStartTime(),
+                        shifts.getEndTime(),
                         shifts.getInitialAmount(),
                         shifts.getTotalRevenue(),
                         shifts.getCash(),

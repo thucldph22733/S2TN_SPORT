@@ -9,34 +9,34 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/v1/")
 public class CustomerAddressController {
 
     @Autowired
     private CustomerAddressService customerAddressService;
 
-    @GetMapping("customer-address")
-    public ResponseEntity<?> getAllCustomerAdress(){
+    @GetMapping("customerAddress")
+    public ResponseEntity<?> getAllCustomerAddress(){
         return ResponseEntity.ok(customerAddressService.getAll());
     }
 
-    @PostMapping("create-customer-address")
-    public ResponseEntity<?>createCustomerAddress(CustomerAddressRequestDto customerAddressRequestDto){
+    @PostMapping("create-customerAddress")
+    public ResponseEntity<?>createCustomerAddress(@RequestBody CustomerAddressRequestDto customerAddressRequestDto){
         return ResponseEntity.ok(customerAddressService.add(customerAddressRequestDto));
     }
 
-    @PutMapping("update-customer-address/{id}")
-    public ResponseEntity<CustomerAddress>updateCustomerAddress(CustomerAddressRequestDto customerAddressRequestDto, @PathVariable Long id){
+    @PutMapping("update-customerAddress/{id}")
+    public ResponseEntity<CustomerAddress>updateCustomerAddress(@RequestBody CustomerAddressRequestDto customerAddressRequestDto, @PathVariable Long id){
         return ResponseEntity.ok(customerAddressService.update(customerAddressRequestDto,id));
     }
 
-    @DeleteMapping("delete-customer-address/{id}")
+    @DeleteMapping("delete-customerAddress/{id}")
     public ResponseEntity<String> deleteCustomerAddress(@PathVariable Long id) {
         String message = customerAddressService.delete(id);
         return ResponseEntity.ok(message);
     }
 
-    @GetMapping("customer-address/{id}")
+    @GetMapping("customerAddress/{id}")
     public ResponseEntity<CustomerAddress> findById(@PathVariable Long id) {
         CustomerAddress customerAddress = customerAddressService.findCustomerById(id);
         return ResponseEntity.ok(customerAddress);

@@ -7,6 +7,8 @@ import com.poly.springboot.entity.Customer;
 import com.poly.springboot.repository.CustomerRepository;
 import com.poly.springboot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,10 +67,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public String delete(Long id) {
-        if (customerRepository.existsById(id)){
+        if (customerRepository.existsById(id)) {
             customerRepository.deleteById(id);
             return "Delete successful";
-        }else {
+        } else {
             return "This id was not found" + id;
         }
     }
@@ -76,7 +78,25 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer findCustomerById(Long id) {
         Optional<Customer> result = customerRepository.findById(id);
-        return result.isPresent() ? result.get() :null;
+        return result.isPresent() ? result.get() : null;
+    }
+
+    @Override
+    public List<CustomerResponeDto> getPagination(Integer pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 5);
+        List<CustomerResponeDto> list = customerRepository.findAll(pageable)
+                .stream().map(c -> new CustomerResponeDto(
+                        c.getId(),
+                        c.getFirstName(),
+                        c.getLastName(),
+                        c.getAvatar(),
+                        c.getNumberPhone(),
+                        c.getEmail(),
+                        c.getGender(),
+                        c.getBirthOfDay(),
+                        c.getPassword()
+                        )).collect(Collectors.toList());
+        return list;
     }
 }
 

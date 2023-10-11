@@ -21,4 +21,6 @@ public interface CustomerService {
 
     Customer findCustomerById(Long id);
 
+    List<CustomerResponeDto> getPagination(Integer pageNo);
+
 }

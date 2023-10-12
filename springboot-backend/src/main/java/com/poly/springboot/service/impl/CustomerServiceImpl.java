@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import java.util.Collection;
+
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -97,6 +101,35 @@ public class CustomerServiceImpl implements CustomerService {
                         c.getPassword()
                         )).collect(Collectors.toList());
         return list;
+    }
+
+    @Override
+    public List<CustomerResponeDto> searchByNameOrPhoneNumber(String searchQuery) {
+        List<Customer> customersByFirstName = customerRepository.searchByFirstName(searchQuery);
+        List<Customer> customersByLastName = customerRepository.searchByLastName(searchQuery);
+        List<Customer> customersByPhoneNumber = customerRepository.searchByPhoneNumber(searchQuery);
+        List<Customer> customersByFullName = customerRepository.searchByFullName(searchQuery);
+
+        List<Customer> searchResults = Stream.of(customersByFirstName, customersByLastName, customersByPhoneNumber, customersByFullName)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+
+        List<CustomerResponeDto> searchResultsDto = searchResults.stream().map(
+                customer -> new CustomerResponeDto(
+                        customer.getId(),
+                        customer.getFirstName(),
+                        customer.getLastName(),
+                        customer.getAvatar(),
+                        customer.getNumberPhone(),
+                        customer.getEmail(),
+                        customer.getGender(),
+                        customer.getBirthOfDay(),
+                        customer.getPassword())
+        ).collect(Collectors.toList());
+
+        return searchResultsDto;
+
     }
 }
 

@@ -2,7 +2,6 @@ package com.poly.springboot.controller;
 
 import com.poly.springboot.dto.requestDto.CustomerRequestDto;
 import com.poly.springboot.dto.responseDto.CustomerResponeDto;
-import com.poly.springboot.entity.Brand;
 import com.poly.springboot.entity.Customer;
 import com.poly.springboot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,4 +51,13 @@ public class CustomerController {
     List<CustomerResponeDto> list = customerService.getPagination(pageNo.orElse(null));
     return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
+    @GetMapping("search")
+    public ResponseEntity<List<CustomerResponeDto>>searchCustomers(
+            @RequestParam(name = "query") String query) {
+        List<CustomerResponeDto> searchResults = customerService.searchByNameOrPhoneNumber(query);
+        return new ResponseEntity<>(searchResults, HttpStatus.OK);
+    }
+
+
 }

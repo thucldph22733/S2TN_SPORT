@@ -32,13 +32,10 @@ public class Staff {
     
     @ManyToOne
     @JoinColumn(name = "position_id")
-    private Position position;
+    private Role role;
 
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "last_name")
-    private String lastName;
+    @Column(name = "staff_name")
+    private String staffName;
 
     @Column(name = "avatar")
     private String avatar;
@@ -66,6 +63,9 @@ public class Staff {
 
     @Column(name = "login_password")
     private String password;
+
+    @Column(name = "staff_status")
+    private Integer staffStatus;
 
     @CreationTimestamp
     @Column(name = "create_date")

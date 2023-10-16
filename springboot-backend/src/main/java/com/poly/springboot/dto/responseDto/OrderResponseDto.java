@@ -34,5 +34,7 @@ public class OrderResponseDto {
 
     private Date receivedDate;
 
+    private String categoryOrder;
+
     private String note;
 }

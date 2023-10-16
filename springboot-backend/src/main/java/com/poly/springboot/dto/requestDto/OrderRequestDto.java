@@ -17,7 +17,7 @@ public class OrderRequestDto {
 
     private Long customerId;
 
-    private Long shippingId;
+    private Long deliveryId;
 
     private Long paymentId;
 
@@ -28,6 +28,10 @@ public class OrderRequestDto {
     private Date deliveryDate;
 
     private Date receivedDate;
+
+    private String categoryOrder;
+
+    private String orderTotal;
 
     private String note;
 }

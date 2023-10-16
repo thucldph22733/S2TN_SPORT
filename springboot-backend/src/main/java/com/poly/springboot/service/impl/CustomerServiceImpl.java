@@ -24,40 +24,42 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findAll().stream().map(
                 customer -> new CustomerResponseDto(
                         customer.getId(),
-                        customer.getFirstName() + " " + customer.getLastName(),
+                        customer.getCustomerName(),
                         customer.getAvatar(),
                         customer.getNumberPhone(),
                         customer.getEmail(),
                         customer.getGender(),
-                        customer.getBirthOfDay())
+                        customer.getBirthOfDay(),
+                        customer.getCustomerStatus())
+
         ).collect(Collectors.toList());
     }
 
     @Override
     public Customer add(CustomerRequestDto customerRequestDto) {
         Customer customer = new Customer();
-        customer.setFirstName(customerRequestDto.getFirstName());
-        customer.setLastName(customerRequestDto.getLastName());
+        customer.setCustomerName(customerRequestDto.getCustomerName());
         customer.setAvatar(customerRequestDto.getAvatar());
         customer.setNumberPhone(customerRequestDto.getNumberPhone());
         customer.setEmail(customerRequestDto.getEmail());
         customer.setGender(customerRequestDto.getGender());
         customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
         customer.setPassword(customerRequestDto.getPassword());
+        customer.setCustomerStatus(customerRequestDto.getCustomerStatus());
         return customerRepository.save(customer);
     }
 
     @Override
     public Customer update(CustomerRequestDto customerRequestDto, Long id) {
         Customer customer = customerRepository.findById(id).get();
-        customer.setFirstName(customerRequestDto.getFirstName());
-        customer.setLastName(customerRequestDto.getLastName());
+        customer.setCustomerName(customerRequestDto.getCustomerName());
         customer.setAvatar(customerRequestDto.getAvatar());
         customer.setNumberPhone(customerRequestDto.getNumberPhone());
         customer.setEmail(customerRequestDto.getEmail());
         customer.setGender(customerRequestDto.getGender());
         customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
         customer.setPassword(customerRequestDto.getPassword());
+        customer.setCustomerStatus(customerRequestDto.getCustomerStatus());
         return customerRepository.save(customer);
     }
 

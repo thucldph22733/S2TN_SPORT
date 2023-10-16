@@ -26,7 +26,7 @@ public class ShiftServiceImpl implements ShiftService {
         return shiftRepository.findAll().stream().map(
                 shifts -> new ShiftResponseDto(
                         shifts.getId(),
-                        shifts.getStaff().getLastName() + " " + shifts.getStaff().getFirstName(),
+                        shifts.getStaff().getStaffName(),
                         shifts.getStartTime(),
                         shifts.getEndTime(),
                         shifts.getInitialAmount(),
@@ -35,6 +35,7 @@ public class ShiftServiceImpl implements ShiftService {
                         shifts.getTransferMoney(),
                         shifts.getTotalAvailableMoney(),
                         shifts.getMoneyArises(),
+                        shifts.getCollectedOwner(),
                         shifts.getNote())
         ).collect(Collectors.toList());
     }
@@ -47,17 +48,18 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     @Override
-    public Shifts createShift(ShiftRequestDto requestDto) {
+    public Shifts createShift(ShiftRequestDto shiftRequestDto) {
         Shifts shifts = new Shifts();
 
-        shifts.setStaff(staffRepository.findById(requestDto.getStaffId()).orElse(null));
-        shifts.setInitialAmount(requestDto.getInitialAmount());
-        shifts.setTotalRevenue(requestDto.getTotalRevenue());
-        shifts.setCash(requestDto.getCash());
-        shifts.setTransferMoney(requestDto.getTransferMoney());
-        shifts.setTotalAvailableMoney(requestDto.getTotalAvailableMoney());
-        shifts.setMoneyArises(requestDto.getMoneyArises());
-        shifts.setNote(requestDto.getNote());
+        shifts.setStaff(staffRepository.findById(shiftRequestDto.getStaffId()).orElse(null));
+        shifts.setInitialAmount(shiftRequestDto.getInitialAmount());
+        shifts.setTotalRevenue(shiftRequestDto.getTotalRevenue());
+        shifts.setCash(shiftRequestDto.getCash());
+        shifts.setTransferMoney(shiftRequestDto.getTransferMoney());
+        shifts.setTotalAvailableMoney(shiftRequestDto.getTotalAvailableMoney());
+        shifts.setMoneyArises(shiftRequestDto.getMoneyArises());
+        shifts.setCollectedOwner(shiftRequestDto.getCollectedOwner());
+        shifts.setNote(shiftRequestDto.getNote());
 
         shiftRepository.save(shifts);
 
@@ -65,17 +67,18 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     @Override
-    public Shifts updateShift(ShiftRequestDto requestDto, Long id) {
+    public Shifts updateShift(ShiftRequestDto shiftRequestDto, Long id) {
         Shifts shifts = shiftRepository.findById(id).get();
 
-        shifts.setStaff(staffRepository.findById(requestDto.getStaffId()).orElse(null));
-        shifts.setInitialAmount(requestDto.getInitialAmount());
-        shifts.setTotalRevenue(requestDto.getTotalRevenue());
-        shifts.setCash(requestDto.getCash());
-        shifts.setTransferMoney(requestDto.getTransferMoney());
-        shifts.setTotalAvailableMoney(requestDto.getTotalAvailableMoney());
-        shifts.setMoneyArises(requestDto.getMoneyArises());
-        shifts.setNote(requestDto.getNote());
+        shifts.setStaff(staffRepository.findById(shiftRequestDto.getStaffId()).orElse(null));
+        shifts.setInitialAmount(shiftRequestDto.getInitialAmount());
+        shifts.setTotalRevenue(shiftRequestDto.getTotalRevenue());
+        shifts.setCash(shiftRequestDto.getCash());
+        shifts.setTransferMoney(shiftRequestDto.getTransferMoney());
+        shifts.setTotalAvailableMoney(shiftRequestDto.getTotalAvailableMoney());
+        shifts.setMoneyArises(shiftRequestDto.getMoneyArises());
+        shifts.setCollectedOwner(shiftRequestDto.getCollectedOwner());
+        shifts.setNote(shiftRequestDto.getNote());
 
         shiftRepository.save(shifts);
 

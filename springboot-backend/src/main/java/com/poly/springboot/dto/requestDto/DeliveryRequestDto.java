@@ -9,9 +9,11 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentMethodRequestDto {
+public class DeliveryRequestDto {
 
-    private String paymentName;
+    private String shippingName;
 
-    private String paymentDescribe;
+    private Double price;
+
+    private String shippingDescribe;
 }

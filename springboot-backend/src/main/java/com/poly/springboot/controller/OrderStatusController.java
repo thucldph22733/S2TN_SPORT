@@ -1,11 +1,8 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
-import com.poly.springboot.dto.requestDto.PaymentMethodRequestDto;
 import com.poly.springboot.entity.OrderStatus;
-import com.poly.springboot.entity.PaymentMethod;
 import com.poly.springboot.service.OrderStatusService;
-import com.poly.springboot.service.PaymentMethodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

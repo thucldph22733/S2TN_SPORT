@@ -17,6 +17,8 @@ public class ImageRequestDto {
 
     private String imageName;
 
+    private String imageLink;
+
     private String imageDescribe;
 
 }

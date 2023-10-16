@@ -43,7 +43,7 @@ public class ProductRequestDto {
     private String productDescribe;
 
     @NotEmpty(message = "Vui lòng Không để trống!")
-    private Integer isDefault;
+    private Integer productStatus;
 
     @NotBlank(message = "Không được để trống!")
     private String createBy;

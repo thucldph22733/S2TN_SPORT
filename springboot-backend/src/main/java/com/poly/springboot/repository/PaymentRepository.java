@@ -1,9 +1,9 @@
 package com.poly.springboot.repository;
 
-import com.poly.springboot.entity.PaymentMethod;
+import com.poly.springboot.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PaymentMethodRepository extends JpaRepository<PaymentMethod,Long> {
+public interface PaymentRepository extends JpaRepository<Payment,Long> {
 }

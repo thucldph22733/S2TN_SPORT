@@ -15,7 +15,7 @@ import java.sql.Date;
 @ToString
 public class VoucherRequestDto {
 
-    private Long categoryVoucherId;
+    private Integer categoryVoucher;
 
     private String voucherName;
 
@@ -23,9 +23,11 @@ public class VoucherRequestDto {
 
     private Date endDate;
 
-    private Integer quantity;
+    private Integer orderMinimum;
 
-    private Integer reductionLevel;
+    private Integer maxReduce;
+
+    private Integer quantity;
 
     private Integer discountRate;
 

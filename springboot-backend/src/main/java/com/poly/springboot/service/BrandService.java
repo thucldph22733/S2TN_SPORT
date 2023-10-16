@@ -1,15 +1,14 @@
 package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.BrandRequestDto;
-import com.poly.springboot.dto.responseDto.BrandResponseDto;
 import com.poly.springboot.entity.Brand;
 
 import java.util.List;
 
 public interface BrandService {
-    List<BrandResponseDto> getBrands();
+    List<Brand> getBrands();
 
-    List<BrandResponseDto> getPage(Integer pageNo);
+//    List<BrandResponseDto> getPage(Integer pageNo);
 
     Brand saveBrand(BrandRequestDto brandRequestDto);
 

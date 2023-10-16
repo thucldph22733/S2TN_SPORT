@@ -11,10 +11,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PositionRequestDto {
+public class RoleRequestDto {
 
-    private String positionName;
+    private String roleName;
 
-    private String positionDescribe;
+    private String roleDescribe;
 
 }

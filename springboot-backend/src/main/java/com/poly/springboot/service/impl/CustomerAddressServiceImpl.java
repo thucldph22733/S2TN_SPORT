@@ -32,8 +32,8 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
         return  customerAddressRepository.findAll().stream().map(
                 customerAddress -> new CustomerAddressResponseDto(
                         customerAddress.getId(),
-                        customerAddress.getAddress().getAddress(),
-                        customerAddress.getCustomer().getFirstName() + " " + customerAddress.getCustomer().getLastName(),
+                        customerAddress.getAddress().getAddressDetail(),
+                        customerAddress.getCustomer().getCustomerName(),
                         customerAddress.getIsDefault()
                 )
         ).collect(Collectors.toList());

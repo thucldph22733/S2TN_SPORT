@@ -3,6 +3,7 @@ package com.poly.springboot.service.impl;
 import com.poly.springboot.dto.requestDto.ClubRequestDto;
 import com.poly.springboot.entity.Category;
 import com.poly.springboot.entity.Club;
+import com.poly.springboot.repository.CategoryClubRepository;
 import com.poly.springboot.repository.ClubRepository;
 import com.poly.springboot.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ public class ClubServiceImpl implements ClubService {
 
     @Autowired
     private ClubRepository clubRepository;
+
+    @Autowired
+    private CategoryClubRepository categoryClubRepository;
 
     @Override
     public List<Club> findAll() {
@@ -45,6 +49,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public Club save(ClubRequestDto clubRequestDto) {
         Club club = new Club();
+        club.setCategoryClub(categoryClubRepository.findById(clubRequestDto.getCategoryClubId()).orElse(null));
         club.setClubDescribe(clubRequestDto.getClubDescribe());
         club.setClubName(clubRequestDto.getClubName());
         clubRepository.save(club);
@@ -54,6 +59,7 @@ public class ClubServiceImpl implements ClubService {
     public Club update(ClubRequestDto clubRequestDto, Long id) {
         Club club = clubRepository.findById(id).get();
 
+        club.setCategoryClub(categoryClubRepository.findById(clubRequestDto.getCategoryClubId()).orElse(null));
         club.setClubName(clubRequestDto.getClubName());
         club.setClubDescribe(clubRequestDto.getClubDescribe());
         clubRepository.save(club);

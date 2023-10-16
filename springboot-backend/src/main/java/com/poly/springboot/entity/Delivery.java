@@ -20,18 +20,21 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "positions")
-public class Position {
+@Table(name = "deliveries")
+public class Delivery {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "position_name")
-    private String positionName;
+    @Column(name = "delivery_name")
+    private String deliveryName;
 
-    @Column(name = "position_describe")
-    private String positionDescribe;
+    @Column(name = "price")
+    private Double price;
+
+    @Column(name = "delivery_describe")
+    private String deliveryDescribe;
 
     @CreationTimestamp
     @Column(name = "create_date")

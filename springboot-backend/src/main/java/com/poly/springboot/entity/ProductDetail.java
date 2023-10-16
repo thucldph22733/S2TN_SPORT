@@ -54,6 +54,9 @@ public class ProductDetail {
     @Column(name = "promotion_price")
     private Double promotionPrice;
 
+    @Column(name = "product_status")
+    private Double productStatus;
+
     @CreationTimestamp
     @Column(name = "create_date")
     private LocalDateTime createDate;

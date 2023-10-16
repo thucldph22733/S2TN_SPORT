@@ -12,19 +12,16 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AddressRequestDto {
 
-    private String address;
+    private String recipientName;
 
+    private String phoneNumber;
 
-    private String street;
-
+    private String addressDetail;
 
     private String region;
 
-
     private String city;
 
-
     private String country;
-
 
 }

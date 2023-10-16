@@ -18,8 +18,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     private OrderStatusRepository orderStatusRepository;
     private AddressRepository addressRepository;
-    private ShippingMethodRepository shippingMethodRepository;
-    private PaymentMethodRepository paymentMethodRepository;
+    private DeliveryRepository shippingMethodRepository;
+    private PaymentRepository paymentMethodRepository;
     private CustomerRepository customerRepository;
     private StaffRepository staffRepository;
 
@@ -28,8 +28,8 @@ public class OrderServiceImpl implements OrderService {
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderStatusRepository orderStatusRepository,
                             AddressRepository addressRepository,
-                            ShippingMethodRepository shippingMethodRepository,
-                            PaymentMethodRepository paymentMethodRepository,
+                            DeliveryRepository shippingMethodRepository,
+                            PaymentRepository paymentMethodRepository,
                             CustomerRepository customerRepository,
                             StaffRepository staffRepository) {
         this.orderRepository = orderRepository;
@@ -48,14 +48,15 @@ public class OrderServiceImpl implements OrderService {
                 order -> new OrderResponseDto(
                         order.getId(),
                         order.getOrderDate(),
-                        order.getStaff().getFirstName() + " " + order.getStaff().getLastName(),
-                        order.getCustomer().getFirstName() + " " + order.getCustomer().getLastName(),
-                        order.getShippingMethod().getShippingName(),
-                        order.getPaymentMethod().getPaymentName(),
-                        order.getAddress().getAddress(),
+                        order.getStaff().getStaffName(),
+                        order.getCustomer().getCustomerName(),
+                        order.getDelivery().getDeliveryName(),
+                        order.getPayment().getPaymentName(),
+                        order.getAddress().getAddressDetail(),
                         order.getOrderStatus().getStatusName(),
                         order.getDeliveryDate(),
                         order.getReceivedDate(),
+                        order.getCategoryOrder(),
                         order.getNote()
                 )
         ).collect(Collectors.toList());
@@ -69,9 +70,9 @@ public class OrderServiceImpl implements OrderService {
         //Get staff by id
         Staff staff = staffRepository.findById(orderRequestDto.getStaffId()).orElse(null);
         //Get paymentMethod by id
-        PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null);
+        Payment payment= paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null);
         //Get shippingMethod by id
-        ShippingMethod shippingMethod =  shippingMethodRepository.findById(orderRequestDto.getShippingId()).orElse(null);
+        Delivery delivery =  shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null);
         //Get orderStatus by id
         OrderStatus orderStatus = orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null);
         //Get address by id
@@ -81,10 +82,12 @@ public class OrderServiceImpl implements OrderService {
 
         order.setCustomer(customer);
         order.setStaff(staff);
-        order.setPaymentMethod(paymentMethod);
-        order.setShippingMethod(shippingMethod);
+        order.setDelivery(delivery);
+        order.setPayment(payment);
         order.setOrderStatus(orderStatus);
         order.setAddress(address);
+        order.setCategoryOrder(orderRequestDto.getCategoryOrder());
+        order.setOrderTotal(orderRequestDto.getOrderTotal());
         order.setNote(orderRequestDto.getNote());
         orderRepository.save(order);
         return order;
@@ -98,9 +101,9 @@ public class OrderServiceImpl implements OrderService {
         //Get staff by id
         Staff staff = staffRepository.findById(orderRequestDto.getStaffId()).orElse(null);
         //Get paymentMethod by id
-        PaymentMethod paymentMethod = paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null);
+        Payment payment = paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null);
         //Get shippingMethod by id
-        ShippingMethod shippingMethod =  shippingMethodRepository.findById(orderRequestDto.getShippingId()).orElse(null);
+        Delivery delivery =  shippingMethodRepository.findById(orderRequestDto. getDeliveryId()).orElse(null);
         //Get orderStatus by id
         OrderStatus orderStatus = orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null);
         //Get address by id
@@ -111,10 +114,12 @@ public class OrderServiceImpl implements OrderService {
         //Neu tim thay update lai
         order.setCustomer(customer);
         order.setStaff(staff);
-        order.setPaymentMethod(paymentMethod);
-        order.setShippingMethod(shippingMethod);
+        order.setDelivery(delivery);
+        order.setPayment(payment);
         order.setOrderStatus(orderStatus);
         order.setAddress(address);
+        order.setCategoryOrder(orderRequestDto.getCategoryOrder());
+        order.setOrderTotal(orderRequestDto.getOrderTotal());
         order.setNote(orderRequestDto.getNote());
         //Kiem tra trang thai
         //Neu trang thai co id = 1001 thi cap nhat ngay giao

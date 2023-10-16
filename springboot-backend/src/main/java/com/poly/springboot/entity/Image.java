@@ -36,6 +36,9 @@ public class Image {
     @Column(name = "image_name")
     private String imageName;
 
+    @Column(name = "image_link")
+    private String imageLink;
+
     @Column(name = "image_describe")
     private String imageDescribe;
 

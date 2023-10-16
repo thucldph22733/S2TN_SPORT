@@ -16,7 +16,7 @@ public class StaffResponseDto {
 
     private Long id;
 
-    private String positionName;
+    private String roleName;
 
     private String staffName;
 
@@ -36,5 +36,6 @@ public class StaffResponseDto {
 
     private String country;
 
+    private Integer staffStatus;
 
 }

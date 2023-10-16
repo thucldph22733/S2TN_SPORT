@@ -12,10 +12,7 @@ import java.sql.Date;
 @NoArgsConstructor
 public class CustomerRequestDto {
 
-
-    private String firstName;
-
-    private String lastName;
+    private String customerName;
 
     private String avatar;
 
@@ -28,5 +25,7 @@ public class CustomerRequestDto {
     private Date birthOfDay;
 
     private String password;
+
+    private Integer customerStatus;
 
 }

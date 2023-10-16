@@ -29,6 +29,8 @@ public class ProductDetailRequestDto {
     @NotEmpty(message = "Vui lòng Không để trống!")
     private Double promotionPrice;
 
+    private Integer productStatus;
+
     @NotEmpty(message = "Vui lòng Không để trống!")
     private String createBy;
 

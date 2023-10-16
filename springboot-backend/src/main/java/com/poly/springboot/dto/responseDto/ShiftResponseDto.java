@@ -33,5 +33,7 @@ public class ShiftResponseDto {
 
     private Double moneyArises;
 
+    private Double collectedOwner;
+
     private String note;
 }

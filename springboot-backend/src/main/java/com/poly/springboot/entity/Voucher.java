@@ -30,9 +30,8 @@ public class Voucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "category_voucher_id")
-    private CategoryVoucher categoryVoucher;
+    @Column(name = "category_voucher")
+    private Integer categoryVoucher;
 
     @Column(name = "voucher_name")
     private String voucherName;
@@ -46,8 +45,11 @@ public class Voucher {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "reduction_level")  // muc giam
-    private Integer reductionLevel;
+    @Column(name = "order_minimum")  // don hang toi thieu
+    private Integer orderMinimum;
+
+    @Column(name = "max_reduce")  // giam toi da
+    private Integer maxReduce;
 
     @Column(name = "discount_rate")  // ty le chiet khau
     private Integer discountRate;

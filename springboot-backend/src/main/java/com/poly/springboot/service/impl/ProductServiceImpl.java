@@ -46,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
                 product.getProductSale(),
                 product.getProductNew(),
                 product.getViewCount(),
+                product.getProductStatus(),
                 product.getProductDescribe())
         ).collect(Collectors.toList());
     }
@@ -85,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
         product.setProductNew(productRequestDto.getProductNew());
         product.setViewCount(productRequestDto.getViewCount());
         product.setProductName(productRequestDto.getProductName());
-        product.setIsDefault(productRequestDto.getIsDefault());
+        product.setProductStatus(productRequestDto.getProductStatus());
         product.setCreateBy(productRequestDto.getCreateBy());
         product.setUpdateBy(productRequestDto.getUpdateBy());
 
@@ -108,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
         product.setProductNew(productRequestDto.getProductNew());
         product.setViewCount(productRequestDto.getViewCount());
         product.setProductName(productRequestDto.getProductName());
-        product.setIsDefault(productRequestDto.getIsDefault());
+        product.setProductStatus(productRequestDto.getProductStatus());
         product.setCreateBy(productRequestDto.getCreateBy());
         product.setUpdateBy(productRequestDto.getUpdateBy());
 

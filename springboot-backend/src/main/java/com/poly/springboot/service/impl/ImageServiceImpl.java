@@ -31,6 +31,7 @@ public class ImageServiceImpl implements ImageService {
 
         image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
+        image.setImageLink(imageRequestDto.getImageLink());
         image.setImageDescribe(imageRequestDto.getImageDescribe());
 
         imageRepository.save(image);
@@ -51,6 +52,7 @@ public class ImageServiceImpl implements ImageService {
 
         image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
+        image.setImageLink(imageRequestDto.getImageLink());
         image.setImageDescribe(imageRequestDto.getImageDescribe());
 
         imageRepository.save(image);

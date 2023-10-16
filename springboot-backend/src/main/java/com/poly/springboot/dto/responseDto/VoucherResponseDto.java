@@ -1,6 +1,5 @@
 package com.poly.springboot.dto.responseDto;
 
-import com.poly.springboot.entity.CategoryVoucher;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,7 @@ public class VoucherResponseDto {
 
     private Long id;
 
-    private String categoryVoucher;
+    private Integer categoryVoucher;
 
     private String voucherName;
 
@@ -25,18 +24,16 @@ public class VoucherResponseDto {
 
     private Date endDate;
 
-    private Integer quantity;
+    private Integer orderMinimum;
 
-    private Integer reductionLevel;
+    private Integer maxReduce;
+
+    private Integer quantity;
 
     private Integer discountRate;
 
     private String voucherDescribe;
 
     private Boolean voucherStatus;
-
-    private LocalDateTime createDate;
-
-    private LocalDateTime updateDate;
 
 }

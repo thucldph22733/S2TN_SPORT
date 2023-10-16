@@ -81,6 +81,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
         productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
+        productDetail.setProductStatus(productDetail.getProductStatus());
         productDetail.setCreateBy(productDetailRequestDto.getCreateBy());
         productDetail.setUpdateBy(productDetailRequestDto.getUpdateBy());
 
@@ -100,6 +101,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
         productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
+        productDetail.setProductStatus(productDetail.getProductStatus());
         productDetail.setCreateBy(productDetailRequestDto.getCreateBy());
         productDetail.setUpdateBy(productDetailRequestDto.getUpdateBy());
 

@@ -39,15 +39,15 @@ public class Order {
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "shipping_id")
-    private ShippingMethod shippingMethod;
+    @JoinColumn(name = "delivery_id")
+    private Delivery delivery;
 
     @ManyToOne
     @JoinColumn(name = "payment_id")
-    private PaymentMethod paymentMethod;
+    private Payment payment;
 
     @ManyToOne
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "delivery_address_id")
     private Address address;
 
     @ManyToOne
@@ -63,6 +63,12 @@ public class Order {
 
     @Column(name = "received_date")
     private Date receivedDate;
+
+    @Column(name = "category_order")
+    private String categoryOrder;
+
+    @Column(name = "orderTotal")
+    private String orderTotal;
 
     @Column(name = "note")
     private String note;

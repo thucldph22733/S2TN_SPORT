@@ -23,33 +23,40 @@ public class AddressServiceImpl implements AddressService {
         return addressRepository.findAll().stream().map(
         address -> new AddressResponseDto(
                 address.getId(),
-                address.getAddress(),
-                address.getStreet(),
+                address.getRecipientName(),
+                address.getPhoneNumber(),
+                address.getAddressDetail(),
                 address.getCity(),
                 address.getRegion(),
-                address.getCoutry())
+                address.getCountry())
         ).collect(Collectors.toList());
     }
 
     @Override
     public Address add(AddressRequestDto addressRequestDto) {
         Address address =  new Address();
-        address.setAddress(addressRequestDto.getAddress());
+
+        address.setRecipientName(addressRequestDto.getRecipientName());
+        address.setPhoneNumber(addressRequestDto.getPhoneNumber());
+        address.setAddressDetail(addressRequestDto.getAddressDetail());
         address.setCity(addressRequestDto.getCity());
         address.setRegion(addressRequestDto.getRegion());
-        address.setCoutry(addressRequestDto.getCountry());
-        address.setStreet(addressRequestDto.getStreet());
+        address.setCountry(addressRequestDto.getCountry());
+
         return addressRepository.save(address);
     }
 
     @Override
     public Address update(AddressRequestDto addressRequestDto, Long id) {
        Address address = addressRepository.findById(id).get();
-        address.setAddress(addressRequestDto.getAddress());
+
+        address.setRecipientName(addressRequestDto.getRecipientName());
+        address.setPhoneNumber(addressRequestDto.getPhoneNumber());
+        address.setAddressDetail(addressRequestDto.getAddressDetail());
         address.setCity(addressRequestDto.getCity());
         address.setRegion(addressRequestDto.getRegion());
-        address.setCoutry(addressRequestDto.getCountry());
-        address.setStreet(addressRequestDto.getStreet());
+        address.setCountry(addressRequestDto.getCountry());
+
         return addressRepository.save(address);
     }
 

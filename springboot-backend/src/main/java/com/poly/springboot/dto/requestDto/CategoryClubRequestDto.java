@@ -11,10 +11,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class CategoryVoucherRequestDto {
+public class CategoryClubRequestDto {
 
-    private String categoryName;
+    private String categoryClubName;
 
-    private String categoryDescribe;
+    private String categoryClubDescribe;
 
 }

@@ -26,6 +26,8 @@ public class ShiftRequestDto {
 
     private Double totalAvailableMoney;
 
+    private Double collectedOwner;
+
     private Double moneyArises;
 
     private String note;

@@ -14,8 +14,6 @@ public class UserReviewRequestDto {
 
     private Long orderDetailId;
 
-    private Long customerId;
-
     private  Integer ratingValue;
 
     private  String userComment;

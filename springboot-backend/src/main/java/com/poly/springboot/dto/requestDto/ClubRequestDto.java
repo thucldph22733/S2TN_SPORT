@@ -12,6 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ClubRequestDto {
 
+    private Long categoryClubId;
+
     @NotBlank(message = "Vui lòng nhập tên Club!")
     private String clubName;
 

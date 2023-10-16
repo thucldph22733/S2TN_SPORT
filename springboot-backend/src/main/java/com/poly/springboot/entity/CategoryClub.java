@@ -20,18 +20,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "category_vouchers")
-public class CategoryVoucher {
+@Table(name = "category_clubs")
+public class CategoryClub {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "category_name")
-    private String categoryName;
+    @Column(name = "category_club_name")
+    private String categoryClubName;
 
-    @Column(name = "category_describe")
-    private String categoryDescribe;
+    @Column(name = "category_club_describe")
+    private String categoryClubDescribe;
 
     @CreationTimestamp
     @Column(name = "create_date")

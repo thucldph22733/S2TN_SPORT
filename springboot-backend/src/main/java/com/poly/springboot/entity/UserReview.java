@@ -33,14 +33,6 @@ public class UserReview {
     @JoinColumn(name = "order_detail_id")
     private OrderDetail orderDetail;
 
-    @ManyToOne
-    @JoinColumn(name = "staff_id")
-    private Staff staff;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
-
     @Column(name = "rating_value")
     private  Integer ratingValue;
 

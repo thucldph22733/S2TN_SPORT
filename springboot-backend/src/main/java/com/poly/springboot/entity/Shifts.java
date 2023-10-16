@@ -41,7 +41,7 @@ public class Shifts {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(name = "initia_amount")  //so tien ban dau;
+    @Column(name = "initial_amount")  //so tien ban dau;
     private Double initialAmount;
 
     @Column(name = "total_revenue")  //tong doanh thu
@@ -55,6 +55,9 @@ public class Shifts {
 
     @Column(name = "total_available_money")   //tong tien hien tai
     private Double totalAvailableMoney;
+
+    @Column(name = "collected_owner")   //tien chu thu
+    private Double collectedOwner;
 
     @Column(name = "money_arises")  //tien phat sinh
     private Double moneyArises;

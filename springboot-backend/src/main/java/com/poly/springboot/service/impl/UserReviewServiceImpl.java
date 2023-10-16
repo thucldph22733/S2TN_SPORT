@@ -20,16 +20,12 @@ public class UserReviewServiceImpl implements UserReviewService {
 
     private UserReviewRepository userReviewRepository;
 
-    private CustomerRepository customerRepository;
-
     private OrderDetailRepository orderDetailRepository;
 
     @Autowired
     public UserReviewServiceImpl(UserReviewRepository userReviewRepository,
-                                 CustomerRepository customerRepository,
                                  OrderDetailRepository orderDetailRepository) {
         this.userReviewRepository = userReviewRepository;
-        this.customerRepository = customerRepository;
         this.orderDetailRepository = orderDetailRepository;
     }
 
@@ -39,8 +35,9 @@ public class UserReviewServiceImpl implements UserReviewService {
                 userReview ->
                         new UserReviewResponseDto(
                                 userReview.getId(),
-                                userReview.getCustomer().getAvatar(),
-                                userReview.getCustomer().getFirstName() + " " + userReview.getCustomer().getLastName(),
+
+                                userReview.getOrderDetail().getOrder().getCustomer().getAvatar(),
+                                userReview.getOrderDetail().getOrder().getCustomer().getCustomerName(),
                                 userReview.getRatingValue(),
                                 userReview.getUserComment(),
                                 userReview.getCreateDate()
@@ -50,14 +47,11 @@ public class UserReviewServiceImpl implements UserReviewService {
 
     @Override
     public UserReview saveUserReview(UserReviewRequestDto userReviewRequestDto) {
-        //find customer by id
-        Customer customer = customerRepository.findById(userReviewRequestDto.getCustomerId()).orElse(null);
         //find order detail by id
         OrderDetail orderDetail = orderDetailRepository.findById(userReviewRequestDto.getOrderDetailId()).orElse(null);
 
         UserReview userReview = new UserReview();
 
-        userReview.setCustomer(customer);
         userReview.setOrderDetail(orderDetail);
         userReview.setRatingValue(userReviewRequestDto.getRatingValue());
         userReview.setUserComment(userReviewRequestDto.getUserComment());
@@ -68,14 +62,11 @@ public class UserReviewServiceImpl implements UserReviewService {
 
     @Override
     public UserReview updateUserReview(UserReviewRequestDto userReviewRequestDto, Long id) {
-        //find customer by id
-        Customer customer = customerRepository.findById(userReviewRequestDto.getCustomerId()).orElse(null);
         //find order detail by id
         OrderDetail orderDetail = orderDetailRepository.findById(userReviewRequestDto.getOrderDetailId()).orElse(null);
         //find user review by id
         UserReview userReview = userReviewRepository.findById(id).get();
         //Neu tim thay id thi set lai roi luu
-        userReview.setCustomer(customer);
         userReview.setOrderDetail(orderDetail);
         userReview.setRatingValue(userReviewRequestDto.getRatingValue());
         userReview.setUserComment(userReviewRequestDto.getUserComment());

@@ -1,17 +1,17 @@
-package com.poly.springboot.dto.responseDto;
+package com.poly.springboot.dto.requestDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryResponseDto {
+public class PaymentRequestDto {
 
-    private String categoryName;
+    private String paymentName;
 
-    private String categoryDescribe;
+    private String paymentDescribe;
 }

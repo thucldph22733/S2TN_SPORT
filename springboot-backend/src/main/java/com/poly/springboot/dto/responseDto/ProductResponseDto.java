@@ -33,6 +33,8 @@ public class ProductResponseDto {
 
     private Integer viewCount;
 
+    private  Integer productStatus;
+
     private String productDescribe;
 
 }

@@ -27,4 +27,6 @@ public class CustomerResponseDto {
 
     private Date birthOfDay;
 
+    private Integer customerStatus;
+
 }

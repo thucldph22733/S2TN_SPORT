@@ -13,15 +13,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShiftRequestDto {
-    private Long id;
 
     private Long staffId;
 
-    private LocalDateTime startDate;
-
-    private LocalDateTime endDate;
-
-    private Double initiaAmount;
+    private Double initialAmount;
 
     private Double totalRevenue;
 
@@ -30,6 +25,8 @@ public class ShiftRequestDto {
     private Double transferMoney;
 
     private Double totalAvailableMoney;
+
+    private Double collectedOwner;
 
     private Double moneyArises;
 

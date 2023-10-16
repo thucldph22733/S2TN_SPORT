@@ -11,9 +11,18 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SupplierRequestDto {
+
     @NotBlank(message = "Vui lòng nhập tên Supplier!")
     private String supplierName;
 
+    private String email;
+
+    private String phoneNumber;
+
+    private String address;
+
     @NotBlank(message = "Không được để trống!")
     private String supplierDescribe;
+
+
 }

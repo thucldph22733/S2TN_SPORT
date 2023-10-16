@@ -1,6 +1,5 @@
 package com.poly.springboot.dto.requestDto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +28,8 @@ public class ProductDetailRequestDto {
 
     @NotEmpty(message = "Vui lòng Không để trống!")
     private Double promotionPrice;
+
+    private Integer productStatus;
 
     @NotEmpty(message = "Vui lòng Không để trống!")
     private String createBy;

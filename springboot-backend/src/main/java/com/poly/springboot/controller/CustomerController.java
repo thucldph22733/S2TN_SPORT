@@ -25,12 +25,12 @@ public class CustomerController {
     }
 
     @PostMapping("create-customer")
-    public ResponseEntity<?>createCustomer(CustomerRequestDto customerRequestDto){
+    public ResponseEntity<?>createCustomer(@RequestBody CustomerRequestDto customerRequestDto){
         return ResponseEntity.ok(customerService.add(customerRequestDto));
     }
 
     @PutMapping("update-customer/{id}")
-    public ResponseEntity<Customer>updateCustomer(CustomerRequestDto customerRequestDto,@PathVariable Long id){
+    public ResponseEntity<Customer>updateCustomer(@RequestBody CustomerRequestDto customerRequestDto,@PathVariable Long id){
         return ResponseEntity.ok(customerService.update(customerRequestDto,id));
     }
 

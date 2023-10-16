@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ColorRequestDto {
+
     @NotBlank(message = "Vui lòng nhập tên Mau!")
     private String colorName;
 

@@ -1,18 +1,14 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.BrandRequestDto;
-import com.poly.springboot.dto.responseDto.BrandResponseDto;
 import com.poly.springboot.entity.Brand;
 import com.poly.springboot.repository.BrandRepository;
 import com.poly.springboot.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class BrandServiceImpl implements BrandService {
@@ -21,25 +17,8 @@ public class BrandServiceImpl implements BrandService {
     private BrandRepository brandRepository;
 
     @Override
-    public List<BrandResponseDto> getBrands() {
-        return brandRepository.findAll().stream().map(
-                brand -> new BrandResponseDto(
-                        brand.getId(),
-                        brand.getBrandName(),
-                        brand.getBrandDescribe())
-        ).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<BrandResponseDto> getPage(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 5);
-        List<BrandResponseDto> brandResponseDtoList = brandRepository.findAll(pageable)
-                .stream().map(brand -> new BrandResponseDto(
-                        brand.getId(),
-                        brand.getBrandName(),
-                        brand.getBrandDescribe()
-                )).collect(Collectors.toList());
-        return brandResponseDtoList;
+    public List<Brand> getBrands() {
+        return brandRepository.findAll();
     }
 
     @Override

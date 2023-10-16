@@ -16,11 +16,9 @@ public class StaffResponseDto {
 
     private Long id;
 
-    private String positionName;
+    private String roleName;
 
-    private String firstName;
-
-    private String lastName;
+    private String staffName;
 
     private String avatar;
 
@@ -38,6 +36,6 @@ public class StaffResponseDto {
 
     private String country;
 
-    private String password;
+    private Integer staffStatus;
 
 }

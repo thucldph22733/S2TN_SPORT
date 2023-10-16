@@ -27,11 +27,14 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "address")
-    private String address;
+    @Column(name = "recipient_name")
+    private String recipientName;
 
-    @Column(name = "street")
-    private String street;
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "address_detail")
+    private String addressDetail;
 
     @Column(name = "region")  // khuc vuc
     private String region;
@@ -39,8 +42,8 @@ public class Address {
     @Column(name = "city")
     private String city;
 
-    @Column(name = "coutry")
-    private String coutry;
+    @Column(name = "country")
+    private String country;
 
     @CreationTimestamp
     @Column(name = "create_date")

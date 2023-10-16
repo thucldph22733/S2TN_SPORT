@@ -3,6 +3,7 @@ package com.poly.springboot.service.impl;
 import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 import com.poly.springboot.dto.responseDto.VoucherResponseDto;
 import com.poly.springboot.entity.Voucher;
+import com.poly.springboot.repository.CategoryClubRepository;
 import com.poly.springboot.repository.VoucherRepository;
 import com.poly.springboot.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,70 +16,67 @@ import java.util.stream.Collectors;
 @Service
 public class VoucherServiceImpl implements VoucherService {
     @Autowired
-    private VoucherRepository repository;
+    private VoucherRepository voucherRepository;
 
     @Override
-    public List<VoucherResponseDto> getVoucher() {
-        return repository.findAll().stream().map(
+    public List<VoucherResponseDto> getVouchers() {
+        return voucherRepository.findAll().stream().map(
                 voucher -> new VoucherResponseDto(
                         voucher.getId(),
                         voucher.getCategoryVoucher(),
                         voucher.getVoucherName(),
                         voucher.getStartDate(),
                         voucher.getEndDate(),
+                        voucher.getOrderMinimum(),
+                        voucher.getMaxReduce(),
                         voucher.getQuantity(),
-                        voucher.getReductionLevel(),
                         voucher.getDiscountRate(),
                         voucher.getVoucherDescribe(),
-                        voucher.getVoucherStatus(),
-                        voucher.getCreateDate(),
-                        voucher.getUpdateDate()
+                        voucher.getVoucherStatus()
                 )
         ).collect(Collectors.toList());
     }
 
     @Override
-    public Voucher saveVoucher(VoucherRequestDto requestDto) {
-        System.out.println(requestDto);
+    public Voucher saveVoucher(VoucherRequestDto voucherRequestDto) {
+
+        System.out.println(voucherRequestDto);
         Voucher voucher = new Voucher();
-        voucher.setCategoryVoucher(requestDto.getCategoryVoucher());
-        voucher.setVoucherName(requestDto.getVoucherName());
-        voucher.setStartDate(requestDto.getStartDate());
-        voucher.setEndDate(requestDto.getEndDate());
-        voucher.setQuantity(requestDto.getQuantity());
-        voucher.setReductionLevel(requestDto.getReductionLevel());
-        voucher.setDiscountRate(requestDto.getDiscountRate());
-        voucher.setVoucherDescribe(requestDto.getVoucherDescribe());
-        voucher.setVoucherStatus(requestDto.getVoucherStatus());
-        voucher.setCreateDate(requestDto.getCreateDate());
-        voucher.setUpdateDate(requestDto.getUpdateDate());
+        voucher.setCategoryVoucher(voucherRequestDto.getCategoryVoucher());
+        voucher.setVoucherName(voucherRequestDto.getVoucherName());
+        voucher.setStartDate(voucherRequestDto.getStartDate());
+        voucher.setEndDate(voucherRequestDto.getEndDate());
+        voucher.setQuantity(voucherRequestDto.getQuantity());
+        voucher.setMaxReduce(voucherRequestDto.getMaxReduce());
+        voucher.setOrderMinimum(voucherRequestDto.getOrderMinimum());
+        voucher.setDiscountRate(voucherRequestDto.getDiscountRate());
+        voucher.setVoucherDescribe(voucherRequestDto.getVoucherDescribe());
+        voucher.setVoucherStatus(voucherRequestDto.getVoucherStatus());
         System.out.println(voucher);
-        return repository.save(voucher);
+        return voucherRepository.save(voucher);
     }
 
     @Override
-    public Voucher updateVoucher(VoucherRequestDto requestDto, Long id) {
-        Voucher voucher = repository.findById(id).get();
+    public Voucher updateVoucher(VoucherRequestDto voucherRequestDto, Long id) {
+        Voucher voucher = voucherRepository.findById(id).get();
+        voucher.setCategoryVoucher(voucherRequestDto.getCategoryVoucher());
+        voucher.setVoucherName(voucherRequestDto.getVoucherName());
+        voucher.setStartDate(voucherRequestDto.getStartDate());
+        voucher.setEndDate(voucherRequestDto.getEndDate());
+        voucher.setQuantity(voucherRequestDto.getQuantity());
+        voucher.setMaxReduce(voucherRequestDto.getMaxReduce());
+        voucher.setOrderMinimum(voucherRequestDto.getOrderMinimum());
+        voucher.setDiscountRate(voucherRequestDto.getDiscountRate());
+        voucher.setVoucherDescribe(voucherRequestDto.getVoucherDescribe());
+        voucher.setVoucherStatus(voucherRequestDto.getVoucherStatus());
         System.out.println(voucher);
-        voucher.setCategoryVoucher(requestDto.getCategoryVoucher());
-        voucher.setVoucherName(requestDto.getVoucherName());
-        voucher.setStartDate(requestDto.getStartDate());
-        voucher.setEndDate(requestDto.getEndDate());
-        voucher.setQuantity(requestDto.getQuantity());
-        voucher.setReductionLevel(requestDto.getReductionLevel());
-        voucher.setDiscountRate(requestDto.getDiscountRate());
-        voucher.setVoucherDescribe(requestDto.getVoucherDescribe());
-        voucher.setVoucherStatus(requestDto.getVoucherStatus());
-        voucher.setCreateDate(requestDto.getCreateDate());
-        voucher.setUpdateDate(requestDto.getUpdateDate());
-        repository.save(voucher);
         return voucher;
     }
 
     @Override
-    public String delete(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
+    public String deleteVoucher(Long id) {
+        if (voucherRepository.existsById(id)) {
+            voucherRepository.deleteById(id);
             return "Xoá Thành Công";
         } else {
             return "Không tìm thấy id" + id;
@@ -87,7 +85,7 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher findVoucherById(Long id) {
-        Optional<Voucher> result = repository.findById(id);
+        Optional<Voucher> result = voucherRepository.findById(id);
         return result.isPresent() ? result.get() : null;
     }
 }

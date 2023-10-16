@@ -1,7 +1,7 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.dto.requestDto.BrandRequestDto;
-import com.poly.springboot.dto.responseDto.BrandResponseDto;
+
 import com.poly.springboot.entity.Brand;
 import com.poly.springboot.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +10,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/")
 public class BrandController {
+
     @Autowired
     private BrandService brandService;
 
     @GetMapping("brands")
-    public ResponseEntity<List<BrandResponseDto>> getBrands() {
-        List<BrandResponseDto> brandResponseDtoList = brandService.getBrands();
-        return ResponseEntity.ok(brandResponseDtoList);
+    public ResponseEntity<List<Brand>> getBrands() {
+        List<Brand> brandList = brandService.getBrands();
+        return ResponseEntity.ok(brandList);
     }
 
     @GetMapping("brand/{id}")

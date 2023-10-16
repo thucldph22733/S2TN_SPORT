@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductDetailResponseDto {
+
     private Long id;
 
     private String productName;
@@ -25,9 +26,5 @@ public class ProductDetailResponseDto {
     private Double price;
 
     private Double promotionPrice;
-
-    private String createBy;
-
-    private String updateBy;
 
 }

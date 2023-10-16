@@ -15,13 +15,10 @@ import java.sql.Date;
 public class StaffRequestDto {
 
 
-    private Long idPosition;
+    private Long roleId;
 
     @NotBlank(message = "Vui lòng nhập họ!")
-    private String firstName;
-
-    @NotBlank(message = "Vui lòng nhập tên!")
-    private String lastName;
+    private String staffName;
 
     private String avatar;
 
@@ -47,4 +44,6 @@ public class StaffRequestDto {
 
     @NotBlank(message = "Vui lòng nhập mật khẩu!")
     private String password;
+
+    private Integer staffStatus;
 }

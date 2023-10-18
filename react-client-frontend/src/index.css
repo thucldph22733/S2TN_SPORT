@@ -1,0 +1,235 @@
+html,
+body {
+    height: 100%;
+    font-family: 'Nunito Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    color: #111111;
+    font-weight: 400;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+h1 {
+    font-size: 70px;
+}
+
+h2 {
+    font-size: 36px;
+}
+
+h3 {
+    font-size: 30px;
+}
+
+h4 {
+    font-size: 24px;
+}
+
+h5 {
+    font-size: 18px;
+}
+
+h6 {
+    font-size: 16px;
+}
+
+p {
+    font-size: 15px;
+    font-family: 'Nunito Sans', sans-serif;
+    color: #3d3d3d;
+    font-weight: 400;
+    line-height: 25px;
+    margin: 0 0 15px 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+input:focus,
+select:focus,
+button:focus,
+textarea:focus {
+    outline: none;
+}
+
+a:hover,
+a:focus {
+    text-decoration: none;
+    outline: none;
+    color: #ffffff;
+}
+
+ul,
+ol {
+    padding: 0;
+    margin: 0;
+}
+.section-title {
+    margin-bottom: 45px;
+    text-align: center;
+}
+
+.section-title span {
+    color: #e53637;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.section-title h2 {
+    color: #111111;
+    font-weight: 700;
+    line-height: 46px;
+}
+
+.set-bg {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top center;
+}
+
+.spad {
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+.text-white h1,
+.text-white h2,
+.text-white h3,
+.text-white h4,
+.text-white h5,
+.text-white h6,
+.text-white p,
+.text-white span,
+.text-white li,
+.text-white a {
+    color: #fff;
+}
+/* buttons */
+
+.primary-btn {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 14px 30px;
+    color: #ffffff;
+    background: #000000;
+    letter-spacing: 4px;
+}
+
+.site-btn {
+    font-size: 14px;
+    color: #ffffff;
+    background: #111111;
+    font-weight: 700;
+    border: none;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 14px 30px;
+}
+@media only screen and (min-width: 1200px) {
+    .container {
+        max-width: 1170px;
+    }
+}
+
+/* Medium Device = 1200px */
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+    .categories__text h2 {
+        font-size: 26px;
+    }
+    .header__menu ul li {
+        margin-right: 38px;
+    }
+    .hero__slider.owl-carousel .owl-nav button {
+        left: 2px;
+    }
+    .hero__slider.owl-carousel .owl-nav button.owl-next {
+        right: 2px;
+    }
+    .testimonial__text {
+        padding: 130px 45px 175px;
+    }
+}
+
+/* Tablet Device = 768px */
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    .header__menu ul li {
+        margin-right: 10px;
+    }
+    .header__nav__option a {
+        margin-right: 10px;
+    }
+    .header__nav__option .price {
+        margin-left: 0;
+    }
+    .hero__slider.owl-carousel .owl-nav button {
+        left: 2px;
+    }
+    .hero__slider.owl-carousel .owl-nav button.owl-next {
+        right: 2px;
+    }
+    .banner__item.banner__item--middle {
+        margin-top: 0;
+    }
+    .banner__item.banner__item--last {
+        margin-top: 0;
+    }
+    .banner__item {
+        margin-bottom: 40px;
+    }
+    .banner {
+        padding-bottom: 60px;
+    }
+    .categories__text {
+        margin-bottom: 40px;
+    }
+    .categories__hot__deal {
+        margin-bottom: 40px;
+    }
+    .instagram__text {
+        padding-top: 70px;
+    }
+    .shop__sidebar {
+        padding-right: 0;
+        padding-top: 40px;
+    }
+    .cart__discount {
+        margin-top: 40px;
+    }
+    .testimonial__text {
+        padding: 100px 105px 100px;
+    }
+    .blog__details__share {
+        position: relative;
+        left: 0;
+        margin-bottom: 18px;
+    }
+    .blog__details__share span {
+        margin-bottom: 14px;
+        margin-right: 0;
+    }
+    .blog__details__share ul li {
+        margin-bottom: 15px;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .blog__details__share ul li:last-child {
+        margin-right: 0;
+    }
+}

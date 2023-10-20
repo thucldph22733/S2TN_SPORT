@@ -14,5 +14,8 @@ public interface OrderService {
 
     Order updateOrder(OrderRequestDto orderRequestDto,Long id);
 
+    List<OrderResponseDto> getPagination(Integer pageNo,Integer pageSize);
+
+
 
 }

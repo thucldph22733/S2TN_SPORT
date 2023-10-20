@@ -6,7 +6,10 @@ import com.poly.springboot.entity.*;
 import com.poly.springboot.repository.*;
 import com.poly.springboot.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 import java.util.Date;
 import java.util.List;
@@ -122,12 +125,32 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderTotal(orderRequestDto.getOrderTotal());
         order.setNote(orderRequestDto.getNote());
         //Kiem tra trang thai
-        //Neu trang thai co id = 1001 thi cap nhat ngay giao
-        if(orderStatus.getId() == 1001){
+        //Neu trang thai co tên = dang giao thi cap nhat ngay giao
+        if(orderStatus.getStatusName() == "Đang giao"){
             order.setDeliveryDate(new Date());
-        }else  if(orderStatus.getId() == 1002){  //Neu trang thai co id = 1002 thi cap nhat ngay nhan
+        }else  if(orderStatus.getStatusName() == "Đã nhận"){  //Neu trang thai co ten la da nhan thi cap nhat ngay nhan
             order.setReceivedDate(new Date());
         }
         return orderRepository.save(order);
+    }
+
+    @Override
+    public List<OrderResponseDto> getPagination(Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+        return orderRepository.findAll(pageable).stream().map(
+            order -> new OrderResponseDto(
+                    order.getId(),
+                    order.getOrderDate(),
+                    order.getStaff().getStaffName(),
+                    order.getCustomer().getCustomerName(),
+                    order.getDelivery().getDeliveryName(),
+                    order.getPayment().getPaymentName(),
+                    order.getAddress().getAddressDetail(),
+                    order.getOrderStatus().getStatusName(),
+                    order.getDeliveryDate(),
+                    order.getReceivedDate(),
+                    order.getCategoryOrder(),
+                    order.getNote())
+        ).collect(Collectors.toList());
     }
 }

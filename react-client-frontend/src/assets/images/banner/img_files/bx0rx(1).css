@@ -1,0 +1,91 @@
+div.wpcf7 {
+margin: 0;
+padding: 0;
+}
+div.wpcf7 .screen-reader-response {
+position: absolute;
+overflow: hidden;
+clip: rect(1px, 1px, 1px, 1px);
+height: 1px;
+width: 1px;
+margin: 0;
+padding: 0;
+border: 0;
+}
+div.wpcf7-response-output {
+margin: 2em 0.5em 1em;
+padding: 0.2em 1em;
+border: 2px solid #ff0000;
+}
+div.wpcf7-mail-sent-ok {
+border: 2px solid #398f14;
+}
+div.wpcf7-mail-sent-ng,
+div.wpcf7-aborted {
+border: 2px solid #ff0000;
+}
+div.wpcf7-spam-blocked {
+border: 2px solid #ffa500;
+}
+div.wpcf7-validation-errors,
+div.wpcf7-acceptance-missing {
+border: 2px solid #f7e700;
+}
+.wpcf7-form-control-wrap {
+position: relative;
+}
+span.wpcf7-not-valid-tip {
+color: #f00;
+font-size: 1em;
+font-weight: normal;
+display: block;
+}
+.use-floating-validation-tip span.wpcf7-not-valid-tip {
+position: absolute;
+top: 20%;
+left: 20%;
+z-index: 100;
+border: 1px solid #ff0000;
+background: #fff;
+padding: .2em .8em;
+}
+span.wpcf7-list-item {
+display: inline-block;
+margin: 0 0 0 1em;
+}
+span.wpcf7-list-item-label::before,
+span.wpcf7-list-item-label::after {
+content: " ";
+}
+.wpcf7-display-none {
+display: none;
+}
+div.wpcf7 .ajax-loader {
+visibility: hidden;
+display: inline-block;
+background-image: url(//www.sporter.vn/wp-content/plugins/contact-form-7/images/ajax-loader.gif);
+width: 16px;
+height: 16px;
+border: none;
+padding: 0;
+margin: 0 0 0 4px;
+vertical-align: middle;
+}
+div.wpcf7 .ajax-loader.is-active {
+visibility: visible;
+}
+div.wpcf7 div.ajax-error {
+display: none;
+}
+div.wpcf7 .placeheld {
+color: #888;
+}
+div.wpcf7 input[type="file"] {
+cursor: pointer;
+}
+div.wpcf7 input[type="file"]:disabled {
+cursor: default;
+}
+div.wpcf7 .wpcf7-submit:disabled {
+cursor: not-allowed;
+}#toc_container li,#toc_container ul{margin:0;padding:0}#toc_container.no_bullets li,#toc_container.no_bullets ul,#toc_container.no_bullets ul li,.toc_widget_list.no_bullets,.toc_widget_list.no_bullets li{background:0 0;list-style-type:none;list-style:none}#toc_container.have_bullets li{padding-left:12px}#toc_container ul ul{margin-left:1.5em}#toc_container{background:#f9f9f9;border:1px solid #aaa;padding:10px;margin-bottom:1em;width:auto;display:table;font-size:95%}#toc_container.toc_light_blue{background:#edf6ff}#toc_container.toc_white{background:#fff}#toc_container.toc_black{background:#000}#toc_container.toc_transparent{background:none transparent}#toc_container p.toc_title{text-align:center;font-weight:700;margin:0;padding:0}#toc_container.toc_black p.toc_title{color:#aaa}#toc_container span.toc_toggle{font-weight:400;font-size:90%}#toc_container p.toc_title+ul.toc_list{margin-top:1em}.toc_wrap_left{float:left;margin-right:10px}.toc_wrap_right{float:right;margin-left:10px}#toc_container a{text-decoration:none;text-shadow:none}#toc_container a:hover{text-decoration:underline}.toc_sitemap_posts_letter{font-size:1.5em;font-style:italic}

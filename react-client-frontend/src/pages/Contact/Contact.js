@@ -1,5 +1,10 @@
 import { Fragment } from 'react';
 import './Contact.css';
+
+// Icon
+import { PiMapPinLine } from 'react-icons/pi';
+import { SiMinutemailer } from 'react-icons/si';
+import { AiOutlinePhone, AiOutlineMail, AiOutlineFieldTime } from 'react-icons/ai';
 function Contact() {
     return (
         <Fragment>
@@ -22,12 +27,19 @@ function Contact() {
                                     <p>Hân hạnh được phục vụ quý khách!</p>
                                 </div>
                                 <p>
-                                    Địa chỉ cửa hàng : Tòa nhà FPT Polytechnic, 13 phố Trịnh Văn Bô, phường Phương Canh,
-                                    quận Nam Từ Liêm, TP Hà Nội
+                                    <PiMapPinLine className="contact_icon" />: Tòa nhà FPT Polytechnic, 13 phố Trịnh Văn
+                                    Bô, phường Phương Canh, quận Nam Từ Liêm, TP Hà Nội
                                 </p>
-                                <p>Điện thoại : 024 7300 1955</p>
-                                <p>Email : caodang@fpt.edu.vn</p>
-                                <p>Thời gian làm việc : 8h sáng đến 8h tối từ thứ 2 đến thứ 7, Chủ Nhật shop nghỉ.</p>
+                                <p>
+                                    <AiOutlinePhone className="contact_icon" />: 024 7300 1955
+                                </p>
+                                <p>
+                                    <AiOutlineMail className="contact_icon" />: caodang@fpt.edu.vn
+                                </p>
+                                <p>
+                                    <AiOutlineFieldTime className="contact_icon" />: 8h sáng đến 8h tối từ thứ 2 đến thứ
+                                    7, Chủ Nhật shop nghỉ.
+                                </p>
                             </div>
                         </div>
                         <div className="col-lg-6 col-md-6">
@@ -43,7 +55,7 @@ function Contact() {
                                         <div className="col-lg-12">
                                             <textarea placeholder="Nội dung"></textarea>
                                             <button type="submit" className="site-btn">
-                                                Gửi thông báo
+                                                <SiMinutemailer className="contact_icon_btn" /> Gửi thông báo
                                             </button>
                                         </div>
                                     </div>

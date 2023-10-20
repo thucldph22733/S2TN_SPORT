@@ -1,7 +1,7 @@
 import './Herder.css';
 
 import { Link } from 'react-router-dom';
-
+import config from '~/config';
 // import Icon
 import logo from '~/assets/images/logo.png';
 import cart from '~/assets/images/icon/cart.png';
@@ -33,7 +33,7 @@ function Header() {
                 </div>
             </div>
             <div className="container">
-                <div className="row">
+                <div className="row ">
                     <div className="col-lg-2 col-md-2">
                         <div className="header__logo">
                             <a href="./index.html">
@@ -42,14 +42,14 @@ function Header() {
                         </div>
                     </div>
                     <div className="col-lg-7 col-md-7">
-                        <nav className="header__menu mobile-menu">
+                        <nav className="header__menu">
                             <ul>
                                 <li className="active">
-                                    <Link to="/">Trang chủ</Link>
+                                    <Link to={config.routes.home}>Trang chủ</Link>
                                 </li>
 
                                 <li>
-                                    <Link to="/product">Sản phẩm</Link>
+                                    <Link to={config.routes.product}>Sản phẩm</Link>
                                     <ul className="dropdown">
                                         <li>
                                             <a href="./about.html">Áo đội tuyển</a>
@@ -66,13 +66,13 @@ function Header() {
                                     </ul>
                                 </li>
                                 <li>
-                                    <Link to="/about">Giới thiệu</Link>
+                                    <Link to={config.routes.about}>Giới thiệu</Link>
                                 </li>
                                 <li>
-                                    <Link to="/contact">Tin tức</Link>
+                                    <Link to={config.routes.blog}>Tin tức</Link>
                                 </li>
                                 <li>
-                                    <Link to="/contact">Liên hệ</Link>
+                                    <Link to={config.routes.contact}>Liên hệ</Link>
                                 </li>
                             </ul>
                         </nav>

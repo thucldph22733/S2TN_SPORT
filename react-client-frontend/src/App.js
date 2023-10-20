@@ -1,31 +1,39 @@
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import Header from './layouts/Header/Header';
-import Footer from './layouts/Footer/Footer';
-import Slider from './layouts/Slider/Slider';
-import Banner from './layouts/Banner/Banner';
-
+import { Fragment } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { publicRoutes } from '~/routes';
+import MainLayout from '~/layouts';
 
-import Home from './pages/Home/Home';
-import Product from './pages/Product/Product';
-import Contact from './pages/Contact/Contact';
-import About from './pages/About/About';
 function App() {
     return (
-        <div className="App">
-            <Router>
-                <Header />
-                <Slider />
-                <Banner />
+        <Router>
+            <div className="App">
                 <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/product" element={<Product />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
+                    {publicRoutes.map((route, index) => {
+                        const Page = route.component;
+                        let Layout = MainLayout;
+
+                        if (route.layout) {
+                            Layout = route.layout;
+                        } else if (route.layout === null) {
+                            Layout = Fragment;
+                        }
+
+                        return (
+                            <Route
+                                key={index}
+                                path={route.path}
+                                element={
+                                    <Layout>
+                                        <Page />
+                                    </Layout>
+                                }
+                            />
+                        );
+                    })}
                 </Routes>
-                <Footer />
-            </Router>
-        </div>
+            </div>
+        </Router>
     );
 }
 

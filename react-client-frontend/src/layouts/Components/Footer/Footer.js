@@ -1,14 +1,19 @@
 import './Footer.css';
 import logo from '~/assets/images/footer-logo.png';
 import payment from '~/assets/images/payment.png';
+
+// Icon
+import { PiMapPinLine } from 'react-icons/pi';
+import { AiOutlinePhone, AiOutlineMail } from 'react-icons/ai';
+
 function Footer() {
     return (
-        <footer class="footer">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="footer__about">
-                            <div class="footer__logo">
+        <footer className="footer">
+            <div className="container">
+                <div className="row">
+                    <div className="col-md-3">
+                        <div className="footer__about">
+                            <div className="footer__logo">
                                 <a href="#">
                                     <img src={logo} alt="" />
                                 </a>
@@ -22,8 +27,8 @@ function Footer() {
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="footer__widget">
+                    <div className="col-md-3">
+                        <div className="footer__widget">
                             <h6>Chính sách</h6>
                             <ul>
                                 <li>
@@ -41,8 +46,8 @@ function Footer() {
                             </ul>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="footer__widget">
+                    <div className="col-md-3">
+                        <div className="footer__widget">
                             <h6>Hỗ trợ khách hàng</h6>
                             <ul>
                                 <li>
@@ -60,21 +65,25 @@ function Footer() {
                             </ul>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="footer__widget">
+                    <div className="col-md-3">
+                        <div className="footer__widget">
                             <h6>Thông tin liên hệ</h6>
                             <ul>
                                 <li>
                                     <p>
-                                        Địa chỉ: Tòa nhà FPT Polytechnic, 13 phố Trịnh Văn Bô, phường Phương Canh, quận
-                                        Nam Từ Liêm, TP Hà Nội
+                                        <PiMapPinLine className="footer_icon" />: Tòa nhà FPT Polytechnic, 13 phố Trịnh
+                                        Văn Bô, phường Phương Canh, quận Nam Từ Liêm, TP Hà Nội
                                     </p>
                                 </li>
                                 <li>
-                                    <p>Điện thoại: 024 7300 1955</p>
+                                    <p>
+                                        <AiOutlinePhone className="footer_icon" />: 024 7300 1955
+                                    </p>
                                 </li>
                                 <li>
-                                    <p>Email: caodang@fpt.edu.vn</p>
+                                    <p>
+                                        <AiOutlineMail className="footer_icon" />: caodang@fpt.edu.vn
+                                    </p>
                                 </li>
                             </ul>
                         </div>

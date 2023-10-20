@@ -96,7 +96,7 @@ a {
 }
 
 .header__logo {
-    padding: 30px 0;
+    padding: 20px 0;
 }
 
 .header__logo a {
@@ -105,7 +105,7 @@ a {
 
 .header__menu {
     text-align: center;
-    padding: 26px 0 25px;
+    padding: 20px 0 7px;
 }
 
 .header__menu ul li {
@@ -197,7 +197,7 @@ a {
 
 .header__nav__option {
     text-align: right;
-    padding: 30px 0;
+    padding: 20px 0;
 }
 
 .header__nav__option a {

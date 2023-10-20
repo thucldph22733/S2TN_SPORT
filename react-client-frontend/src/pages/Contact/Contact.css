@@ -110,3 +110,11 @@ iframe {
     width: 100%;
     height: 450px;
 }
+.contact_icon {
+    font-size: 19px;
+    margin-right: 5px;
+    color: #020203;
+}
+.contact_icon_btn {
+    font-size: 24px;
+}

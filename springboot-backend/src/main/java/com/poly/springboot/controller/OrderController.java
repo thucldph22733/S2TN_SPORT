@@ -25,6 +25,14 @@ public class OrderController {
         List<OrderResponseDto> orderResponseDtoList = orderService.getOrders();
         return ResponseEntity.ok(orderResponseDtoList);
     }
+
+    //phan trang
+    @GetMapping("pagination-order/{pageNo}/{pageSize}")
+    public ResponseEntity<List<OrderResponseDto>> getPaginationOrder(@PathVariable Integer pageNo,@PathVariable Integer pageSize){
+        List<OrderResponseDto> orderResponseDtoList = orderService.getPagination(pageNo,pageSize);
+        return ResponseEntity.ok(orderResponseDtoList);
+    }
+
     // save order rest api
     @PostMapping("create-order")
     public ResponseEntity<Order> saveOrder(@RequestBody OrderRequestDto orderRequestDto){

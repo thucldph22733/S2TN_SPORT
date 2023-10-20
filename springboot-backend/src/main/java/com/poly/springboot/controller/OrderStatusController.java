@@ -33,6 +33,7 @@ public class OrderStatusController {
         return ResponseEntity.ok(orderStatuses);
     }
 
+
     //get Order Status by id rest api
     @GetMapping("orderStatus/{id}")
     public ResponseEntity<OrderStatus> getOrderStatus(@PathVariable Long id) {

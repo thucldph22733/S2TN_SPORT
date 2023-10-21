@@ -7,6 +7,7 @@ import com.poly.springboot.entity.Customer;
 import com.poly.springboot.repository.CustomerRepository;
 import com.poly.springboot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -91,45 +92,34 @@ public class CustomerServiceImpl implements CustomerService {
         List<CustomerResponeDto> list = customerRepository.findAll(pageable)
                 .stream().map(c -> new CustomerResponeDto(
                         c.getId(),
-                        c.getFirstName(),
-                        c.getLastName(),
+                        c.getCustomerName(),
                         c.getAvatar(),
                         c.getNumberPhone(),
                         c.getEmail(),
                         c.getGender(),
                         c.getBirthOfDay(),
-                        c.getPassword()
+                        c.getCustomerStatus()
                         )).collect(Collectors.toList());
         return list;
     }
 
     @Override
-    public List<CustomerResponeDto> searchByNameOrPhoneNumber(String searchQuery) {
-        List<Customer> customersByFirstName = customerRepository.searchByFirstName(searchQuery);
-        List<Customer> customersByLastName = customerRepository.searchByLastName(searchQuery);
-        List<Customer> customersByPhoneNumber = customerRepository.searchByPhoneNumber(searchQuery);
-        List<Customer> customersByFullName = customerRepository.searchByFullName(searchQuery);
+    public List<CustomerResponeDto> searchCustomersWithPagination(String searchQuery, Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
 
-        List<Customer> searchResults = Stream.of(customersByFirstName, customersByLastName, customersByPhoneNumber, customersByFullName)
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
+        Page<Customer> customers = customerRepository.searchByCustomerNameOrNumberPhone(searchQuery, pageable);
 
-        List<CustomerResponeDto> searchResultsDto = searchResults.stream().map(
-                customer -> new CustomerResponeDto(
-                        customer.getId(),
-                        customer.getFirstName(),
-                        customer.getLastName(),
-                        customer.getAvatar(),
-                        customer.getNumberPhone(),
-                        customer.getEmail(),
-                        customer.getGender(),
-                        customer.getBirthOfDay(),
-                        customer.getPassword())
-        ).collect(Collectors.toList());
-
-        return searchResultsDto;
-
+        return customers.getContent().stream().map(c -> new CustomerResponeDto(
+                c.getId(),
+                c.getCustomerName(),
+                c.getAvatar(),
+                c.getNumberPhone(),
+                c.getEmail(),
+                c.getGender(),
+                c.getBirthOfDay(),
+                c.getCustomerStatus()
+        )).collect(Collectors.toList());
     }
+
 }
 

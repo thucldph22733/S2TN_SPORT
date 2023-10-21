@@ -21,6 +21,7 @@ public interface CustomerService {
 
     List<CustomerResponeDto> getPagination(Integer pageNo);
 
-    List<CustomerResponeDto> searchByNameOrPhoneNumber(String searchQuery);
+    List<CustomerResponeDto> searchCustomersWithPagination(String searchQuery, Integer pageNo, Integer pageSize);
+
 
 }

@@ -1,17 +1,15 @@
 package com.poly.springboot.service;
 
-import com.poly.springboot.dto.requestDto.AddressRequestDto;
 import com.poly.springboot.dto.requestDto.CustomerRequestDto;
 //import com.poly.springboot.dto.responseDto.CustomerResponeDto;
-import com.poly.springboot.dto.responseDto.CustomerResponseDto;
-import com.poly.springboot.entity.Address;
+import com.poly.springboot.dto.responseDto.CustomerResponeDto;
 import com.poly.springboot.entity.Customer;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    List<CustomerResponseDto> getAll();
+    List<CustomerResponeDto> getAll();
 
     Customer add(CustomerRequestDto customerRequestDto);
 

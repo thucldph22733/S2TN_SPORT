@@ -2,7 +2,7 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CustomerRequestDto;
-import com.poly.springboot.dto.responseDto.CustomerResponseDto;
+import com.poly.springboot.dto.responseDto.CustomerResponeDto;
 import com.poly.springboot.entity.Customer;
 import com.poly.springboot.repository.CustomerRepository;
 import com.poly.springboot.service.CustomerService;
@@ -26,9 +26,9 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository customerRepository;
 
     @Override
-    public List<CustomerResponseDto> getAll() {
+    public List<CustomerResponeDto> getAll() {
         return customerRepository.findAll().stream().map(
-                customer -> new CustomerResponseDto(
+                customer -> new CustomerResponeDto(
                         customer.getId(),
                         customer.getCustomerName(),
                         customer.getAvatar(),

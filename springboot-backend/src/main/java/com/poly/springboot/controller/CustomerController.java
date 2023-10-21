@@ -5,6 +5,10 @@ import com.poly.springboot.dto.responseDto.CustomerResponeDto;
 import com.poly.springboot.entity.Customer;
 import com.poly.springboot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,11 +57,14 @@ public class CustomerController {
     }
 
     @GetMapping("search")
-    public ResponseEntity<List<CustomerResponeDto>>searchCustomers(
-            @RequestParam(name = "query") String query) {
-        List<CustomerResponeDto> searchResults = customerService.searchByNameOrPhoneNumber(query);
+    public ResponseEntity<Page<CustomerResponeDto>> searchCustomers(
+            @RequestParam(name = "query") String query,
+            Pageable pageable
+    ) {
+        Page<CustomerResponeDto> searchResults = customerService.searchByCustomerNameOrNumberPhone(query, pageable);
         return new ResponseEntity<>(searchResults, HttpStatus.OK);
     }
+
 
 
 }

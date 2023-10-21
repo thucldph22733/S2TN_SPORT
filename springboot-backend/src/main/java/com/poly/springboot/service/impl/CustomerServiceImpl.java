@@ -104,22 +104,20 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerResponeDto> searchCustomersWithPagination(String searchQuery, Integer pageNo, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-
-        Page<Customer> customers = customerRepository.searchByCustomerNameOrNumberPhone(searchQuery, pageable);
-
-        return customers.getContent().stream().map(c -> new CustomerResponeDto(
-                c.getId(),
-                c.getCustomerName(),
-                c.getAvatar(),
-                c.getNumberPhone(),
-                c.getEmail(),
-                c.getGender(),
-                c.getBirthOfDay(),
-                c.getCustomerStatus()
-        )).collect(Collectors.toList());
+    public Page<CustomerResponeDto> searchByCustomerNameOrNumberPhone(String searchQuery, Pageable pageable) {
+        return customerRepository.searchByCustomerNameOrNumberPhone(searchQuery, pageable)
+                .map(customer -> new CustomerResponeDto(
+                        customer.getId(),
+                        customer.getCustomerName(),
+                        customer.getAvatar(),
+                        customer.getNumberPhone(),
+                        customer.getEmail(),
+                        customer.getGender(),
+                        customer.getBirthOfDay(),
+                        customer.getCustomerStatus()
+                ));
     }
+
 
 }
 

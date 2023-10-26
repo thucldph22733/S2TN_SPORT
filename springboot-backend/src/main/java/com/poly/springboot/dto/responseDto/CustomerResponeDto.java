@@ -11,7 +11,7 @@ import java.sql.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerResponseDto {
+public class CustomerResponeDto {
 
     private  Long id;
 

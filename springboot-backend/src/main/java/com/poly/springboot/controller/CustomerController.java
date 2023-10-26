@@ -1,12 +1,16 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.dto.requestDto.CustomerRequestDto;
-import com.poly.springboot.entity.Brand;
+import com.poly.springboot.dto.responseDto.CustomerResponeDto;
 import com.poly.springboot.entity.Customer;
 import com.poly.springboot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -41,4 +45,19 @@ public class CustomerController {
         Customer customer = customerService.findCustomerById(id);
         return ResponseEntity.ok(customer);
     }
+
+    @GetMapping("pagination")
+    public ResponseEntity<List<CustomerResponeDto>> getPagination(@RequestParam(name = "page")Optional<Integer> pageNo){
+    List<CustomerResponeDto> list = customerService.getPagination(pageNo.orElse(null));
+    return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("search")
+    public ResponseEntity<List<CustomerResponeDto>>searchCustomers(
+            @RequestParam(name = "query") String query) {
+        List<CustomerResponeDto> searchResults = customerService.searchByNameOrPhoneNumber(query);
+        return new ResponseEntity<>(searchResults, HttpStatus.OK);
+    }
+
+
 }

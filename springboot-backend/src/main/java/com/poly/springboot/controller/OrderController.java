@@ -27,8 +27,8 @@ public class OrderController {
     }
 
     //phan trang
-    @GetMapping("pagination-order/{pageNo}/{pageSize}")
-    public ResponseEntity<List<OrderResponseDto>> getPaginationOrder(@PathVariable Integer pageNo,@PathVariable Integer pageSize){
+    @GetMapping("pagination-order")
+    public ResponseEntity<List<OrderResponseDto>> getPaginationOrder(@RequestParam Integer pageNo,@RequestParam Integer pageSize){
         List<OrderResponseDto> orderResponseDtoList = orderService.getPagination(pageNo,pageSize);
         return ResponseEntity.ok(orderResponseDtoList);
     }

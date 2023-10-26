@@ -259,7 +259,7 @@ function Product() {
                                 </div>
                             </div>
                         </div>
-                        <div className="row">
+                        {/* <div className="row">
                             <div className="col-lg-4 col-md-6 col-sm-6">
                                 <div className="product__item">
                                     <div className="product__item__pic set-bg" data-setbg="img/product/product-2.jpg">
@@ -308,7 +308,7 @@ function Product() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="product__pagination">

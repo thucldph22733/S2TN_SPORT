@@ -1,12 +1,12 @@
 import './Herder.css';
 
 import { Link } from 'react-router-dom';
-import config from '~/config';
 // import Icon
 import logo from '~/assets/images/logo.png';
 import cart from '~/assets/images/icon/cart.png';
 import search from '~/assets/images/icon/search.png';
 import heart from '~/assets/images/icon/heart.png';
+import path_name from '~/core/constants/routers';
 
 function Header() {
     return (
@@ -24,8 +24,8 @@ function Header() {
                         <div className="col-lg-6 col-md-5">
                             <div className="header__top__right">
                                 <div className="header__top__links">
-                                    <a href="#">Đăng nhập /</a>
-                                    <a href="#">Đăng ký</a>
+                                    <Link to={path_name.login}>Đăng nhập /</Link>
+                                    <Link to={path_name.logout}>Đăng ký</Link>
                                 </div>
                             </div>
                         </div>
@@ -36,20 +36,18 @@ function Header() {
                 <div className="row ">
                     <div className="col-lg-2 col-md-2">
                         <div className="header__logo">
-                            <a href="./index.html">
-                                <img src={logo} alt="" />
-                            </a>
+                            <a href="./index.html">{/* <img src={logo} alt="" /> */}</a>
                         </div>
                     </div>
                     <div className="col-lg-7 col-md-7">
                         <nav className="header__menu">
                             <ul>
                                 <li className="active">
-                                    <Link to={config.routes.home}>Trang chủ</Link>
+                                    <Link to={path_name.home}>Trang chủ</Link>
                                 </li>
 
                                 <li>
-                                    <Link to={config.routes.product}>Sản phẩm</Link>
+                                    <Link to={path_name.product}>Sản phẩm</Link>
                                     <ul className="dropdown">
                                         <li>
                                             <a href="./about.html">Áo đội tuyển</a>
@@ -66,13 +64,13 @@ function Header() {
                                     </ul>
                                 </li>
                                 <li>
-                                    <Link to={config.routes.about}>Giới thiệu</Link>
+                                    <Link to={path_name.about}>Giới thiệu</Link>
                                 </li>
                                 <li>
-                                    <Link to={config.routes.blog}>Tin tức</Link>
+                                    <Link to={path_name.blog}>Tin tức</Link>
                                 </li>
                                 <li>
-                                    <Link to={config.routes.contact}>Liên hệ</Link>
+                                    <Link to={path_name.contact}>Liên hệ</Link>
                                 </li>
                             </ul>
                         </nav>

@@ -4,6 +4,8 @@ const path_name = {
     login: '/login',
     product: '/product',
     order: '/order',
+    customer: '/customer',
+    address: '/address',
 };
 
 export default path_name;

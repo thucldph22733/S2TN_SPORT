@@ -65,10 +65,10 @@ function Slider() {
                     </a>
                     <ul className="collapse list-unstyled" id="userSubmenu">
                         <li>
-                            <Link to={path_name.customer}>Khách hàng</Link>
+                            <a href="#">Page 1</a>
                         </li>
                         <li>
-                            <Link to={path_name.address}>Địa chỉ</Link>
+                            <a href="#">Page 2</a>
                         </li>
                         <li>
                             <a href="#">Page 3</a>

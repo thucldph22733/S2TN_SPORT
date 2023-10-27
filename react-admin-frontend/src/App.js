@@ -8,8 +8,6 @@ import Sell from './pages/Sell/Sell';
 import Product from './pages/Products/Product';
 import LogIn from './pages/Auth/LogIn';
 import Order from './pages/Orders/Order';
-import Customer from './pages/Customers/Customer';
-import Address from './pages/Address/Address';
 
 function App() {
     const router = createBrowserRouter([
@@ -32,14 +30,6 @@ function App() {
                 {
                     path: path_name.order,
                     element: <Order />,
-                },
-                {
-                    path: path_name.customer,
-                    element: <Customer />,
-                },
-                {
-                    path: path_name.address,
-                    element: <Address />,
                 },
             ],
         },

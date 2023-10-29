@@ -91,14 +91,13 @@ public class CustomerServiceImpl implements CustomerService {
         List<CustomerResponeDto> list = customerRepository.findAll(pageable)
                 .stream().map(c -> new CustomerResponeDto(
                         c.getId(),
-                        c.getFirstName(),
-                        c.getLastName(),
+                        c.getCustomerName(),
                         c.getAvatar(),
                         c.getNumberPhone(),
                         c.getEmail(),
                         c.getGender(),
                         c.getBirthOfDay(),
-                        c.getPassword()
+                        c.getCustomerStatus()
                         )).collect(Collectors.toList());
         return list;
     }
@@ -118,14 +117,13 @@ public class CustomerServiceImpl implements CustomerService {
         List<CustomerResponeDto> searchResultsDto = searchResults.stream().map(
                 customer -> new CustomerResponeDto(
                         customer.getId(),
-                        customer.getFirstName(),
-                        customer.getLastName(),
+                        customer.getCustomerName(),
                         customer.getAvatar(),
                         customer.getNumberPhone(),
                         customer.getEmail(),
                         customer.getGender(),
                         customer.getBirthOfDay(),
-                        customer.getPassword())
+                        customer.getCustomerStatus())
         ).collect(Collectors.toList());
 
         return searchResultsDto;

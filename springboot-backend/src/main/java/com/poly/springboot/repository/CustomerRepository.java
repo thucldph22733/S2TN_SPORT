@@ -12,13 +12,13 @@ import java.util.List;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer,Long> {
 
-    @Query("SELECT c FROM Customer c WHERE CONCAT(c.firstName, ' ', c.lastName) LIKE %:searchQuery%")
+    @Query("SELECT c FROM Customer c WHERE c.customerName LIKE %:searchQuery%")
     List<Customer> searchByFullName(@Param("searchQuery") String searchQuery);
 
-    @Query("SELECT c FROM Customer c WHERE c.firstName LIKE %:searchQuery%")
+    @Query("SELECT c FROM Customer c WHERE c.customerName LIKE %:searchQuery%")
     List<Customer> searchByFirstName(@Param("searchQuery") String searchQuery);
 
-    @Query("SELECT c FROM Customer c WHERE c.lastName LIKE %:searchQuery%")
+    @Query("SELECT c FROM Customer c WHERE c.customerName LIKE %:searchQuery%")
     List<Customer> searchByLastName(@Param("searchQuery") String searchQuery);
 
     @Query("SELECT c FROM Customer c WHERE c.numberPhone LIKE %:searchQuery%")

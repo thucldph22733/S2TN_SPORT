@@ -1,23 +1,16 @@
 package com.poly.springboot.service;
 
-import com.poly.springboot.dto.requestDto.ColorRequestDto;
 import com.poly.springboot.dto.requestDto.MaterialRequestDto;
-import com.poly.springboot.entity.Club;
-import com.poly.springboot.entity.Color;
 import com.poly.springboot.entity.Material;
 
 import java.util.List;
 
 public interface MaterialService {
-    List<Material> findAll();
+    List<Material> getMaterials();
 
-    List<Material> getPage(Integer pageNo);
+    Boolean deleteMaterial(Long id);
 
-    String delete(Long id);
+    Boolean createMaterial(MaterialRequestDto materialRequestDto);
 
-    Material findById(Long id);
-
-    Material save(MaterialRequestDto materialRequestDto);
-
-    Material update(MaterialRequestDto materialRequestDto,Long id);
+    Boolean updateMaterial(MaterialRequestDto materialRequestDto,Long id);
 }

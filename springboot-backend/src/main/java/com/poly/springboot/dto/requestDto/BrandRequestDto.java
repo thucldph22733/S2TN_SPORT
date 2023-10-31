@@ -12,9 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BrandRequestDto {
 
-    @NotBlank(message = "Vui lòng nhập tên thương hiệu!")
+    @NotBlank(message = "Tên thương hiệu không được để trống!")
     private String brandName;
 
-    @NotBlank(message = "Không được để trống!")
     private String brandDescribe;
 }

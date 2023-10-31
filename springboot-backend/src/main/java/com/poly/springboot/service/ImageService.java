@@ -9,11 +9,9 @@ public interface ImageService {
 
     List<Image> getImages();
 
-    Image saveImage(ImageRequestDto imageRequestDto);
+    Boolean saveImage(ImageRequestDto imageRequestDto);
 
-    Image findImageById(Long id);
+    Boolean updateImage(ImageRequestDto imageRequestDto,Long id);
 
-    Image updateImage(ImageRequestDto imageRequestDto,Long id);
-
-    String deleteImage(Long id);
+    Boolean deleteImage(Long id);
 }

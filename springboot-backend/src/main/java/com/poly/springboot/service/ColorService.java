@@ -1,22 +1,16 @@
 package com.poly.springboot.service;
 
-import com.poly.springboot.dto.requestDto.ClubRequestDto;
 import com.poly.springboot.dto.requestDto.ColorRequestDto;
-import com.poly.springboot.entity.Club;
 import com.poly.springboot.entity.Color;
 
 import java.util.List;
 
 public interface ColorService {
-    List<Color> findAll();
+    List<Color> getColors();
 
-    List<Color> getPage(Integer pageNo);
+    Boolean deleteColor(Long id);
 
-    String delete(Long id);
+    Boolean createColor(ColorRequestDto colorRequestDto);
 
-    Color findById(Long id);
-
-    Color sava(ColorRequestDto colorRequestDto);
-
-    Color update(ColorRequestDto colorRequestDto,Long id);
+    Boolean updateColor(ColorRequestDto colorRequestDto,Long id);
 }

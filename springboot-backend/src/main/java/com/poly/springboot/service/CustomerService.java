@@ -1,26 +1,25 @@
 package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.CustomerRequestDto;
-//import com.poly.springboot.dto.responseDto.CustomerResponeDto;
-import com.poly.springboot.dto.responseDto.CustomerResponeDto;
+import com.poly.springboot.dto.responseDto.CustomerResponseDto;
 import com.poly.springboot.entity.Customer;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    List<CustomerResponeDto> getAll();
+    List<CustomerResponseDto> getCustomers();
 
-    Customer add(CustomerRequestDto customerRequestDto);
+    Boolean createCustomer(CustomerRequestDto customerRequestDto);
 
-    Customer update(CustomerRequestDto customerRequestDto, Long id);
+    Boolean updateCustomer(CustomerRequestDto customerRequestDto, Long id);
 
-    String delete(Long id);
+    Boolean deleteCustomer(Long id);
 
-    Customer findCustomerById(Long id);
+    List<CustomerResponseDto> getPagination(Integer pageNo);
 
-    List<CustomerResponeDto> getPagination(Integer pageNo);
+    Customer findCustomerByPhoneNumber(String phoneNumber);
 
-    List<CustomerResponeDto> searchByNameOrPhoneNumber(String searchQuery);
+    List<CustomerResponseDto> searchCustomer(String keyword,Integer pageNo);
 
 }

@@ -22,7 +22,7 @@ public class StaffResponseDto {
 
     private String avatar;
 
-    private String numberPhone;
+    private String phoneNumber;
 
     private String email;
 
@@ -36,6 +36,6 @@ public class StaffResponseDto {
 
     private String country;
 
-    private Integer staffStatus;
+    private Integer status;
 
 }

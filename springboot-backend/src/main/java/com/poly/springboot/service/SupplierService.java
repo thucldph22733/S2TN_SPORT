@@ -6,15 +6,11 @@ import com.poly.springboot.entity.Supplier;
 import java.util.List;
 
 public interface SupplierService {
-    List<Supplier> findAll();
+    List<Supplier> getSuppliers();
 
-    List<Supplier> getPage(Integer pageNo);
+    Boolean deleteSupplier(Long id);
 
-    String delete(Long id);
+    Boolean createSupplier(SupplierRequestDto supplierRequestDto);
 
-    Supplier findById(Long id);
-
-    Supplier save(SupplierRequestDto supplierRequestDto);
-
-    Supplier update(SupplierRequestDto supplierRequestDto,Long id);
+    Boolean updateSupplier(SupplierRequestDto supplierRequestDto,Long id);
 }

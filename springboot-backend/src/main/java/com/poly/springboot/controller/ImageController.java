@@ -1,10 +1,16 @@
 package com.poly.springboot.controller;
 
+import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.ImageRequestDto;
+import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.Image;
 import com.poly.springboot.service.ImageService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,57 +19,73 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/images/")
+@Tag(name = "Images",description = "( Rest API Hiển thị, thêm, sửa, xóa ảnh )")
+@Validated
 public class ImageController {
 
     @Autowired
     private ImageService imageService;
 
     // get all Image rest api
-    @GetMapping("images")
+    @GetMapping("getAll")
     public ResponseEntity<List<Image>> getImages() {
 
-        List<Image> images = imageService.getImages();
-        return ResponseEntity.ok(images);
-    }
-
-    //get Image by id rest api
-    @GetMapping("image/{id}")
-    public ResponseEntity<Image> getImage(@PathVariable Long id) {
-
-        Image image = imageService.findImageById(id);
-        return ResponseEntity.ok(image);
+        List<Image> imageList = imageService.getImages();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(imageList);
     }
 
     //create Image rest api
-    @PostMapping("create-image")
-    public ResponseEntity<Image> creatImage(@RequestBody ImageRequestDto imageRequestDto) {
+    @PostMapping("create")
+    public ResponseEntity<ResponseDto> creatImage(@Valid @RequestBody ImageRequestDto imageRequestDto) {
 
-        Image image = imageService.saveImage(imageRequestDto);
+        Boolean isCreated = imageService.saveImage(imageRequestDto);
 
-        return ResponseEntity.ok(image);
+        if(isCreated){
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
     }
 
     //update Image rest api
-    @PutMapping("update-image/{id}")
-    public ResponseEntity<Image> updateImage(@RequestBody ImageRequestDto imageRequestDto, @PathVariable Long id) {
+    @PutMapping("update")
+    public ResponseEntity<ResponseDto> updateImage(@Valid @RequestBody ImageRequestDto imageRequestDto, @RequestParam Long id) {
 
-        Image image = imageService.updateImage(imageRequestDto, id);
+        Boolean isUpdated = imageService.updateImage(imageRequestDto, id);
 
-        return ResponseEntity.ok(image);
+        if(isUpdated){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
     }
 
     //delete Image rest api
-    @DeleteMapping("delete-image/{id}")
-    public ResponseEntity<String> deleteImage(@PathVariable Long id) {
+    @DeleteMapping("delete")
+    public ResponseEntity<ResponseDto> deleteImage(@RequestParam Long id) {
 
-        String message = imageService.deleteImage(id);
-        return ResponseEntity.ok(message);
+        Boolean isDeleted = imageService.deleteImage(id);
+
+        if(isDeleted){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
     }
 }

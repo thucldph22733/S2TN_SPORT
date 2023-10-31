@@ -8,14 +8,10 @@ import java.util.List;
 public interface BrandService {
     List<Brand> getBrands();
 
-//    List<BrandResponseDto> getPage(Integer pageNo);
+    Boolean createBrand(BrandRequestDto brandRequestDto);
 
-    Brand saveBrand(BrandRequestDto brandRequestDto);
+    Boolean deleteBrand(Long id);
 
-    String deleteBrand(Long id);
-
-    Brand findBrandById(Long id);
-
-    Brand updateBrand(BrandRequestDto brandRequestDto,Long id);
+    Boolean updateBrand(BrandRequestDto brandRequestDto,Long id);
 
 }

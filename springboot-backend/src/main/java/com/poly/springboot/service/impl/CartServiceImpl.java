@@ -18,7 +18,7 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CustomerRepository  customerRepository;
     @Override
-    public Cart saveCart(CartRequestDto cartRequestDto) {
+    public Boolean createCart(CartRequestDto cartRequestDto) {
 
         Customer customer = customerRepository.findById(cartRequestDto.getCustomerId()).orElse(null);
 
@@ -26,6 +26,6 @@ public class CartServiceImpl implements CartService {
         cart.setCustomer(customer);
 
         cartRepository.save(cart);
-        return cart;
+        return true;
     }
 }

@@ -5,6 +5,6 @@ import com.poly.springboot.entity.Cart;
 
 public interface CartService {
 
-    Cart saveCart(CartRequestDto cartRequestDto);
+    Boolean createCart(CartRequestDto cartRequestDto);
 
 }

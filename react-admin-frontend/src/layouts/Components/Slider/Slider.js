@@ -34,7 +34,7 @@ function Slider() {
                             <Link to={path_name.product}>Danh sách sản phẩm</Link>
                         </li>
                         <li>
-                            <a href="#">Home 2</a>
+                            <Link to={path_name.size}>Size</Link>
                         </li>
                         <li>
                             <a href="#">Home 3</a>

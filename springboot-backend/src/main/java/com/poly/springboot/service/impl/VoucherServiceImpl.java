@@ -27,6 +27,16 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public List<VoucherResponseDto> getPagination(Integer pageNo) {
+        return null;
+    }
+
+    @Override
+    public List<VoucherResponseDto> searchVoucher(Integer pageNo, String keyword) {
+        return null;
+    }
+
+    @Override
     public Boolean createVoucher(VoucherRequestDto voucherRequestDto) {
 
         Voucher voucher = new Voucher();

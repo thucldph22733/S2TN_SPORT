@@ -12,12 +12,15 @@ public interface StaffService {
 
     List<StaffResponseDto> getStaffs();
 
-    Staff saveStaff(StaffRequestDto requestDto);
+    List<StaffResponseDto> getPagination(Integer pageNo);
 
-    Staff updateStaff(StaffRequestDto requestDto,Long id);
+    List<StaffResponseDto> searchStaff(String keyword,Integer pageNo);
 
-    String deleteStaff(Long id);
+    Boolean createStaff(StaffRequestDto requestDto);
 
-    Staff findStaffById(Long id);
+    Boolean updateStaff(StaffRequestDto requestDto,Long id);
+
+    Boolean deleteStaff(Long id);
+
 
 }

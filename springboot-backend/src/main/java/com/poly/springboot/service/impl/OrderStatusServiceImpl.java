@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
 import com.poly.springboot.entity.OrderStatus;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.OrderStatusRepository;
 import com.poly.springboot.service.OrderStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,47 +25,39 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     }
 
     @Override //Method save order status
-    public OrderStatus saveOrderStatus(OrderStatusRequestDto orderStatusRequestDto) {
+    public Boolean createOrderStatus(OrderStatusRequestDto orderStatusRequestDto) {
 
         OrderStatus orderStatus = new OrderStatus();
+
         orderStatus.setStatusName(orderStatusRequestDto.getStatusName());
         orderStatus.setStatusDescribe(orderStatusRequestDto.getStatusDescribe());
 
         orderStatusRepository.save(orderStatus);
 
-        return orderStatus;
+        return true;
     }
 
     @Override //Method update order status
-    public OrderStatus updateOrderStatus(OrderStatusRequestDto orderStatusRequestDto, Long id) {
+    public Boolean updateOrderStatus(OrderStatusRequestDto orderStatusRequestDto, Long id) {
 
-        OrderStatus orderStatus = orderStatusRepository.findById(id).get();
+        OrderStatus orderStatus = orderStatusRepository
+                .findById(id).orElseThrow(() -> new ResourceNotFoundException("trạng thái hóa đơn",String.valueOf(id)));
 
         orderStatus.setStatusName(orderStatusRequestDto.getStatusName());
         orderStatus.setStatusDescribe(orderStatusRequestDto.getStatusDescribe());
 
         orderStatusRepository.save(orderStatus);
 
-        return orderStatus;
-    }
-
-    @Override //Method get order status by id
-    public OrderStatus findOrderStatusById(Long id) {
-
-        Optional<OrderStatus> result = orderStatusRepository.findById(id);
-
-        return result.isPresent() ? result.get() : null;
+        return true;
     }
 
     @Override //Method delete order status by id
-    public String deleteOrderStatus(Long id) {
-        if (orderStatusRepository.existsById(id)){
+    public Boolean deleteOrderStatus(Long id) {
 
-            orderStatusRepository.deleteById(id);
-            return "Delete success!";
-        }else {
+        OrderStatus orderStatus = orderStatusRepository
+                .findById(id).orElseThrow(() -> new ResourceNotFoundException("trạng thái hóa đơn",String.valueOf(id)));
 
-            return "This id was not found: "+id;
-        }
+        orderStatusRepository.deleteById(orderStatus.getId());
+        return true;
     }
 }

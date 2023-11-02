@@ -1,6 +1,8 @@
 package com.poly.springboot.dto.requestDto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,21 +19,21 @@ public class StaffRequestDto {
 
     private Long roleId;
 
-    @NotBlank(message = "Vui lòng nhập họ!")
+    @NotBlank(message = "Vui lòng nhập họ và tên!")
     private String staffName;
 
     private String avatar;
 
     @NotBlank(message = "Vui lòng nhập số điện thoại!")
-    private String numberPhone;
+    private String phoneNumber;
 
-    @NotBlank(message = "Vui lòng nhập email!")
+    @NotBlank(message = "Vui lòng nhập địa chỉ email!")
     private String email;
 
+    @NotNull (message = "Vui lòng chọn giới tính!")
     private Boolean gender;
 
-    @NotBlank(message = "Vui lòng nhập ngày sinh!")
-    private Date birthOfDate;
+    private Date birthOfDay;
 
     @NotBlank(message = "Vui lòng nhập địa chỉ!")
     private String address;
@@ -45,5 +47,5 @@ public class StaffRequestDto {
     @NotBlank(message = "Vui lòng nhập mật khẩu!")
     private String password;
 
-    private Integer staffStatus;
+    private Integer status;
 }

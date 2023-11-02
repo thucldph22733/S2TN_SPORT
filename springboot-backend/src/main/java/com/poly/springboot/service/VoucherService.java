@@ -2,19 +2,20 @@ package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 import com.poly.springboot.dto.responseDto.VoucherResponseDto;
-import com.poly.springboot.entity.Voucher;
 
 import java.util.List;
 
 public interface VoucherService {
     List<VoucherResponseDto> getVouchers();
 
-    Voucher saveVoucher(VoucherRequestDto requestDto);
+    List<VoucherResponseDto> getPagination(Integer pageNo);
 
-    Voucher updateVoucher(VoucherRequestDto requestDto, Long id);
+    List<VoucherResponseDto> searchVoucher(Integer pageNo,String keyword);
 
-    String deleteVoucher(Long id);
+    Boolean createVoucher(VoucherRequestDto requestDto);
 
-    Voucher findVoucherById(Long id);
+    Boolean updateVoucher(VoucherRequestDto requestDto, Long id);
+
+    Boolean deleteVoucher(Long id);
 
 }

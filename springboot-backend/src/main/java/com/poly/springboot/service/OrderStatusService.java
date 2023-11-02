@@ -9,11 +9,9 @@ public interface OrderStatusService {
 
     List<OrderStatus> getOrderStatuses();
 
-    OrderStatus saveOrderStatus(OrderStatusRequestDto orderStatusRequestDto);
+    Boolean createOrderStatus(OrderStatusRequestDto orderStatusRequestDto);
 
-    OrderStatus updateOrderStatus(OrderStatusRequestDto orderStatusRequestDto,Long id);
+    Boolean updateOrderStatus(OrderStatusRequestDto orderStatusRequestDto,Long id);
 
-    OrderStatus findOrderStatusById(Long id);
-
-    String deleteOrderStatus(Long id);
+    Boolean deleteOrderStatus(Long id);
 }

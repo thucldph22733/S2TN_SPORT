@@ -1,16 +1,14 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ClubRequestDto;
-import com.poly.springboot.entity.Category;
 import com.poly.springboot.entity.Club;
-import com.poly.springboot.repository.CategoryClubRepository;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.ClubRepository;
 import com.poly.springboot.service.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClubServiceImpl implements ClubService {
@@ -18,52 +16,49 @@ public class ClubServiceImpl implements ClubService {
     @Autowired
     private ClubRepository clubRepository;
 
-    @Autowired
-    private CategoryClubRepository categoryClubRepository;
-
     @Override
-    public List<Club> findAll() {
+    public List<Club> getClubs() {
         return clubRepository.findAll();
     }
 
     @Override
-    public List<Club> getPage(Integer pageNo) {
-        return null;
+    public Boolean deleteClub(Long id) {
+
+        Club club = clubRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Câu lạc bộ",String.valueOf(id)));
+
+        clubRepository.deleteById(club.getId());
+        return  true;
     }
 
-    @Override
-    public String delete(Long id) {
-        if (clubRepository.existsById(id)){
-            clubRepository.deleteById(id);
-            return "Delete Success!";
-        }
-        return "This is was not found!";
-    }
+
 
     @Override
-    public Club findById(Long id) {
-        Optional<Club> result = clubRepository.findById(id);
-        return result.isPresent() ? result.get() : null;
-    }
+    public Boolean createClub(ClubRequestDto clubRequestDto) {
 
-    @Override
-    public Club save(ClubRequestDto clubRequestDto) {
         Club club = new Club();
-        club.setCategoryClub(categoryClubRepository.findById(clubRequestDto.getCategoryClubId()).orElse(null));
+
+        club.setCategoryClub(clubRequestDto.getCategoryClub());
         club.setClubDescribe(clubRequestDto.getClubDescribe());
         club.setClubName(clubRequestDto.getClubName());
+
         clubRepository.save(club);
-        return club;    }
+
+        return true;
+
+    }
 
     @Override
-    public Club update(ClubRequestDto clubRequestDto, Long id) {
-        Club club = clubRepository.findById(id).get();
+    public Boolean updateClub(ClubRequestDto clubRequestDto, Long id) {
+        Club club = clubRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Câu lạc bộ",String.valueOf(id)));
 
-        club.setCategoryClub(categoryClubRepository.findById(clubRequestDto.getCategoryClubId()).orElse(null));
-        club.setClubName(clubRequestDto.getClubName());
+        club.setCategoryClub(clubRequestDto.getCategoryClub());
         club.setClubDescribe(clubRequestDto.getClubDescribe());
+        club.setClubName(clubRequestDto.getClubName());
         clubRepository.save(club);
-        return club;
+
+        return true;
 
     }
 }

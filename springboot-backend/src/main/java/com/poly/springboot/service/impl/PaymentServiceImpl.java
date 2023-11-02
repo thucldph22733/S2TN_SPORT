@@ -2,13 +2,13 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.PaymentRequestDto;
 import com.poly.springboot.entity.Payment;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.PaymentRepository;
 import com.poly.springboot.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -24,7 +24,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override  //Method save payment
-    public Payment savePayment(PaymentRequestDto paymentRequestDto) {
+    public Boolean createPayment(PaymentRequestDto paymentRequestDto) {
 
         Payment payment = new Payment();
         payment.setPaymentName(paymentRequestDto.getPaymentName());
@@ -32,40 +32,30 @@ public class PaymentServiceImpl implements PaymentService {
 
         paymentRepository.save(payment);
 
-        return payment;
+        return true;
     }
 
     @Override  //Method update payment
-    public Payment updatePayment(PaymentRequestDto paymentRequestDto, Long id) {
+    public Boolean updatePayment(PaymentRequestDto paymentRequestDto, Long id) {
 
-        Payment payment = paymentRepository.findById(id).get();
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("phương thức thanh toán",String.valueOf(id)));
 
         payment.setPaymentName(paymentRequestDto.getPaymentName());
         payment.setPaymentDescribe(paymentRequestDto.getPaymentDescribe());
 
         paymentRepository.save(payment);
 
-        return payment;
-    }
-
-    @Override  //Method find payment by id
-    public Payment findPaymentById(Long id) {
-
-        Optional<Payment>  result = paymentRepository.findById(id);
-
-        return result.isPresent() ? result.get() : null;
+        return true;
     }
 
     @Override  // Method delete payment by id
-    public String deletePayment(Long id) {
+    public Boolean deletePayment(Long id) {
 
-        if (paymentRepository.existsById(id)){
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("phương thức thanh toán",String.valueOf(id)));
 
-            paymentRepository.deleteById(id);
-            return "Delete success!";
-        }else {
-
-            return "This id was not found: "+id;
-        }
+        paymentRepository.deleteById(payment.getId());
+        return true;
     }
 }

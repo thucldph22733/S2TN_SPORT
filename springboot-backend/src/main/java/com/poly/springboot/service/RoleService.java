@@ -7,12 +7,11 @@ import java.util.List;
 public interface RoleService {
     List<Role> getRoles();
 
-    Role saveRole(RoleRequestDto requestDto);
+    Boolean createRole(RoleRequestDto requestDto);
 
-    Role updateRole(RoleRequestDto requestDto, Long id);
+    Boolean updateRole(RoleRequestDto requestDto, Long id);
 
-    String deleteRole(Long id);
+    Boolean deleteRole(Long id);
 
-    Role findRoleById(Long id);
 
 }

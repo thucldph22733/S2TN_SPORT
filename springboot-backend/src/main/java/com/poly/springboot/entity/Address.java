@@ -36,14 +36,14 @@ public class Address {
     @Column(name = "address_detail")
     private String addressDetail;
 
-    @Column(name = "region")  // khuc vuc
+    @Column(name = "region")  // phuong/ xa
     private String region;
 
-    @Column(name = "city")
-    private String city;
+    @Column(name = "district") //quan/ huyen
+    private String district;
 
-    @Column(name = "country")
-    private String country;
+    @Column(name = "city")  //tinh/thanh pho
+    private String city;
 
     @CreationTimestamp
     @Column(name = "create_date")

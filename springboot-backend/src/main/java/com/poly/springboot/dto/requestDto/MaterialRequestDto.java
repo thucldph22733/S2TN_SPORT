@@ -11,9 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaterialRequestDto {
-    @NotBlank(message = "Vui lòng nhập tên Material!")
+
+    @NotBlank(message = "Tên chất liệu không được để trống!")
     private String materialName;
 
-    @NotBlank(message = "Không được để trống!")
     private String materialDescribe;
 }

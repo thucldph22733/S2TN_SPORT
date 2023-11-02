@@ -15,8 +15,6 @@ public interface ProductService {
 
     String delete(Long id);
 
-    Product findById(Long id);
-
     Product save(ProductRequestDto productRequestDto);
 
     Product update(ProductRequestDto productRequestDto,Long id);

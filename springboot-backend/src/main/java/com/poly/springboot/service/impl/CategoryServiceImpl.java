@@ -1,16 +1,14 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CategoryRequestDto;
-import com.poly.springboot.entity.Brand;
 import com.poly.springboot.entity.Category;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.CategoryRepository;
 import com.poly.springboot.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -19,47 +17,41 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepository;
 
     @Override
-    public List<Category> getCategory() {
+    public List<Category> getCategories() {
         return categoryRepository.findAll();
     }
 
     @Override
-    public List<Category> getPageCate(Integer pageNo) {
-        return null;
+    public Boolean deleteCategory(Long id) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("loại sản phẩm",String.valueOf(id)));
+        categoryRepository.deleteById(category.getId());
+        return true;
     }
 
     @Override
-    public String deleteCate(Long id) {
-        if(categoryRepository.existsById(id)){
-            categoryRepository.deleteById(id);
-            return "Delete Success!";
-        }
-        return "This is was not found!";
+    public Boolean createCategory(CategoryRequestDto categoryRequestDto) {
 
-    }
-
-    @Override
-    public Category findById(Long id) {
-        //Tim id chuyen vao
-        Optional<Category> result = categoryRepository.findById(id);
-        return result.isPresent() ? result.get() : null;
-    }
-
-    @Override
-    public Category savaCate(CategoryRequestDto categoryRequestDto) {
         Category category = new Category();
+
         category.setCategoryDescribe(categoryRequestDto.getCategoryDescribe());
         category.setCategoryName(categoryRequestDto.getCategoryName());
         categoryRepository.save(category);
-        return category;
+
+        return true;
     }
 
     @Override
-    public Category updateCate(CategoryRequestDto categoryRequestDto, Long id) {
-        Category category = categoryRepository.findById(id).get();
+    public Boolean updateCategory(CategoryRequestDto categoryRequestDto, Long id) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("loại sản phẩm",String.valueOf(id)));
+
         category.setCategoryDescribe(categoryRequestDto.getCategoryDescribe());
         category.setCategoryName(categoryRequestDto.getCategoryName());
         categoryRepository.save(category);
-        return category;
+
+        return true;
     }
 }

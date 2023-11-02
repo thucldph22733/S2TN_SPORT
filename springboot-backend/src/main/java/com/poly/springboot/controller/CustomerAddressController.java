@@ -3,43 +3,41 @@ package com.poly.springboot.controller;
 import com.poly.springboot.dto.requestDto.CustomerAddressRequestDto;
 import com.poly.springboot.entity.CustomerAddress;
 import com.poly.springboot.service.CustomerAddressService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/customerAddress/")
+@Tag(name = "CustomerAddress")
 public class CustomerAddressController {
 
     @Autowired
     private CustomerAddressService customerAddressService;
 
-    @GetMapping("customerAddress")
+    @GetMapping("getAll")
     public ResponseEntity<?> getAllCustomerAddress(){
-        return ResponseEntity.ok(customerAddressService.getAll());
+        return ResponseEntity.ok(customerAddressService.getCustomerAddress());
     }
 
-    @PostMapping("create-customerAddress")
+    @PostMapping("create")
     public ResponseEntity<?>createCustomerAddress(@RequestBody CustomerAddressRequestDto customerAddressRequestDto){
-        return ResponseEntity.ok(customerAddressService.add(customerAddressRequestDto));
+        return ResponseEntity.ok(customerAddressService.createCustomerAddress(customerAddressRequestDto));
     }
 
-    @PutMapping("update-customerAddress/{id}")
-    public ResponseEntity<CustomerAddress>updateCustomerAddress(@RequestBody CustomerAddressRequestDto customerAddressRequestDto, @PathVariable Long id){
-        return ResponseEntity.ok(customerAddressService.update(customerAddressRequestDto,id));
+    @PutMapping("update")
+    public ResponseEntity<?>updateCustomerAddress(@RequestBody CustomerAddressRequestDto customerAddressRequestDto, @RequestParam Long id){
+        return ResponseEntity.ok(customerAddressService.updateCustomerAddress(customerAddressRequestDto,id));
     }
 
-    @DeleteMapping("delete-customerAddress/{id}")
-    public ResponseEntity<String> deleteCustomerAddress(@PathVariable Long id) {
-        String message = customerAddressService.delete(id);
-        return ResponseEntity.ok(message);
+    @DeleteMapping("delete")
+    public ResponseEntity<?> deleteCustomerAddress(@RequestParam Long id) {
+       return ResponseEntity.ok( customerAddressService.deleteCustomerAddress(id));
+//        return ResponseEntity.ok(message);
     }
 
-    @GetMapping("customerAddress/{id}")
-    public ResponseEntity<CustomerAddress> findById(@PathVariable Long id) {
-        CustomerAddress customerAddress = customerAddressService.findCustomerById(id);
-        return ResponseEntity.ok(customerAddress);
-    }
+
 
 }

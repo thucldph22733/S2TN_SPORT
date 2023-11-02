@@ -1,51 +1,83 @@
 package com.poly.springboot.controller;
 
+import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.CategoryRequestDto;
+import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.Category;
-import com.poly.springboot.repository.CategoryRepository;
 import com.poly.springboot.service.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/categories/")
+@Tag(name = "Categories",description = "( Rest API Hiển thị, thêm, sửa, xóa loại sản phẩm )")
+@Validated
 public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("categories")
+    @GetMapping("getAll")
     public ResponseEntity<List<Category>> getCategories() {
-        List<Category> categories = categoryService.getCategory();
-        return ResponseEntity.ok(categories);
+        List<Category> categoryList = categoryService.getCategories();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(categoryList);
 
     }
 
-    @GetMapping("category/{id}")
-    public ResponseEntity<Category> findById(@PathVariable Long id){
-        Category category = categoryService.findById(id);
-        return ResponseEntity.ok(category);
+
+
+    @PostMapping("create")
+    public ResponseEntity<ResponseDto>createCategory(@Valid  @RequestBody CategoryRequestDto categoryRequestDto){
+        Boolean isCreated = categoryService.createCategory(categoryRequestDto);
+
+        if (isCreated){
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
     }
 
-    @PostMapping("create-category")
-    public ResponseEntity<Category>createCategory(@RequestBody CategoryRequestDto categoryRequestDto){
-        Category category1 = categoryService.savaCate(categoryRequestDto);
-        return ResponseEntity.ok(category1);
+    @PutMapping("update")
+    public ResponseEntity<ResponseDto> updateCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto,@RequestParam Long id){
+        Boolean isUpdated = categoryService.updateCategory(categoryRequestDto,id);
+
+        if (isUpdated){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
     }
 
-    @PutMapping("update-category/{id}")
-    public ResponseEntity<Category> updateCategory(@RequestBody CategoryRequestDto categoryRequestDto,@PathVariable Long id){
-        Category category = categoryService.updateCate(categoryRequestDto,id);
-        return ResponseEntity.ok(category);
-    }
+    @DeleteMapping("delete")
+    public ResponseEntity<ResponseDto> deleteCategory(@RequestParam Long id){
+        Boolean isDeleted = categoryService.deleteCategory(id);
 
-    @DeleteMapping("delete-category/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long id){
-        String mes = categoryService.deleteCate(id);
-        return ResponseEntity.ok(mes);
+        if (isDeleted){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
     }
 }

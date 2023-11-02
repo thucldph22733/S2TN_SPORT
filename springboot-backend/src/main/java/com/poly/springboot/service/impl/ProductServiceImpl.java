@@ -1,115 +1,115 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ProductRequestDto;
-import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
 import com.poly.springboot.dto.responseDto.ProductResponseDto;
 import com.poly.springboot.entity.Product;
-import com.poly.springboot.entity.Size;
+import com.poly.springboot.exception.ResourceNotFoundException;
+import com.poly.springboot.mapper.ProductMapper;
 import com.poly.springboot.repository.*;
 import com.poly.springboot.service.ProductService;
-import com.poly.springboot.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
-    @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
     private CategoryRepository categoryRepository;
 
-    @Autowired
     private ClubRepository clubRepository;
 
-    @Autowired
     private BrandRepository brandRepository;
 
+    private SupplierRepository supplierRepository;
+
     @Autowired
-    private SupplierReppsitory supplierReppsitory;
+    public ProductServiceImpl(ProductRepository productRepository,
+                              CategoryRepository categoryRepository,
+                              ClubRepository clubRepository,
+                              BrandRepository brandRepository,
+                              SupplierRepository supplierRepository) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        this.clubRepository = clubRepository;
+        this.brandRepository = brandRepository;
+        this.supplierRepository = supplierRepository;
+    }
+
+
 
     @Override
-    public List<ProductResponseDto> findAll() {
-        return productRepository.findAll().stream().map(product -> new ProductResponseDto(
-                product.getId(),
-                product.getCategory().getCategoryName(),
-                product.getClub().getClubName(),
-                product.getBrand().getBrandName(),
-                product.getSupplier().getSupplierName(),
-                product.getProductName(),
-                product.getProductAvatar(),
-                product.getProductHot(),
-                product.getProductSale(),
-                product.getProductNew(),
-                product.getViewCount(),
-                product.getProductStatus(),
-                product.getProductDescribe())
+    public List<ProductResponseDto> getProducts() {
+        return productRepository.findAll()
+                .stream().map(product -> ProductMapper.mapToProductResponse(product,new ProductResponseDto())
         ).collect(Collectors.toList());
     }
 
     @Override
-    public List<ProductResponseDto> getPage(Integer pageNo) {
-        return null;
+    public List<ProductResponseDto> getPagination(Integer pageNo) {
+        Pageable pageable = PageRequest.of(pageNo,10);
+        List<ProductResponseDto> list = productRepository.findAll(pageable)
+                .stream().map(product -> ProductMapper.mapToProductResponse(product,new ProductResponseDto())
+                ).collect(Collectors.toList());
+        return list;
     }
 
     @Override
-    public String delete(Long id) {
-        if(productRepository.existsById(id)){
-            productRepository.deleteById(id);
-            return "Delete Success!";
+    public Boolean deleteProduct(Long id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("sản phẩm",String.valueOf(id)));
+
+        if (product.getStatus() == 0){
+            product.setStatus(1);
+        }else {
+            product.setStatus(0);
         }
-        return "This is was not found!";
+        productRepository.save(product);
+        return true;
     }
 
 
 
     @Override
-    public Product save(ProductRequestDto productRequestDto) {
+    public Boolean createProduct(ProductRequestDto productRequestDto) {
         Product product = new Product();
 
         product.setCategory(categoryRepository.findById(productRequestDto.getCategoryId()).orElse(null));
         product.setClub(clubRepository.findById(productRequestDto.getClubId()).orElse(null));
         product.setBrand(brandRepository.findById(productRequestDto.getBrandId()).orElse(null));
-        product.setSupplier(supplierReppsitory.findById(productRequestDto.getSupplierId()).orElse(null));
-        product.setProductName(productRequestDto.getProductName());
-        product.setProductAvatar(productRequestDto.getProductAvatar());
-        product.setProductHot(productRequestDto.getProductHot());
-        product.setProductSale(productRequestDto.getProductSale());
-        product.setProductNew(productRequestDto.getProductNew());
-        product.setViewCount(productRequestDto.getViewCount());
-        product.setProductName(productRequestDto.getProductName());
-        product.setProductStatus(productRequestDto.getProductStatus());
-        product.setCreateBy(productRequestDto.getCreateBy());
-        product.setUpdateBy(productRequestDto.getUpdateBy());
-
+        product.setSupplier(supplierRepository.findById(productRequestDto.getSupplierId()).orElse(null));
+        ProductMapper.mapToProductRequest(product,productRequestDto);
+        product.setStatus(0);
         productRepository.save(product);
-        return product;
+        return true;
     }
 
     @Override
-    public Product update(ProductRequestDto productRequestDto, Long id) {
-        Product product = productRepository.findById(id).get();
+    public Boolean updateProduct(ProductRequestDto productRequestDto, Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("sản phẩm",String.valueOf(id)));
 
         product.setCategory(categoryRepository.findById(productRequestDto.getCategoryId()).orElse(null));
         product.setClub(clubRepository.findById(productRequestDto.getClubId()).orElse(null));
         product.setBrand(brandRepository.findById(productRequestDto.getBrandId()).orElse(null));
-        product.setSupplier(supplierReppsitory.findById(productRequestDto.getSupplierId()).orElse(null));
-        product.setProductName(productRequestDto.getProductName());
-        product.setProductAvatar(productRequestDto.getProductAvatar());
-        product.setProductHot(productRequestDto.getProductHot());
-        product.setProductSale(productRequestDto.getProductSale());
-        product.setProductNew(productRequestDto.getProductNew());
-        product.setViewCount(productRequestDto.getViewCount());
-        product.setProductName(productRequestDto.getProductName());
-        product.setProductStatus(productRequestDto.getProductStatus());
-        product.setCreateBy(productRequestDto.getCreateBy());
-        product.setUpdateBy(productRequestDto.getUpdateBy());
+        product.setSupplier(supplierRepository.findById(productRequestDto.getSupplierId()).orElse(null));
+        ProductMapper.mapToProductRequest(product,productRequestDto);
 
         productRepository.save(product);
+        return true;
+    }
+
+    @Override
+    public Product findProductById(Long id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("sản phẩm",String.valueOf(id)));
+
         return product;
     }
 }

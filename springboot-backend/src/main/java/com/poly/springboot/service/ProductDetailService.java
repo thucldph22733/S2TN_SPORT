@@ -7,15 +7,15 @@ import com.poly.springboot.entity.ProductDetail;
 import java.util.List;
 
 public interface ProductDetailService {
-    List<ProductDetailResponseDto> findAll();
+    List<ProductDetailResponseDto> getProductDetails();
 
-    List<ProductDetail> getPage(Integer pageNo);
+    List<ProductDetailResponseDto> getPagination(Integer pageNo);
 
-    String delete(Long id);
+    Boolean deleteProductDetail(Long id);
 
-    ProductDetail findById(Long id);
+//    List<ProductDetail> findByIdProductDetailsId(Long id);
 
-    ProductDetail save(ProductDetailRequestDto productDetailRequestDto);
+    Boolean createProductDetail(ProductDetailRequestDto productDetailRequestDto);
 
-    ProductDetail update(ProductDetailRequestDto productDetailRequestDto,Long id);
+    Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto,Long id);
 }

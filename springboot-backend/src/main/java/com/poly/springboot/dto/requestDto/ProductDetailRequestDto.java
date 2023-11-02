@@ -20,20 +20,17 @@ public class ProductDetailRequestDto {
 
     private Long sizeId;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
+    @NotEmpty(message = "Số lượng không được để trống!")
     private Integer quantity;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
+    @NotEmpty(message = "Tên giá không được để trống!")
     private Double price;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
     private Double promotionPrice;
 
-    private Integer productStatus;
+    private Integer status;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
     private String createBy;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
     private String updateBy;
 }

@@ -49,7 +49,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
-    public OrderDetail saveOrderDetail(OrderDetailRequestDto orderDetailRequestDto) {
+    public OrderDetail createOrderDetail(OrderDetailRequestDto orderDetailRequestDto) {
          //find productDetail by id
         ProductDetail productDetail = productDetailRepository.findById(orderDetailRequestDto.getProductDetailId()).orElse(null);
          //find orderRepository by id

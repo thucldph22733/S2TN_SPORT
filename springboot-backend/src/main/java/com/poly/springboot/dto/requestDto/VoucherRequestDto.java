@@ -23,8 +23,10 @@ public class VoucherRequestDto {
     @NotBlank(message = "Tên mã giảm giá không được để trống!")
     private String voucherName;
 
+    @NotNull(message = "Ngày bắt đầu không được để trống!")
     private Date startDate;
 
+    @NotNull(message = "Ngày kết thúc không được để trống!")
     private Date endDate;
 
     @NotNull(message = "Đơn tối thiểu không được để trống!")
@@ -33,9 +35,10 @@ public class VoucherRequestDto {
     @NotNull(message = "Giảm tối đa không được để trống!")
     private Integer maxReduce;  //Giảm tối đa
 
-    @NotNull(message = "Số lượng mã không được để trống!")
+    @NotNull(message = "Số lượng không được để trống!")
     private Integer quantity;
 
+    @NotNull(message = "Tỉ lệ chiết khấu không được để trống!")
     private Integer discountRate;
 
     private String voucherDescribe;

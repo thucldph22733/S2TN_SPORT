@@ -67,7 +67,7 @@ public class Product {
     private String productDescribe;
 
     @Column(name = "product_status")
-    private Integer productStatus;
+    private Integer status;
 
     @CreationTimestamp
     @Column(name = "create_date")

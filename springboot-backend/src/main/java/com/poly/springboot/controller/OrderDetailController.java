@@ -39,7 +39,7 @@ public class OrderDetailController {
     // create order detail rest api
     @PostMapping("create")
     public ResponseEntity<OrderDetail> saveOrderDetail(@RequestBody OrderDetailRequestDto orderDetailRequestDto){
-        OrderDetail orderDetail = orderDetailService.saveOrderDetail(orderDetailRequestDto);
+        OrderDetail orderDetail = orderDetailService.createOrderDetail(orderDetailRequestDto);
         return ResponseEntity.ok(orderDetail);
     }
 

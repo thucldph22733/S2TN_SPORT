@@ -2,6 +2,7 @@ package com.poly.springboot.dto.requestDto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,33 +22,27 @@ public class ProductRequestDto {
 
     private Long supplierId;
 
-    @NotBlank(message = "Không được để trống!")
+    @NotBlank(message = "Tên sản phẩm không được để trống!")
     private String productName;
 
-    @NotBlank(message = "Không được để trống!")
+    @NotBlank(message = "Ảnh sản phẩm không được để trống!")
     private String productAvatar;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
     private Integer productHot;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
     private Integer productSale;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
     private Integer productNew;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
     private Integer viewCount;
 
-    @NotBlank(message = "Không được để trống!")
     private String productDescribe;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
-    private Integer productStatus;
+    private Integer status;
 
-    @NotBlank(message = "Không được để trống!")
+    @NotBlank(message = "Tên người tạo không được để trống!")
     private String createBy;
 
-    @NotEmpty(message = "Vui lòng Không để trống!")
+    @NotEmpty(message = "Tên người sửa không được để trống!")
     private  String updateBy;
 }

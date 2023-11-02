@@ -12,7 +12,7 @@ public interface OrderDetailService {
 
     List<OrderDetailResponseDto> getOrderDetails();
 
-    OrderDetail saveOrderDetail(OrderDetailRequestDto orderDetailRequestDto);
+    OrderDetail createOrderDetail(OrderDetailRequestDto orderDetailRequestDto);
 
     OrderDetail updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto,Long id);
 

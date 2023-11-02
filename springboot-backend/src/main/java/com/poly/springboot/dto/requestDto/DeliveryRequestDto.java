@@ -1,6 +1,7 @@
 package com.poly.springboot.dto.requestDto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +14,10 @@ import lombok.Setter;
 public class DeliveryRequestDto {
 
     @NotBlank(message = "Tên phương thức giao hàng không được để trống!")
-    private String shippingName;
+    private String deliveryName;
 
-    @NotBlank(message = "Giá phương thức giao hàng không được để trống!")
+    @NotNull(message = "Giá phương thức giao hàng không được để trống!")
     private Double price;
 
-    private String shippingDescribe;
+    private String deliveryDescribe;
 }

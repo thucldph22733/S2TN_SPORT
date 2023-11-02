@@ -19,32 +19,33 @@ public class StaffRequestDto {
 
     private Long roleId;
 
-    @NotBlank(message = "Vui lòng nhập họ và tên!")
+    @NotBlank(message = "Tên nhân viên không được để trống!")
     private String staffName;
 
     private String avatar;
 
-    @NotBlank(message = "Vui lòng nhập số điện thoại!")
+    @NotBlank(message = "Số điện thoại không được để trống!")
     private String phoneNumber;
 
-    @NotBlank(message = "Vui lòng nhập địa chỉ email!")
+    @NotBlank(message = "Địa chỉ email không được để trống!")
     private String email;
 
-    @NotNull (message = "Vui lòng chọn giới tính!")
+    @NotNull(message = "Vui lòng chọn giới tính!")
     private Boolean gender;
 
+    @NotNull(message = "Ngày sinh không được để trống!")
     private Date birthOfDay;
 
-    @NotBlank(message = "Vui lòng nhập địa chỉ!")
+    @NotBlank(message = "Địa chỉ không được để trống!")
     private String address;
 
-    @NotBlank(message = "Vui lòng nhập thành phố!")
+    @NotBlank(message = "tên thành phố không được để trống!")
     private String city;
 
-    @NotBlank(message = "Vui lòng nhập quốc gia!")
+    @NotBlank(message = "Quốc gia không được để trống!")
     private String country;
 
-    @NotBlank(message = "Vui lòng nhập mật khẩu!")
+    @NotBlank(message = "Mật khẩu không được để trống!")
     private String password;
 
     private Integer status;

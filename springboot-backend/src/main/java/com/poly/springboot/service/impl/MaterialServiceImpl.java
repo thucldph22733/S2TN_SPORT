@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.MaterialRequestDto;
 import com.poly.springboot.entity.Material;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.MaterialRepository;
 import com.poly.springboot.service.MaterialService;
@@ -40,6 +41,9 @@ public class MaterialServiceImpl implements MaterialService {
          material.setMaterialDescribe(materialRequestDto.getMaterialDescribe());
          material.setMaterialName(materialRequestDto.getMaterialName());
 
+         if (materialRepository.existsByMaterialName(materialRequestDto.getMaterialName())){
+             throw new AlreadyExistsException("Tên chất liệu đã tồn tại");
+         }
          materialRepository.save(material);
          return true;
     }

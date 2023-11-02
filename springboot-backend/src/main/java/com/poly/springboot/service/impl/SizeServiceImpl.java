@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.SizeRequestDto;
 import com.poly.springboot.entity.Size;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.SizeRepository;
 import com.poly.springboot.service.SizeService;
@@ -37,6 +38,9 @@ public class SizeServiceImpl implements SizeService {
         size.setSizeName(sizeRequestDto.getSizeName());
         size.setSizeDescribe(sizeRequestDto.getSizeDescribe());
 
+        if (sizeRepository.existsBySizeName(sizeRequestDto.getSizeName())){
+            throw new AlreadyExistsException("Tên kích thức đã tồn tại!");
+        }
         sizeRepository.save(size);
 
         return true;

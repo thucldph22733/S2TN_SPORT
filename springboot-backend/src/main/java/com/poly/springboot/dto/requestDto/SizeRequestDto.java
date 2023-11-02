@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SizeRequestDto {
 
-    @NotBlank(message = "Vui lòng nhập tên Size!")
+    @NotBlank(message = "Tên kích thước không được để trống!")
     private String sizeName;
 
     private String sizeDescribe;

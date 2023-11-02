@@ -44,11 +44,20 @@ public class ImageController {
                 .body(imageList);
     }
 
+    @GetMapping("findImageByProductId")
+    public ResponseEntity<List<Image>> findImageByProductId(@RequestParam Long id) {
+
+        List<Image> imageList = imageService.findImageByProductId(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(imageList);
+    }
+
     //create Image rest api
     @PostMapping("create")
     public ResponseEntity<ResponseDto> creatImage(@Valid @RequestBody ImageRequestDto imageRequestDto) {
 
-        Boolean isCreated = imageService.saveImage(imageRequestDto);
+        Boolean isCreated = imageService.createImage(imageRequestDto);
 
         if(isCreated){
             return ResponseEntity.status(HttpStatus.CREATED)

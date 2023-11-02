@@ -36,15 +36,15 @@ public class OrderController {
     }
 
     // save order rest api
-    @PostMapping("create")
-    public ResponseEntity<Order> saveOrder(@RequestBody OrderRequestDto orderRequestDto){
-        Order order = orderService.saveOrder(orderRequestDto);
-        return ResponseEntity.ok(order);
-    }
+//    @PostMapping("create")
+//    public ResponseEntity<Order> saveOrder(@RequestBody OrderRequestDto orderRequestDto){
+//        Boolean order = orderService.createOrder(orderRequestDto);
+//        return ResponseEntity.ok(order);
+//    }
     // update order rest api
-    @PutMapping ("update")
-    public ResponseEntity<Order> updateOrder(@RequestBody OrderRequestDto orderRequestDto,@RequestParam Long id){
-        Order order = orderService.updateOrder(orderRequestDto,id);
-        return ResponseEntity.ok(order);
-    }
+//    @PutMapping ("update")
+//    public ResponseEntity<Order> updateOrder(@RequestBody OrderRequestDto orderRequestDto,@RequestParam Long id){
+//        Order order = orderService.updateOrder(orderRequestDto,id);
+//        return ResponseEntity.ok(order);
+//    }
 }

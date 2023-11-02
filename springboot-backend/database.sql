@@ -271,7 +271,6 @@ create table address
 );
 alter table address auto_increment = 1000;  -- xet khoa chinh tu tang bat dau tu 1000;
 
-alter table soccer_clothes_management_system.address add column district varchar(50);
 -- 20 tao bang dia chi khach hang;
 create table customer_address
 (

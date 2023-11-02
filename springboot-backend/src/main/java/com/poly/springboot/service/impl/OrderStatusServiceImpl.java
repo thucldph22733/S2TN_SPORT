@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
 import com.poly.springboot.entity.OrderStatus;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.OrderStatusRepository;
 import com.poly.springboot.service.OrderStatusService;
@@ -32,6 +33,9 @@ public class OrderStatusServiceImpl implements OrderStatusService {
         orderStatus.setStatusName(orderStatusRequestDto.getStatusName());
         orderStatus.setStatusDescribe(orderStatusRequestDto.getStatusDescribe());
 
+        if (orderStatusRepository.existsByOrStatusName(orderStatusRequestDto.getStatusName())){
+            throw new AlreadyExistsException("Tên trạng thái đã tồn tại!");
+        }
         orderStatusRepository.save(orderStatus);
 
         return true;

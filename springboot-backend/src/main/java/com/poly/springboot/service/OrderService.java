@@ -10,9 +10,16 @@ public interface OrderService {
 
     List<OrderResponseDto> getOrders();
 
-    Order saveOrder(OrderRequestDto orderRequestDto);
+//    List<OrderResponseDto> getPagination(Integer pageNo);
 
-    Order updateOrder(OrderRequestDto orderRequestDto,Long id);
+
+    Order findOrderById(Long id);
+
+//    List<OrderResponseDto> getOrderByStatus(Long id);
+
+    Boolean createOrder(OrderRequestDto orderRequestDto);
+
+    Boolean updateOrder(OrderRequestDto orderRequestDto,Long id);
 
     List<OrderResponseDto> getPagination(Integer pageNo,Integer pageSize);
 

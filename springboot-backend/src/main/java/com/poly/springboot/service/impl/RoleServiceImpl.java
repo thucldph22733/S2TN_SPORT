@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.RoleRequestDto;
 import com.poly.springboot.entity.Role;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.RoleRepository;
 import com.poly.springboot.service.RoleService;
@@ -27,6 +28,9 @@ public class RoleServiceImpl implements RoleService {
         role.setRoleName(requestDto.getRoleName());
         role.setRoleDescribe(requestDto.getRoleDescribe());
 
+        if (roleRepository.existsByRoleName(requestDto.getRoleName())){
+            throw new AlreadyExistsException("Tên vai trò đã tồn tại!");
+        }
         roleRepository.save(role);
         return true;
     }

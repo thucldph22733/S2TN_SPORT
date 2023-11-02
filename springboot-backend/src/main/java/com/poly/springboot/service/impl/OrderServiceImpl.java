@@ -66,7 +66,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order saveOrder(OrderRequestDto orderRequestDto) {
+    public Order findOrderById(Long id) {
+        return null;
+    }
+
+    @Override
+    public Boolean createOrder(OrderRequestDto orderRequestDto) {
 
         //Get customer by id
         Customer customer = customerRepository.findById(orderRequestDto.getCustomerId()).orElse(null);
@@ -93,11 +98,11 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderTotal(orderRequestDto.getOrderTotal());
         order.setNote(orderRequestDto.getNote());
         orderRepository.save(order);
-        return order;
+        return true;
     }
 
     @Override
-    public Order updateOrder(OrderRequestDto orderRequestDto, Long id) {
+    public Boolean updateOrder(OrderRequestDto orderRequestDto, Long id) {
 
         //Get customer by id
         Customer customer = customerRepository.findById(orderRequestDto.getCustomerId()).orElse(null);
@@ -131,7 +136,8 @@ public class OrderServiceImpl implements OrderService {
         }else  if(orderStatus.getStatusName() == "Đã nhận"){  //Neu trang thai co ten la da nhan thi cap nhat ngay nhan
             order.setReceivedDate(new Date());
         }
-        return orderRepository.save(order);
+        orderRepository.save(order);
+        return true;
     }
 
     @Override

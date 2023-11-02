@@ -8,6 +8,8 @@ import com.poly.springboot.mapper.VoucherMapper;
 import com.poly.springboot.repository.VoucherRepository;
 import com.poly.springboot.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,12 +30,20 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public List<VoucherResponseDto> getPagination(Integer pageNo) {
-        return null;
+        Pageable pageable = PageRequest.of(pageNo,10);
+        List<VoucherResponseDto> voucherResponseDtoList = voucherRepository.findAll(pageable).stream().map(
+                voucher -> VoucherMapper.mapToVoucherResponse(voucher,new VoucherResponseDto())
+        ).collect(Collectors.toList());
+        return voucherResponseDtoList;
     }
 
     @Override
     public List<VoucherResponseDto> searchVoucher(Integer pageNo, String keyword) {
-        return null;
+        Pageable pageable = PageRequest.of(pageNo,10);
+        List<VoucherResponseDto> voucherResponseDtoList = voucherRepository.searchVoucher(keyword,pageable).stream().map(
+                voucher -> VoucherMapper.mapToVoucherResponse(voucher,new VoucherResponseDto())
+        ).collect(Collectors.toList());
+        return voucherResponseDtoList;
     }
 
     @Override

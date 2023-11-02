@@ -2,8 +2,11 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CustomerRequestDto;
-import com.poly.springboot.dto.responseDto.CustomerResponeDto;
+import com.poly.springboot.dto.responseDto.CustomerResponseDto;
 import com.poly.springboot.entity.Customer;
+import com.poly.springboot.exception.AlreadyExistsException;
+import com.poly.springboot.exception.ResourceNotFoundException;
+import com.poly.springboot.mapper.CustomerMapper;
 import com.poly.springboot.repository.CustomerRepository;
 import com.poly.springboot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +26,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import java.util.Collection;
 
 
 @Service
@@ -38,18 +38,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public List<CustomerResponeDto> getAll() {
+    public List<CustomerResponseDto> getCustomers() {
         return customerRepository.findAll().stream().map(
-                customer -> new CustomerResponeDto(
-                        customer.getId(),
-                        customer.getCustomerName(),
-                        customer.getAvatar(),
-                        customer.getNumberPhone(),
-                        customer.getEmail(),
-                        customer.getGender(),
-                        customer.getBirthOfDay(),
-                        customer.getCustomerStatus())
-
+                customer -> CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto())
         ).collect(Collectors.toList());
     }
 
@@ -87,21 +78,35 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.save(customer);
 
     }
+    public Boolean createCustomer(CustomerRequestDto customerRequestDto) {
 
-    @Override
-    public String delete(Long id) {
-        if (customerRepository.existsById(id)) {
-            customerRepository.deleteById(id);
-            return "Delete successful";
-        } else {
-            return "This id was not found" + id;
+        Customer customer = new Customer();
+
+        CustomerMapper.mapToCustomerRequest(customer, customerRequestDto);
+        customer.setStatus(0);
+
+        Optional<Customer> result = customerRepository.findCustomerByPhoneNumber(customerRequestDto.getPhoneNumber());
+        if (result.isPresent()) {
+            throw new AlreadyExistsException("Số điện thoại này đã được đăng ký:  " + customerRequestDto.getPhoneNumber());
         }
+        Boolean isEmail = customerRepository.existsByEmail(customerRequestDto.getEmail());
+        if (isEmail) {
+            throw new AlreadyExistsException("Địa chỉ email này đã được đăng ký:  " + customerRequestDto.getEmail());
+        }
+
+        customerRepository.save(customer);
+        return true;
     }
 
     @Override
-    public Customer findCustomerById(Long id) {
-        Optional<Customer> result = customerRepository.findById(id);
-        return result.isPresent() ? result.get() : null;
+    public Boolean updateCustomer(CustomerRequestDto customerRequestDto, Long id) {
+        Customer customer = customerRepository.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+
+        CustomerMapper.mapToCustomerRequest(customer, customerRequestDto);
+
+        customerRepository.save(customer);
+        return true;
     }
 
     @Override
@@ -118,24 +123,46 @@ public class CustomerServiceImpl implements CustomerService {
                         c.getBirthOfDay(),
                         c.getCustomerStatus()
                 )).collect(Collectors.toList());
+
+    public Boolean deleteCustomer(Long id) {
+        Customer customer = customerRepository.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+        if (customer.getStatus() == 0) {
+            customer.setStatus(1);
+        } else {
+            customer.setStatus(0);
+        }
+        customerRepository.save(customer);
+        return true;
+    }
+
+
+    @Override
+    public List<CustomerResponseDto> getPagination(Integer pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 10);
+        List<CustomerResponseDto> list = customerRepository.findAll(pageable)
+                .stream().map(customer -> CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto())
+                ).collect(Collectors.toList());
         return list;
     }
 
     @Override
-    public Page<CustomerResponeDto> searchByCustomerNameOrNumberPhone(String searchQuery, Pageable pageable) {
-        return customerRepository.searchByCustomerNameOrNumberPhone(searchQuery, pageable)
-                .map(customer -> new CustomerResponeDto(
-                        customer.getId(),
-                        customer.getCustomerName(),
-                        customer.getAvatar(),
-                        customer.getNumberPhone(),
-                        customer.getEmail(),
-                        customer.getGender(),
-                        customer.getBirthOfDay(),
-                        customer.getCustomerStatus()
-                ));
+
+    public Customer findCustomerByPhoneNumber(String phoneNumber) {
+        Customer customer = customerRepository.findCustomerByPhoneNumber(phoneNumber).
+                orElseThrow(() -> new ResourceNotFoundException("Khách hàng", phoneNumber));
+        return customer;
+
     }
 
+    @Override
+    public List<CustomerResponseDto> searchCustomer(String keyword, Integer pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 10);
+        List<CustomerResponseDto> list = customerRepository.searchCustomer(keyword, pageable)
+                .stream().map(customer -> CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto()
+                )).collect(Collectors.toList());
+        return list;
+    }
 
 }
 

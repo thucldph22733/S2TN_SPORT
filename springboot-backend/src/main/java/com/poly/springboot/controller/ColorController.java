@@ -1,52 +1,73 @@
 package com.poly.springboot.controller;
 
-import com.poly.springboot.dto.requestDto.ClubRequestDto;
+import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.ColorRequestDto;
-import com.poly.springboot.entity.Club;
+import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.Color;
 import com.poly.springboot.service.ColorService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/colors/")
+@Tag(name = "Colors",description = "( Rest API Hiển thị, thêm, sửa, xóa màu sắc )")
+@Validated
 public class ColorController {
     @Autowired
     private ColorService colorService;
 
 
-    @GetMapping("colors")
-    public ResponseEntity<List<Color>> getAll() {
-        List<Color> a = colorService.findAll();
-        return ResponseEntity.ok(a);
+    @GetMapping("getAll")
+    public ResponseEntity<List<Color>> getColors() {
+        List<Color> colorList = colorService.getColors();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(colorList);
 
     }
 
-    @GetMapping("color/{id}")
-    public ResponseEntity<Color> findById(@PathVariable Long id){
-        Color a = colorService.findById(id);
-        return ResponseEntity.ok(a);
+    @PostMapping("create")
+    public ResponseEntity<ResponseDto> createColor(@Valid @RequestBody ColorRequestDto colorRequestDto) {
+        Boolean isCreated = colorService.createColor(colorRequestDto);
+        if (isCreated) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
     }
 
-    @PostMapping("create-color")
-    public ResponseEntity<Color>crate(@RequestBody ColorRequestDto colorRequestDto){
-        Color a = colorService.sava(colorRequestDto);
-        return ResponseEntity.ok(a);
+    @PutMapping("update")
+    public ResponseEntity<ResponseDto> updateColor(@Valid @RequestBody ColorRequestDto colorRequestDto, @RequestParam Long id) {
+        Boolean isUpdated = colorService.updateColor(colorRequestDto, id);
+        if (isUpdated) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
     }
 
-    @PutMapping("update-color/{id}")
-    public ResponseEntity<Color> update(@RequestBody ColorRequestDto colorRequestDto,@PathVariable Long id){
-        Color a = colorService.update(colorRequestDto,id);
-        return ResponseEntity.ok(a);
-    }
-
-    @DeleteMapping("delete-color/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id){
-        String mes = colorService.delete(id);
-        return ResponseEntity.ok(mes);
+    @DeleteMapping("color")
+    public ResponseEntity<ResponseDto> deleteColor(@RequestParam Long id) {
+        Boolean isDeleted = colorService.deleteColor(id);
+        if (isDeleted) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
     }
 
 }

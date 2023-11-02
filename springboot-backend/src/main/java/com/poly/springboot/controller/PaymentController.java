@@ -1,10 +1,16 @@
 package com.poly.springboot.controller;
 
+import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.PaymentRequestDto;
+import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.Payment;
 import com.poly.springboot.service.PaymentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,57 +19,71 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/payments/")
+@Tag(name = "Payments",description = "( Rest API Hiển thị, thêm, sửa, xóa phương thức thanh toán )")
+@Validated
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
-    // get all Payment  rest api
-    @GetMapping("payments")
+    // get all Payment Method rest api
+    @GetMapping("getAll")
     public ResponseEntity<List<Payment>> getPayments() {
 
-        List<Payment> responseDtoList = paymentService.getPayments();
-        return ResponseEntity.ok(responseDtoList);
+        List<Payment> paymentList = paymentService.getPayments();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(paymentList);
     }
 
-    //get Payment  by id rest api
-    @GetMapping("payment/{id}")
-    public ResponseEntity<Payment> getPayment(@PathVariable Long id) {
 
-        Payment paymentMethod = paymentService.findPaymentById(id);
-        return ResponseEntity.ok(paymentMethod);
+    //create Payment Method rest api
+    @PostMapping("create")
+    public ResponseEntity<ResponseDto> createPayment(@Valid @RequestBody PaymentRequestDto paymentRequestDto) {
+
+        Boolean isCreated = paymentService.createPayment(paymentRequestDto);
+        if (isCreated){
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.MESSAGE_500,NotificationConstants.STATUS_500));
+        }
     }
 
-    //create Payment  rest api
-    @PostMapping("create-payment")
-    public ResponseEntity<Payment> createPayment(@RequestBody PaymentRequestDto paymentRequestDto) {
+    //update Payment Method rest api
+    @PutMapping("update")
+    public ResponseEntity<ResponseDto> updatePayment(@Valid @RequestBody PaymentRequestDto paymentRequestDto, @RequestParam Long id) {
 
-        Payment paymentMethod = paymentService.savePayment(paymentRequestDto);
-
-        return ResponseEntity.ok(paymentMethod);
+        Boolean isUpdated = paymentService.updatePayment(paymentRequestDto,id);
+        if (isUpdated){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.MESSAGE_500,NotificationConstants.STATUS_500));
+        }
     }
 
-    //update Payment  rest api
-    @PutMapping("update-payment/{id}")
-    public ResponseEntity<Payment> updatePayment(@RequestBody PaymentRequestDto paymentRequestDto, @PathVariable Long id) {
+    //delete Payment Method rest api
+    @DeleteMapping("delete")
+    public ResponseEntity<ResponseDto> deleteShipping(@RequestParam Long id) {
 
-        Payment paymentMethod = paymentService.updatePayment(paymentRequestDto, id);
-
-        return ResponseEntity.ok(paymentMethod);
-    }
-
-    //delete Payment rest api
-    @DeleteMapping("delete-payment/{id}")
-    public ResponseEntity<String> deletePayment(@PathVariable Long id) {
-
-        String message = paymentService.deletePayment(id);
-        return ResponseEntity.ok(message);
+        Boolean isDeleted = paymentService.deletePayment(id);
+        if (isDeleted){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.MESSAGE_500,NotificationConstants.STATUS_500));
+        }
     }
 }

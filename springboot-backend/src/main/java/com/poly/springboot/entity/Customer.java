@@ -28,8 +28,8 @@ public class Customer {
     @Column(name = "avatar")
     private String avatar;
 
-    @Column(name = "number_phone")
-    private String numberPhone;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @Column(name = "email")
     private String email;
@@ -44,7 +44,7 @@ public class Customer {
     private String password;
 
     @Column(name = "customer_status")
-    private Integer customerStatus;
+    private Integer status;
 
     @CreationTimestamp
     @Column(name = "create_date")

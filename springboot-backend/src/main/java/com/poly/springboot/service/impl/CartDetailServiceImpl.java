@@ -5,6 +5,7 @@ import com.poly.springboot.dto.responseDto.CartDetailResponseDto;
 import com.poly.springboot.entity.Cart;
 import com.poly.springboot.entity.CartDetail;
 import com.poly.springboot.entity.ProductDetail;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.CartDetailRepository;
 import com.poly.springboot.repository.CartRepository;
 import com.poly.springboot.repository.ProductDetailRepository;
@@ -48,7 +49,7 @@ public class CartDetailServiceImpl implements CartDetailService {
     }
 
     @Override
-    public CartDetail saveCartDetail(CartDetailRequestDto cartDetailRequestDto) {
+    public Boolean createCartDetail(CartDetailRequestDto cartDetailRequestDto) {
         //find product detail by id
         ProductDetail productDetail = productDetailRepository.findById(cartDetailRequestDto.getProductDetailId()).orElse(null);
         // find cart by id
@@ -61,17 +62,18 @@ public class CartDetailServiceImpl implements CartDetailService {
 
         cartDetailRepository.save(cartDetail);
 
-        return cartDetail;
+        return true;
     }
 
     @Override
-    public CartDetail updateCartDetail(CartDetailRequestDto cartDetailRequestDto, Long id) {
+    public Boolean updateCartDetail(CartDetailRequestDto cartDetailRequestDto, Long id) {
         //find product detail by id
         ProductDetail productDetail = productDetailRepository.findById(cartDetailRequestDto.getProductDetailId()).orElse(null);
         // find cart by id
         Cart cart = cartRepository.findById(cartDetailRequestDto.getCartId()).orElse(null);
         // find cartDetail by id
-        CartDetail cartDetail = cartDetailRepository.findById(id).get();
+        CartDetail cartDetail = cartDetailRepository.findById(id)
+                .orElseThrow( ()-> new ResourceNotFoundException("giỏ hàng chi tiết",String.valueOf(id)));
         // Neu tim thay thi set cart detail va luu lai
         cartDetail.setProductDetail(productDetail);
         cartDetail.setCart(cart);
@@ -79,19 +81,18 @@ public class CartDetailServiceImpl implements CartDetailService {
 
         cartDetailRepository.save(cartDetail);
 
-        return cartDetailRepository.save(cartDetail);
+        return true;
     }
 
     @Override
-    public String deleteCartDetail(Long id) {
+    public Boolean deleteCartDetail(Long id) {
 
-        if (cartDetailRepository.existsById(id)){
+        CartDetail cartDetail = cartDetailRepository.findById(id)
+                .orElseThrow( ()-> new ResourceNotFoundException("giỏ hàng chi tiết",String.valueOf(id)));
 
-            cartDetailRepository.deleteById(id);
-            return "Delete success!";
-        }else {
-            return "This id was not found: "+id;
-        }
+        cartDetailRepository.deleteById(cartDetail.getId());
 
+        return true;
     }
+
 }

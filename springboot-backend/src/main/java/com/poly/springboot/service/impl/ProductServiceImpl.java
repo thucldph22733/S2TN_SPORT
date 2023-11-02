@@ -65,11 +65,7 @@ public class ProductServiceImpl implements ProductService {
         return "This is was not found!";
     }
 
-    @Override
-    public Product findById(Long id) {
-        Optional<Product> result = productRepository.findById(id);
-        return result.isPresent() ? result.get() : null;
-    }
+
 
     @Override
     public Product save(ProductRequestDto productRequestDto) {

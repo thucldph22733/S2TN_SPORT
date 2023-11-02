@@ -1,11 +1,17 @@
 package com.poly.springboot.controller;
 
+import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.BrandRequestDto;
 
+import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.Brand;
 import com.poly.springboot.service.BrandService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,39 +19,53 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@Validated
+@RequestMapping("/api/brands/")
+@Tag(name = "Brands",description = "( Rest API Hiển thị, thêm, sửa, xóa thương hiệu )")
 public class BrandController {
 
     @Autowired
     private BrandService brandService;
 
-    @GetMapping("brands")
+    @GetMapping("getAll")
     public ResponseEntity<List<Brand>> getBrands() {
         List<Brand> brandList = brandService.getBrands();
-        return ResponseEntity.ok(brandList);
+        return ResponseEntity.status(HttpStatus.OK).body(brandList);
     }
 
-    @GetMapping("brand/{id}")
-    public ResponseEntity<Brand> findById(@PathVariable Long id) {
-        Brand brand = brandService.findBrandById(id);
-        return ResponseEntity.ok(brand);
+    @PostMapping("create")
+    public ResponseEntity<ResponseDto> createBrand(@Valid @RequestBody BrandRequestDto brandRequestDto) {
+        Boolean isCreated = brandService.createBrand(brandRequestDto);
+        if (isCreated) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
     }
 
-    @PostMapping("create-brand")
-    public ResponseEntity<Brand> createBrand(@RequestBody BrandRequestDto brandRequestDto) {
-        Brand brand = brandService.saveBrand(brandRequestDto);
-        return ResponseEntity.ok(brand);
+    @PutMapping("update")
+    public ResponseEntity<ResponseDto> updateBrand(@Valid @RequestBody BrandRequestDto brandRequestDto, @RequestParam Long id) {
+        Boolean isUpdated = brandService.updateBrand(brandRequestDto, id);
+        if (isUpdated) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
     }
 
-    @PutMapping("update-brand/{id}")
-    public ResponseEntity<Brand> updateBrand(@RequestBody BrandRequestDto brandRequestDto, @PathVariable Long id) {
-        Brand brand = brandService.updateBrand(brandRequestDto, id);
-        return ResponseEntity.ok(brand);
-    }
-
-    @DeleteMapping("delete-brand/{id}")
-    public ResponseEntity<String> deleteBrand(@PathVariable Long id) {
-        String message = brandService.deleteBrand(id);
-        return ResponseEntity.ok(message);
+    @DeleteMapping("delete")
+    public ResponseEntity<ResponseDto> deleteBrand(@RequestParam Long id) {
+        Boolean isDelete = brandService.deleteBrand(id);
+        if (isDelete) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
     }
 }

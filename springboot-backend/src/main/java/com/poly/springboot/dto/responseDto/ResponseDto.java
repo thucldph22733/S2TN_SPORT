@@ -5,17 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-public class CustomerAddressResponseDto {
+@NoArgsConstructor
+public class ResponseDto {
 
-    private Long id;
+    private  String statusCode;
 
-    private String customerName;
-
-    private String addressName;
-
-    private Integer isDefault;
+    private String statusMessage;
 }

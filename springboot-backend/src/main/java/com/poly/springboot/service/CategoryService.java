@@ -6,15 +6,12 @@ import com.poly.springboot.entity.Category;
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> getCategory();
+    List<Category> getCategories();
 
-    List<Category> getPageCate(Integer pageNo);
+    Boolean deleteCategory(Long id);
 
-    String deleteCate(Long id);
 
-    Category findById(Long id);
+    Boolean createCategory(CategoryRequestDto categoryRequestDto);
 
-    Category savaCate(CategoryRequestDto categoryRequestDto);
-
-    Category updateCate(CategoryRequestDto categoryRequestDto,Long id);
+    Boolean updateCategory(CategoryRequestDto categoryRequestDto,Long id);
 }

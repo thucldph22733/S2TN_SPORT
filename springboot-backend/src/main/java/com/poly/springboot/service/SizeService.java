@@ -1,22 +1,17 @@
 package com.poly.springboot.service;
 
-import com.poly.springboot.dto.requestDto.ProductRequestDto;
 import com.poly.springboot.dto.requestDto.SizeRequestDto;
-import com.poly.springboot.entity.Product;
 import com.poly.springboot.entity.Size;
 
 import java.util.List;
 
 public interface SizeService {
-    List<Size> findAll();
+    List<Size> getSizes();
 
-    List<Size> getPage(Integer pageNo);
+    Boolean deleteSize(Long id);
 
-    String delete(Long id);
 
-    Size findById(Long id);
+    Boolean createSize(SizeRequestDto sizeRequestDto);
 
-    Size save(SizeRequestDto sizeRequestDto);
-
-    Size update(SizeRequestDto sizeRequestDto,Long id);
+    Boolean updateSize(SizeRequestDto sizeRequestDto,Long id);
 }

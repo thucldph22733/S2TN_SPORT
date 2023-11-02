@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ImageRequestDto;
 import com.poly.springboot.entity.Image;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.ImageRepository;
 import com.poly.springboot.repository.ProductRepository;
 import com.poly.springboot.service.ImageService;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -24,8 +24,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Image saveImage(ImageRequestDto imageRequestDto) {
-
+    public Boolean saveImage(ImageRequestDto imageRequestDto) {
 
         Image image = new Image();
 
@@ -35,20 +34,13 @@ public class ImageServiceImpl implements ImageService {
         image.setImageDescribe(imageRequestDto.getImageDescribe());
 
         imageRepository.save(image);
-        return image;
+        return true;
     }
 
     @Override
-    public Image findImageById(Long id) {
-
-        Optional<Image> result = imageRepository.findById(id);
-
-        return result.isPresent() ? result.get() : null;
-    }
-
-    @Override
-    public Image updateImage(ImageRequestDto imageRequestDto, Long id) {
-        Image image = imageRepository.findById(id).get();
+    public Boolean updateImage(ImageRequestDto imageRequestDto, Long id) {
+        Image image = imageRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("ảnh",String.valueOf(id)));
 
         image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
@@ -56,16 +48,14 @@ public class ImageServiceImpl implements ImageService {
         image.setImageDescribe(imageRequestDto.getImageDescribe());
 
         imageRepository.save(image);
-        return image;
+        return true;
     }
 
     @Override
-    public String deleteImage(Long id) {
-        if (imageRepository.existsById(id)){
-            imageRepository.deleteById(id);
-            return "Delete success!";
-        }else {
-            return "This id was not found: "+id;
-        }
+    public Boolean deleteImage(Long id) {
+        Image image = imageRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("ảnh",String.valueOf(id)));
+        imageRepository.deleteById(image.getId());
+        return true;
     }
 }

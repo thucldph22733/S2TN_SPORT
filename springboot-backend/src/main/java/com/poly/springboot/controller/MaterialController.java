@@ -1,52 +1,77 @@
 package com.poly.springboot.controller;
 
-import com.poly.springboot.dto.requestDto.ColorRequestDto;
+import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.MaterialRequestDto;
-import com.poly.springboot.entity.Color;
+import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.Material;
 import com.poly.springboot.service.MaterialService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/materials/")
+@Tag(name = "Materials",description = "( Rest API Hiển thị, thêm, sửa, xóa chất liệu )")
+@Validated
 public class MaterialController {
+
     @Autowired
     private MaterialService materialService;
 
-    @GetMapping("materials")
-    public ResponseEntity<List<Material>> getAll() {
-        List<Material> a = materialService.findAll();
-        return ResponseEntity.ok(a);
+    @GetMapping("getAll")
+    public ResponseEntity<List<Material>> getMaterials() {
+        List<Material> materialList = materialService.getMaterials();
+        return ResponseEntity.
+                status(HttpStatus.OK)
+                .body(materialList);
 
     }
 
-    @GetMapping("material/{id}")
-    public ResponseEntity<Material> findById(@PathVariable Long id){
-        Material a = materialService.findById(id);
-        return ResponseEntity.ok(a);
+
+
+    @PostMapping("create")
+    public ResponseEntity<ResponseDto>createMaterial(@Valid @RequestBody MaterialRequestDto materialRequestDto){
+        Boolean isCreated = materialService.createMaterial(materialRequestDto);
+
+        if (isCreated){
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.STATUS_500));
+        }
     }
 
-    @PostMapping("create-material")
-    public ResponseEntity<Material>crate(@RequestBody MaterialRequestDto materialRequestDto){
-        Material a = materialService.save(materialRequestDto);
-        return ResponseEntity.ok(a);
+    @PutMapping("update")
+    public ResponseEntity<ResponseDto> updateMaterial(@Valid @RequestBody MaterialRequestDto materialRequestDto,@RequestParam Long id){
+        Boolean isUpdated = materialService.updateMaterial(materialRequestDto,id);
+        if (isUpdated){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.STATUS_500));
+        }
     }
 
-    @PutMapping("update-material/{id}")
-    public ResponseEntity<Material> update(@RequestBody MaterialRequestDto materialRequestDto,@PathVariable Long id){
-        Material a = materialService.update(materialRequestDto,id);
-        return ResponseEntity.ok(a);
-    }
+    @DeleteMapping("delete")
+    public ResponseEntity<ResponseDto> deleteMaterial(@RequestParam Long id){
 
-    @DeleteMapping("delete-material/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id){
-        String mes = materialService.delete(id);
-        return ResponseEntity.ok(mes);
+        Boolean isDeleted = materialService.deleteMaterial(id);
+        if (isDeleted){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.STATUS_500));
+        }
     }
 
 }

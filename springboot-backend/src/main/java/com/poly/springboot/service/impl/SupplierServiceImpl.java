@@ -3,6 +3,8 @@ package com.poly.springboot.service.impl;
 import com.poly.springboot.dto.requestDto.SupplierRequestDto;
 import com.poly.springboot.entity.Material;
 import com.poly.springboot.entity.Supplier;
+import com.poly.springboot.exception.ResourceNotFoundException;
+import com.poly.springboot.mapper.SupplierMapper;
 import com.poly.springboot.repository.SupplierReppsitory;
 import com.poly.springboot.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,52 +20,38 @@ public class SupplierServiceImpl implements SupplierService {
     private SupplierReppsitory supplierReppsitory;
 
     @Override
-    public List<Supplier> findAll() {
+    public List<Supplier> getSuppliers() {
         return supplierReppsitory.findAll();
     }
 
     @Override
-    public List<Supplier> getPage(Integer pageNo) {
-        return null;
+    public Boolean deleteSupplier(Long id) {
+
+        Supplier supplier = supplierReppsitory.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("nhà cung cấp",String.valueOf(id)));
+
+        supplierReppsitory.deleteById(supplier.getId());
+        return true;
     }
 
     @Override
-    public String delete(Long id) {
-        if (supplierReppsitory.existsById(id)){
-            supplierReppsitory.deleteById(id);
-            return "Delete Success!";
-        }
-        return "This is was not found!";
-    }
-
-    @Override
-    public Supplier findById(Long id) {
-        Optional<Supplier> result = supplierReppsitory.findById(id);
-        return result.isPresent() ? result.get() : null;
-    }
-
-    @Override
-    public Supplier save(SupplierRequestDto supplierRequestDto) {
+    public Boolean createSupplier(SupplierRequestDto supplierRequestDto) {
         Supplier supplier = new Supplier();
-        supplier.setSupplierDescribe(supplierRequestDto.getSupplierDescribe());
-        supplier.setSupplierName(supplierRequestDto.getSupplierName());
-        supplier.setEmail(supplierRequestDto.getEmail());
-        supplier.setAddress(supplierRequestDto.getAddress());
-        supplier.setPhoneNumber(supplierRequestDto.getPhoneNumber());
+
+        SupplierMapper.mapToSupplierRequest(supplier,supplierRequestDto);
+
         supplierReppsitory.save(supplier);
-        return supplier;
+        return true;
     }
 
     @Override
-    public Supplier update(SupplierRequestDto supplierRequestDto, Long id) {
-        Supplier supplier = supplierReppsitory.findById(id).get();
+    public Boolean updateSupplier(SupplierRequestDto supplierRequestDto, Long id) {
+        Supplier supplier = supplierReppsitory.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("nhà cung cấp",String.valueOf(id)));
 
-        supplier.setSupplierDescribe(supplierRequestDto.getSupplierDescribe());
-        supplier.setSupplierName(supplierRequestDto.getSupplierName());
-        supplier.setEmail(supplierRequestDto.getEmail());
-        supplier.setAddress(supplierRequestDto.getAddress());
-        supplier.setPhoneNumber(supplierRequestDto.getPhoneNumber());
+        SupplierMapper.mapToSupplierRequest(supplier,supplierRequestDto);
 
-        return supplierReppsitory.save(supplier);
+        supplierReppsitory.save(supplier);
+        return true;
     }
 }

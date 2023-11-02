@@ -9,12 +9,10 @@ public interface PaymentService {
 
     List<Payment> getPayments();
 
-    Payment savePayment(PaymentRequestDto methodRequestDto);
+    Boolean createPayment(PaymentRequestDto methodRequestDto);
 
-    Payment updatePayment(PaymentRequestDto methodRequestDto, Long id);
+    Boolean updatePayment(PaymentRequestDto methodRequestDto, Long id);
 
-    Payment findPaymentById(Long id);
-
-    String deletePayment(Long id);
+    Boolean deletePayment(Long id);
 
 }

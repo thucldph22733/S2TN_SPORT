@@ -1,15 +1,14 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ColorRequestDto;
-import com.poly.springboot.entity.Club;
 import com.poly.springboot.entity.Color;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.ColorRepository;
 import com.poly.springboot.service.ColorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ColorServiceImpl implements ColorService {
@@ -18,45 +17,40 @@ public class ColorServiceImpl implements ColorService {
     private ColorRepository colorRepository;
 
     @Override
-    public List<Color> findAll() {
+    public List<Color> getColors() {
         return colorRepository.findAll();
     }
 
     @Override
-    public List<Color> getPage(Integer pageNo) {
-        return null;
+    public Boolean deleteColor(Long id) {
+        Color color = colorRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Màu sắc ", String.valueOf(id)));
+        colorRepository.deleteById(color.getId());
+        return true;
     }
 
     @Override
-    public String delete(Long id) {
-        if (colorRepository.existsById(id)){
-            colorRepository.deleteById(id);
-            return "Delete Success!";
-        }
-        return "This is was not found!";
-    }
+    public Boolean createColor(ColorRequestDto colorRequestDto) {
 
-    @Override
-    public Color findById(Long id) {
-        Optional<Color> result = colorRepository.findById(id);
-        return result.isPresent() ? result.get() : null;
-    }
-
-    @Override
-    public Color sava(ColorRequestDto colorRequestDto) {
         Color color = new Color();
+
         color.setColorDescribe(colorRequestDto.getColorDescribe());
         color.setColorName(colorRequestDto.getColorName());
+
         colorRepository.save(color);
-        return color;
+        return true;
     }
 
     @Override
-    public Color update(ColorRequestDto colorRequestDto, Long id) {
-        Color color = colorRepository.findById(id).get();
-        color.setColorName(colorRequestDto.getColorName());
+    public Boolean updateColor(ColorRequestDto colorRequestDto, Long id) {
+
+        Color color = colorRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Màu sắc ", String.valueOf(id)));
+
         color.setColorDescribe(colorRequestDto.getColorDescribe());
+        color.setColorName(colorRequestDto.getColorName());
+
         colorRepository.save(color);
-        return color;
+        return true;
     }
 }

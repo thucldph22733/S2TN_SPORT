@@ -7,13 +7,11 @@ import java.util.List;
 
 public interface DeliveryService {
 
-    List<Delivery> getDeliverys();
+    List<Delivery> getDeliveries();
 
-    Delivery saveDelivery(DeliveryRequestDto methodRequestDto);
+    Boolean saveDelivery(DeliveryRequestDto deliveryRequestDto);
 
-    Delivery updateDelivery(DeliveryRequestDto methodRequestDto, Long id);
+    Boolean updateDelivery(DeliveryRequestDto deliveryRequestDto, Long id);
 
-    Delivery findDeliveryById(Long id);
-
-    String deleteDelivery(Long id);
+    Boolean deleteDelivery(Long id);
 }

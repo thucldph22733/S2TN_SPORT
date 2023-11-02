@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.DeliveryRequestDto;
 import com.poly.springboot.entity.Delivery;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.DeliveryRepository;
 import com.poly.springboot.service.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,58 +17,50 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Autowired
     private DeliveryRepository deliveryRepository;
 
-    @Override   //Phuong thuoc lay du lieu Delivery
-    public List<Delivery> getDeliverys() {
+    @Override
+    public List<Delivery> getDeliveries() {
 
         return deliveryRepository.findAll();
 
     }
 
     @Override    //Phuong thuc them Delivery
-    public Delivery saveDelivery(DeliveryRequestDto methodRequestDto) {
+    public Boolean saveDelivery(DeliveryRequestDto deliveryRequestDto) {
 
         Delivery delivery = new Delivery();
 
-        delivery.setDeliveryName(methodRequestDto.getShippingName());
-        delivery.setPrice(methodRequestDto.getPrice());
-        delivery.setDeliveryDescribe(methodRequestDto.getShippingDescribe());
+        delivery.setDeliveryName(deliveryRequestDto.getShippingName());
+        delivery.setPrice(deliveryRequestDto.getPrice());
+        delivery.setDeliveryDescribe(deliveryRequestDto.getShippingDescribe());
 
         deliveryRepository.save(delivery);
 
-        return delivery;
+        return true;
     }
 
     @Override //Phuong thuc cap nhat Delivery
-    public Delivery updateDelivery(DeliveryRequestDto methodRequestDto, Long id) {
+    public Boolean updateDelivery(DeliveryRequestDto deliveryRequestDto, Long id) {
 
-        Delivery delivery = deliveryRepository.findById(id).get();
+        Delivery delivery = deliveryRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("phương thức giao hàng",String.valueOf(id)));
 
-        delivery.setDeliveryName(methodRequestDto.getShippingName());
-        delivery.setPrice(methodRequestDto.getPrice());
-        delivery.setDeliveryDescribe(methodRequestDto.getShippingDescribe());
+        delivery.setDeliveryName(deliveryRequestDto.getShippingName());
+        delivery.setPrice(deliveryRequestDto.getPrice());
+        delivery.setDeliveryDescribe(deliveryRequestDto.getShippingDescribe());
 
         deliveryRepository.save(delivery);
 
-        return delivery;
+        return true;
     }
 
-    @Override  //Phuong thuc tim Delivery bang id
-    public Delivery findDeliveryById(Long id) {
-
-        Optional<Delivery> result = deliveryRepository.findById(id);
-
-        return result.isPresent() ? result.get() : null;
-    }
 
     @Override  //Phuong thuc xoa Delivery
-    public String deleteDelivery(Long id) {
+    public Boolean deleteDelivery(Long id) {
 
-        if (deliveryRepository.existsById(id)) {
-            deliveryRepository.deleteById(id);
-            return "Delete success!";
-        }else {
-            return "This id was not found: "+id;
-        }
+        Delivery delivery = deliveryRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("phương thức vận chuyển",String.valueOf(id)));
 
+        deliveryRepository.deleteById(delivery.getId());
+        return true;
     }
 }

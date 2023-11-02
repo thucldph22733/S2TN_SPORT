@@ -12,7 +12,7 @@ import java.sql.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerResponeDto {
+public class CustomerResponseDto {
 
     private  Long id;
 
@@ -20,7 +20,7 @@ public class CustomerResponeDto {
 
     private String avatar;
 
-    private String numberPhone;
+    private String phoneNumber;
 
     private String email;
 
@@ -28,6 +28,6 @@ public class CustomerResponeDto {
 
     private Date birthOfDay;
 
-    private Integer customerStatus;
+    private Integer status;
 
 }

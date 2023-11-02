@@ -1,10 +1,16 @@
 package com.poly.springboot.controller;
 
+import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.DeliveryRequestDto;
+import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.Delivery;
 import com.poly.springboot.service.DeliveryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,57 +19,73 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/deliveries/")
+@Tag(name = "Deliveries",description = "( Rest API Hiển thị, thêm, sửa, xóa phương thức vận chuyển )")
+@Validated
 public class DeliveryController {
 
     @Autowired
     private DeliveryService deliveryService;
 
     // get alldelivery rest api
-    @GetMapping("deliveries")
-    public ResponseEntity<List<Delivery>> getDeliverys(){
-
-        List<Delivery> shippingMethods = deliveryService.getDeliverys();
-        return ResponseEntity.ok(shippingMethods);
+    @GetMapping("getAll")
+    public ResponseEntity<List<Delivery>> getDeliveries(){
+        List<Delivery>  deliveryList= deliveryService.getDeliveries();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(deliveryList);
     }
 
-    //get delivery by id rest api
-    @GetMapping("delivery/{id}")
-    public ResponseEntity<Delivery> getDelivery(@PathVariable Long id){
-
-        Delivery shippingMethod = deliveryService.findDeliveryById(id);
-        return ResponseEntity.ok(shippingMethod);
-    }
 
     //create delivery rest api
-    @PostMapping("create-delivery")
-    public ResponseEntity<Delivery> createDelivery(@RequestBody DeliveryRequestDto deliveryRequestDto){
+    @PostMapping("create")
+    public ResponseEntity<ResponseDto> createDelivery(@Valid @RequestBody DeliveryRequestDto deliveryRequestDto){
 
-        Delivery shippingMethod = deliveryService.saveDelivery(deliveryRequestDto);
+        Boolean isCreated = deliveryService.saveDelivery(deliveryRequestDto);
 
-        return ResponseEntity.ok(shippingMethod);
+        if (isCreated){
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
     }
 
     //update delivery rest api
-    @PutMapping("update-delivery/{id}")
-    public ResponseEntity<Delivery> updateDelivery(@RequestBody DeliveryRequestDto deliveryRequestDto, @PathVariable Long id){
+    @PutMapping("update")
+    public ResponseEntity<ResponseDto> updateDelivery(@Valid @RequestBody DeliveryRequestDto deliveryRequestDto, @RequestParam Long id){
 
-        Delivery shippingMethod = deliveryService.updateDelivery(deliveryRequestDto,id);
+        Boolean isUpdated = deliveryService.updateDelivery(deliveryRequestDto,id);
 
-        return ResponseEntity.ok(shippingMethod);
+        if (isUpdated){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
     }
 
     //delete delivery rest api
-    @DeleteMapping("delete-delivery/{id}")
-    public ResponseEntity<String> deleteDelivery(@PathVariable Long id){
+    @DeleteMapping("delete")
+    public ResponseEntity<ResponseDto> deleteDelivery(@RequestParam Long id){
 
-        String message = deliveryService.deleteDelivery(id);
-        return ResponseEntity.ok(message);
+        Boolean isDeleted = deliveryService.deleteDelivery(id);
+
+        if (isDeleted){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
     }
 }

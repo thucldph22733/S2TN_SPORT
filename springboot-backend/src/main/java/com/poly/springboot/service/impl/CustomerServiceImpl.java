@@ -11,7 +11,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +33,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    public static String uploadDirectory = "F:/Java/S2TN_SPORT/react-admin-frontend/src/assets/images/";
+
 
     @Override
     public List<CustomerResponeDto> getAll() {
@@ -43,24 +54,30 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer add(CustomerRequestDto customerRequestDto) {
+    public Customer add(CustomerRequestDto customerRequestDto, MultipartFile multipartFile) throws IOException, SQLException {
+        String fileName = multipartFile.getOriginalFilename();
+        String filePath = uploadDirectory + fileName;
         Customer customer = new Customer();
+        customer.setAvatar(fileName); // Lưu tên tệp ảnh, không phải đường dẫn tuyệt đối
         customer.setCustomerName(customerRequestDto.getCustomerName());
-        customer.setAvatar(customerRequestDto.getAvatar());
         customer.setNumberPhone(customerRequestDto.getNumberPhone());
         customer.setEmail(customerRequestDto.getEmail());
         customer.setGender(customerRequestDto.getGender());
         customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
         customer.setPassword(customerRequestDto.getPassword());
         customer.setCustomerStatus(customerRequestDto.getCustomerStatus());
-        return customerRepository.save(customer);
+        customerRepository.save(customer);
+        multipartFile.transferTo(new File(filePath));
+        return customer;
     }
+
 
     @Override
     public Customer update(CustomerRequestDto customerRequestDto, Long id) {
-        Customer customer = customerRepository.findById(id).get();
-        customer.setCustomerName(customerRequestDto.getCustomerName());
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
+        Customer customer = optionalCustomer.get();
         customer.setAvatar(customerRequestDto.getAvatar());
+        customer.setCustomerName(customerRequestDto.getCustomerName());
         customer.setNumberPhone(customerRequestDto.getNumberPhone());
         customer.setEmail(customerRequestDto.getEmail());
         customer.setGender(customerRequestDto.getGender());
@@ -68,6 +85,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setPassword(customerRequestDto.getPassword());
         customer.setCustomerStatus(customerRequestDto.getCustomerStatus());
         return customerRepository.save(customer);
+
     }
 
     @Override
@@ -99,7 +117,7 @@ public class CustomerServiceImpl implements CustomerService {
                         c.getGender(),
                         c.getBirthOfDay(),
                         c.getCustomerStatus()
-                        )).collect(Collectors.toList());
+                )).collect(Collectors.toList());
         return list;
     }
 

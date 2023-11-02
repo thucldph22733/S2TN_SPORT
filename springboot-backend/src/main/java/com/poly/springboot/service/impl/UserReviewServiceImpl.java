@@ -36,7 +36,7 @@ public class UserReviewServiceImpl implements UserReviewService {
                         new UserReviewResponseDto(
                                 userReview.getId(),
 
-                                userReview.getOrderDetail().getOrder().getCustomer().getAvatar(),
+                                userReview.getOrderDetail().getOrder().getCustomer().getAvatar().toString(),
                                 userReview.getOrderDetail().getOrder().getCustomer().getCustomerName(),
                                 userReview.getRatingValue(),
                                 userReview.getUserComment(),

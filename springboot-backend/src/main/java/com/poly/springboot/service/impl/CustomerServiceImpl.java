@@ -10,6 +10,7 @@ import com.poly.springboot.mapper.CustomerMapper;
 import com.poly.springboot.repository.CustomerRepository;
 import com.poly.springboot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -65,6 +66,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+
     public Boolean deleteCustomer(Long id) {
         Customer customer = customerRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
@@ -88,6 +90,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+
     public Customer findCustomerByPhoneNumber(String phoneNumber) {
         Customer customer = customerRepository.findCustomerByPhoneNumber(phoneNumber).
                 orElseThrow(() -> new ResourceNotFoundException("Khách hàng", phoneNumber));

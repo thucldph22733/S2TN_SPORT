@@ -10,8 +10,7 @@ public interface OrderService {
 
     List<OrderResponseDto> getOrders();
 
-//    List<OrderResponseDto> getPagination(Integer pageNo);
-
+    List<OrderResponseDto> getPagination(Integer pageNo);
 
     Order findOrderById(Long id);
 
@@ -21,7 +20,7 @@ public interface OrderService {
 
     Boolean updateOrder(OrderRequestDto orderRequestDto,Long id);
 
-    List<OrderResponseDto> getPagination(Integer pageNo,Integer pageSize);
+//    List<OrderResponseDto> searchOrder(Integer pageNo,String keyword);
 
 
 

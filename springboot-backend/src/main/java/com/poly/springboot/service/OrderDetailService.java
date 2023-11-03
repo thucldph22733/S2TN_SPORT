@@ -12,8 +12,9 @@ public interface OrderDetailService {
 
     List<OrderDetailResponseDto> getOrderDetails();
 
-    OrderDetail createOrderDetail(OrderDetailRequestDto orderDetailRequestDto);
+    Boolean createOrderDetail(OrderDetailRequestDto orderDetailRequestDto);
 
-    OrderDetail updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto,Long id);
+    Boolean updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto,Long id);
+
 
 }

@@ -25,4 +25,8 @@ public class OrderDetailResponseDto {
     private Integer quantity;
 
     private Double price;
+
+    private Integer status;
+
+    private String note;
 }

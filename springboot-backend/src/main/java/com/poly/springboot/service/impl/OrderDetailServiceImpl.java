@@ -6,6 +6,7 @@ import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
 import com.poly.springboot.entity.Order;
 import com.poly.springboot.entity.OrderDetail;
 import com.poly.springboot.entity.ProductDetail;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.OrderDetailRepository;
 import com.poly.springboot.repository.OrderRepository;
 import com.poly.springboot.repository.ProductDetailRepository;
@@ -44,12 +45,14 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         orderDetail.getProductDetail().getSize().getSizeName(),
                         orderDetail.getProductDetail().getProduct().getProductName(),
                         orderDetail.getQuantity(),
-                        orderDetail.getPrice())
+                        orderDetail.getPrice(),
+                        orderDetail.getStatus(),
+                        orderDetail.getNote())
         ).collect(Collectors.toList());
     }
 
     @Override
-    public OrderDetail createOrderDetail(OrderDetailRequestDto orderDetailRequestDto) {
+    public Boolean createOrderDetail(OrderDetailRequestDto orderDetailRequestDto) {
          //find productDetail by id
         ProductDetail productDetail = productDetailRepository.findById(orderDetailRequestDto.getProductDetailId()).orElse(null);
          //find orderRepository by id
@@ -60,26 +63,32 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         orderDetail.setProductDetail(productDetail);
         orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
         orderDetail.setPrice(orderDetailRequestDto.getPrice());
+        orderDetail.setStatus(0);
+        orderDetail.setNote(orderDetailRequestDto.getNote());
 
         orderDetailRepository.save(orderDetail);
-        return orderDetail;
+        return true;
     }
 
     @Override
-    public OrderDetail updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto, Long id) {
+    public Boolean updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto, Long id) {
         //find productDetail by id
         ProductDetail productDetail = productDetailRepository.findById(orderDetailRequestDto.getProductDetailId()).orElse(null);
         //find orderRepository by id
         Order order = orderRepository.findById(orderDetailRequestDto.getOrderId()).orElse(null);
 
-        OrderDetail orderDetail = orderDetailRepository.findById(id).get();
+        OrderDetail orderDetail = orderDetailRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("hóa đơn chi tiết",String.valueOf(id)));
         orderDetail.setOrder(order);
         orderDetail.setProductDetail(productDetail);
         orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
         orderDetail.setPrice(orderDetailRequestDto.getPrice());
+        orderDetail.setStatus(orderDetailRequestDto.getStatus());
+        orderDetail.setNote(orderDetailRequestDto.getNote());
 
         orderDetailRepository.save(orderDetail);
-        return orderDetail;
+        return true;
     }
+
 
 }

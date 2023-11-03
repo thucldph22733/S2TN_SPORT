@@ -68,7 +68,7 @@ public class Order {
     private String categoryOrder;
 
     @Column(name = "orderTotal")
-    private String orderTotal;
+    private Double orderTotal;
 
     @Column(name = "note")
     private String note;

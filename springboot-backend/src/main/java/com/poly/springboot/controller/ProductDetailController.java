@@ -18,7 +18,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/productDetails/")
-@Tag(name = "ProductDetails",description = "( Rest API Hiển thị, thêm, sửa, xóa sản, phân trang, tìm kiếm phẩm chi tiết)")
+@Tag(name = "ProductDetails",description = "( Rest API Hiển thị, thêm, sửa, xóa sản, phân trang, tìm kiếm sản phẩm chi tiết)")
 public class ProductDetailController {
 
    @Autowired

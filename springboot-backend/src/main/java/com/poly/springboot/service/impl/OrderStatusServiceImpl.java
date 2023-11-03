@@ -33,7 +33,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
         orderStatus.setStatusName(orderStatusRequestDto.getStatusName());
         orderStatus.setStatusDescribe(orderStatusRequestDto.getStatusDescribe());
 
-        if (orderStatusRepository.existsByOrStatusName(orderStatusRequestDto.getStatusName())){
+        if (orderStatusRepository.existsByStatusName(orderStatusRequestDto.getStatusName())){
             throw new AlreadyExistsException("Tên trạng thái đã tồn tại!");
         }
         orderStatusRepository.save(orderStatus);

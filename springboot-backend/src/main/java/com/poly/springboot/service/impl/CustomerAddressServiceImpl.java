@@ -1,10 +1,11 @@
 package com.poly.springboot.service.impl;
 
-import com.poly.springboot.dto.requestDto.AddressRequestDto;
 import com.poly.springboot.dto.requestDto.CustomerAddressRequestDto;
 
+import com.poly.springboot.dto.responseDto.CustomerAddressResponseDto;
 import com.poly.springboot.entity.Address;
 import com.poly.springboot.entity.CustomerAddress;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.mapper.AddressMapper;
 import com.poly.springboot.repository.AddressRepository;
 import com.poly.springboot.repository.CustomerAddressRepository;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerAddressServiceImpl implements CustomerAddressService {
@@ -28,8 +30,12 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
     private AddressRepository addressRepository;
 
     @Override
-    public List<CustomerAddress> getCustomerAddress() {
-        return  customerAddressRepository.findAll();
+    public List<CustomerAddressResponseDto> getCustomerAddress() {
+        List<CustomerAddressResponseDto> customerAddressResponseDtoList =customerAddressRepository.findAll()
+                .stream().map(customerAddress -> AddressMapper.mapToAddressResponse(customerAddress,new CustomerAddressResponseDto())
+                ).collect(Collectors.toList());
+
+        return customerAddressResponseDtoList;
     }
 
     @Override
@@ -39,9 +45,11 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
         customerAddress.setCustomer(customerRepository.findById(customerAddressRequestDto.getCustomerId()).orElse(null));
 
         Address address = new Address();
-        AddressMapper.mapToAddressRequest(address,new AddressRequestDto());
-        addressRepository.save(address);
-        customerAddress.setAddress(addressRepository.save(address));
+
+        AddressMapper.mapToAddressRequest(address,customerAddressRequestDto);
+
+        Address addressId = addressRepository.save(address);
+        customerAddress.setAddress(addressId);
         customerAddress.setIsDefault(customerAddressRequestDto.getIsDefault());
         customerAddressRepository.save(customerAddress);
         return true;
@@ -49,9 +57,14 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Override
     public Boolean updateCustomerAddress(CustomerAddressRequestDto customerAddressRequestDto, Long id) {
-        CustomerAddress customerAddress = customerAddressRepository.findById(id).get();
-        customerAddress.setCustomer(customerRepository.findById(customerAddressRequestDto.getCustomerId()).orElse(null));
-        customerAddress.setAddress(addressRepository.findById(customerAddressRequestDto.getAddressId()).orElse(null));
+        CustomerAddress customerAddress = customerAddressRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("địa chỉ khách hàng", String.valueOf(id)));
+
+
+        Address address = AddressMapper.mapToAddressRequest(new Address(),customerAddressRequestDto);
+
+        Address addressId = addressRepository.save(address);
+        customerAddress.setAddress(addressId);
         customerAddress.setIsDefault(customerAddressRequestDto.getIsDefault());
         customerAddressRepository.save(customerAddress);
         return true;
@@ -59,7 +72,22 @@ public class CustomerAddressServiceImpl implements CustomerAddressService {
 
     @Override
     public Boolean deleteCustomerAddress(Long id) {
-return true;
+
+        CustomerAddress customerAddress = customerAddressRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("địa chỉ khách hàng", String.valueOf(id)));
+
+        customerAddressRepository.deleteById(customerAddress.getId());
+        addressRepository.deleteById(customerAddress.getAddress().getId());
+        return true;
+    }
+
+    @Override
+    public List<CustomerAddressResponseDto> getCustomerAddressByCustomerId(Long id) {
+        List<CustomerAddressResponseDto> customerAddressResponseDtoList =customerAddressRepository.getCustomerAddressByCustomerId(id)
+                .stream().map(customerAddress -> AddressMapper.mapToAddressResponse(customerAddress,new CustomerAddressResponseDto())
+                ).collect(Collectors.toList());
+
+        return customerAddressResponseDtoList;
     }
 
 

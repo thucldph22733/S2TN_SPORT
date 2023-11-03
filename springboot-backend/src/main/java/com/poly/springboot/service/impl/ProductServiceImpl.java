@@ -3,6 +3,7 @@ package com.poly.springboot.service.impl;
 import com.poly.springboot.dto.requestDto.ProductRequestDto;
 import com.poly.springboot.dto.responseDto.ProductResponseDto;
 import com.poly.springboot.entity.Product;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.mapper.ProductMapper;
 import com.poly.springboot.repository.*;
@@ -85,6 +86,9 @@ public class ProductServiceImpl implements ProductService {
         product.setSupplier(supplierRepository.findById(productRequestDto.getSupplierId()).orElse(null));
         ProductMapper.mapToProductRequest(product,productRequestDto);
         product.setStatus(0);
+        if (productRepository.existsByProductName(productRequestDto.getProductName())){
+            throw new AlreadyExistsException("Tên sản phẩm đã tồn tại!");
+        }
         productRepository.save(product);
         return true;
     }

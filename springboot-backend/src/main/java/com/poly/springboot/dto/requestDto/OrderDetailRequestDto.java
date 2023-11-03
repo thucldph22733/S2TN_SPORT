@@ -1,5 +1,6 @@
 package com.poly.springboot.dto.requestDto;
 
+import com.poly.springboot.entity.Order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,8 @@ public class OrderDetailRequestDto {
     private Integer quantity;
 
     private Double price;
+
+    private Integer status;
+
+    private String note;
 }

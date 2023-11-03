@@ -28,6 +28,7 @@ public class CustomerMapper {
         customerResponseDto.setEmail(customer.getEmail());
         customerResponseDto.setGender(customer.getGender());
         customerResponseDto.setBirthOfDay(customer.getBirthOfDay());
+        customerResponseDto.setPassword(customer.getPassword());
         customerResponseDto.setStatus(customer.getStatus());
 
         return customerResponseDto;

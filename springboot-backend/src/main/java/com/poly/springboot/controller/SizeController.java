@@ -48,8 +48,8 @@ public class SizeController {
         }
     }
 
-    @PutMapping("update")
-    public ResponseEntity<ResponseDto> updateSize(@Valid @RequestBody SizeRequestDto sizeRequestDto, @RequestParam Long id){
+    @PutMapping("update/{id}")
+    public ResponseEntity<ResponseDto> updateSize(@Valid @RequestBody SizeRequestDto sizeRequestDto, @PathVariable Long id){
         Boolean isUpdated = sizeService.updateSize(sizeRequestDto,id);
 
         if (isUpdated){

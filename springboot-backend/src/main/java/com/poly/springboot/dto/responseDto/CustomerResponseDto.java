@@ -28,6 +28,8 @@ public class CustomerResponseDto {
 
     private Date birthOfDay;
 
+    private String password;
+
     private Integer status;
 
 }

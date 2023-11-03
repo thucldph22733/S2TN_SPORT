@@ -45,39 +45,52 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public CustomerResponseDto getCustomerById(Long id) {
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
+        if (optionalCustomer.isPresent()) {
+            Customer customer = optionalCustomer.get();
+            CustomerResponseDto responseDto = CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto());
+            return responseDto;
+        } else {
+            throw new ResourceNotFoundException("Khách hàng", String.valueOf(id));
+        }
+    }
+
+
+    @Override
     public Customer add(CustomerRequestDto customerRequestDto, MultipartFile multipartFile) throws IOException, SQLException {
         String fileName = multipartFile.getOriginalFilename();
         String filePath = uploadDirectory + fileName;
         Customer customer = new Customer();
         customer.setAvatar(fileName); // Lưu tên tệp ảnh, không phải đường dẫn tuyệt đối
         customer.setCustomerName(customerRequestDto.getCustomerName());
-        customer.setNumberPhone(customerRequestDto.getNumberPhone());
+        customer.setPhoneNumber(customerRequestDto.getPhoneNumber());
         customer.setEmail(customerRequestDto.getEmail());
         customer.setGender(customerRequestDto.getGender());
         customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
         customer.setPassword(customerRequestDto.getPassword());
-        customer.setCustomerStatus(customerRequestDto.getCustomerStatus());
+        customer.setStatus(customerRequestDto.getStatus());
         customerRepository.save(customer);
         multipartFile.transferTo(new File(filePath));
         return customer;
     }
 
 
-    @Override
-    public Customer update(CustomerRequestDto customerRequestDto, Long id) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        Customer customer = optionalCustomer.get();
-        customer.setAvatar(customerRequestDto.getAvatar());
-        customer.setCustomerName(customerRequestDto.getCustomerName());
-        customer.setNumberPhone(customerRequestDto.getNumberPhone());
-        customer.setEmail(customerRequestDto.getEmail());
-        customer.setGender(customerRequestDto.getGender());
-        customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
-        customer.setPassword(customerRequestDto.getPassword());
-        customer.setCustomerStatus(customerRequestDto.getCustomerStatus());
-        return customerRepository.save(customer);
-
-    }
+//    @Override
+//    public Customer update(CustomerRequestDto customerRequestDto, Long id) {
+//        Optional<Customer> optionalCustomer = customerRepository.findById(id);
+//        Customer customer = optionalCustomer.get();
+//        customer.setAvatar(customerRequestDto.getAvatar());
+//        customer.setCustomerName(customerRequestDto.getCustomerName());
+//        customer.setPhoneNumber(customerRequestDto.getPhoneNumber());
+//        customer.setEmail(customerRequestDto.getEmail());
+//        customer.setGender(customerRequestDto.getGender());
+//        customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
+//        customer.setPassword(customerRequestDto.getPassword());
+//        customer.setStatus(customerRequestDto.getStatus());
+//        return customerRepository.save(customer);
+//
+//    }
     public Boolean createCustomer(CustomerRequestDto customerRequestDto) {
 
         Customer customer = new Customer();
@@ -109,60 +122,63 @@ public class CustomerServiceImpl implements CustomerService {
         return true;
     }
 
-    @Override
-    public List<CustomerResponeDto> getPagination(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 5);
-        List<CustomerResponeDto> list = customerRepository.findAll(pageable)
-                .stream().map(c -> new CustomerResponeDto(
-                        c.getId(),
-                        c.getCustomerName(),
-                        c.getAvatar(),
-                        c.getNumberPhone(),
-                        c.getEmail(),
-                        c.getGender(),
-                        c.getBirthOfDay(),
-                        c.getCustomerStatus()
-                )).collect(Collectors.toList());
+        public Boolean deleteCustomer (Long id){
+            Customer customer = customerRepository.findById(id).
+                    orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+            if (customer.getStatus() == 0) {
+                customer.setStatus(1);
+            } else {
+                customer.setStatus(0);
+            }
+            customerRepository.save(customer);
+            return true;
+        }
 
-    public Boolean deleteCustomer(Long id) {
-        Customer customer = customerRepository.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+
+        @Override
+        public List<CustomerResponseDto> getPagination (Integer pageNo){
+            Pageable pageable = PageRequest.of(pageNo, 10);
+            List<CustomerResponseDto> list = customerRepository.findAll(pageable)
+                    .stream().map(customer -> CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto())
+                    ).collect(Collectors.toList());
+            return list;
+        }
+
+        @Override
+
+        public Customer findCustomerByPhoneNumber (String phoneNumber){
+            Customer customer = customerRepository.findCustomerByPhoneNumber(phoneNumber).
+                    orElseThrow(() -> new ResourceNotFoundException("Khách hàng", phoneNumber));
+            return customer;
+
+        }
+
+        @Override
+        public List<CustomerResponseDto> searchCustomer (String keyword, Integer pageNo){
+            Pageable pageable = PageRequest.of(pageNo, 10);
+            List<CustomerResponseDto> list = customerRepository.searchCustomer(keyword, pageable)
+                    .stream().map(customer -> CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto()
+                    )).collect(Collectors.toList());
+            return list;
+        }
+
+    @Override
+    public Boolean toggleCustomerStatus(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+
+        // Kiểm tra và chuyển đổi trạng thái
         if (customer.getStatus() == 0) {
             customer.setStatus(1);
         } else {
             customer.setStatus(0);
         }
+
         customerRepository.save(customer);
         return true;
     }
 
 
-    @Override
-    public List<CustomerResponseDto> getPagination(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 10);
-        List<CustomerResponseDto> list = customerRepository.findAll(pageable)
-                .stream().map(customer -> CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto())
-                ).collect(Collectors.toList());
-        return list;
-    }
-
-    @Override
-
-    public Customer findCustomerByPhoneNumber(String phoneNumber) {
-        Customer customer = customerRepository.findCustomerByPhoneNumber(phoneNumber).
-                orElseThrow(() -> new ResourceNotFoundException("Khách hàng", phoneNumber));
-        return customer;
-
-    }
-
-    @Override
-    public List<CustomerResponseDto> searchCustomer(String keyword, Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 10);
-        List<CustomerResponseDto> list = customerRepository.searchCustomer(keyword, pageable)
-                .stream().map(customer -> CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto()
-                )).collect(Collectors.toList());
-        return list;
-    }
 
 }
 

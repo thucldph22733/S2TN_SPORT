@@ -7,11 +7,12 @@ export default function AddCustomer() {
     const [customer, setCustomer] = useState({
         customerName: '',
         avatar: null, // Thay mảng thành tệp ảnh đơn
-        numberPhone: '',
+        phoneNumber: '',
         email: '',
         gender: true,
         birthOfDay: '',
         password: '',
+        status: '',
     });
 
     const onInputChange = (e) => {
@@ -29,14 +30,14 @@ export default function AddCustomer() {
 
         formData.append('customerName', customer.customerName);
         formData.append('avatar', customer.avatar);
-        formData.append('numberPhone', customer.numberPhone);
+        formData.append('phoneNumber', customer.phoneNumber);
         formData.append('email', customer.email);
         formData.append('gender', customer.gender);
         formData.append('birthOfDay', customer.birthOfDay);
         formData.append('password', customer.password);
 
         try {
-            const response = await fetch('http://localhost:8080/api/create-customer', {
+            const response = await fetch('http://localhost:8080/api/customers/create-customer', {
                 method: 'POST',
                 body: formData,
             });
@@ -79,15 +80,15 @@ export default function AddCustomer() {
                             <input type="file" className="form-control" name="avatar" onChange={onFileChange} />
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="numberPhone" className="form-label">
+                            <label htmlFor="phoneNumber" className="form-label">
                                 Number Phone
                             </label>
                             <input
                                 type="text"
                                 className="form-control"
                                 placeholder="Enter your number phone"
-                                name="numberPhone"
-                                value={customer.numberPhone}
+                                name="phoneNumber"
+                                value={customer.phoneNumber}
                                 onChange={onInputChange}
                             />
                         </div>

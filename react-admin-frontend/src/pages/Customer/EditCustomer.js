@@ -10,27 +10,28 @@ export default function EditCustomer() {
     const [customer, setCustomer] = useState({
         customerName: '',
         avatar: '',
-        numberPhone: '',
+        phoneNumber: '',
         email: '',
         gender: '',
         birthOfDay: '',
         password: '',
+        status: '',
     });
 
-    const { customerName, avatar, numberPhone, email, gender, birthOfDay, password } = customer;
+    const { customerName, avatar, phoneNumber, email, gender, birthOfDay, password, status } = customer;
 
     const onInputChange = (e) => {
         setCustomer({ ...customer, [e.target.name]: e.target.value });
     };
 
     const loadCustomer = useCallback(async () => {
-        const result = await axios.get(`http://localhost:8080/api/customer/${id}`);
+        const result = await axios.get(`http://localhost:8080/api/customers/getAll/${id}`);
         setCustomer(result.data);
     }, [id]);
 
     const onsubmit = async (e) => {
         e.preventDefault();
-        await axios.put(`http://localhost:8080/api/update-customer/${id}`, customer);
+        await axios.put(`http://localhost:8080/api/customers/update?id=${id}`, customer);
         navigate('/Customer');
     };
 
@@ -71,15 +72,15 @@ export default function EditCustomer() {
                             />
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="numberPhone" className="form-label">
+                            <label htmlFor="phoneNumber" className="form-label">
                                 Phone Number
                             </label>
                             <input
                                 type={'text'}
                                 className="form-control"
                                 placeholder="Enter your Phone Number"
-                                name="numberPhone"
-                                value={numberPhone}
+                                name="phoneNumber"
+                                value={phoneNumber}
                                 onChange={(e) => onInputChange(e)}
                             />
                         </div>
@@ -131,6 +132,16 @@ export default function EditCustomer() {
                                 value={birthOfDay}
                                 onChange={(e) => onInputChange(e)}
                             />
+                        </div>
+
+                        <div className="mb-3">
+                            <Form.Group>
+                                <Form.Label>Trạng thái</Form.Label>
+                                <Form.Select name="status" value={status} onChange={(e) => onInputChange(e)}>
+                                    <option value="0">Đang hoạt động</option>
+                                    <option value="1">Không hoạt động</option>
+                                </Form.Select>
+                            </Form.Group>
                         </div>
                         <button type="submit" className="btn btn-outline-primary">
                             submit

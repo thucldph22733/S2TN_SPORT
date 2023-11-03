@@ -37,40 +37,38 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    public static String uploadDirectory = System.getProperty("user.dir") + "/src/main/resources/static/image";
+    public static String uploadDirectory = "F:/Java/S2TN_SPORT/react-admin-frontend/src/assets/images/";
+
 
     @GetMapping("customers")
     public ResponseEntity<?> getAllCustomer() {
-        return ResponseEntity.ok(customerService.getAll());
+        return ResponseEntity.ok(customerService.getCustomers());
     }
 
     @PostMapping("create-customer")
     public ResponseEntity<?> createCustomer(
             @RequestParam("customerName") String customerName,
             @RequestParam("avatar") MultipartFile avatar,
-            @RequestParam("numberPhone") String numberPhone,
+            @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("email") String email,
             @RequestParam("gender") Boolean gender,
             @RequestParam("birthOfDay") Date birthOfDay,
-            @RequestParam("password") String password
-//            @RequestParam("customerStatus") Integer customerStatus
+            @RequestParam("password") String password,
+            @RequestParam("status") Integer status
 
     ) throws IOException, SQLException {
         CustomerRequestDto customerRequestDto = new CustomerRequestDto();
         customerRequestDto.setCustomerName(customerName);
         customerRequestDto.setAvatar(String.valueOf(avatar));
-        customerRequestDto.setNumberPhone(numberPhone);
+        customerRequestDto.setPhoneNumber(phoneNumber);
         customerRequestDto.setEmail(email);
         customerRequestDto.setGender(gender);
         customerRequestDto.setBirthOfDay(birthOfDay);
         customerRequestDto.setPassword(password);
-        customerRequestDto.setCustomerStatus(1);
+        customerRequestDto.setStatus(status);
         return ResponseEntity.ok(customerService.add(customerRequestDto, avatar));
     }
 
-    @PutMapping("update-customer/{id}")
-    public ResponseEntity<Customer> updateCustomer(@RequestBody CustomerRequestDto customerRequestDto, @PathVariable Long id) {
-        return ResponseEntity.ok(customerService.update(customerRequestDto, id));
     @GetMapping("getAll")
     public ResponseEntity<List<CustomerResponseDto>> getCustomers() {
         List<CustomerResponseDto> customerResponseDtoList = customerService.getCustomers();
@@ -93,19 +91,54 @@ public class CustomerController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<ResponseDto> updateCustomer(@Valid @RequestBody CustomerRequestDto customerRequestDto, @RequestParam Long id) {
-        Boolean isUpdated = customerService.updateCustomer(customerRequestDto,id);
-        if (isUpdated){
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+    public ResponseEntity<ResponseDto> updateCustomer(
+            @Valid
+            @RequestParam Long id,
+            @RequestParam("customerName") String customerName,
+            @RequestParam("avatar") MultipartFile avatar,
+            @RequestParam("phoneNumber") String phoneNumber,
+            @RequestParam("email") String email,
+            @RequestParam("gender") Boolean gender,
+            @RequestParam("birthOfDay") Date birthOfDay,
+            @RequestParam("password") String password,
+            @RequestParam("status") Integer status
+          ) throws IOException {
+        CustomerRequestDto customerRequestDto = new CustomerRequestDto();
+        customerRequestDto.setCustomerName(customerName);
+        customerRequestDto.setAvatar(String.valueOf(avatar));
+        customerRequestDto.setPhoneNumber(phoneNumber);
+        customerRequestDto.setEmail(email);
+        customerRequestDto.setGender(gender);
+        customerRequestDto.setBirthOfDay(birthOfDay);
+        customerRequestDto.setPassword(password);
+        customerRequestDto.setStatus(status);
+        if (avatar != null) {
+            // Nếu có tệp ảnh mới, lưu nó vào thư mục và cập nhật đường dẫn ảnh đại diện trong cơ sở dữ liệu
+            String newAvatarPath = saveAvatar(avatar);
+
+            customerRequestDto.setAvatar(newAvatarPath);
         }
 
+        Boolean isUpdated = customerService.updateCustomer(customerRequestDto, id);
+        if (isUpdated) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
     }
+
+
+    private String saveAvatar(MultipartFile avatar) throws IOException {
+        String fileName = avatar.getOriginalFilename();
+        String filePath = uploadDirectory + fileName;
+        avatar.transferTo(new File(filePath));
+        return fileName;
+    }
+
 
     @DeleteMapping("delete")
     public ResponseEntity<ResponseDto> deleteCustomer(@RequestParam Long id) {
@@ -121,11 +154,14 @@ public class CustomerController {
         }
     }
 
+    @GetMapping("getAll/{id}")
+    public ResponseEntity<CustomerResponseDto> getCustomerById(@PathVariable Long id) {
+        CustomerResponseDto customer = customerService.getCustomerById(id);
+        return ResponseEntity.ok(customer);
+    }
 
-    @GetMapping("pagination")
-    public ResponseEntity<List<CustomerResponeDto>> getPagination(@RequestParam(name = "page") Optional<Integer> pageNo) {
-        List<CustomerResponeDto> list = customerService.getPagination(pageNo.orElse(null));
-        return new ResponseEntity<>(list, HttpStatus.OK);
+
+
     public ResponseEntity<List<CustomerResponseDto>> getPagination(@RequestParam(name = "page") Optional<Integer> pageNo) {
         List<CustomerResponseDto> customerResponseDtoList = customerService.getPagination(pageNo.orElse(0));
         return ResponseEntity
@@ -151,5 +187,18 @@ public class CustomerController {
                 .body(customerResponseDtoList);
     }
 
+    @PutMapping("toggle-status/{id}")
+    public ResponseEntity<ResponseDto> toggleCustomerStatus(@PathVariable Long id) {
+        Boolean isToggled = customerService.toggleCustomerStatus(id);
+        if (isToggled) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
+    }
 
 }

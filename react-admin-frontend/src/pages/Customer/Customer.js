@@ -477,7 +477,7 @@ export default function Customer() {
                     <form onSubmit={isEditMode ? onSubmitEdit : onSubmitAdd} encType="multipart/form-data">
                         <div className="mb-3">
                             <label htmlFor="customerName" className="form-label">
-                                Customer Name
+                                Tên khách hàng
                             </label>
                             <input
                                 type={'text'}
@@ -490,13 +490,13 @@ export default function Customer() {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="avatar" className="form-label">
-                                Avatar
+                                Ảnh
                             </label>
                             <input type="file" className="form-control" name="avatar" onChange={onFileChange} />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="phoneNumber" className="form-label">
-                                Phone Number
+                                Số điện thoại
                             </label>
                             <input
                                 type={'text'}
@@ -509,7 +509,7 @@ export default function Customer() {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="email" className="form-label">
-                                email
+                                Email
                             </label>
                             <input
                                 type={'text'}
@@ -522,7 +522,7 @@ export default function Customer() {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="password" className="form-label">
-                                password
+                                Mật khẩu
                             </label>
                             <input
                                 type={'text'}
@@ -545,7 +545,7 @@ export default function Customer() {
 
                         <div className="mb-3">
                             <label htmlFor="birthOfDay" className="form-label">
-                                BirthOfDate
+                                Ngày sinh
                             </label>
                             <input
                                 type={'date'}
@@ -568,21 +568,23 @@ export default function Customer() {
                         </div>
                     </form>
                 </Modal>
-
+                <div className="tieu-de" style={{ float: 'left', marginLeft: '10px' }}>
+                    <h4>Danh sách khách hàng</h4>
+                </div>
                 <Link
                     className="btn btn-success mx-2"
                     // to={path_name.addcustomer}
                     onClick={onAddClick}
                     style={{ float: 'right', marginBottom: '15px' }}
                 >
-                    <PlusOutlined /> Thêm khách hàng
+                    <PlusOutlined /> Thêm mới
                 </Link>
                 <Link
                     className="btn btn-success mx-2"
                     to={path_name.addcustomer}
                     style={{ float: 'right', marginBottom: '15px' }}
                 >
-                    <FileExcelOutlined /> Xuất excel
+                    <FileExcelOutlined /> Xuất dữ liệu
                 </Link>
                 <Table
                     columns={columns}

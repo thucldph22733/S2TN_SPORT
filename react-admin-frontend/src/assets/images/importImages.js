@@ -4,6 +4,6 @@ function importAll(r) {
     return images;
 }
 
-const images = importAll(require.context('../../../src/assets/images', false, /\.(png|jpe?g|gif|svg)$/));
+const images = importAll(require.context('D:/DoAnTotNghiep/S2TN_SPORT/react-admin-frontend/src/assets/images', false, /\.(png|jpe?g|gif|svg)$/));
 
 export default images;

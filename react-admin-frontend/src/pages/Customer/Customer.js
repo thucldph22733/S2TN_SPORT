@@ -8,7 +8,7 @@ import qs from 'qs';
 import path_name from '~/core/constants/routers';
 import { DeleteOutlined } from '@ant-design/icons';
 import { FaEdit, FaEye } from 'react-icons/fa';
-import imagess from '../../../src/assets/images/importImages';
+import imagess from 'D:/DoAnTotNghiep/S2TN_SPORT/react-admin-frontend/src/assets/images/importImages';
 import { Form } from 'react-bootstrap';
 export default function Customer() {
     // Đường dẫn đến ảnh mặc định

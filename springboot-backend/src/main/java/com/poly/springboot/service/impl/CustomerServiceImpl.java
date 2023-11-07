@@ -1,6 +1,11 @@
 
 package com.poly.springboot.service.impl;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import com.poly.springboot.dto.requestDto.CustomerRequestDto;
 import com.poly.springboot.dto.responseDto.CustomerResponseDto;
 import com.poly.springboot.entity.Customer;
@@ -10,20 +15,16 @@ import com.poly.springboot.mapper.CustomerMapper;
 import com.poly.springboot.repository.CustomerRepository;
 import com.poly.springboot.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private CustomerRepository customerRepository;
-
-    public static String uploadDirectory = "F:/Java/S2TN_SPORT/react-admin-frontend/src/assets/images/";
 
 
     @Override
@@ -58,11 +57,10 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public Customer add(CustomerRequestDto customerRequestDto, MultipartFile multipartFile) throws IOException, SQLException {
-        String fileName = multipartFile.getOriginalFilename();
-        String filePath = uploadDirectory + fileName;
+    public Customer add(CustomerRequestDto customerRequestDto, String avatar) throws Exception {
+        // Tạo đối tượng Customer và đặt các giá trị
         Customer customer = new Customer();
-        customer.setAvatar(fileName); // Lưu tên tệp ảnh, không phải đường dẫn tuyệt đối
+        customer.setAvatar(avatar); // Lưu URL tải xuống từ Firebase Storage
         customer.setCustomerName(customerRequestDto.getCustomerName());
         customer.setPhoneNumber(customerRequestDto.getPhoneNumber());
         customer.setEmail(customerRequestDto.getEmail());
@@ -70,27 +68,12 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
         customer.setPassword(customerRequestDto.getPassword());
         customer.setStatus(customerRequestDto.getStatus());
+
+        // Lưu đối tượng Customer vào cơ sở dữ liệu
         customerRepository.save(customer);
-        multipartFile.transferTo(new File(filePath));
+
         return customer;
     }
-
-
-//    @Override
-//    public Customer update(CustomerRequestDto customerRequestDto, Long id) {
-//        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-//        Customer customer = optionalCustomer.get();
-//        customer.setAvatar(customerRequestDto.getAvatar());
-//        customer.setCustomerName(customerRequestDto.getCustomerName());
-//        customer.setPhoneNumber(customerRequestDto.getPhoneNumber());
-//        customer.setEmail(customerRequestDto.getEmail());
-//        customer.setGender(customerRequestDto.getGender());
-//        customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
-//        customer.setPassword(customerRequestDto.getPassword());
-//        customer.setStatus(customerRequestDto.getStatus());
-//        return customerRepository.save(customer);
-//
-//    }
     public Boolean createCustomer(CustomerRequestDto customerRequestDto) {
 
         Customer customer = new Customer();
@@ -113,16 +96,29 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Boolean updateCustomer(CustomerRequestDto customerRequestDto, Long id) {
-        Customer customer = customerRepository.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+        // Tìm khách hàng theo ID
+        Customer existingCustomer = customerRepository.findById(id).orElse(null);
+        if (existingCustomer == null) {
+            return false; // Trả về false nếu không tìm thấy khách hàng với ID
+        }
+        // Cập nhật thông tin khách hàng từ customerRequestDto
+        existingCustomer.setCustomerName(customerRequestDto.getCustomerName());
+        existingCustomer.setPhoneNumber(customerRequestDto.getPhoneNumber());
+        existingCustomer.setEmail(customerRequestDto.getEmail());
+        existingCustomer.setGender(customerRequestDto.getGender());
+        existingCustomer.setBirthOfDay(customerRequestDto.getBirthOfDay());
+        existingCustomer.setPassword(customerRequestDto.getPassword());
+        existingCustomer.setStatus(customerRequestDto.getStatus());
+        existingCustomer.setAvatar(String.valueOf(customerRequestDto.getAvatar()));
 
-        CustomerMapper.mapToCustomerRequest(customer, customerRequestDto);
-
-        customerRepository.save(customer);
-        return true;
+        // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
+        customerRepository.save(existingCustomer);
+        return true; // Trả về true nếu cập nhật thành công
     }
 
-        public Boolean deleteCustomer (Long id){
+
+
+    public Boolean deleteCustomer (Long id){
             Customer customer = customerRepository.findById(id).
                     orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
             if (customer.getStatus() == 0) {

@@ -9,7 +9,7 @@ public class CustomerMapper {
     public static Customer mapToCustomerRequest(Customer customer, CustomerRequestDto customerRequestDto) {
 
         customer.setCustomerName(customerRequestDto.getCustomerName());
-        customer.setAvatar(customerRequestDto.getAvatar());
+        customer.setAvatar(String.valueOf(customerRequestDto.getAvatar()));
         customer.setPhoneNumber(customerRequestDto.getPhoneNumber());
         customer.setEmail(customerRequestDto.getEmail());
         customer.setGender(customerRequestDto.getGender());

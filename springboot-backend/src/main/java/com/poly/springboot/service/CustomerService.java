@@ -16,7 +16,7 @@ public interface CustomerService {
     List<CustomerResponseDto> getCustomers();
     CustomerResponseDto getCustomerById(Long id);
 
-    Customer add(CustomerRequestDto customerRequestDto, MultipartFile multipartFiles) throws IOException, SQLException;
+    Customer add(CustomerRequestDto customerRequestDto, String avatarUrl) throws Exception;
 
     Boolean createCustomer(CustomerRequestDto customerRequestDto);
 

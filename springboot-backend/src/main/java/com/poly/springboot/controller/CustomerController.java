@@ -37,13 +37,6 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    public static String uploadDirectory = "F:/Java/S2TN_SPORT/react-admin-frontend/src/assets/images/";
-
-
-    @GetMapping("customers")
-    public ResponseEntity<?> getAllCustomer() {
-        return ResponseEntity.ok(customerService.getCustomers());
-    }
 
     @PostMapping("create-customer")
     public ResponseEntity<?> createCustomer(
@@ -54,20 +47,29 @@ public class CustomerController {
             @RequestParam("gender") Boolean gender,
             @RequestParam("birthOfDay") Date birthOfDay,
             @RequestParam("password") String password,
-            @RequestParam("status") Integer status
-
-    ) throws IOException, SQLException {
+            @RequestParam("status") Integer status,
+            @RequestParam("avatarUrl") String avatarUrl // Thêm tham số này để nhận URL tải xuống
+    ) throws Exception {
         CustomerRequestDto customerRequestDto = new CustomerRequestDto();
         customerRequestDto.setCustomerName(customerName);
-        customerRequestDto.setAvatar(String.valueOf(avatar));
         customerRequestDto.setPhoneNumber(phoneNumber);
         customerRequestDto.setEmail(email);
         customerRequestDto.setGender(gender);
         customerRequestDto.setBirthOfDay(birthOfDay);
         customerRequestDto.setPassword(password);
         customerRequestDto.setStatus(status);
-        return ResponseEntity.ok(customerService.add(customerRequestDto, avatar));
+        customerRequestDto.setAvatar(avatar);
+
+        Customer customer = customerService.add(customerRequestDto, avatarUrl);
+
+        if (customer != null) {
+            return ResponseEntity.ok(customer);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi trong quá trình tạo khách hàng.");
+        }
     }
+
+
 
     @GetMapping("getAll")
     public ResponseEntity<List<CustomerResponseDto>> getCustomers() {
@@ -76,6 +78,7 @@ public class CustomerController {
                 .status(HttpStatus.OK)
                 .body(customerResponseDtoList);
     }
+
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createCustomer(@Valid @RequestBody CustomerRequestDto customerRequestDto) {
         Boolean isCreated = customerService.createCustomer(customerRequestDto);
@@ -83,10 +86,10 @@ public class CustomerController {
             return ResponseEntity.
                     status(HttpStatus.CREATED)
                     .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));
-        }else {
+        } else {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
@@ -102,22 +105,16 @@ public class CustomerController {
             @RequestParam("birthOfDay") Date birthOfDay,
             @RequestParam("password") String password,
             @RequestParam("status") Integer status
-          ) throws IOException {
+    )  {
         CustomerRequestDto customerRequestDto = new CustomerRequestDto();
         customerRequestDto.setCustomerName(customerName);
-        customerRequestDto.setAvatar(String.valueOf(avatar));
+        customerRequestDto.setAvatar(avatar);
         customerRequestDto.setPhoneNumber(phoneNumber);
         customerRequestDto.setEmail(email);
         customerRequestDto.setGender(gender);
         customerRequestDto.setBirthOfDay(birthOfDay);
         customerRequestDto.setPassword(password);
         customerRequestDto.setStatus(status);
-        if (avatar != null) {
-            // Nếu có tệp ảnh mới, lưu nó vào thư mục và cập nhật đường dẫn ảnh đại diện trong cơ sở dữ liệu
-            String newAvatarPath = saveAvatar(avatar);
-
-            customerRequestDto.setAvatar(newAvatarPath);
-        }
 
         Boolean isUpdated = customerService.updateCustomer(customerRequestDto, id);
         if (isUpdated) {
@@ -132,25 +129,17 @@ public class CustomerController {
     }
 
 
-    private String saveAvatar(MultipartFile avatar) throws IOException {
-        String fileName = avatar.getOriginalFilename();
-        String filePath = uploadDirectory + fileName;
-        avatar.transferTo(new File(filePath));
-        return fileName;
-    }
-
-
     @DeleteMapping("delete")
     public ResponseEntity<ResponseDto> deleteCustomer(@RequestParam Long id) {
         Boolean isDeleted = customerService.deleteCustomer(id);
-        if (isDeleted){
+        if (isDeleted) {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
@@ -159,7 +148,6 @@ public class CustomerController {
         CustomerResponseDto customer = customerService.getCustomerById(id);
         return ResponseEntity.ok(customer);
     }
-
 
 
     public ResponseEntity<List<CustomerResponseDto>> getPagination(@RequestParam(name = "page") Optional<Integer> pageNo) {
@@ -179,9 +167,9 @@ public class CustomerController {
 
     @GetMapping("search")
     public ResponseEntity<List<CustomerResponseDto>> searchCustomer(
-            @RequestParam(name = "page") Optional<Integer> pageNo ,
+            @RequestParam(name = "page") Optional<Integer> pageNo,
             @RequestParam String keyword) {
-        List<CustomerResponseDto> customerResponseDtoList = customerService.searchCustomer(keyword,pageNo.orElse(0));
+        List<CustomerResponseDto> customerResponseDtoList = customerService.searchCustomer(keyword, pageNo.orElse(0));
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(customerResponseDtoList);
@@ -200,5 +188,23 @@ public class CustomerController {
                     .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
+
+//    @PostMapping("upload")
+//    public ResponseEntity<String> uploadFile(@RequestParam("avatar") MultipartFile file) {
+//        if (file.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Vui lòng chọn một tệp để tải lên.");
+//        }
+//
+//        try {
+//            String fileName = file.getOriginalFilename();
+//            String filePath = uploadDirectory + fileName;
+//            File dest = new File(filePath);
+//            file.transferTo(dest);
+//            return ResponseEntity.ok("Tệp " + fileName + " đã được tải lên thành công.");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(500).body("Lỗi trong quá trình tải lên tệp.");
+//        }
+//    }
 
 }

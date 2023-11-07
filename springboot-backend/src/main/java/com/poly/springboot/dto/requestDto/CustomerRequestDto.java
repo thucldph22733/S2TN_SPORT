@@ -18,7 +18,7 @@ public class CustomerRequestDto {
     @NotBlank(message = "Tên khách hàng không được để trống!")
     private String customerName;
 
-    private String avatar;
+    private MultipartFile avatar;
 
     @NotBlank(message = "Số điện thoại không được để trống!")
     private String phoneNumber;

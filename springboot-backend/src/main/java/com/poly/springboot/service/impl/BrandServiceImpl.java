@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.BrandRequestDto;
 import com.poly.springboot.entity.Brand;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.BrandRepository;
 import com.poly.springboot.service.BrandService;
@@ -25,8 +26,14 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Boolean createBrand(BrandRequestDto brandRequestDto) {
         Brand brand = new Brand();
+
         brand.setBrandDescribe(brandRequestDto.getBrandDescribe());
         brand.setBrandName(brandRequestDto.getBrandName());
+
+        if (brandRepository.existsByBrandName(brandRequestDto.getBrandName())){
+            throw  new AlreadyExistsException("Tên thương hiệu đã tồn tại!");
+        }
+
         brandRepository.save(brand);
         return true;
     }

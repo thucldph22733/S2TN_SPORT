@@ -1,5 +1,6 @@
 package com.poly.springboot.dto.requestDto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,16 +13,19 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SupplierRequestDto {
 
-    @NotBlank(message = "Vui lòng nhập tên Supplier!")
+    @NotBlank(message = "Tên nhà sản xuất không được để trống!")
     private String supplierName;
 
+    @NotBlank(message = "Địa chỉ email không được để trống!")
+    @Email(message = "Địa chỉ email không đúng định dạng!")
     private String email;
 
+    @NotBlank(message = "Số điện thoại không được để trống!")
     private String phoneNumber;
 
+    @NotBlank(message = "Địa chỉ không được để trống!")
     private String address;
 
-    @NotBlank(message = "Không được để trống!")
     private String supplierDescribe;
 
 

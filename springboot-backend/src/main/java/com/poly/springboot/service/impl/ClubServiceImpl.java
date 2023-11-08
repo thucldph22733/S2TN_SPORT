@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ClubRequestDto;
 import com.poly.springboot.entity.Club;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.ClubRepository;
 import com.poly.springboot.service.ClubService;
@@ -42,6 +43,9 @@ public class ClubServiceImpl implements ClubService {
         club.setClubDescribe(clubRequestDto.getClubDescribe());
         club.setClubName(clubRequestDto.getClubName());
 
+        if (clubRepository.existsByClubName(clubRequestDto.getClubName())){
+            throw new AlreadyExistsException("Tên câu lạc bộ đã tồn tại!");
+        }
         clubRepository.save(club);
 
         return true;

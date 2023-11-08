@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.PaymentRequestDto;
 import com.poly.springboot.entity.Payment;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.PaymentRepository;
 import com.poly.springboot.service.PaymentService;
@@ -30,6 +31,9 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentName(paymentRequestDto.getPaymentName());
         payment.setPaymentDescribe(paymentRequestDto.getPaymentDescribe());
 
+        if (paymentRepository.existsByPaymentName(paymentRequestDto.getPaymentName())){
+            throw new AlreadyExistsException("Tên phương thức thanh toán đã tồn tại!");
+        }
         paymentRepository.save(payment);
 
         return true;

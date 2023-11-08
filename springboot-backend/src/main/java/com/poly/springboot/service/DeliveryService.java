@@ -9,7 +9,7 @@ public interface DeliveryService {
 
     List<Delivery> getDeliveries();
 
-    Boolean saveDelivery(DeliveryRequestDto deliveryRequestDto);
+    Boolean createDelivery(DeliveryRequestDto deliveryRequestDto);
 
     Boolean updateDelivery(DeliveryRequestDto deliveryRequestDto, Long id);
 

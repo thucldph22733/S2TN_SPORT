@@ -2,10 +2,9 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.UserReviewRequestDto;
 import com.poly.springboot.dto.responseDto.UserReviewResponseDto;
-import com.poly.springboot.entity.Customer;
 import com.poly.springboot.entity.OrderDetail;
 import com.poly.springboot.entity.UserReview;
-import com.poly.springboot.repository.CustomerRepository;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.OrderDetailRepository;
 import com.poly.springboot.repository.UserReviewRepository;
 import com.poly.springboot.service.UserReviewService;
@@ -35,8 +34,7 @@ public class UserReviewServiceImpl implements UserReviewService {
                 userReview ->
                         new UserReviewResponseDto(
                                 userReview.getId(),
-
-                                userReview.getOrderDetail().getOrder().getCustomer().getAvatar().toString(),
+                                userReview.getOrderDetail().getOrder().getCustomer().getAvatar(),
                                 userReview.getOrderDetail().getOrder().getCustomer().getCustomerName(),
                                 userReview.getRatingValue(),
                                 userReview.getUserComment(),
@@ -46,7 +44,7 @@ public class UserReviewServiceImpl implements UserReviewService {
     }
 
     @Override
-    public UserReview saveUserReview(UserReviewRequestDto userReviewRequestDto) {
+    public Boolean createUserReview(UserReviewRequestDto userReviewRequestDto) {
         //find order detail by id
         OrderDetail orderDetail = orderDetailRepository.findById(userReviewRequestDto.getOrderDetailId()).orElse(null);
 
@@ -57,34 +55,33 @@ public class UserReviewServiceImpl implements UserReviewService {
         userReview.setUserComment(userReviewRequestDto.getUserComment());
 
         userReviewRepository.save(userReview);
-        return userReview;
+        return true;
     }
 
     @Override
-    public UserReview updateUserReview(UserReviewRequestDto userReviewRequestDto, Long id) {
+    public Boolean updateUserReview(UserReviewRequestDto userReviewRequestDto, Long id) {
         //find order detail by id
         OrderDetail orderDetail = orderDetailRepository.findById(userReviewRequestDto.getOrderDetailId()).orElse(null);
         //find user review by id
-        UserReview userReview = userReviewRepository.findById(id).get();
+        UserReview userReview = userReviewRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("đánh giá",String.valueOf(id)));
         //Neu tim thay id thi set lai roi luu
         userReview.setOrderDetail(orderDetail);
         userReview.setRatingValue(userReviewRequestDto.getRatingValue());
         userReview.setUserComment(userReviewRequestDto.getUserComment());
 
         userReviewRepository.save(userReview);
-        return userReview;
+        return true;
     }
 
     @Override
-    public String deleteUserReview(Long id) {
-        //Check xem id co ton tai ko
-        if (userReviewRepository.existsById(id)) {
-            //Neu co thi xoa va thong bao
-            userReviewRepository.deleteById(id);
-            return "Delete success!";
-        } else {
-            //Neu ko tra ve thong bao
-            return "This id was not found: " + id;
-        }
+    public Boolean deleteUserReview(Long id) {
+
+        UserReview userReview = userReviewRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("đánh giá",String.valueOf(id)));
+
+        userReviewRepository.deleteById(userReview.getId());
+
+        return true;
     }
 }

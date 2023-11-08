@@ -14,6 +14,8 @@ import EditAddress from './pages/Address/EditAddress';
 import Customer from './pages/Customer/Customer';
 import Size from './pages/Products/Sizes';
 import OderStatus from './pages/Orders/oderStatus';
+import EditProduct from './pages/Products/EditProduct';
+import AddProduct from './pages/Products/AddProduct';
 
 function App() {
     const router = createBrowserRouter([
@@ -32,6 +34,10 @@ function App() {
                 {
                     path: path_name.product,
                     element: <Product />,
+                },
+                {
+                    path: path_name.addproduct,
+                    element: <AddProduct />,
                 },
                 {
                     path: path_name.order,
@@ -60,6 +66,10 @@ function App() {
                 {
                     path: path_name.orderstatus,
                     element: <OderStatus />,
+                },
+                {
+                    path: path_name.editproduct + '/:id',
+                    element: <EditProduct />,
                 },
             ],
         },

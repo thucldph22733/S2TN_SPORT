@@ -1,6 +1,8 @@
 package com.poly.springboot.dto.requestDto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,7 @@ public class CustomerRequestDto {
     private String phoneNumber;
 
     @NotBlank(message = "Email không được để trống!")
+    @Email(message = "Địa chỉ email không đúng định dạng!")
     private String email;
 
     private Boolean gender;

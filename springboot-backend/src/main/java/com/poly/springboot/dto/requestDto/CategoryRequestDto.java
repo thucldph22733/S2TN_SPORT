@@ -11,9 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryRequestDto {
-    @NotBlank(message = "Vui lòng nhập tên Loai!")
+
+    @NotBlank(message = "Tên loại sản phẩm không được để trống!")
     private String categoryName;
 
-    @NotBlank(message = "Không được để trống!")
     private String categoryDescribe;
 }

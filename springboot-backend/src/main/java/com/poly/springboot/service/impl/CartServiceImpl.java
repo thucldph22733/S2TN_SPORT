@@ -23,6 +23,7 @@ public class CartServiceImpl implements CartService {
         Customer customer = customerRepository.findById(cartRequestDto.getCustomerId()).orElse(null);
 
         Cart cart = new Cart();
+
         cart.setCustomer(customer);
 
         cartRepository.save(cart);

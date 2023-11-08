@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ColorRequestDto;
 import com.poly.springboot.entity.Color;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.ColorRepository;
 import com.poly.springboot.service.ColorService;
@@ -36,7 +37,9 @@ public class ColorServiceImpl implements ColorService {
 
         color.setColorDescribe(colorRequestDto.getColorDescribe());
         color.setColorName(colorRequestDto.getColorName());
-
+        if (colorRepository.existsByColorName(colorRequestDto.getColorName())){
+            throw  new AlreadyExistsException("Tên thương hiệu đã tồn tại!");
+        }
         colorRepository.save(color);
         return true;
     }

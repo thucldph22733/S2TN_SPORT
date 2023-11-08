@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CategoryRequestDto;
 import com.poly.springboot.entity.Category;
+import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.CategoryRepository;
 import com.poly.springboot.service.CategoryService;
@@ -37,6 +38,11 @@ public class CategoryServiceImpl implements CategoryService {
 
         category.setCategoryDescribe(categoryRequestDto.getCategoryDescribe());
         category.setCategoryName(categoryRequestDto.getCategoryName());
+
+        if (categoryRepository.existsByCategoryName(category.getCategoryName())){
+            throw  new AlreadyExistsException("Tên loại sản phẩm đã tồn tại!");
+        }
+
         categoryRepository.save(category);
 
         return true;

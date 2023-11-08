@@ -48,7 +48,7 @@ public class DeliveryController {
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createDelivery(@Valid @RequestBody DeliveryRequestDto deliveryRequestDto){
 
-        Boolean isCreated = deliveryService.saveDelivery(deliveryRequestDto);
+        Boolean isCreated = deliveryService.createDelivery(deliveryRequestDto);
 
         if (isCreated){
             return ResponseEntity.status(HttpStatus.CREATED)

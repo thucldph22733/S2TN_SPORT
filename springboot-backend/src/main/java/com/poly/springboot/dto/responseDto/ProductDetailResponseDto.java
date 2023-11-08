@@ -27,4 +27,6 @@ public class ProductDetailResponseDto {
 
     private Double promotionPrice;
 
+    private Integer status;
+
 }

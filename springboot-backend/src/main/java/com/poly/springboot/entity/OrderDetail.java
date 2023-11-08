@@ -46,6 +46,9 @@ public class OrderDetail {
     @Column(name = "order_status")
     private Integer status;
 
+    @Column(name = "note")
+    private String note;
+
     @CreationTimestamp
     @Column(name = "create_date")
     private LocalDateTime createDate;

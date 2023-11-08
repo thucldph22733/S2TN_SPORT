@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -49,8 +50,26 @@ public class VoucherController {
 
     @GetMapping("getAll")
     public ResponseEntity<List<VoucherResponseDto>> getVouchers() {
-        List<VoucherResponseDto> responseDtoList = voucherService.getVouchers();
-        return ResponseEntity.ok(responseDtoList);
+        List<VoucherResponseDto> voucherResponseDtoList = voucherService.getVouchers();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(voucherResponseDtoList);
+    }
+
+    @GetMapping("pagination")
+    public ResponseEntity<List<VoucherResponseDto>> getPagination(@RequestParam Optional<Integer> pageNo) {
+        List<VoucherResponseDto> voucherResponseDtoList = voucherService.getPagination(pageNo.orElse(0));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(voucherResponseDtoList);
+    }
+
+    @GetMapping("search")
+    public ResponseEntity<List<VoucherResponseDto>> searchVoucher(@RequestParam Optional<Integer> pageNo,@RequestParam String keyword) {
+        List<VoucherResponseDto> voucherResponseDtoList = voucherService.searchVoucher(pageNo.orElse(0),keyword);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(voucherResponseDtoList);
     }
 
     @PutMapping("update")

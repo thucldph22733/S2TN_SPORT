@@ -9,8 +9,5 @@ import java.util.List;
 public interface AddressService {
     List<Address> getAddress();
 
-    Boolean createAddress(AddressRequestDto addressRequestDto);
-
-    Boolean updateAddress(AddressRequestDto addressRequestDto, Long id);
 
 }

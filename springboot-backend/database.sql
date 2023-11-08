@@ -344,9 +344,11 @@ create table order_details
     quantity int,
     price double,
     order_status bit,
+    note nvarchar(200),
     primary key (id)
 );
 alter table order_details auto_increment = 1000;  -- xet khoa chinh tu tang bat dau tu 1000;
+
 -- 25 tao bang chi tiet gio hang;
 create table cart_details
 (
@@ -449,4 +451,4 @@ alter table staffs add foreign key (role_id) references roles(id);
 alter table shifts add foreign key (staff_id) references staffs(id);
 
 -- user_reviews vs order_details
-alter table user_reviews add foreign key (order_detail_id) references order_details(id);ategories
+alter table user_reviews add foreign key (order_detail_id) references order_details(id);

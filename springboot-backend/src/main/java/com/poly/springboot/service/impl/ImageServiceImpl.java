@@ -24,7 +24,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Boolean saveImage(ImageRequestDto imageRequestDto) {
+    public Boolean createImage(ImageRequestDto imageRequestDto) {
 
         Image image = new Image();
 
@@ -57,5 +57,13 @@ public class ImageServiceImpl implements ImageService {
                 .orElseThrow(()->new ResourceNotFoundException("ảnh",String.valueOf(id)));
         imageRepository.deleteById(image.getId());
         return true;
+    }
+
+    @Override
+    public List<Image> findImageByProductId(Long id) {
+
+        List<Image> imageList = imageRepository.findImageByProductId(id);
+
+        return imageList;
     }
 }

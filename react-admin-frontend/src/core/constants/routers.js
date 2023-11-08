@@ -4,6 +4,7 @@ const path_name = {
     login: '/login',
     product: '/product',
     order: '/order',
+    orderstatus: '/orderstatus',
     address: '/address',
     addaddress: '/addaddress',
     editaddress: '/editaddress',

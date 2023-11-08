@@ -13,6 +13,7 @@ import AddAddress from './pages/Address/AddAddress';
 import EditAddress from './pages/Address/EditAddress';
 import Customer from './pages/Customer/Customer';
 import Size from './pages/Products/Sizes';
+import OderStatus from './pages/Orders/oderStatus';
 
 function App() {
     const router = createBrowserRouter([
@@ -55,6 +56,10 @@ function App() {
                 {
                     path: path_name.size,
                     element: <Size />,
+                },
+                {
+                    path: path_name.orderstatus,
+                    element: <OderStatus />,
                 },
             ],
         },

@@ -89,7 +89,7 @@ function Slider() {
                     </a>
                     <ul className="collapse list-unstyled" id="otherSubmenu">
                         <li>
-                            <a href="#">Page 1</a>
+                            <Link to={path_name.orderstatus}>Trạng thái hóa đơn</Link>
                         </li>
                         <li>
                             <a href="#">Page 2</a>

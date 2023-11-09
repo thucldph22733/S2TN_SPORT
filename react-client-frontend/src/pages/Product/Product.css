@@ -1,7 +1,15 @@
 /*---------------------
   Shop
 -----------------------*/
-
+.section-title span {
+    color: #e53637;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    display: block;
+}
 .shop__sidebar {
     padding-right: 20px;
 }

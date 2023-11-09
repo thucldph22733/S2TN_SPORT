@@ -7,6 +7,8 @@ const path_name = {
     login: '/login',
     register: '/register',
     forgot_password: '/forgot-password',
+    shopping_cart: '/shopping-cart',
+    checkout: '/checkout',
 };
 
 export default path_name;

@@ -25,7 +25,7 @@ function Size() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.post('http://localhost:8080/api/create-size', sizes);
+        await axios.post('http://localhost:8080/api/sizes/create', sizes);
         loadSize();
     };
     const [loading, setLoading] = useState(false);
@@ -37,6 +37,11 @@ function Size() {
     const showModalUpdate = (record) => {
         setSelectedRecord(record);
         setOpenEdit(true);
+        setSizes((prevSizes) => ({
+            ...prevSizes,
+            sizeName: record.sizeName,
+            sizeDescribe: record.sizeDescribe,
+        }));
     };
 
     const handleOk = () => {
@@ -51,6 +56,7 @@ function Size() {
         setTimeout(() => {
             setLoading(false);
             setOpenEdit(false);
+            loadSize(); // Gọi hàm loadSize sau khi hoàn thành cập nhật
         }, 0);
     };
     const handleCancel = () => {
@@ -87,13 +93,13 @@ function Size() {
     }, []);
 
     const loadSize = async () => {
-        const result = await axios.get('http://localhost:8080/api/sizes');
+        const result = await axios.get('http://localhost:8080/api/sizes/getAll');
         setSize(result.data);
     };
 
     const deleteSize = async (id) => {
         try {
-            await axios.delete(`http://localhost:8080/api/delete-size/${id}`);
+            await axios.delete(`http://localhost:8080/api/sizes/delete/${id}`);
             loadSize();
         } catch (error) {
             console.error('Error deleting size:', error);
@@ -109,7 +115,8 @@ function Size() {
             sizeName,
             sizeDescribe,
         };
-        await axios.put(`http://localhost:8080/api/update-size/${id}`, data);
+        await axios.put(`http://localhost:8080/api/sizes/update/${id}`, data);
+        loadSize();
     };
 
     // sort
@@ -290,7 +297,7 @@ function Size() {
 
     const fetchData = () => {
         setLoading(true);
-        fetch(`http://localhost:8080/api/sizes?${qs.stringify(getRandomuserParams(tableParams))}`)
+        fetch(`http://localhost:8080/api/sizes/getAll?${qs.stringify(getRandomuserParams(tableParams))}`)
             .then((res) => res.json())
             .then(({ results }) => {
                 setData(results);
@@ -396,7 +403,7 @@ function Size() {
                                     className="form-control"
                                     placeholder="Nhập size muốn sửa"
                                     name="sizeName"
-                                    value={selectedRecord.sizeName}
+                                    value={sizes.sizeName}
                                     onChange={(e) => onInputChange(e)}
                                 />
                             </div>
@@ -409,7 +416,7 @@ function Size() {
                                     className="form-control"
                                     placeholder="Mô tả của size"
                                     name="sizeDescribe"
-                                    value={selectedRecord.sizeDescribe}
+                                    value={sizes.sizeDescribe}
                                     onChange={(e) => onInputChange(e)}
                                 />
                             </div>
@@ -418,6 +425,38 @@ function Size() {
                             Update
                         </button>
                     </form>
+
+                    //          <form onSubmit={(e) => onSubmit(e)}>
+                    //     <div className="mb-3 row">
+                    //         <label className="col-sm-2 col-form-label">Size</label>
+                    //         <div className="col-sm-10">
+                    //             <input
+                    //                 type={'text'}
+                    //                 className="form-control"
+                    //                 placeholder="Nhập size muốn thêm"
+                    //                 name="sizeName"
+                    //                 value={sizeName}
+                    //                 onChange={(e) => onInputChange(e)}
+                    //             />
+                    //         </div>
+                    //     </div>
+                    //     <div className="mb-3 row">
+                    //         <label className="col-sm-2 col-form-label">Mô Tả</label>
+                    //         <div className="col-sm-10">
+                    //             <input
+                    //                 type={'text'}
+                    //                 className="form-control"
+                    //                 placeholder="Mô tả của size"
+                    //                 name="sizeDescribe"
+                    //                 value={sizeDescribe}
+                    //                 onChange={(e) => onInputChange(e)}
+                    //             />
+                    //         </div>
+                    //     </div>
+                    //     <button className="btn btn-outline-primary mx-2" onClick={handleOk}>
+                    //         Thêm Mới
+                    //     </button>
+                    // </form>
                 )}
             </Modal>
 

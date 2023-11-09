@@ -34,10 +34,7 @@ function Slider() {
                             <Link to={path_name.product}>Danh sách sản phẩm</Link>
                         </li>
                         <li>
-                            <Link to={path_name.size}>Size</Link>
-                        </li>
-                        <li>
-                            <a href="#">Home 3</a>
+                            <Link to={path_name.size}>Danh sách chi tiết sản phẩm</Link>
                         </li>
                     </ul>
                 </li>
@@ -65,10 +62,10 @@ function Slider() {
                     </a>
                     <ul className="collapse list-unstyled" id="userSubmenu">
                         <li>
-                            <a href="#">Page 1</a>
+                            <Link to={path_name.address}>Address</Link>
                         </li>
                         <li>
-                            <a href="#">Page 2</a>
+                            <Link to={path_name.customer}>Customer</Link>
                         </li>
                         <li>
                             <a href="#">Page 3</a>

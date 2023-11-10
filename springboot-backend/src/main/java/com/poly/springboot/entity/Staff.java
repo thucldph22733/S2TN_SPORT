@@ -1,35 +1,30 @@
 package com.poly.springboot.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "staffs")
-public class Staff {
+public class Staff implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "staff_role",
-            joinColumns = @JoinColumn(name = "staff_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> listRole;
 
     @Column(name = "staff_name")
     private String staffName;
@@ -52,13 +47,7 @@ public class Staff {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "city")
-    private String city;
-
-    @Column(name = "country")
-    private String country;
-
-    @Column(name = "login_password")
+    @Column(name = "_password")
     private String password;
 
     @Column(name = "staff_status")
@@ -71,4 +60,37 @@ public class Staff {
     @UpdateTimestamp
     @Column(name = "update_date")
     private LocalDateTime updateDate;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return role.getAuthorities();
+    }
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

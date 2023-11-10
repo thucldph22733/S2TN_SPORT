@@ -1,12 +1,9 @@
 package com.poly.springboot.dto.requestDto;
 
+import com.poly.springboot.entity.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Date;
 
@@ -15,9 +12,6 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StaffRequestDto {
-
-
-    private Long roleId;
 
     @NotBlank(message = "Tên nhân viên không được để trống!")
     private String staffName;
@@ -39,14 +33,10 @@ public class StaffRequestDto {
     @NotBlank(message = "Địa chỉ không được để trống!")
     private String address;
 
-    @NotBlank(message = "tên thành phố không được để trống!")
-    private String city;
-
-    @NotBlank(message = "Quốc gia không được để trống!")
-    private String country;
-
     @NotBlank(message = "Mật khẩu không được để trống!")
     private String password;
 
     private Integer status;
+
+    private Role role;
 }

@@ -1,22 +1,22 @@
 package com.poly.springboot.dto.responseDto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.poly.springboot.entity.Role;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Setter
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class StaffResponseDto {
 
     private Long id;
 
-    private String roleName;
+    private Role role;
 
     private String staffName;
 
@@ -32,10 +32,8 @@ public class StaffResponseDto {
 
     private String address;
 
-    private String city;
-
-    private String country;
-
     private Integer status;
+
+    private LocalDateTime createDate;
 
 }

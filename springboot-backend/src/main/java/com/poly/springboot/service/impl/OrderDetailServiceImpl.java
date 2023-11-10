@@ -40,10 +40,10 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         .stream().map(
                 orderDetail -> new OrderDetailResponseDto(
                         orderDetail.getId(),
-                        orderDetail.getProductDetail().getProduct().getProductAvatar(),
-                        orderDetail.getProductDetail().getColor().getColorName(),
-                        orderDetail.getProductDetail().getSize().getSizeName(),
-                        orderDetail.getProductDetail().getProduct().getProductName(),
+                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductAvatar() : " ",
+                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
+                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
+                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
                         orderDetail.getQuantity(),
                         orderDetail.getPrice(),
                         orderDetail.getStatus(),

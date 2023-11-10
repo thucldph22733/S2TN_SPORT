@@ -1,16 +1,15 @@
 package com.poly.springboot.config;
 
-import com.poly.springboot.exception.AlreadyExistsException;
-import com.poly.springboot.security.CustomUserDetailService;
-import com.poly.springboot.security.CustomUserDetails;
+//import com.poly.springboot.security.CustomUserDetailService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
-import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,66 +21,82 @@ import org.springframework.stereotype.Component;
 //Lop nay dung de sinh ra chuoi JWT
 public class JwtTokenProvider {
 
-    @Autowired
-    private  CustomUserDetailService userDetailService;
 
-    @Value("${application.security.jwt.secret-key}")
+    @Value("${jwt.secret-key}")
     private String secretKey;
-    @Value("${application.security.jwt.expiration}")
-    private long jwtExpiration;
-//    @Value("${application.security.jwt.refresh-token.expiration}")
-//    private long refreshExpiration;
 
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
+
+    @Value("${jwt.refresh-token}")
+    private long refreshExpiration;
+
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
+    }
+
+    public String generateToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails
+    ) {
+        return buildToken(extraClaims, userDetails, jwtExpiration);
+    }
+
+    public String generateRefreshToken(
+            UserDetails userDetails
+    ) {
+        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+    }
+
+    private String buildToken(
+            Map<String, Object> extraClaims,
+            UserDetails userDetails,
+            long expiration
+    ) {
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
-//    Tao ra jwt tu thong tin cua staff
-    public String generateToken(CustomUserDetails customUserDetails) {
-
-        Date now = new Date();
-        Date dateExpired = new Date(now.getTime()+jwtExpiration);
-//        Tao chuoi jwt tu email
-        return Jwts.builder()
-                .setSubject(customUserDetails.getUsername())
-                .setIssuedAt(now)
-                .setExpiration(dateExpired)
-                .signWith(getSignInKey(),SignatureAlgorithm.HS256)
-                .compact();
-
-    }
-// Lay thong tin staff tu jwt
-    public String extractUsername(String token) {
-        Claims claims =  Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-//        Tra ve thong tin username
-        return claims.getSubject();
-    }
-
-    public boolean isValidToken(String token) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSignInKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return true;
-        }catch (ExpiredJwtException ex) {
-            log.error("Token hết hạn",ex);
-        }catch (UnsupportedJwtException ex){
-            log.error("Token không hỗ trợ.",ex);
-        }catch (MalformedJwtException | SignatureException ex) {
-            log.error("Token không đúng.",ex);
-        }catch (IllegalArgumentException ex){
-            log.error("Token chống.",ex);
-        }
-        return false;
-    }
-
-
 }

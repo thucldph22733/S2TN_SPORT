@@ -1,39 +1,60 @@
 package com.poly.springboot.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "roles")
-public class Role {
+import static com.poly.springboot.entity.Permission.ADMIN_CREATE;
+import static com.poly.springboot.entity.Permission.ADMIN_DELETE;
+import static com.poly.springboot.entity.Permission.ADMIN_READ;
+import static com.poly.springboot.entity.Permission.ADMIN_UPDATE;
+import static com.poly.springboot.entity.Permission.STAFF_READ;
+import static com.poly.springboot.entity.Permission.STAFF_DELETE;
+import static com.poly.springboot.entity.Permission.STAFF_CREATE;
+import static com.poly.springboot.entity.Permission.STAFF_UPDATE;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@RequiredArgsConstructor
+public enum Role {
 
-    @Column(name = "role_name")
-    @Enumerated(EnumType.STRING)
-    private ERole roleName;
+    USER(Collections.emptySet()),
+    ADMIN(
+            Set.of(
+                    ADMIN_READ,
+                    ADMIN_UPDATE,
+                    ADMIN_DELETE,
+                    ADMIN_CREATE,
+                    STAFF_READ,
+                    STAFF_UPDATE,
+                    STAFF_DELETE,
+                    STAFF_CREATE
+            )
+    ),
+    STAFF(
+            Set.of(
+                    STAFF_READ,
+                    STAFF_UPDATE,
+                    STAFF_DELETE,
+                    STAFF_CREATE
+            )
+    )
 
-    @Column(name = "role_describe")
-    private String roleDescribe;
+    ;
 
-    @CreationTimestamp
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
+    @Getter
+    private final Set<Permission> permissions;
 
-    @UpdateTimestamp
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        var authorities = getPermissions()
+                .stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+                .collect(Collectors.toList());
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+        return authorities;
+    }
 }

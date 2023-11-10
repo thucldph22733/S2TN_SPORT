@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.sql.Blob;
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -40,7 +41,7 @@ public class Customer {
     @Column(name = "birth_of_day")
     private Date birthOfDay;
 
-    @Column(name = "login_password")
+    @Column(name = "_password")
     private String password;
 
     @Column(name = "customer_status")
@@ -53,4 +54,12 @@ public class Customer {
     @UpdateTimestamp
     @Column(name = "update_date")
     private LocalDateTime updateDate;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "customer_address",
+            joinColumns = @JoinColumn(name = "cutomer_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id")
+    )
+    private Set<Address> listAddress;
 }

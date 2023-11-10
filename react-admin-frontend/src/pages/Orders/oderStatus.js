@@ -296,6 +296,7 @@ function OderStatus() {
     const onEditClick = async (record) => {
         setIsEditMode(true);
         showModal();
+        await axios.get(`http://localhost:8080/api/customers/getAll/${record.id}`);
     };
 
     const onSubmitEdit = async (e) => {

@@ -37,18 +37,18 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public List<OrderDetailResponseDto> getOrderDetails() {
         return orderDetailRepository.findAll()
-        .stream().map(
-                orderDetail -> new OrderDetailResponseDto(
-                        orderDetail.getId(),
-                        orderDetail.getProductDetail().getProduct().getProductAvatar(),
-                        orderDetail.getProductDetail().getColor().getColorName(),
-                        orderDetail.getProductDetail().getSize().getSizeName(),
-                        orderDetail.getProductDetail().getProduct().getProductName(),
-                        orderDetail.getQuantity(),
-                        orderDetail.getPrice(),
-                        orderDetail.getStatus(),
-                        orderDetail.getNote())
-        ).collect(Collectors.toList());
+                .stream().map(
+                        orderDetail -> new OrderDetailResponseDto(
+                                orderDetail.getId(),
+                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductAvatar() : " ",
+                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
+                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
+                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
+                                orderDetail.getQuantity(),
+                                orderDetail.getPrice(),
+                                orderDetail.getStatus(),
+                                orderDetail.getNote())
+                ).collect(Collectors.toList());
     }
 
     @Override

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost3000")
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/orderDetails/")
 @Tag(name = "OrderDetails",description = "( Rest API Hiển thị, thêm, sửa hóa đơn chi tiết )")

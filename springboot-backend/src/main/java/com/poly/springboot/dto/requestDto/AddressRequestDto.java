@@ -13,22 +13,22 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AddressRequestDto {
 
-    @NotBlank(message = "Tên người nhận không được để trống!")
+//    @NotBlank(message = "Tên người nhận không được để trống!")
     private String recipientName;
 
-    @NotBlank(message = "Số điện thoại không được để trống!")
+//    @NotBlank(message = "Số điện thoại không được để trống!")
     private String phoneNumber;
 
-    @NotBlank(message = "Địa chỉ không được để trống!")
+//    @NotBlank(message = "Địa chỉ không được để trống!")
     private String addressDetail;
 
-    @NotBlank(message = "Phường/xã không được để trống!")
+//    @NotBlank(message = "Phường/xã không được để trống!")
     private String region;
 
-    @NotBlank(message = "Quận/huyện phố không được để trống!")
+//    @NotBlank(message = "Quận/huyện phố không được để trống!")
     private  String district;
 
-    @NotBlank(message = "Tỉnh/thành phố không được để trống!")
+//    @NotBlank(message = "Tỉnh/thành phố không được để trống!")
     private String city;
 
 }

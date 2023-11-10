@@ -15,7 +15,6 @@ import qs from 'qs';
 import path_name from '~/core/constants/routers';
 import { DeleteOutlined } from '@ant-design/icons';
 import { FaEdit, FaEye } from 'react-icons/fa';
-import imagess from 'D:/DoAnTotNghiep/S2TN_SPORT/react-admin-frontend/src/assets/images/importImages';
 import { Form } from 'react-bootstrap';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { firebaseApp } from './config';

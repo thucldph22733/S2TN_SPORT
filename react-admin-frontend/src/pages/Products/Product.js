@@ -8,7 +8,7 @@ import qs from 'qs';
 import path_name from '~/core/constants/routers';
 import { DeleteOutlined } from '@ant-design/icons';
 import { FaEdit, FaEye } from 'react-icons/fa';
-import imagess from 'D:/DoAnTotNghiep/S2TN_SPORT/react-admin-frontend/src/assets/images/importImages';
+// import imagess from 'D:/DoAnTotNghiep/S2TN_SPORT/react-admin-frontend/src/assets/images/importImages';
 import { Form } from 'react-bootstrap';
 function Product() {
     const [searchText, setSearchText] = useState('');
@@ -146,7 +146,7 @@ function Product() {
             key: 'productAvatar',
             width: '10%',
             render: (record) => {
-                return <Image width={70} src={imagess[`./${record}`]} />;
+                // return <Image width={70} src={imagess[`./${record}`]} />;
             },
         },
 
@@ -224,7 +224,6 @@ function Product() {
             width: '30%',
             render: (record) => (
                 <div style={{ textAlign: 'center' }}>
-
                     <button
                         onClick={() => toggleProductStatus(record.id)}
                         className="btn btn-outline-danger"
@@ -319,7 +318,18 @@ function Product() {
         status: 1,
     });
 
-    const { productName, avatar, categoryName, clubName, brandName, supplierName, productDescribe, createBy, productSale, status } = product;
+    const {
+        productName,
+        avatar,
+        categoryName,
+        clubName,
+        brandName,
+        supplierName,
+        productDescribe,
+        createBy,
+        productSale,
+        status,
+    } = product;
 
     const onInputChange = (e) => {
         setProduct({ ...product, [e.target.name]: e.target.value });
@@ -473,8 +483,6 @@ function Product() {
             console.error(error);
         }
     };
-
-
 
     return (
         <>

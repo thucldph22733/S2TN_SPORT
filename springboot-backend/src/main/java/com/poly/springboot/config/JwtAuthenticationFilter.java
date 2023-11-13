@@ -1,18 +1,11 @@
 package com.poly.springboot.config;
 
-//import com.alibou.security.token.TokenRepository;
-import com.poly.springboot.config.JwtTokenProvider;
+import com.poly.springboot.repository.TokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.beans.Transient;
 import java.io.IOException;
-import java.security.Security;
-
-import jakarta.transaction.TransactionScoped;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,11 +18,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
+//Lớp JwtAuthenticationFilter là một bộ lọc được sử dụng để xác thực và ủy quyền người dùng trong ứng dụng
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-//    private final TokenRepository tokenRepository;
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -37,25 +31,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        //Nếu đường dẫn của yêu cầu là "/api/v1/auth", bộ lọc sẽ bỏ qua  và chuyển tiếp yêu cầu đến bộ lọc tiếp theo
         if (request.getServletPath().contains("/api/v1/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
+
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
+        final String jwtToken;
         final String userEmail;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+
+        //kiểm tra xem yêu cầu có chứa tiêu đề "Authorization" và có bắt đầu bằng chuỗi "Bearer " hay không.
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
+           /*Nếu không có tiêu đề "Authorization" hoặc không bắt đầu bằng "Bearer ",
+           bộ lọc sẽ bỏ qua và chuyển tiếp yêu cầu đến bộ lọc tiếp theo.*/
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(7);
-        userEmail = jwtTokenProvider.extractUsername(jwt);
+
+
+        //Nếu header hợp lệ, cắt chuỗi để lấy giá trị của token JWT từ chuỗi "Bearer token".
+        jwtToken = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwtToken);
+
+        //Kiểm tra xem email đã được trích xuất từ JWT không và xem người dùng đã được xác thực chưa
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-//            var isTokenValid = tokenRepository.findByToken(jwt)
-//                    .map(t -> !t.isExpired() && !t.isRevoked())
-//                    .orElse(false);
-            if (jwtTokenProvider.isTokenValid(jwt, userDetails) ) {
+
+            var isTokenValid = tokenRepository.findByToken(jwtToken)
+                    .map(t -> !t.isExpired() && !t.isRevoked())
+                    .orElse(false);
+
+            // kiểm tra tính hợp lệ của token bằng cách kiểm tra xem nó có hết hạn hay bị thu hồi không.
+            if (jwtService.isTokenValid(jwtToken, userDetails) && isTokenValid) {
+
+                // Nếu cả hai điều kiện đều đúng
+                // Thì tạo một UsernamePasswordAuthenticationToken và cập nhật SecurityContextHolder để xác thực người dùng đã đăng nhập thành công.
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -67,6 +80,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
+
+        //Bất kỳ yêu cầu nào, sau khi được xác thực hoặc bỏ qua, đều được chuyển tiếp đến bộ lọc tiếp theo trong chuỗi bộ lọc.
         filterChain.doFilter(request, response);
     }
 }

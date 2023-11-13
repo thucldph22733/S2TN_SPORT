@@ -1,9 +1,9 @@
 package com.poly.springboot.config;
 
-//import com.poly.springboot.security.CustomUserDetailService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,27 +11,26 @@ import java.util.Map;
 import java.util.function.Function;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-//Lop nay dung de sinh ra chuoi JWT
-public class JwtTokenProvider {
+/*Lop giúp tạo và xác thực các token, cung cấp các phương tiện để quản lý xác thực người dùng.*/
+public class JwtService {
 
 
-    @Value("${jwt.secret-key}")
+    @Value("${jwt.secret-key}")  // Chứa khóa bí mật được sử dụng để ký và xác minh JWT
     private String secretKey;
 
-    @Value("${jwt.expiration}")
+    @Value("${jwt.expiration}") //Thời gian hết hạn của token JWT.
     private long jwtExpiration;
 
-    @Value("${jwt.refresh-token}")
+    @Value("${jwt.refresh-token}")  //Thời gian hết hạn của refresh token.
     private long refreshExpiration;
 
-
+    //Phương thức extractUsername: Trích xuất tên người dùng từ claim "subject" trong JWT.
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -41,6 +40,17 @@ public class JwtTokenProvider {
         return claimsResolver.apply(claims);
     }
 
+    // Phương thức extractAllClaims:Trích xuất tất cả các claims từ token.
+    private Claims extractAllClaims(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    //Phương thức generateToken: Tạo một token JWT với các claim từ UserDetails
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
@@ -52,12 +62,14 @@ public class JwtTokenProvider {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
+    //Phương thức generateRefreshToken: Tạo một refresh token
     public String generateRefreshToken(
             UserDetails userDetails
     ) {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
+    //Phương thức buildToken: Xây dựng token với các claims, người dùng chi tiết và thời gian hết hạn cụ thể.
     private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
@@ -73,28 +85,24 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /* Phương thức isTokenValid: Kiểm tra xem một token có hợp lệ không bằng cách
+    so sánh tên người dùng và kiểm tra thời gian hết hạn */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
+    //Phương thức isTokenExpired: Kiểm tra xem một token có hết hạn không
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
+    //Phương thức extractExpiration: Trích xuất thời gian hết hạn từ token.
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
+    // Phương thức getSignInKey: Lấy khóa dùng để ký và xác minh JWT từ chuỗi được decode từ secretKey.
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

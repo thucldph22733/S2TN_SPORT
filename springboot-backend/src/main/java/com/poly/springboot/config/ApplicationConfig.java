@@ -1,10 +1,8 @@
 package com.poly.springboot.config;
 
-//import com.alibou.security.auditing.ApplicationAuditAware;
 
 import com.poly.springboot.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -16,20 +14,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 @Configuration
 @RequiredArgsConstructor
-//@Component
 public class ApplicationConfig {
 
-    @Autowired
-    private  StaffRepository staffRepository;
+
+    private final StaffRepository staffRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> staffRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng"));
     }
 
     @Bean
@@ -40,17 +36,17 @@ public class ApplicationConfig {
         return authProvider;
     }
 
-//    @Bean
-//    public AuditorAware<Integer> auditorAware() {
-//        return new AuditorAware<Integer>() {
-//        };
-//    }
+    @Bean
+    public AuditorAware<Long> auditorAware() {
+        return new ApplicationAuditAware();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    //Phương thức này để mã hóa mật khẩu.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -2,18 +2,16 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.StaffRequestDto;
 import com.poly.springboot.dto.responseDto.StaffResponseDto;
-import com.poly.springboot.entity.Role;
 import com.poly.springboot.entity.Staff;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
-//import com.poly.springboot.mapper.StaffMapper;
 import com.poly.springboot.mapper.StaffMapper;
-import com.poly.springboot.repository.RoleRepository;
 import com.poly.springboot.repository.StaffRepository;
 import com.poly.springboot.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +24,8 @@ public class StaffServiceImpl implements StaffService {
     @Autowired
     private StaffRepository staffRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private PasswordEncoder passwordEncoder;
+
 
 
 //    @Override
@@ -57,25 +55,35 @@ public class StaffServiceImpl implements StaffService {
         ).collect(Collectors.toList());
     }
 
-    @Override
-    public Boolean createStaff(StaffRequestDto staffRequestDto) {
-
-        Staff staff = new Staff();
-        StaffMapper.mapToStaffRequest(staff, staffRequestDto);
-        staff.setStatus(0);
-
-        Boolean isPhoneNumber = staffRepository.existsByEmail(staffRequestDto.getPhoneNumber());
-        if (isPhoneNumber) {
-            throw new AlreadyExistsException("Số điện thoại này đã tồn tại !");
-        }
-        Boolean isEmail = staffRepository.existsByEmail(staffRequestDto.getEmail());
-        if (isEmail) {
-            throw new AlreadyExistsException("Địa chỉ email này đã tồn tại !");
-        }
-
-        staffRepository.save(staff);
-        return true;
-    }
+//    @Override
+//    public Boolean createStaff(StaffRequestDto staffRequestDto) {
+//
+//        Boolean isPhoneNumber = staffRepository.existsByPhoneNumber(staffRequestDto.getPhoneNumber());
+//        if (isPhoneNumber) {
+//            throw new AlreadyExistsException("Số điện thoại này đã tồn tại !");
+//        }
+//        Boolean isEmail = staffRepository.existsByEmail(staffRequestDto.getEmail());
+//        if (isEmail) {
+//            throw new AlreadyExistsException("Địa chỉ email này đã tồn tại !");
+//        }
+//
+//        Staff staff = Staff.builder()
+//                .staffName(staffRequestDto.getStaffName())
+//                .avatar(staffRequestDto.getAvatar())
+//                .phoneNumber(staffRequestDto.getPhoneNumber())
+//                .email(staffRequestDto.getEmail())
+//                .gender(staffRequestDto.getGender())
+//                .birthOfDay(staffRequestDto.getBirthOfDay())
+//                .address(staffRequestDto.getAddress())
+//                .password(passwordEncoder.encode(staffRequestDto.getPassword()))
+//                .status(0)
+//                .build();
+//        var savedUser = repository.save(user);
+//        var jwtToken = jwtService.generateToken(user);
+//        var refreshToken = jwtService.generateRefreshToken(user);
+//        staffRepository.save(staff);
+//        return true;
+//    }
 
     @Override
     public Boolean updateStaff(StaffRequestDto staffRequestDto, Long id) {
@@ -96,7 +104,7 @@ public class StaffServiceImpl implements StaffService {
         Staff staff = staffRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("nhân viên", String.valueOf(id)));
 
-        staff.setStatus(staff.getStatus() == 0 ? 1 : 0);
+        staff.setStatus( staff.getStatus() ?false:true);
         staffRepository.save(staff);
 
         return true;

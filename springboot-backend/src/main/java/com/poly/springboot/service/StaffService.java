@@ -15,7 +15,7 @@ public interface StaffService {
 
     List<StaffResponseDto> searchStaff(String keyword,Integer pageNo);
 
-    Boolean createStaff(StaffRequestDto requestDto);
+//    Boolean createStaff(StaffRequestDto requestDto);
 
     Boolean updateStaff(StaffRequestDto requestDto,Long id);
 

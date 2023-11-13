@@ -18,7 +18,6 @@ import static com.poly.springboot.entity.Permission.ADMIN_DELETE;
 import static com.poly.springboot.entity.Permission.ADMIN_READ;
 import static com.poly.springboot.entity.Permission.ADMIN_UPDATE;
 import static com.poly.springboot.entity.Permission.STAFF_READ;
-import static com.poly.springboot.entity.Permission.STAFF_DELETE;
 import static com.poly.springboot.entity.Permission.STAFF_CREATE;
 import static com.poly.springboot.entity.Permission.STAFF_UPDATE;
 import static com.poly.springboot.entity.Role.ADMIN;
@@ -33,9 +32,16 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
+//Lớp SecurityConfig dùng để cấu hình bảo mật
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthFilter;
+    private final AuthenticationProvider authenticationProvider;
+    private final LogoutHandler logoutHandler;
+
+    //mảng chứa các đường dẫn được cho phép truy cập mà không cần xác thực.
     private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**",
+            "/api/staffs**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -44,33 +50,29 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-ui.html"};
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final AuthenticationProvider authenticationProvider;
-//    private final LogoutHandler logoutHandler;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)  //Vô hiệu hóa CSRF (Cross-Site Request Forgery) vì ứng dụng sử dụng token JWT để xác thực thay vì CSRF token.
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
+                        req.requestMatchers(WHITE_LIST_URL) // Không yêu cầu xác thực
                                 .permitAll()
                                 .requestMatchers("/api/brands/**").hasAnyRole(ADMIN.name(), STAFF.name())
                                 .requestMatchers(GET, "/api/brands/**").hasAnyAuthority(ADMIN_READ.name(), STAFF_READ.name())
                                 .requestMatchers(POST, "/api/brands/**").hasAnyAuthority(ADMIN_CREATE.name(), STAFF_CREATE.name())
                                 .requestMatchers(PUT, "/api/brands/**").hasAnyAuthority(ADMIN_UPDATE.name(), STAFF_UPDATE.name())
                                 .requestMatchers(DELETE, "/api/brands/**").hasAnyAuthority(ADMIN_DELETE.name())
-                                .anyRequest()
+                                .anyRequest() //Tất cả các yêu cầu khác yêu cầu xác thực.
                                 .authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider)
+                .authenticationProvider(authenticationProvider)  // xác thực người dùng
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-//                .logout(logout ->
-//                        logout.logoutUrl("/api/v1/auth/logout")
-//                                .addLogoutHandler(logoutHandler)
-//                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-//                )
+                .logout(logout ->
+                        logout.logoutUrl("/api/v1/auth/logout") //đường dẫn đăng xuất
+                                .addLogoutHandler(logoutHandler)  //Khi người dùng đăng xuất, logoutHandler được gọi và sau đó SecurityContextHolder được xóa để đảm bảo là người dùng không được xác thực nữa.
+                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
+                )
         ;
 
         return http.build();

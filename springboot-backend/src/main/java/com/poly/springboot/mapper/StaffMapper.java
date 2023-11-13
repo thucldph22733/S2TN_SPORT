@@ -5,10 +5,10 @@ import com.poly.springboot.dto.responseDto.StaffResponseDto;
 import com.poly.springboot.entity.Staff;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static com.poly.springboot.entity.Staff.*;
 
 public class StaffMapper {
-    private static  PasswordEncoder passwordEncoder;
+
+    private  static  PasswordEncoder passwordEncoder;
 
 
     public static Staff mapToStaffRequest(Staff staff , StaffRequestDto staffRequestDto){

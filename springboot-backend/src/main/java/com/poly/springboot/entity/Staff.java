@@ -10,8 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Setter
 @Getter
@@ -32,10 +31,10 @@ public class Staff implements UserDetails {
     @Column(name = "avatar")
     private String avatar;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number",unique = true,nullable = false) //unique= tre ko dc trung lap, nullable = false ko dc de trong
     private String phoneNumber;
 
-    @Column(name = "email")
+    @Column(name = "email",unique = true,nullable = false)
     private String email;
 
     @Column(name = "gender")
@@ -51,7 +50,7 @@ public class Staff implements UserDetails {
     private String password;
 
     @Column(name = "staff_status")
-    private Integer status;
+    private Boolean status;
 
     @CreationTimestamp
     @Column(name = "create_date")
@@ -64,33 +63,41 @@ public class Staff implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToMany(mappedBy = "staff")
+    private List<Token> tokens;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }
 
     @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
     public String getUsername() {
-        return null;
+        return this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

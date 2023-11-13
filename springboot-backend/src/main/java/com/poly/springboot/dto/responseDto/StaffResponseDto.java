@@ -32,7 +32,7 @@ public class StaffResponseDto {
 
     private String address;
 
-    private Integer status;
+    private Boolean status;
 
     private LocalDateTime createDate;
 

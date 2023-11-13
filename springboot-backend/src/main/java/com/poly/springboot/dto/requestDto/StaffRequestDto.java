@@ -11,32 +11,33 @@ import java.sql.Date;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class StaffRequestDto {
 
-    @NotBlank(message = "Tên nhân viên không được để trống!")
+//    @NotBlank(message = "Tên nhân viên không được để trống!")
     private String staffName;
 
     private String avatar;
 
-    @NotBlank(message = "Số điện thoại không được để trống!")
+//    @NotBlank(message = "Số điện thoại không được để trống!")
     private String phoneNumber;
 
-    @NotBlank(message = "Địa chỉ email không được để trống!")
+//    @NotBlank(message = "Địa chỉ email không được để trống!")
     private String email;
 
-    @NotNull(message = "Vui lòng chọn giới tính!")
+//    @NotNull(message = "Vui lòng chọn giới tính!")
     private Boolean gender;
 
-    @NotNull(message = "Ngày sinh không được để trống!")
+//    @NotNull(message = "Ngày sinh không được để trống!")
     private Date birthOfDay;
 
-    @NotBlank(message = "Địa chỉ không được để trống!")
+//    @NotBlank(message = "Địa chỉ không được để trống!")
     private String address;
 
-    @NotBlank(message = "Mật khẩu không được để trống!")
+//    @NotBlank(message = "Mật khẩu không được để trống!")
     private String password;
 
-    private Integer status;
+    private Boolean status;
 
     private Role role;
 }

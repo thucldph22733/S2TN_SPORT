@@ -9,7 +9,7 @@ import {
 } from 'react-icons/ai';
 import { CgPassword } from 'react-icons/cg';
 import { Link } from 'react-router-dom';
-import path_name from '~/core/constants/routers';
+import path_name from '~/constants/routers';
 function Slider() {
     return (
         <nav id="sidebar">

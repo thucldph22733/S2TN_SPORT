@@ -1,5 +1,6 @@
 package com.poly.springboot.config;
 
+import com.poly.springboot.entity.Staff;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +46,6 @@ public class SecurityConfig {
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
-            "/swagger-resources",
             "/swagger-resources/**",
             "/swagger-ui/**",
             "/swagger-ui.html"};
@@ -57,11 +57,31 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL) // Không yêu cầu xác thực
                                 .permitAll()
+
                                 .requestMatchers("/api/brands/**").hasAnyRole(ADMIN.name(), STAFF.name())
                                 .requestMatchers(GET, "/api/brands/**").hasAnyAuthority(ADMIN_READ.name(), STAFF_READ.name())
                                 .requestMatchers(POST, "/api/brands/**").hasAnyAuthority(ADMIN_CREATE.name(), STAFF_CREATE.name())
                                 .requestMatchers(PUT, "/api/brands/**").hasAnyAuthority(ADMIN_UPDATE.name(), STAFF_UPDATE.name())
                                 .requestMatchers(DELETE, "/api/brands/**").hasAnyAuthority(ADMIN_DELETE.name())
+
+                                //Staff
+                                .requestMatchers("/api/staffs/**").hasAnyRole(ADMIN.name())
+                                .requestMatchers(GET, "/api/staffs/**").hasAnyAuthority(ADMIN_READ.name())
+                                .requestMatchers(POST, "/api/staffs/**").hasAnyAuthority(ADMIN_CREATE.name())
+                                .requestMatchers(PUT, "/api/staffs/**").hasAnyAuthority(ADMIN_UPDATE.name())
+                                .requestMatchers(DELETE, "/api/staffs/**").hasAnyAuthority(ADMIN_DELETE.name())
+                                 //Customer
+                                .requestMatchers("/api/customers/**").hasAnyRole(ADMIN.name(),STAFF.name())
+                                .requestMatchers(GET, "/api/customers/**").hasAnyAuthority(ADMIN_READ.name(),STAFF.name())
+                                .requestMatchers(POST, "/api/customers/**").hasAnyAuthority(ADMIN_CREATE.name(),STAFF.name())
+                                .requestMatchers(PUT, "/api/customers/**").hasAnyAuthority(ADMIN_UPDATE.name(),STAFF.name())
+                                .requestMatchers(DELETE, "/api/customers/**").hasAnyAuthority(ADMIN_DELETE.name())
+                                //Product
+                                .requestMatchers("/api/customers/**").hasAnyRole(ADMIN.name(),STAFF.name())
+                                .requestMatchers(GET, "/api/customers/**").hasAnyAuthority(ADMIN_READ.name(),STAFF.name())
+                                .requestMatchers(POST, "/api/customers/**").hasAnyAuthority(ADMIN_CREATE.name(),STAFF.name())
+                                .requestMatchers(PUT, "/api/customers/**").hasAnyAuthority(ADMIN_UPDATE.name(),STAFF.name())
+                                .requestMatchers(DELETE, "/api/customers/**").hasAnyAuthority(ADMIN_DELETE.name())
                                 .anyRequest() //Tất cả các yêu cầu khác yêu cầu xác thực.
                                 .authenticated()
                 )

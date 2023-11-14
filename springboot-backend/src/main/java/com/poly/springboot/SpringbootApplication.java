@@ -2,9 +2,6 @@ package com.poly.springboot;
 
 import com.poly.springboot.dto.requestDto.StaffRequestDto;
 import static com.poly.springboot.entity.Role.ADMIN;
-import static com.poly.springboot.entity.Role.STAFF;
-import com.poly.springboot.entity.Staff;
-import com.poly.springboot.service.AuthenticationService;
 import com.poly.springboot.service.StaffService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,10 +17,9 @@ public class SpringbootApplication {
         SpringApplication.run(SpringbootApplication.class, args);
     }
 
-
 //    @Bean
 //    public CommandLineRunner commandLineRunner(
-//            AuthenticationService service
+//            StaffService staffService
 //    ) {
 //        return args -> {
 //            var admin = StaffRequestDto.builder()
@@ -32,15 +28,8 @@ public class SpringbootApplication {
 //                    .password("password")
 //                    .role(ADMIN)
 //                    .build();
-//            System.out.println("Admin token: " + service.register(admin).getAccessToken());
+//            System.out.println("Admin token: " + staffService.createStaff(admin));
 //
-//            var manager = StaffRequestDto.builder()
-//                    .staffName("thanh")
-//                    .email("thanh@gmail.com")
-//                    .password("password")
-//                    .role(STAFF)
-//                    .build();
-//            System.out.println("Staff token: " + service.register(manager).getAccessToken());
 //        };
 //    }
 }

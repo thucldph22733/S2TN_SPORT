@@ -4,10 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Blob;
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Set;
 
 @Setter
@@ -17,7 +20,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "customers")
-public class Customer {
+public class Customer{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,4 +65,6 @@ public class Customer {
             inverseJoinColumns = @JoinColumn(name = "address_id")
     )
     private Set<Address> listAddress;
+
+
 }

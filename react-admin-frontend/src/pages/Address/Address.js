@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Button, Input, Space, Table, theme } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import qs from 'qs';
-import path_name from '~/core/constants/routers';
+import path_name from '~/constants/routers';
 import { DeleteOutlined } from '@ant-design/icons';
 export default function Address() {
     const [searchText, setSearchText] = useState('');

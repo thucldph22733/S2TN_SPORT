@@ -3,29 +3,26 @@ package com.poly.springboot.mapper;
 import com.poly.springboot.dto.requestDto.StaffRequestDto;
 import com.poly.springboot.dto.responseDto.StaffResponseDto;
 import com.poly.springboot.entity.Staff;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 public class StaffMapper {
 
-    private  static  PasswordEncoder passwordEncoder;
 
-
+    //Phương thức chuyển đổi từ StaffRequestDto sang Staff
     public static Staff mapToStaffRequest(Staff staff , StaffRequestDto staffRequestDto){
 
-           Staff.builder()
-                .staffName(staffRequestDto.getStaffName())
-                .avatar(staffRequestDto.getAvatar())
-                .phoneNumber(staffRequestDto.getPhoneNumber())
-                .email(staffRequestDto.getEmail())
-                .gender(staffRequestDto.getGender())
-                .birthOfDay(staffRequestDto.getBirthOfDay())
-                .address(staffRequestDto.getAddress())
-                .password(passwordEncoder.encode(staffRequestDto.getPassword()))
-                .status(staffRequestDto.getStatus())
-                .build();
-         return staff;
+        staff.setStaffName(staffRequestDto.getStaffName());
+        staff.setAvatar(staffRequestDto.getAvatar());
+        staff.setPhoneNumber(staffRequestDto.getPhoneNumber());
+        staff.setEmail(staffRequestDto.getEmail());
+        staff.setBirthOfDay(staffRequestDto.getBirthOfDay());
+        staff.setAddress(staffRequestDto.getAddress());
+        staff.setStatus(staffRequestDto.getStatus());
+        staff.setRole(staffRequestDto.getRole());
+
+        return staff;
     }
+    //Phương thức chuyển đổi từ Staff sang StaffResponseDto
     public static StaffResponseDto mapToStaffResponse(Staff staff){
 
         StaffResponseDto staffResponseDto = StaffResponseDto.builder()

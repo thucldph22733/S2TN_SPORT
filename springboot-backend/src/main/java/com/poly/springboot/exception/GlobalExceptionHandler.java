@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @ControllerAdvice
+//Lớp để xử lý các ngoại lệ (exceptions) global trong ứng dụng
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override

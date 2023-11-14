@@ -34,13 +34,13 @@ public class StaffController {
     @Autowired
     private StaffService staffService;
 
-//    @GetMapping("getAll")
-//    public ResponseEntity<List<StaffResponseDto>> getStaffs(){
-//        List<StaffResponseDto> staffResponseDtoList = staffService.getStaffs();
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(staffResponseDtoList);
-//    }
+    @GetMapping("getAll")
+    public ResponseEntity<List<StaffResponseDto>> getStaffs(){
+        List<StaffResponseDto> staffResponseDtoList = staffService.getStaffs();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(staffResponseDtoList);
+    }
 
     @GetMapping("pagination")
     public ResponseEntity<List<StaffResponseDto>> getPagination(@RequestParam Optional<Integer> pageNo){
@@ -58,19 +58,19 @@ public class StaffController {
                 .body(staffResponseDtoList);
     }
 
-//    @PostMapping("create")
-//    public ResponseEntity<ResponseDto> createStaff(@RequestBody StaffRequestDto staffRequestDto){
-//        Boolean isCreated = staffService.createStaff(staffRequestDto);
-//        if (isCreated){
-//            return ResponseEntity
-//                    .status(HttpStatus.CREATED)
-//                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
-//        }else {
-//            return ResponseEntity
-//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
-//        }
-//    }
+    @PostMapping("create")
+    public ResponseEntity<ResponseDto> createStaff(@RequestBody StaffRequestDto staffRequestDto){
+        Boolean isCreated = staffService.createStaff(staffRequestDto);
+        if (isCreated){
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
+    }
 
     @PutMapping("update")
     public ResponseEntity<ResponseDto> updateStaff(@Valid @RequestBody StaffRequestDto staffRequestDto, @RequestParam Long id){

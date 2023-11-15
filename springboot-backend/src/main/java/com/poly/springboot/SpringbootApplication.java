@@ -26,6 +26,7 @@ public class SpringbootApplication {
 //                    .staffName("admin")
 //                    .email("admin@gmail.com")
 //                    .password("password")
+//                    .phoneNumber("0369958572")
 //                    .role(ADMIN)
 //                    .build();
 //            System.out.println("Admin token: " + staffService.createStaff(admin));

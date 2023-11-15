@@ -1,32 +1,21 @@
 import { Link, useNavigate } from 'react-router-dom';
 import path_name from '~/constants/routers';
 import { useState } from 'react';
-import axios from 'axios';
+import { useAuth } from '~/components/AuthContext';
+
 import './Auth.css';
 function LogIn() {
+    const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
 
-    let navigate = useNavigate();
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        await axios.post("http://localhost:8080/api/v1/auth/admin/login",
-            JSON.stringify({ email, password }),
-            {
-                headers: { 'Content-Type': 'application/json' },
-            }).then(function (response) {
-                console.log(response.data);
-
-                const token = response.data.access_token
-
-                localStorage.setItem('jsonwebtoken', token)
-                navigate("/");
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        login(email, password);
     };
+
+
     return (
         <div className="container">
             <div className="row justify-content-center">
@@ -39,28 +28,25 @@ function LogIn() {
                                         <div className="text-center">
                                             <h1 className="h4 text-gray-900 mb-4">Đăng nhập!</h1>
                                         </div>
-                                        <form className="user" onSubmit={(e) => handleSubmit(e)}>
+                                        <form className="user" onSubmit={handleSubmit}>
                                             <div className="form-group">
                                                 <input
                                                     type="email"
                                                     className="form-control form-control-user"
-                                                    id="exampleInputEmail"
                                                     aria-describedby="emailHelp"
                                                     placeholder="Nhập địa chỉ email..."
-                                                    name="email"
-                                                    onChange={(e) => setEmail(e.target.value)}
                                                     value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
                                                 />
                                             </div>
                                             <div className="form-group">
                                                 <input
                                                     type="password"
                                                     className="form-control form-control-user"
-                                                    id="exampleInputPassword"
                                                     placeholder="Nhập mật khẩu..."
                                                     name="password"
-                                                    onChange={(e) => setPassword(e.target.value)}
                                                     value={password}
+                                                    onChange={(e) => setPassword(e.target.value)}
                                                 />
                                             </div>
                                             <div className="form-group">

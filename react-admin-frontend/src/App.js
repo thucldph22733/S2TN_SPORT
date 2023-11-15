@@ -18,8 +18,7 @@ import Size from './pages/Products/Sizes';
 import EditProduct from './pages/Products/EditProduct';
 import AddProduct from './pages/Products/AddProduct';
 import ForgotPassword from './pages/Auth/ForgotPassword';
-import PrivateRoute from './layouts/PrivateRoute';
-
+import { AuthProvider } from './components/AuthContext';
 function App() {
     const router = createBrowserRouter([
         {
@@ -31,7 +30,7 @@ function App() {
             element: <ForgotPassword />,
         },
         {   
-            element: <PrivateRoute/>,
+            element: <AuthProvider/>,
             children:[{
             path: path_name.home,
             element: <MainLayout />,

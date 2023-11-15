@@ -205,7 +205,6 @@ public class StaffServiceImpl implements StaffService {
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
 
-
         }
     }
 

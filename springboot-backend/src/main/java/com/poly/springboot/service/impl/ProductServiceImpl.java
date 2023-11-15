@@ -42,19 +42,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-
     @Override
     public List<ProductResponseDto> getProducts() {
         return productRepository.findAll()
-                .stream().map(product -> ProductMapper.mapToProductResponse(product,new ProductResponseDto())
-        ).collect(Collectors.toList());
+                .stream().map(product -> ProductMapper.mapToProductResponse(product, new ProductResponseDto())
+                ).collect(Collectors.toList());
     }
 
     @Override
     public List<ProductResponseDto> getPagination(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo,10);
+        Pageable pageable = PageRequest.of(pageNo, 10);
         List<ProductResponseDto> list = productRepository.findAll(pageable)
-                .stream().map(product -> ProductMapper.mapToProductResponse(product,new ProductResponseDto())
+                .stream().map(product -> ProductMapper.mapToProductResponse(product, new ProductResponseDto())
                 ).collect(Collectors.toList());
         return list;
     }
@@ -63,17 +62,12 @@ public class ProductServiceImpl implements ProductService {
     public Boolean deleteProduct(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("sản phẩm",String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("sản phẩm", String.valueOf(id)));
 
-        if (product.getStatus() == 0){
-            product.setStatus(1);
-        }else {
-            product.setStatus(0);
-        }
+        product.setStatus(product.getStatus() ? false : true);
         productRepository.save(product);
         return true;
     }
-
 
 
     @Override
@@ -84,9 +78,9 @@ public class ProductServiceImpl implements ProductService {
         product.setClub(clubRepository.findById(productRequestDto.getClubId()).orElse(null));
         product.setBrand(brandRepository.findById(productRequestDto.getBrandId()).orElse(null));
         product.setSupplier(supplierRepository.findById(productRequestDto.getSupplierId()).orElse(null));
-        ProductMapper.mapToProductRequest(product,productRequestDto);
-        product.setStatus(0);
-        if (productRepository.existsByProductName(productRequestDto.getProductName())){
+        ProductMapper.mapToProductRequest(product, productRequestDto);
+        product.setStatus(productRequestDto.getStatus());
+        if (productRepository.existsByProductName(productRequestDto.getProductName())) {
             throw new AlreadyExistsException("Tên sản phẩm đã tồn tại!");
         }
         productRepository.save(product);
@@ -96,13 +90,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Boolean updateProduct(ProductRequestDto productRequestDto, Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("sản phẩm",String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("sản phẩm", String.valueOf(id)));
 
         product.setCategory(categoryRepository.findById(productRequestDto.getCategoryId()).orElse(null));
         product.setClub(clubRepository.findById(productRequestDto.getClubId()).orElse(null));
         product.setBrand(brandRepository.findById(productRequestDto.getBrandId()).orElse(null));
         product.setSupplier(supplierRepository.findById(productRequestDto.getSupplierId()).orElse(null));
-        ProductMapper.mapToProductRequest(product,productRequestDto);
+        ProductMapper.mapToProductRequest(product, productRequestDto);
 
         productRepository.save(product);
         return true;
@@ -112,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
     public Product findProductById(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("sản phẩm",String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("sản phẩm", String.valueOf(id)));
 
         return product;
     }

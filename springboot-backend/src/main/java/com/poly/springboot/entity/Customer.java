@@ -1,5 +1,6 @@
 package com.poly.springboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -48,7 +49,7 @@ public class Customer{
     private String password;
 
     @Column(name = "customer_status")
-    private Integer status;
+    private Boolean status;
 
     @CreationTimestamp
     @Column(name = "create_date")
@@ -61,10 +62,13 @@ public class Customer{
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "customer_address",
-            joinColumns = @JoinColumn(name = "cutomer_id"),
+            joinColumns = @JoinColumn(name = "customer_id"),
             inverseJoinColumns = @JoinColumn(name = "address_id")
     )
-    private Set<Address> listAddress;
+    private Set<Address> address;
 
 
+    @OneToOne(mappedBy = "customers")
+    @JsonIgnore
+    private Cart cart;
 }

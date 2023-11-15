@@ -50,7 +50,7 @@ public class Address {
     @Column(name = "update_date")
     private LocalDateTime updateDate;
 
-    @ManyToMany(mappedBy = "listAddress")
+    @ManyToMany(mappedBy = "address")
     @JsonIgnore
-    private Set<Customer> listCustomer;
+    private Set<Customer> customers;
 }

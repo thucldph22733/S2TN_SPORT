@@ -55,7 +55,7 @@ public class ProductDetail {
     private Double promotionPrice;
 
     @Column(name = "product_status")
-    private Integer status;
+    private Boolean status;
 
     @CreationTimestamp
     @Column(name = "create_date")

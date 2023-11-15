@@ -52,13 +52,13 @@ public class Product {
     private String productAvatar;
 
     @Column(name = "product_hot")
-    private Integer productHot;
+    private Boolean productHot;
 
     @Column(name = "product_sale")
-    private Integer productSale;
+    private Boolean productSale;
 
     @Column(name = "product_new")
-    private Integer productNew;
+    private Boolean productNew;
 
     @Column(name = "view_count")
     private Integer viewCount;
@@ -67,7 +67,7 @@ public class Product {
     private String productDescribe;
 
     @Column(name = "product_status")
-    private Integer status;
+    private Boolean status;
 
     @CreationTimestamp
     @Column(name = "create_date")

@@ -17,7 +17,7 @@ public class VoucherMapper {
         voucher.setOrderMinimum(voucherRequestDto.getOrderMinimum());
         voucher.setDiscountRate(voucherRequestDto.getDiscountRate());
         voucher.setVoucherDescribe(voucherRequestDto.getVoucherDescribe());
-        voucher.setVoucherStatus(voucherRequestDto.getVoucherStatus());
+        voucher.setStatus(voucherRequestDto.getStatus());
 
         return voucher;
     }
@@ -33,7 +33,7 @@ public class VoucherMapper {
         voucherResponseDto.setOrderMinimum(voucher.getOrderMinimum());
         voucherResponseDto.setDiscountRate(voucher.getDiscountRate());
         voucherResponseDto.setVoucherDescribe(voucher.getVoucherDescribe());
-        voucherResponseDto.setVoucherStatus(voucher.getVoucherStatus());
+        voucherResponseDto.setStatus(voucher.getStatus());
 
         return voucherResponseDto;
     }

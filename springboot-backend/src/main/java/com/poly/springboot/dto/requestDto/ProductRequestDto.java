@@ -28,17 +28,17 @@ public class ProductRequestDto {
     @NotBlank(message = "Ảnh sản phẩm không được để trống!")
     private String productAvatar;
 
-    private Integer productHot;
+    private Boolean productHot;
 
-    private Integer productSale;
+    private Boolean productSale;
 
-    private Integer productNew;
+    private Boolean productNew;
 
     private Integer viewCount;
 
     private String productDescribe;
 
-    private Integer status;
+    private Boolean status;
 
     @NotBlank(message = "Tên người tạo không được để trống!")
     private String createBy;

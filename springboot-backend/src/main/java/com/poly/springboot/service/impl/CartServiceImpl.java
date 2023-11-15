@@ -24,7 +24,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = new Cart();
 
-        cart.setCustomer(customer);
+        cart.setCustomers(customer);
 
         cartRepository.save(cart);
         return true;

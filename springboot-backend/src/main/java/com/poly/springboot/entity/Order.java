@@ -54,6 +54,10 @@ public class Order {
     @JoinColumn(name = "status_id")
     private OrderStatus orderStatus;
 
+    @ManyToOne
+    @JoinColumn(name = "voucher_id")
+    private Voucher voucher;
+
     @CreationTimestamp
     @Column(name = "order_date")
     private LocalDateTime orderDate;

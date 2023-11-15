@@ -28,7 +28,7 @@ public class ProductDetailRequestDto {
 
     private Double promotionPrice;
 
-    private Integer status;
+    private Boolean status;
 
     private String createBy;
 

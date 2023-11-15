@@ -54,7 +54,7 @@ public class CustomerController {
             @RequestParam("gender") Boolean gender,
             @RequestParam("birthOfDay") Date birthOfDay,
             @RequestParam("password") String password,
-            @RequestParam("status") Integer status
+            @RequestParam("status") Boolean status
 
     ) throws IOException, SQLException {
         CustomerRequestDto customerRequestDto = new CustomerRequestDto();
@@ -101,7 +101,7 @@ public class CustomerController {
             @RequestParam("gender") Boolean gender,
             @RequestParam("birthOfDay") Date birthOfDay,
             @RequestParam("password") String password,
-            @RequestParam("status") Integer status
+            @RequestParam("status") Boolean status
           ) throws IOException {
         CustomerRequestDto customerRequestDto = new CustomerRequestDto();
         customerRequestDto.setCustomerName(customerName);

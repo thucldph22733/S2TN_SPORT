@@ -63,7 +63,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         orderDetail.setProductDetail(productDetail);
         orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
         orderDetail.setPrice(orderDetailRequestDto.getPrice());
-        orderDetail.setStatus(0);
+        orderDetail.setStatus(orderDetailRequestDto.getStatus());
         orderDetail.setNote(orderDetailRequestDto.getNote());
 
         orderDetailRepository.save(orderDetail);

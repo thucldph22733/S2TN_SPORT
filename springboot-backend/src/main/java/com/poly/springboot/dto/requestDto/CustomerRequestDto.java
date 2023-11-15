@@ -36,6 +36,6 @@ public class CustomerRequestDto {
     @NotBlank(message = "Mật khẩu không được để trống!")
     private String password;
 
-    private Integer status;
+    private Boolean status;
 
 }

@@ -20,7 +20,7 @@ public class OrderDetailRequestDto {
 
     private Double price;
 
-    private Integer status;
+    private Boolean status;
 
     private String note;
 }

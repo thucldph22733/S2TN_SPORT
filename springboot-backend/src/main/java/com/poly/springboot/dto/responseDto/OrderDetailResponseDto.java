@@ -26,7 +26,7 @@ public class OrderDetailResponseDto {
 
     private Double price;
 
-    private Integer status;
+    private Boolean status;
 
     private String note;
 }

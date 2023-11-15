@@ -44,7 +44,7 @@ public class OrderDetail {
     private Double price;
 
     @Column(name = "order_status")
-    private Integer status;
+    private Boolean status;
 
     @Column(name = "note")
     private String note;

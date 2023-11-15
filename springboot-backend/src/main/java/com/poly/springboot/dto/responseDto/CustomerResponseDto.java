@@ -30,6 +30,6 @@ public class CustomerResponseDto {
 
     private String password;
 
-    private Integer status;
+    private Boolean status;
 
 }

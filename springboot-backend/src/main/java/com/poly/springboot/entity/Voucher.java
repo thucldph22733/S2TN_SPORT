@@ -58,7 +58,7 @@ public class Voucher {
     private String voucherDescribe;
 
     @Column(name = "voucher_status")
-    private Boolean voucherStatus;
+    private Boolean status;
 
     @CreationTimestamp
     @Column(name = "create_date")

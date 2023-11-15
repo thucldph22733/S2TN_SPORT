@@ -43,6 +43,6 @@ public class VoucherRequestDto {
 
     private String voucherDescribe;
 
-    private Boolean voucherStatus;
+    private Boolean status;
 
 }

@@ -10,10 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -21,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "categories")
-public class Category {
+public class Category extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,11 +30,4 @@ public class Category {
     @Column(name = "category_describe")
     private String categoryDescribe;
 
-    @CreationTimestamp
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 }

@@ -2,16 +2,11 @@ package com.poly.springboot.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.sql.Blob;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.sql.Date;
-import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Set;
 
 @Setter
@@ -19,9 +14,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
 @Table(name = "customers")
-public class Customer{
+public class Customer extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,13 +45,6 @@ public class Customer{
     @Column(name = "customer_status")
     private Boolean status;
 
-    @CreationTimestamp
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -66,7 +53,6 @@ public class Customer{
             inverseJoinColumns = @JoinColumn(name = "address_id")
     )
     private Set<Address> address;
-
 
     @OneToOne(mappedBy = "customers")
     @JsonIgnore

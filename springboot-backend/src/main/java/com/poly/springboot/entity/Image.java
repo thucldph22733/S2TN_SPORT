@@ -12,9 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import java.time.LocalDateTime;
+
 
 @Setter
 @Getter
@@ -22,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "images")
-public class Image {
+public class Image extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,11 +39,5 @@ public class Image {
     @Column(name = "image_type")
     private String imageType;
 
-    @CreationTimestamp
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
 
-    @UpdateTimestamp
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 }

@@ -1,14 +1,15 @@
 package com.poly.springboot.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,10 +17,10 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
+@Builder
 @Table(name = "staffs")
-public class Staff implements UserDetails {
+public class Staff extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,14 +52,6 @@ public class Staff implements UserDetails {
 
     @Column(name = "staff_status")
     private Boolean status;
-
-    @CreationTimestamp
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 
     @Enumerated(EnumType.STRING)
     private Role role;

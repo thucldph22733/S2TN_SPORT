@@ -6,10 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Setter
@@ -41,14 +37,6 @@ public class Address {
 
     @Column(name = "city")  //tinh/thanh pho
     private String city;
-
-    @CreationTimestamp
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @UpdateTimestamp
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 
     @ManyToMany(mappedBy = "address")
     @JsonIgnore

@@ -29,9 +29,9 @@ function App() {
             path: path_name.forgot_password,
             element: <ForgotPassword />,
         },
-        {   
-            element: <AuthProvider/>,
-            children:[{
+        {
+            // element: <AuthProvider/>,
+            // children:[{
             path: path_name.home,
             element: <MainLayout />,
             children: [
@@ -83,7 +83,8 @@ function App() {
                 //     path: path_name.editproduct + '/:id',
                 //     element: <EditProduct />,
                 // },
-            ],}]
+            ],
+            // }]
         },
     ]);
     return <RouterProvider router={router} />;

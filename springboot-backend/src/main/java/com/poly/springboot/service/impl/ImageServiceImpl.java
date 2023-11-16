@@ -31,7 +31,7 @@ public class ImageServiceImpl implements ImageService {
         image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
         image.setImageLink(imageRequestDto.getImageLink());
-        image.setImageDescribe(imageRequestDto.getImageDescribe());
+        image.setImageType(imageRequestDto.getImageType());
 
         imageRepository.save(image);
         return true;
@@ -45,7 +45,7 @@ public class ImageServiceImpl implements ImageService {
         image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
         image.setImageLink(imageRequestDto.getImageLink());
-        image.setImageDescribe(imageRequestDto.getImageDescribe());
+        image.setImageType(imageRequestDto.getImageType());
 
         imageRepository.save(image);
         return true;

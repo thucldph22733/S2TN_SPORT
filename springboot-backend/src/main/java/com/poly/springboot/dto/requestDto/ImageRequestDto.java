@@ -22,6 +22,6 @@ public class ImageRequestDto {
     @NotBlank(message = "Đường dẫn ảnh không được để trống!")
     private String imageLink;
 
-    private String imageDescribe;
+    private String imageType;
 
 }

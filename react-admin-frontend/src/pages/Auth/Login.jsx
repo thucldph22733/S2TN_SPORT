@@ -1,20 +1,32 @@
 import { Link, useNavigate } from 'react-router-dom';
 import path_name from '~/constants/routers';
 import { useState } from 'react';
-import { useAuth } from '~/components/AuthContext';
-
+// import { useAuth } from '~/components/AuthContext';
+import axios from 'axios';
 import './Auth.css';
 function LogIn() {
-    const { login } = useAuth();
+    // const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
-
-    const handleSubmit = (e) => {
+    let navigate = useNavigate();
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        login(email, password);
-    };
+        await axios.post("http://localhost:8080/api/v1/auth/login",
+            JSON.stringify({ email, password }),
+            {
+                headers: { 'Content-Type': 'application/json' },
+            }).then(function (response) {
+                console.log(response.data);
 
+                const token = response.data.access_token
+
+                localStorage.setItem('jsonwebtoken', token)
+                navigate("/");
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    };
 
     return (
         <div className="container">

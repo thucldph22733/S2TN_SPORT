@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 
 @Setter
@@ -39,8 +38,8 @@ public class Image {
     @Column(name = "image_link")
     private String imageLink;
 
-    @Column(name = "image_describe")
-    private String imageDescribe;
+    @Column(name = "image_type")
+    private String imageType;
 
     @CreationTimestamp
     @Column(name = "create_date")

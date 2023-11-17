@@ -40,9 +40,6 @@ public class OrderDetail extends BaseEntity{
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "order_status")
-    private Boolean status;
-
     @Column(name = "note")
     private String note;
 

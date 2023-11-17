@@ -46,7 +46,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Boolean updateDelivery(DeliveryRequestDto deliveryRequestDto, Long id) {
 
         Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("phương thức giao hàng",String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id phương thức giao hàng này!"));
 
         delivery.setDeliveryName(deliveryRequestDto.getDeliveryName());
         delivery.setPrice(deliveryRequestDto.getPrice());
@@ -62,7 +62,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Boolean deleteDelivery(Long id) {
 
         Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("phương thức vận chuyển",String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id phương thức giao hàng này!"));
 
         deliveryRepository.deleteById(delivery.getId());
         return true;

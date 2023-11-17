@@ -40,13 +40,13 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         .stream().map(
                 orderDetail -> new OrderDetailResponseDto(
                         orderDetail.getId(),
-                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductAvatar() : " ",
+                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
                         orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
                         orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
                         orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
                         orderDetail.getQuantity(),
                         orderDetail.getPrice(),
-                        orderDetail.getStatus(),
+                        orderDetail.isDeleted(),
                         orderDetail.getNote())
         ).collect(Collectors.toList());
     }
@@ -63,7 +63,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         orderDetail.setProductDetail(productDetail);
         orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
         orderDetail.setPrice(orderDetailRequestDto.getPrice());
-        orderDetail.setStatus(orderDetailRequestDto.getStatus());
+        orderDetail.setDeleted(orderDetailRequestDto.getStatus());
         orderDetail.setNote(orderDetailRequestDto.getNote());
 
         orderDetailRepository.save(orderDetail);
@@ -78,12 +78,12 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         Order order = orderRepository.findById(orderDetailRequestDto.getOrderId()).orElse(null);
 
         OrderDetail orderDetail = orderDetailRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("hóa đơn chi tiết",String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id hóa đơn chi tiết này!"));
         orderDetail.setOrder(order);
         orderDetail.setProductDetail(productDetail);
         orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
         orderDetail.setPrice(orderDetailRequestDto.getPrice());
-        orderDetail.setStatus(orderDetailRequestDto.getStatus());
+        orderDetail.setDeleted(orderDetailRequestDto.getStatus());
         orderDetail.setNote(orderDetailRequestDto.getNote());
 
         orderDetailRepository.save(orderDetail);

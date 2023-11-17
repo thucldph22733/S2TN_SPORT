@@ -23,7 +23,7 @@ public class ProductResponseDto {
 
     private String productName;
 
-    private String productAvatar;
+    private String avatar;
 
     private Boolean productHot;
 

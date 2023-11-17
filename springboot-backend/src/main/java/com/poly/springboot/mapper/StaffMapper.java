@@ -17,7 +17,7 @@ public class StaffMapper {
         staff.setEmail(staffRequestDto.getEmail());
         staff.setBirthOfDay(staffRequestDto.getBirthOfDay());
         staff.setAddress(staffRequestDto.getAddress());
-        staff.setStatus(staffRequestDto.getStatus());
+        staff.setDeleted(staffRequestDto.getStatus());
         staff.setRole(staffRequestDto.getRole());
 
         return staff;
@@ -35,8 +35,7 @@ public class StaffMapper {
                 .gender(staff.getGender())
                 .birthOfDay(staff.getBirthOfDay())
                 .address(staff.getAddress())
-                .status(staff.getStatus())
-                .createDate(staff.getCreateDate())
+                .status(staff.isDeleted())
                 .build();
 
         return staffResponseDto;

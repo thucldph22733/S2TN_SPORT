@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-/*Lop giúp tạo và xác thực các token, cung cấp các phương tiện để quản lý xác thực người dùng.*/
+/*Lop giúp tạo và xác thực các token, cung cấp các hàm để quản lý xác thực người dùng.*/
 public class JwtService {
 
 
@@ -88,8 +88,23 @@ public class JwtService {
     /* Phương thức isTokenValid: Kiểm tra xem một token có hợp lệ không bằng cách
     so sánh tên người dùng và kiểm tra thời gian hết hạn */
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        try {
+            final String username = extractUsername(token);
+            return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+
+        } catch (ExpiredJwtException ex) {
+            log.error("Hết hạn token",ex);
+            return false;
+        }catch (UnsupportedJwtException ex){
+            log.error("Token không được hỗ trợ",ex);
+            return false;
+        }catch (MalformedJwtException | SignatureException ex) {
+            log.error("Token có định dạng không hợp lệ",ex);
+            return false;
+        } catch (Exception ex) {
+            log.error("Đã xảy ra ngoại lệ khi xác thực token",ex);
+            return false;
+        }
     }
 
     //Phương thức isTokenExpired: Kiểm tra xem một token có hết hạn không

@@ -15,7 +15,7 @@ public class CustomerMapper {
         customer.setGender(customerRequestDto.getGender());
         customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
         customer.setPassword(customerRequestDto.getPassword());
-        customer.setStatus(customerRequestDto.getStatus());
+        customer.setDeleted(customerRequestDto.getStatus());
         return customer;
     }
 
@@ -29,7 +29,7 @@ public class CustomerMapper {
         customerResponseDto.setGender(customer.getGender());
         customerResponseDto.setBirthOfDay(customer.getBirthOfDay());
         customerResponseDto.setPassword(customer.getPassword());
-        customerResponseDto.setStatus(customer.getStatus());
+        customerResponseDto.setStatus(customer.isDeleted());
 
         return customerResponseDto;
     }

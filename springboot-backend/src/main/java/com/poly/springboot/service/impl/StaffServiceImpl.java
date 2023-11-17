@@ -98,8 +98,8 @@ public class StaffServiceImpl implements StaffService {
         Staff saveStaff = staffRepository.save(staff);
 
         //Tạo Token và refreshToken
-        String jwtToken = jwtService.generateToken(staff);
-        String refreshToken = jwtService.generateRefreshToken(staff);
+//        String jwtToken = jwtService.generateToken(staff);
+//        String refreshToken = jwtService.generateRefreshToken(staff);
 
         return true;
     }
@@ -109,7 +109,7 @@ public class StaffServiceImpl implements StaffService {
     public Boolean updateStaff(StaffRequestDto staffRequestDto, Long id) {
         //Tìm nhân viên bằng id chuyền vào
         Staff staff = staffRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("nhân viên", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
 
         //Nếu thấy nv thì cập nhật lại
         StaffMapper.mapToStaffRequest(staff, staffRequestDto);
@@ -123,17 +123,17 @@ public class StaffServiceImpl implements StaffService {
     //Phương thức xóa mềm nhân viên theo trang thái
     @Override
     public Boolean deleteStaff(Long id) {
-        //Tìm nhân viên từ cơ sỏ dữ liệu bằng id
+        // Tìm nhân viên từ cơ sở dữ liệu bằng id
         Staff staff = staffRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("nhân viên", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
 
-        //Nếu thấy nv thì cập nhật lại trạng thái
-        staff.setStatus( staff.getStatus() ? false : true);
-        //Lưu lại nv
+        // Nếu tìm thấy nhân viên, cập nhật trạng thái xóa mềm
+        staff.setDeleted(!staff.isDeleted());
+
+        // Lưu lại nhân viên
         staffRepository.save(staff);
 
         return true;
-
     }
 
     //Phương thúc đang nhập bàng tài khoản nhân viên
@@ -149,7 +149,7 @@ public class StaffServiceImpl implements StaffService {
         );
         //Lấy thông tin nhân viên từ cơ sở dữ liệu dựa trên email.
         Staff staff = staffRepository.findByEmail(request.getEmail())
-                .orElseThrow(()-> new ResourceNotFoundException("nhân viên",request.getEmail()));
+                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
 
         //Tạo token và refresh token dựa trên thông tin nhân viên.
         String jwtToken = jwtService.generateToken(staff);
@@ -187,7 +187,7 @@ public class StaffServiceImpl implements StaffService {
 
             //Lấy thông tin nhân viên từ cơ sở dữ liệu dựa trên email.
             Staff staff = staffRepository.findByEmail(userEmail)
-                    .orElseThrow(()-> new ResourceNotFoundException("nhân viên",userEmail));
+                    .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy email nhân viên này!"));
 
             if (jwtService.isTokenValid(refreshToken, staff)) {
                 // Xác thực thành công, tiếp tục quá trình refresh token.

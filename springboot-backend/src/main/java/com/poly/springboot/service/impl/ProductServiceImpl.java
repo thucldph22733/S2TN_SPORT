@@ -62,9 +62,9 @@ public class ProductServiceImpl implements ProductService {
     public Boolean deleteProduct(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("sản phẩm", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
 
-        product.setStatus(product.getStatus() ? false : true);
+        product.setDeleted(!product.isDeleted());
         productRepository.save(product);
         return true;
     }
@@ -79,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
         product.setBrand(brandRepository.findById(productRequestDto.getBrandId()).orElse(null));
         product.setSupplier(supplierRepository.findById(productRequestDto.getSupplierId()).orElse(null));
         ProductMapper.mapToProductRequest(product, productRequestDto);
-        product.setStatus(productRequestDto.getStatus());
+        product.setDeleted(productRequestDto.getStatus());
         if (productRepository.existsByProductName(productRequestDto.getProductName())) {
             throw new AlreadyExistsException("Tên sản phẩm đã tồn tại!");
         }
@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Boolean updateProduct(ProductRequestDto productRequestDto, Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("sản phẩm", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
 
         product.setCategory(categoryRepository.findById(productRequestDto.getCategoryId()).orElse(null));
         product.setClub(clubRepository.findById(productRequestDto.getClubId()).orElse(null));
@@ -106,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
     public Product findProductById(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("sản phẩm", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
 
         return product;
     }

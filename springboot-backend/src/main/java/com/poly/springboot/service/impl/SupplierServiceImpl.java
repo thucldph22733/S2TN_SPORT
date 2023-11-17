@@ -27,7 +27,7 @@ public class SupplierServiceImpl implements SupplierService {
     public Boolean deleteSupplier(Long id) {
 
         Supplier supplier = supplierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("nhà cung cấp",String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhà cung cấp này!"));
 
         supplierRepository.deleteById(supplier.getId());
         return true;
@@ -48,7 +48,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public Boolean updateSupplier(SupplierRequestDto supplierRequestDto, Long id) {
         Supplier supplier = supplierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("nhà cung cấp",String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhà cung cấp này!"));
 
         SupplierMapper.mapToSupplierRequest(supplier,supplierRequestDto);
 

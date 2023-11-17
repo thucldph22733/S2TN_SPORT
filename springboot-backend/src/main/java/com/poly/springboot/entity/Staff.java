@@ -20,7 +20,7 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "staffs")
-public class Staff extends BaseEntity implements UserDetails {
+public class Staff extends BaseEntity  implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,9 +49,6 @@ public class Staff extends BaseEntity implements UserDetails {
 
     @Column(name = "_password")
     private String password;
-
-    @Column(name = "staff_status")
-    private Boolean status;
 
     @Enumerated(EnumType.STRING)
     private Role role;

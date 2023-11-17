@@ -2,6 +2,7 @@ package com.poly.springboot.repository;
 
 
 import com.poly.springboot.entity.Customer;
+import com.poly.springboot.entity.Staff;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,5 +27,7 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
     List<Customer> searchCustomer(@Param("keyword") String keyword, Pageable pageable);
 
     Boolean findCustomerByEmailAndPassword(String email,String password);
+
+    Optional<Customer> findByEmail(String email);
 
 }

@@ -51,7 +51,5 @@ public class ProductDetail extends BaseEntity{
     @Column(name = "promotion_price")
     private Double promotionPrice;
 
-    @Column(name = "product_status")
-    private Boolean status;
 
 }

@@ -26,7 +26,7 @@ public class ClubServiceImpl implements ClubService {
     public Boolean deleteClub(Long id) {
 
         Club club = clubRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Câu lạc bộ",String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id câu lạc bộ này!"));
 
         clubRepository.deleteById(club.getId());
         return  true;
@@ -55,7 +55,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public Boolean updateClub(ClubRequestDto clubRequestDto, Long id) {
         Club club = clubRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Câu lạc bộ",String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id câu lạc bộ này!"));
 
         club.setCategoryClub(clubRequestDto.getCategoryClub());
         club.setClubDescribe(clubRequestDto.getClubDescribe());

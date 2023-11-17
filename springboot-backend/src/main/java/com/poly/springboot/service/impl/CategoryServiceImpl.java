@@ -26,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Boolean deleteCategory(Long id) {
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("loại sản phẩm",String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id loại sản phẩm này!"));
         categoryRepository.deleteById(category.getId());
         return true;
     }
@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Boolean updateCategory(CategoryRequestDto categoryRequestDto, Long id) {
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("loại sản phẩm",String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id loại sản phẩm này!"));
 
         category.setCategoryDescribe(categoryRequestDto.getCategoryDescribe());
         category.setCategoryName(categoryRequestDto.getCategoryName());

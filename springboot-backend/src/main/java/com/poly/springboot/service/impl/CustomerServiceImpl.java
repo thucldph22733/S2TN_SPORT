@@ -52,7 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
             CustomerResponseDto responseDto = CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto());
             return responseDto;
         } else {
-            throw new ResourceNotFoundException("Khách hàng", String.valueOf(id));
+            throw new ResourceNotFoundException("Không tìm thấy id khách hàng này!");
         }
     }
 
@@ -69,7 +69,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setGender(customerRequestDto.getGender());
         customer.setBirthOfDay(customerRequestDto.getBirthOfDay());
         customer.setPassword(customerRequestDto.getPassword());
-        customer.setStatus(customerRequestDto.getStatus());
+        customer.setDeleted(customerRequestDto.getStatus());
         customerRepository.save(customer);
         multipartFile.transferTo(new File(filePath));
         return customer;
@@ -99,11 +99,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         Optional<Customer> result = customerRepository.findCustomerByPhoneNumber(customerRequestDto.getPhoneNumber());
         if (result.isPresent()) {
-            throw new AlreadyExistsException("Số điện thoại này đã được đăng ký:  " + customerRequestDto.getPhoneNumber());
+            throw new AlreadyExistsException("Số điện thoại này đã tồn tại!");
         }
         Boolean isEmail = customerRepository.existsByEmail(customerRequestDto.getEmail());
         if (isEmail) {
-            throw new AlreadyExistsException("Địa chỉ email này đã được đăng ký:  " + customerRequestDto.getEmail());
+            throw new AlreadyExistsException("Địa chỉ email này đã tồn tại!");
         }
 
         customerRepository.save(customer);
@@ -113,7 +113,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Boolean updateCustomer(CustomerRequestDto customerRequestDto, Long id) {
         Customer customer = customerRepository.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+                orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id khách hàng này!"));
 
         CustomerMapper.mapToCustomerRequest(customer, customerRequestDto);
 
@@ -123,9 +123,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     public Boolean deleteCustomer(Long id) {
         Customer customer = customerRepository.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+                orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id khách hàng này!"));
 
-        customer.setStatus(customer.getStatus() ? false : true);
+        customer.setDeleted(!customer.isDeleted());
+
         customerRepository.save(customer);
         return true;
     }
@@ -144,7 +145,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     public Customer findCustomerByPhoneNumber(String phoneNumber) {
         Customer customer = customerRepository.findCustomerByPhoneNumber(phoneNumber).
-                orElseThrow(() -> new ResourceNotFoundException("Khách hàng", phoneNumber));
+                orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy số điện thoại khách hàng bộ này!"));
         return customer;
 
     }
@@ -161,12 +162,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Boolean toggleCustomerStatus(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id khách hàng bộ này!"));
 
         // Kiểm tra và chuyển đổi trạng thái
-        customer.setStatus(customer.getStatus() ? false : true);
+        customer.setDeleted(!customer.isDeleted());
 
         customerRepository.save(customer);
+
         return true;
     }
 

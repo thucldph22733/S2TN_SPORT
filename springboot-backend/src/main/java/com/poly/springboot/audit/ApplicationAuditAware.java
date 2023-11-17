@@ -1,17 +1,18 @@
-package com.poly.springboot.config;
+package com.poly.springboot.audit;
 
 import com.poly.springboot.entity.Staff;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-
-public class ApplicationAuditAware implements AuditorAware<Long> {
+@Component("auditAware")
+public class ApplicationAuditAware implements AuditorAware<String> {
 
     @Override
-    public Optional<Long> getCurrentAuditor() {
+    public Optional<String> getCurrentAuditor() {
         // Lấy thông tin xác thực từ SecurityContextHolder
         Authentication authentication =
                 SecurityContextHolder
@@ -30,6 +31,6 @@ public class ApplicationAuditAware implements AuditorAware<Long> {
         Staff userPrincipal = (Staff) authentication.getPrincipal();
 
         // Trả về Optional chứa ID của người dùng thực hiện thao tác
-        return Optional.ofNullable(userPrincipal.getId());
+        return Optional.ofNullable(userPrincipal.getStaffName());
     }
 }

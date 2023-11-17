@@ -45,7 +45,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     public Boolean updateOrderStatus(OrderStatusRequestDto orderStatusRequestDto, Long id) {
 
         OrderStatus orderStatus = orderStatusRepository
-                .findById(id).orElseThrow(() -> new ResourceNotFoundException("trạng thái hóa đơn",String.valueOf(id)));
+                .findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id trạng thái hóa đơn này!"));
 
         orderStatus.setStatusName(orderStatusRequestDto.getStatusName());
         orderStatus.setStatusDescribe(orderStatusRequestDto.getStatusDescribe());
@@ -59,7 +59,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     public Boolean deleteOrderStatus(Long id) {
 
         OrderStatus orderStatus = orderStatusRepository
-                .findById(id).orElseThrow(() -> new ResourceNotFoundException("trạng thái hóa đơn",String.valueOf(id)));
+                .findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id trạng thái hóa đơn này!"));
 
         orderStatusRepository.deleteById(orderStatus.getId());
         return true;

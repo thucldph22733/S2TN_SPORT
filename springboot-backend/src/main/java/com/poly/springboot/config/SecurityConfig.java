@@ -77,11 +77,11 @@ public class SecurityConfig {
                                 .requestMatchers(PUT, "/api/customers/**").hasAnyAuthority(ADMIN_UPDATE.name(),STAFF.name())
                                 .requestMatchers(DELETE, "/api/customers/**").hasAnyAuthority(ADMIN_DELETE.name())
                                 //Product
-                                .requestMatchers("/api/customers/**").hasAnyRole(ADMIN.name(),STAFF.name())
-                                .requestMatchers(GET, "/api/customers/**").hasAnyAuthority(ADMIN_READ.name(),STAFF.name())
-                                .requestMatchers(POST, "/api/customers/**").hasAnyAuthority(ADMIN_CREATE.name(),STAFF.name())
-                                .requestMatchers(PUT, "/api/customers/**").hasAnyAuthority(ADMIN_UPDATE.name(),STAFF.name())
-                                .requestMatchers(DELETE, "/api/customers/**").hasAnyAuthority(ADMIN_DELETE.name())
+                                .requestMatchers("/api/products/**").hasAnyRole(ADMIN.name(),STAFF.name())
+                                .requestMatchers(GET, "/api/products/**").hasAnyAuthority(ADMIN_READ.name(),STAFF.name())
+                                .requestMatchers(POST, "/api/products/**").hasAnyAuthority(ADMIN_CREATE.name(),STAFF.name())
+                                .requestMatchers(PUT, "/api/products/**").hasAnyAuthority(ADMIN_UPDATE.name(),STAFF.name())
+                                .requestMatchers(DELETE, "/api/products/**").hasAnyAuthority(ADMIN_DELETE.name())
                                 .anyRequest() //Tất cả các yêu cầu khác yêu cầu xác thực.
                                 .authenticated()
                 )

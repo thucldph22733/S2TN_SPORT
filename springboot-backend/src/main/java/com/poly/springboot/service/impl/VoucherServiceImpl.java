@@ -59,7 +59,7 @@ public class VoucherServiceImpl implements VoucherService {
     public Boolean updateVoucher(VoucherRequestDto voucherRequestDto, Long id) {
 
         Voucher voucher = voucherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("giảm giá",String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id giảm giá này!"));
         VoucherMapper.mapToVoucherRequest(voucher,voucherRequestDto);
         return true;
     }
@@ -68,7 +68,7 @@ public class VoucherServiceImpl implements VoucherService {
     public Boolean deleteVoucher(Long id) {
 
         Voucher voucher = voucherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("giảm giá",String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id giảm giá này!"));
 
         voucherRepository.deleteById(voucher.getId());
 

@@ -39,7 +39,7 @@ public class CartDetailServiceImpl implements CartDetailService {
         return cartDetailRepository.findAll().stream().map(
                 cartDetail -> new CartDetailResponseDto(
                         cartDetail.getId(),
-                        cartDetail.getProductDetail().getProduct().getProductAvatar(),
+                        cartDetail.getProductDetail().getProduct().getAvatar(),
                         cartDetail.getProductDetail().getColor().getColorName(),
                         cartDetail.getProductDetail().getSize().getSizeName(),
                         cartDetail.getProductDetail().getProduct().getProductName(),
@@ -73,7 +73,7 @@ public class CartDetailServiceImpl implements CartDetailService {
         Cart cart = cartRepository.findById(cartDetailRequestDto.getCartId()).orElse(null);
         // find cartDetail by id
         CartDetail cartDetail = cartDetailRepository.findById(id)
-                .orElseThrow( ()-> new ResourceNotFoundException("giỏ hàng chi tiết",String.valueOf(id)));
+                .orElseThrow( ()-> new ResourceNotFoundException("Không tìm thấy id giỏ hàng chi tiết này!"));
         // Neu tim thay thi set cart detail va luu lai
         cartDetail.setProductDetail(productDetail);
         cartDetail.setCart(cart);
@@ -88,7 +88,7 @@ public class CartDetailServiceImpl implements CartDetailService {
     public Boolean deleteCartDetail(Long id) {
 
         CartDetail cartDetail = cartDetailRepository.findById(id)
-                .orElseThrow( ()-> new ResourceNotFoundException("giỏ hàng chi tiết",String.valueOf(id)));
+                .orElseThrow( ()-> new ResourceNotFoundException("Không tìm thấy id giỏ hàng chi tiết này!"));
 
         cartDetailRepository.deleteById(cartDetail.getId());
 

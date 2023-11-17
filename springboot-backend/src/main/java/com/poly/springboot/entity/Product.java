@@ -46,7 +46,7 @@ public class Product extends BaseEntity{
     private String productName;
 
     @Column(name = "product_avatar")
-    private String productAvatar;
+    private String avatar;
 
     @Column(name = "product_hot")
     private Boolean productHot;
@@ -63,7 +63,5 @@ public class Product extends BaseEntity{
     @Column(name = "product_describe")
     private String productDescribe;
 
-    @Column(name = "product_status")
-    private Boolean status;
 
 }

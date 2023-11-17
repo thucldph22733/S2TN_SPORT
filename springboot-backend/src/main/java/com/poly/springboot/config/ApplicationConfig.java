@@ -1,6 +1,7 @@
 package com.poly.springboot.config;
 
 
+import com.poly.springboot.audit.ApplicationAuditAware;
 import com.poly.springboot.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +26,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> staffRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng"));
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng này!"));
     }
 
     @Bean
@@ -37,7 +38,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AuditorAware<Long> auditorAware() {
+    public AuditorAware<String> auditorAware() {
         return new ApplicationAuditAware();
     }
 

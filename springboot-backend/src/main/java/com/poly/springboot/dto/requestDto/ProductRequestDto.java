@@ -26,7 +26,7 @@ public class ProductRequestDto {
     private String productName;
 
     @NotBlank(message = "Ảnh sản phẩm không được để trống!")
-    private String productAvatar;
+    private String avatar;
 
     private Boolean productHot;
 
@@ -40,9 +40,4 @@ public class ProductRequestDto {
 
     private Boolean status;
 
-    @NotBlank(message = "Tên người tạo không được để trống!")
-    private String createBy;
-
-    @NotEmpty(message = "Tên người sửa không được để trống!")
-    private  String updateBy;
 }

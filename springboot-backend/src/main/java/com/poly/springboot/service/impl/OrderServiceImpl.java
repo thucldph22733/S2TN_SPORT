@@ -70,7 +70,7 @@ public class OrderServiceImpl implements OrderService {
     public Order findOrderById(Long id) {
 
         Order order = orderRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("hóa đơn",String.valueOf(id)));
+                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));
 
         return order;
     }
@@ -133,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
         Address address = addressRepository.findById(orderRequestDto.getAddressId()).orElse(null);
 
         Order order = orderRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("hóa đơn",String.valueOf(id)));  //Find order by id
+                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));  //Find order by id
 
         //Neu tim thay update lai
         order.setCustomer(customer);

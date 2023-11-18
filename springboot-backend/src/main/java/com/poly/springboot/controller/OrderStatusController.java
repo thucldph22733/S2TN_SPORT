@@ -25,7 +25,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/orderStatus/")
+@RequestMapping("/api/v1/orderStatus/")
 @Tag(name = "OrderStatus", description = "( Rest API Hiển thị, thêm, sửa, xóa trạng thái hóa đơn )")
 @Validated
 public class OrderStatusController {

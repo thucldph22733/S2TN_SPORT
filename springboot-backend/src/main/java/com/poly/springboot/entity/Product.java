@@ -57,9 +57,6 @@ public class Product extends BaseEntity{
     @Column(name = "product_new")
     private Boolean productNew;
 
-    @Column(name = "view_count")
-    private Integer viewCount;
-
     @Column(name = "product_describe")
     private String productDescribe;
 

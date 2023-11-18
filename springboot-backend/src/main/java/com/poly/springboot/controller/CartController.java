@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/carts/")
+@RequestMapping("/api/v1/carts/")
 @Tag(name = "Carts", description = "( Rest API Thêm giỏ hàng)")
 @Validated
 public class CartController {

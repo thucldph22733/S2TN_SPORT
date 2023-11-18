@@ -20,7 +20,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @Validated
-@RequestMapping("/api/product/")
+@RequestMapping("/api/v1/product/")
 @Tag(name = "Products",description = "( Rest API Hiển thị, thêm, sửa, xóa, tìm kiếm, phân trang sản phẩm )")
 public class ProductController {
 

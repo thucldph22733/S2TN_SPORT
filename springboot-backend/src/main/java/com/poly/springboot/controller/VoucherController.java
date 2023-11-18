@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/vouchers/")
+@RequestMapping("/api/v1/vouchers/")
 @Tag(name = "Vouchers",description = "( Rest API Hiển thị, thêm, sửa, xóa giảm giá )")
 @Validated
 public class VoucherController {

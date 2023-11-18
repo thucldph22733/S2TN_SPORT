@@ -32,11 +32,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "staff_id")
-    private Staff staff;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private User staff;
 
     @ManyToOne
     @JoinColumn(name = "delivery_id")
@@ -76,6 +72,24 @@ public class Order {
 
     @Column(name = "note")
     private String note;
+
+    @Column(name = "recipient_name")
+    private String recipientName;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "address_detail")
+    private String addressDetail;
+
+    @Column(name = "region")  // phuong/ xa
+    private String region;
+
+    @Column(name = "district") //quan/ huyen
+    private String district;
+
+    @Column(name = "city")  //tinh/thanh pho
+    private String city;
 
 
 }

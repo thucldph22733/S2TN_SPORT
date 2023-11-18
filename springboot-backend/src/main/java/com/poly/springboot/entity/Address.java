@@ -40,5 +40,5 @@ public class Address {
 
     @ManyToMany(mappedBy = "address")
     @JsonIgnore
-    private Set<Customer> customers;
+    private Set<User> users;
 }

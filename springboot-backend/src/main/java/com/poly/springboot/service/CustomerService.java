@@ -1,10 +1,6 @@
 package com.poly.springboot.service;
 
-import com.poly.springboot.dto.requestDto.CustomerRequestDto;
 import com.poly.springboot.dto.responseDto.CustomerResponseDto;
-import com.poly.springboot.entity.Customer;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

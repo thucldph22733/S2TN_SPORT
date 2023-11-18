@@ -2,7 +2,7 @@ package com.poly.springboot.config;
 
 
 import com.poly.springboot.audit.ApplicationAuditAware;
-import com.poly.springboot.repository.StaffRepository;
+import com.poly.springboot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +21,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
 
-    private final StaffRepository staffRepository;
+    private final UserRepository userRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> staffRepository.findByEmail(username)
+        return username -> userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng này!"));
     }
 

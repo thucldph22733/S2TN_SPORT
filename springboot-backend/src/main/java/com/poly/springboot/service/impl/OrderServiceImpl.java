@@ -25,7 +25,7 @@ public class OrderServiceImpl implements OrderService {
     private DeliveryRepository shippingMethodRepository;
     private PaymentRepository paymentMethodRepository;
     private CustomerRepository customerRepository;
-    private StaffRepository staffRepository;
+    private UserRepository staffRepository;
 
 
     @Autowired
@@ -35,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
                             DeliveryRepository shippingMethodRepository,
                             PaymentRepository paymentMethodRepository,
                             CustomerRepository customerRepository,
-                            StaffRepository staffRepository) {
+                            UserRepository staffRepository) {
         this.orderRepository = orderRepository;
         this.orderStatusRepository = orderStatusRepository;
         this.addressRepository= addressRepository;
@@ -82,7 +82,7 @@ public class OrderServiceImpl implements OrderService {
         //Get customer by id
         Customer customer = customerRepository.findById(orderRequestDto.getCustomerId()).orElse(null);
         //Get staff by id
-        Staff staff = staffRepository.findById(orderRequestDto.getStaffId()).orElse(null);
+        User staff = staffRepository.findById(orderRequestDto.getStaffId()).orElse(null);
         //Get paymentMethod by id
         Payment payment= paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null);
         //Get shippingMethod by id
@@ -122,7 +122,7 @@ public class OrderServiceImpl implements OrderService {
         //Get customer by id
         Customer customer = customerRepository.findById(orderRequestDto.getCustomerId()).orElse(null);
         //Get staff by id
-        Staff staff = staffRepository.findById(orderRequestDto.getStaffId()).orElse(null);
+        User staff = staffRepository.findById(orderRequestDto.getStaffId()).orElse(null);
         //Get paymentMethod by id
         Payment payment = paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null);
         //Get shippingMethod by id

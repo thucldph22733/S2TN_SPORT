@@ -1,6 +1,5 @@
 package com.poly.springboot.config;
 
-import com.poly.springboot.entity.Staff;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,12 +69,7 @@ public class SecurityConfig {
                                 .requestMatchers(POST, "/api/staffs/**").hasAnyAuthority(ADMIN_CREATE.name())
                                 .requestMatchers(PUT, "/api/staffs/**").hasAnyAuthority(ADMIN_UPDATE.name())
                                 .requestMatchers(DELETE, "/api/staffs/**").hasAnyAuthority(ADMIN_DELETE.name())
-                                 //Customer
-                                .requestMatchers("/api/customers/**").hasAnyRole(ADMIN.name(),STAFF.name())
-                                .requestMatchers(GET, "/api/customers/**").hasAnyAuthority(ADMIN_READ.name(),STAFF.name())
-                                .requestMatchers(POST, "/api/customers/**").hasAnyAuthority(ADMIN_CREATE.name(),STAFF.name())
-                                .requestMatchers(PUT, "/api/customers/**").hasAnyAuthority(ADMIN_UPDATE.name(),STAFF.name())
-                                .requestMatchers(DELETE, "/api/customers/**").hasAnyAuthority(ADMIN_DELETE.name())
+
                                 //Product
                                 .requestMatchers("/api/products/**").hasAnyRole(ADMIN.name(),STAFF.name())
                                 .requestMatchers(GET, "/api/products/**").hasAnyAuthority(ADMIN_READ.name(),STAFF.name())

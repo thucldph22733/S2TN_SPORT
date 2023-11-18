@@ -1,6 +1,6 @@
 package com.poly.springboot.audit;
 
-import com.poly.springboot.entity.Staff;
+import com.poly.springboot.entity.User;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,7 +28,7 @@ public class ApplicationAuditAware implements AuditorAware<String> {
         }
 
         // Lấy thông tin người dùng thực hiện thao tác từ Principal
-        Staff userPrincipal = (Staff) authentication.getPrincipal();
+        User userPrincipal = (User) authentication.getPrincipal();
 
         // Trả về Optional chứa ID của người dùng thực hiện thao tác
         return Optional.ofNullable(userPrincipal.getStaffName());

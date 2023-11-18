@@ -1,5 +1,6 @@
 package com.poly.springboot.repository;
 
+import com.poly.springboot.entity.Brand;
 import com.poly.springboot.entity.Voucher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,7 @@ public interface VoucherRepository extends JpaRepository<Voucher,Long> {
 
     @Query("SELECT v FROM Voucher v WHERE v.voucherName LIKE %:keyword%")
     List<Voucher> searchVoucher(@Param("keyword") String keyword, Pageable pageable);
+
+    // Lọc những bản ghi chưa bị xóa mềm
+    List<Brand> findByIsDeletedFalse();
 }

@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface TokenRepository extends JpaRepository<Token, Integer> {
 
-    @Query(" select t from Token t inner join Staff s on t.staff.id = s.id where s.id = :id and (t.expired = false or t.revoked = false) ")
+    @Query(" select t from Token t inner join User u on t.users.id = u.id where u.id = :id and (t.expired = false or t.revoked = false) ")
     List<Token> findAllValidTokenByStaff(Long id);
     Optional<Token> findByToken(String token);
+
+
 }

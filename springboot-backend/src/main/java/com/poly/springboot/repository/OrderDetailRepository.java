@@ -2,6 +2,7 @@ package com.poly.springboot.repository;
 
 import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
 import com.poly.springboot.entity.OrderDetail;
+import com.poly.springboot.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Long> {
 //            " join colors on pd.color_id = colors.id \n" +
 //            " join sizes on pd.size_id = sizes.id;",nativeQuery = true)
 //    List<OrderDetail> getOrderDetails();
+
+    // Lọc những bản ghi chưa bị xóa mềm
+    List<User> findByIsDeletedFalse();
 }

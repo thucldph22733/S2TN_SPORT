@@ -25,7 +25,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/cartDetails/")
+@RequestMapping("/api/v1/cartDetails/")
 @Tag(name = "CartDetails", description = "( Rest API Hiển thị, thêm, sửa, xóa giỏ hàng chi tiết )")
 public class CartDetailController {
 

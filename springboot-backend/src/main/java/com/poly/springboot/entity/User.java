@@ -1,5 +1,6 @@
 package com.poly.springboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -19,18 +21,15 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "staffs")
-public class Staff extends BaseEntity  implements UserDetails{
+@Table(name = "users")
+public class User extends BaseEntity  implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "staff_name")
-    private String staffName;
-
-    @Column(name = "avatar")
-    private String avatar;
+    @Column(name = "user_name")
+    private String userName;
 
     @Column(name = "phone_number",unique = true,nullable = false) //unique= tre ko dc trung lap, nullable = false ko dc de trong
     private String phoneNumber;
@@ -44,18 +43,26 @@ public class Staff extends BaseEntity  implements UserDetails{
     @Column(name = "birth_of_day")
     private Date birthOfDay;
 
-    @Column(name = "address")
-    private String address;
-
     @Column(name = "_password")
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "staff")
+    @OneToMany(mappedBy = "users")
     private List<Token> tokens;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_address",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id")
+    )
+    private Set<Address> address;
+
+    @OneToOne(mappedBy = "customers")
+    @JsonIgnore
+    private Cart cart;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

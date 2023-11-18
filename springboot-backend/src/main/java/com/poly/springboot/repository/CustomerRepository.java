@@ -1,9 +1,6 @@
 package com.poly.springboot.repository;
 
 
-import com.poly.springboot.entity.Customer;
-import com.poly.springboot.entity.Staff;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

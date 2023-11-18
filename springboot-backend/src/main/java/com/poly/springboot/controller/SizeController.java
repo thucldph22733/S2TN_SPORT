@@ -18,7 +18,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/sizes/")
+@RequestMapping("/api/v1/sizes/")
 @Tag(name = "Sizes",description = "( Rest API Hiển thị, thêm, sửa, xóa kích thước )")
 @Validated
 public class SizeController {

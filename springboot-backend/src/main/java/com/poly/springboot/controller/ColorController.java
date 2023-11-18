@@ -17,7 +17,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/colors/")
+@RequestMapping("/api/v1/colors/")
 @Tag(name = "Colors",description = "( Rest API Hiển thị, thêm, sửa, xóa màu sắc )")
 @Validated
 public class ColorController {

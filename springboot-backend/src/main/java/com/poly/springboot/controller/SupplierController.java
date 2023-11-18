@@ -17,7 +17,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/suppliers/")
+@RequestMapping("/api/v1/suppliers/")
 @Tag(name = "Suppliers", description = "( Rest API Hiển thị, thêm, sửa, xóa nhà cung cấp )")
 @Validated
 public class SupplierController {

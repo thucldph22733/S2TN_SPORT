@@ -2,7 +2,6 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CartRequestDto;
 import com.poly.springboot.entity.Cart;
-import com.poly.springboot.entity.Customer;
 import com.poly.springboot.repository.CartRepository;
 import com.poly.springboot.repository.CustomerRepository;
 import com.poly.springboot.service.CartService;

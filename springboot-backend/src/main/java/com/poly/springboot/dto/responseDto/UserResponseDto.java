@@ -12,7 +12,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StaffResponseDto {
+public class UserResponseDto {
 
     private Long id;
 

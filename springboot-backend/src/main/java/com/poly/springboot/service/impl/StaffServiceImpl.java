@@ -5,14 +5,14 @@ import com.poly.springboot.config.JwtService;
 import com.poly.springboot.dto.requestDto.AuthenticationRequestDto;
 import com.poly.springboot.dto.requestDto.StaffRequestDto;
 import com.poly.springboot.dto.responseDto.AuthenticationResponseDto;
-import com.poly.springboot.dto.responseDto.StaffResponseDto;
-import com.poly.springboot.entity.Staff;
+import com.poly.springboot.dto.responseDto.UserResponseDto;
+import com.poly.springboot.entity.User;
 import com.poly.springboot.entity.Token;
 import com.poly.springboot.entity.TokenType;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
-import com.poly.springboot.mapper.StaffMapper;
-import com.poly.springboot.repository.StaffRepository;
+import com.poly.springboot.mapper.UserMapper;
+import com.poly.springboot.repository.UserRepository;
 import com.poly.springboot.repository.TokenRepository;
 import com.poly.springboot.service.StaffService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class StaffServiceImpl implements StaffService {
 
     @Autowired
-    private StaffRepository staffRepository;
+    private UserRepository staffRepository;
 
     private final JwtService jwtService;
 
@@ -50,31 +50,31 @@ public class StaffServiceImpl implements StaffService {
 
     //Phương thức lấy ra danh sách nhân viên
     @Override
-    public List<StaffResponseDto> getStaffs() {
+    public List<UserResponseDto> getStaffs() {
         return staffRepository.findAll().stream().map(
-                StaffMapper::mapToStaffResponse
+                UserMapper::mapToStaffResponse
         ).collect(Collectors.toList());
     }
 
     //Phương thức lấy ra danh sách nhân viên có phân trang
     @Override
-    public List<StaffResponseDto> getPagination(Integer pageNo) {
+    public List<UserResponseDto> getPagination(Integer pageNo) {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         return staffRepository.findAll(pageable).stream().map(
-                StaffMapper::mapToStaffResponse
+                UserMapper::mapToStaffResponse
         ).collect(Collectors.toList());
     }
 
     //Phương thức lấy ra danh sách nhân viên có phân trang theo từ khóa tìm kiếm
     @Override
-    public List<StaffResponseDto> searchStaff(String keyword, Integer pageNo) {
+    public List<UserResponseDto> searchStaff(String keyword, Integer pageNo) {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
         return staffRepository.searchStaff(keyword, pageable).stream().map(
-                StaffMapper::mapToStaffResponse
+                UserMapper::mapToStaffResponse
         ).collect(Collectors.toList());
     }
 
@@ -91,11 +91,11 @@ public class StaffServiceImpl implements StaffService {
             throw new AlreadyExistsException("Địa chỉ email này đã tồn tại !");
         }
         //Tạo mới đối tượng nhân viên
-        Staff staff = new Staff();
-        StaffMapper.mapToStaffRequest(staff, staffRequestDto);
+        User staff = new User();
+        UserMapper.mapToStaffRequest(staff, staffRequestDto);
         staff.setPassword(passwordEncoder.encode(staffRequestDto.getPassword()));
         //Lưu nhân viên vào csdl
-        Staff saveStaff = staffRepository.save(staff);
+        User saveStaff = staffRepository.save(staff);
 
         //Tạo Token và refreshToken
 //        String jwtToken = jwtService.generateToken(staff);
@@ -108,11 +108,11 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public Boolean updateStaff(StaffRequestDto staffRequestDto, Long id) {
         //Tìm nhân viên bằng id chuyền vào
-        Staff staff = staffRepository.findById(id)
+        User staff = staffRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
 
         //Nếu thấy nv thì cập nhật lại
-        StaffMapper.mapToStaffRequest(staff, staffRequestDto);
+        UserMapper.mapToStaffRequest(staff, staffRequestDto);
         staff.setPassword(passwordEncoder.encode(staffRequestDto.getPassword()));
         //Lưu nhân viên vào CSDL
         staffRepository.save(staff);
@@ -124,7 +124,7 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public Boolean deleteStaff(Long id) {
         // Tìm nhân viên từ cơ sở dữ liệu bằng id
-        Staff staff = staffRepository.findById(id)
+        User staff = staffRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
 
         // Nếu tìm thấy nhân viên, cập nhật trạng thái xóa mềm
@@ -148,7 +148,7 @@ public class StaffServiceImpl implements StaffService {
                 )
         );
         //Lấy thông tin nhân viên từ cơ sở dữ liệu dựa trên email.
-        Staff staff = staffRepository.findByEmail(request.getEmail())
+        User staff = staffRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
 
         //Tạo token và refresh token dựa trên thông tin nhân viên.
@@ -186,7 +186,7 @@ public class StaffServiceImpl implements StaffService {
         if (userEmail != null) {
 
             //Lấy thông tin nhân viên từ cơ sở dữ liệu dựa trên email.
-            Staff staff = staffRepository.findByEmail(userEmail)
+            User staff = staffRepository.findByEmail(userEmail)
                     .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy email nhân viên này!"));
 
             if (jwtService.isTokenValid(refreshToken, staff)) {
@@ -208,7 +208,7 @@ public class StaffServiceImpl implements StaffService {
         }
     }
 
-    private void revokeAllStaffTokens (Staff staff){
+    private void revokeAllStaffTokens (User staff){
         //Lấy danh sách tất cả các token hiện đang có hiệu lực của một nhân viên
         List<Token> validStaffTokens = tokenRepository.findAllValidTokenByStaff(staff.getId());
 
@@ -226,7 +226,7 @@ public class StaffServiceImpl implements StaffService {
         tokenRepository.saveAll(validStaffTokens);
     }
 
-    private void saveStaffToken (Staff staff, String jwtToken){
+    private void saveStaffToken (User staff, String jwtToken){
 
         //Tạo đối tượng Token mới
         Token token = Token.builder()

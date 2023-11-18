@@ -3,7 +3,7 @@ package com.poly.springboot.service;
 import com.poly.springboot.dto.requestDto.AuthenticationRequestDto;
 import com.poly.springboot.dto.requestDto.StaffRequestDto;
 import com.poly.springboot.dto.responseDto.AuthenticationResponseDto;
-import com.poly.springboot.dto.responseDto.StaffResponseDto;
+import com.poly.springboot.dto.responseDto.UserResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -14,11 +14,11 @@ import java.util.List;
 
 public interface StaffService {
 
-    List<StaffResponseDto> getStaffs();
+    List<UserResponseDto> getStaffs();
 
-    List<StaffResponseDto> getPagination(Integer pageNo);
+    List<UserResponseDto> getPagination(Integer pageNo);
 
-    List<StaffResponseDto> searchStaff(String keyword,Integer pageNo);
+    List<UserResponseDto> searchStaff(String keyword, Integer pageNo);
 
     Boolean createStaff(StaffRequestDto requestDto);
 

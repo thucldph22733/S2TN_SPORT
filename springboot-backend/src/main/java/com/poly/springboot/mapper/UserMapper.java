@@ -1,34 +1,32 @@
 package com.poly.springboot.mapper;
 
 import com.poly.springboot.dto.requestDto.StaffRequestDto;
-import com.poly.springboot.dto.responseDto.StaffResponseDto;
-import com.poly.springboot.entity.Staff;
+import com.poly.springboot.dto.responseDto.UserResponseDto;
+import com.poly.springboot.entity.User;
 
 
-public class StaffMapper {
+public class UserMapper {
 
 
     //Phương thức chuyển đổi từ StaffRequestDto sang Staff
-    public static Staff mapToStaffRequest(Staff staff , StaffRequestDto staffRequestDto){
+    public static User mapToStaffRequest(User staff , StaffRequestDto staffRequestDto){
 
-        staff.setStaffName(staffRequestDto.getStaffName());
-        staff.setAvatar(staffRequestDto.getAvatar());
+        staff.setUserName(staffRequestDto.getStaffName());
         staff.setPhoneNumber(staffRequestDto.getPhoneNumber());
         staff.setEmail(staffRequestDto.getEmail());
         staff.setBirthOfDay(staffRequestDto.getBirthOfDay());
-        staff.setAddress(staffRequestDto.getAddress());
         staff.setDeleted(staffRequestDto.getStatus());
         staff.setRole(staffRequestDto.getRole());
 
         return staff;
     }
     //Phương thức chuyển đổi từ Staff sang StaffResponseDto
-    public static StaffResponseDto mapToStaffResponse(Staff staff){
+    public static UserResponseDto mapToStaffResponse(User staff){
 
-        StaffResponseDto staffResponseDto = StaffResponseDto.builder()
+        UserResponseDto staffResponseDto = UserResponseDto.builder()
                 .id(staff.getId())
                 .role(staff.getRole())
-                .staffName(staff.getStaffName())
+                .u(staff.getStaffName())
                 .avatar(staff.getAvatar())
                 .phoneNumber(staff.getPhoneNumber())
                 .email(staff.getEmail())

@@ -20,7 +20,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @Validated
-@RequestMapping("/api/brands/")
+@RequestMapping("/api/v1/brands/")
 @Tag(name = "Brands",description = "( Rest API Hiển thị, thêm, sửa, xóa thương hiệu )")
 public class BrandController {
 

@@ -3,7 +3,7 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.StaffRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
-import com.poly.springboot.dto.responseDto.StaffResponseDto;
+import com.poly.springboot.dto.responseDto.UserResponseDto;
 import com.poly.springboot.service.StaffService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,32 +27,32 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @Validated
-@Tag(name = "Staffs",description = "( Rest API Hiển thị, thêm, sửa, xóa, tìm kiếm, phân trang nhân viên )")
-@RequestMapping("/api/staffs/")
-public class StaffController {
+@Tag(name = "Users",description = "( Rest API Hiển thị, thêm, sửa, xóa, tìm kiếm, phân trang nhân viên )")
+@RequestMapping("/api/v1/users/")
+public class UserController {
 
     @Autowired
-    private StaffService staffService;
+    private StaffService userService;
 
     @GetMapping("getAll")
-    public ResponseEntity<List<StaffResponseDto>> getStaffs(){
-        List<StaffResponseDto> staffResponseDtoList = staffService.getStaffs();
+    public ResponseEntity<List<UserResponseDto>> getStaffs(){
+        List<UserResponseDto> staffResponseDtoList = userService.getStaffs();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(staffResponseDtoList);
     }
 
     @GetMapping("pagination")
-    public ResponseEntity<List<StaffResponseDto>> getPagination(@RequestParam Optional<Integer> pageNo){
-        List<StaffResponseDto> staffResponseDtoList = staffService.getPagination(pageNo.orElse(0));
+    public ResponseEntity<List<UserResponseDto>> getPagination(@RequestParam Optional<Integer> pageNo){
+        List<UserResponseDto> staffResponseDtoList = userService.getPagination(pageNo.orElse(0));
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(staffResponseDtoList);
     }
 
     @GetMapping("search")
-    public ResponseEntity<List<StaffResponseDto>> searchStaff(@RequestParam Optional<Integer> pageNo,@RequestParam String keyword){
-        List<StaffResponseDto> staffResponseDtoList = staffService.searchStaff(keyword,pageNo.orElse(0));
+    public ResponseEntity<List<UserResponseDto>> searchStaff(@RequestParam Optional<Integer> pageNo, @RequestParam String keyword){
+        List<UserResponseDto> staffResponseDtoList = userService.searchStaff(keyword,pageNo.orElse(0));
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(staffResponseDtoList);
@@ -60,7 +60,7 @@ public class StaffController {
 
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createStaff(@RequestBody StaffRequestDto staffRequestDto){
-        Boolean isCreated = staffService.createStaff(staffRequestDto);
+        Boolean isCreated = userService.createStaff(staffRequestDto);
         if (isCreated){
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -74,7 +74,7 @@ public class StaffController {
 
     @PutMapping("update")
     public ResponseEntity<ResponseDto> updateStaff(@Valid @RequestBody StaffRequestDto staffRequestDto, @RequestParam Long id){
-        Boolean isUpdated = staffService.updateStaff(staffRequestDto,id);
+        Boolean isUpdated = userService.updateStaff(staffRequestDto,id);
         if (isUpdated){
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -88,7 +88,7 @@ public class StaffController {
 
     @DeleteMapping("delete")
     public ResponseEntity<ResponseDto> deleteStaff(@RequestParam Long id){
-        Boolean isDeleted = staffService.deleteStaff(id);
+        Boolean isDeleted = userService .deleteStaff(id);
         if (isDeleted){
             return ResponseEntity
                     .status(HttpStatus.OK)

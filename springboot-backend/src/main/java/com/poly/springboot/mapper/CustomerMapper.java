@@ -1,8 +1,6 @@
 package com.poly.springboot.mapper;
 
-import com.poly.springboot.dto.requestDto.CustomerRequestDto;
 import com.poly.springboot.dto.responseDto.CustomerResponseDto;
-import com.poly.springboot.entity.Customer;
 
 public class CustomerMapper {
 

@@ -1,14 +1,7 @@
 package com.poly.springboot.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +25,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "staff_id")
-    private User staff;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "delivery_id")
@@ -43,29 +36,12 @@ public class Order {
     private Payment payment;
 
     @ManyToOne
-    @JoinColumn(name = "delivery_address_id")
-    private Address address;
-
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private OrderStatus orderStatus;
-
-    @ManyToOne
     @JoinColumn(name = "voucher_id")
     private Voucher voucher;
 
-    @CreationTimestamp
-    @Column(name = "order_date")
-    private LocalDateTime orderDate;
-
-    @Column(name = "delivery_date")
-    private Date deliveryDate;
-
-    @Column(name = "received_date")
-    private Date receivedDate;
-
-    @Column(name = "category_order")
-    private String categoryOrder;
+    @Column(name = "order_type")
+    @Enumerated(EnumType.STRING)
+    private OrderType orderType;
 
     @Column(name = "orderTotal")
     private Double orderTotal;
@@ -91,5 +67,8 @@ public class Order {
     @Column(name = "city")  //tinh/thanh pho
     private String city;
 
+    @Column(name = "order_status")
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
 
 }

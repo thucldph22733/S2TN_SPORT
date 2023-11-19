@@ -1,17 +1,14 @@
 const path_name = {
-    home: '/',
-    forgot_password:'/forgot_password',
-    sell: '/sell',
-    login: '/login',
-    product: '/product',
-    order: '/order',
-    address: '/address',
-    addaddress: '/addaddress',
-    editaddress: '/editaddress',
-    customer: '/customer',
-    addcustomer: '/addcustomer',
-    editcustomer: '/editcustomer',
-    size: '/sizes',
+    dashboard: '/',
+    forgot_password: '/quen-mat-khau',
+    logout: '/dang-xuat',
+    sell: '/ban-hang',
+    login: '/dang-nhap',
+    product: '/san-pham',
+    order: '/hoa-don',
+    customer: '/khach-hang',
+    employee: '/nhan-vien',
+    voucher: '/giam-gia',
 };
 
 export default path_name;

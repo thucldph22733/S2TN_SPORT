@@ -31,6 +31,6 @@ public class ApplicationAuditAware implements AuditorAware<String> {
         User userPrincipal = (User) authentication.getPrincipal();
 
         // Trả về Optional chứa ID của người dùng thực hiện thao tác
-        return Optional.ofNullable(userPrincipal.getStaffName());
+        return Optional.ofNullable(userPrincipal.getUsername());
     }
 }

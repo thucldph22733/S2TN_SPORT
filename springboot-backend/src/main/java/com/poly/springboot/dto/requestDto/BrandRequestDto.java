@@ -16,4 +16,5 @@ public class BrandRequestDto {
     private String brandName;
 
     private String brandDescribe;
+
 }

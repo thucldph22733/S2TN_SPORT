@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
-import { Table, Space, Button, Pagination, Input, Form, Modal, notification } from 'antd';
+import { Table, Space, Button, Pagination, Input, Form, Modal, notification, Radio } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -24,7 +24,28 @@ const data = [
         name: 'Jim Green',
         age: 42,
         address: 'London No. 1 Lake Park',
-        tags: 'Không hoạt động',
+        tags: 'Ngừng hoạt động',
+    },
+    {
+        key: '3',
+        name: 'Joe Black',
+        age: 32,
+        address: 'Sydney No. 1 Lake Park',
+        tags: 'Đang hoạt động',
+    },
+    {
+        key: '1',
+        name: 'John Brown',
+        age: 32,
+        address: 'New York No. 1 Lake Park',
+        tags: 'Đang hoạt động',
+    },
+    {
+        key: '2',
+        name: 'Jim Green',
+        age: 42,
+        address: 'London No. 1 Lake Park',
+        tags: 'Ngừng hoạt động',
     },
     {
         key: '3',
@@ -34,9 +55,9 @@ const data = [
         tags: 'Đang hoạt động',
     },
 ];
-const Context = React.createContext({
-    name: 'Default',
-});
+// const Context = React.createContext({
+//     name: 'Default',
+// });
 
 function Brand() {
 
@@ -164,7 +185,7 @@ function Brand() {
             title: 'Mô tả',
             dataIndex: 'age',
             key: 'age',
-            width: '20%',
+            width: '19%',
         },
         {
             title: 'Ngày tạo',
@@ -182,15 +203,15 @@ function Brand() {
             title: 'Trạng thái',
             key: 'tags',
             dataIndex: 'tags',
-            width: '15%',
+            width: '16%',
             filters: [
                 {
                     text: 'Đang hoạt động',
                     value: 'Đang hoạt động',
                 },
                 {
-                    text: 'Không hoạt động',
-                    value: 'Không hoạt động',
+                    text: 'Ngừng hoạt động',
+                    value: 'Ngừng hoạt động',
                 },
             ],
             onFilter: (value, record) => record.tags.indexOf(value) === 0,
@@ -207,7 +228,7 @@ function Brand() {
                         color: 'white',
                     }}
                 >
-                    {text === 'Đang hoạt động' ? 'Đang hoạt động' : 'Không hoạt động'}
+                    {text === 'Đang hoạt động' ? 'Đang hoạt động' : 'Ngừng hoạt động'}
                 </span>
             ),
         },
@@ -238,31 +259,39 @@ function Brand() {
 
     const [api, contextHolder] = notification.useNotification();
 
-    const openNotification = () => {
-        api.error({
-            message: `Thông báo`,
-            description: "Thêm mới thành công!",
-            placement: "topRight",
-        });
+    const openNotification = (type) => {
+        if (type === 'success') {
+            api.success({
+                message: 'Thông báo',
+                description: 'Xử lý thành công!!!',
+                placement: 'topRight',
+            });
+        } else if (type === 'error') {
+            api.error({
+                message: 'Thông báo',
+                description: 'Xử lý thất bại!!!',
+                placement: 'topRight',
+            });
+        }
     };
-    const contextValue = useMemo(
-        () => ({
-            name: 'Thêm mới thành công!',
-        }),
-        [],
-    );
     const onOk = () => {
         console.log("first")
-        openNotification();
+        const isSuccess = true;
+
+        if (isSuccess) {
+            openNotification('success');
+        } else {
+            openNotification('error');
+        }
         hideModal();
 
     }
 
     return (
-        <Context.Provider type={contextValue}>
+        <>
             {contextHolder}
             <h5 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách thương hiệu</h5>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal("add")} style={{ marginBottom: '16px', float: 'right' }} >
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal("add")} style={{ marginBottom: '16px', float: 'right', borderRadius: '2px' }} >
                 Thêm mới
             </Button>
 
@@ -289,25 +318,30 @@ function Brand() {
             >
                 <Form
                     name="wrap"
-                    labelCol={{ flex: '110px' }}
+                    labelCol={{ flex: '100px' }}
                     labelAlign="left"
                     labelWrap
                     wrapperCol={{ flex: 1 }}
                     colon={false}
                     style={{ maxWidth: 600, marginTop: '25px' }}
                 >
-                    <Form.Item label="Tên" name="username" rules={[{ required: true }]}>
+                    <Form.Item label="Tên:" name="username" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
 
-                    <Form.Item label="Mô tả" name="password" rules={[{ required: true }]}>
+                    <Form.Item label="Mô tả:" name="de" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
-
+                    <Form.Item label="Trạng thái:" name="deleted" rules={[{ required: true }]}>
+                        <Radio.Group name="radiogroup" defaultValue={true} style={{ float: 'left' }}>
+                            <Radio value={true}>Đang hoạt động</Radio>
+                            <Radio value={false}>Ngừng hoạt động</Radio>
+                        </Radio.Group>
+                    </Form.Item>
                 </Form>
             </Modal>}
 
-        </Context.Provider>
+        </>
     )
 };
 export default Brand;

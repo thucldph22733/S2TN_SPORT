@@ -35,8 +35,8 @@ const MainLayout = () => {
     return (
         <Layout className="container_layout">
             <Sider trigger={null} collapsible collapsed={collapsed} theme='light' width={230}>
-                <div className="logo">
-                    <img src={logo} width={130} ></img>
+                <div className="logo" style={{ width: collapsed ? 64 : 230 }}>
+                    <img src={logo} width={collapsed ? 50 : 130} alt="Logo"></img>
                 </div>
                 <hr />
                 <Menu
@@ -147,6 +147,7 @@ const MainLayout = () => {
                             fontSize: '16px',
                             width: 64,
                             height: 64,
+
                         }}
                     />
                     <div className='avatar'>

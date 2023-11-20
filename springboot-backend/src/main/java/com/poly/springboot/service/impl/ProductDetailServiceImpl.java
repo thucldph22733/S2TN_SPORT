@@ -50,7 +50,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                         productDetail.getQuantity(),
                         productDetail.getPrice(),
                         productDetail.getPromotionPrice(),
-                        productDetail.isDeleted())
+                        productDetail.getDeleted())
 
         ).collect(Collectors.toList());
     }
@@ -69,7 +69,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                         productDetail.getQuantity(),
                         productDetail.getPrice(),
                         productDetail.getPromotionPrice(),
-                        productDetail.isDeleted())
+                        productDetail.getDeleted())
 
         ).collect(Collectors.toList());
         return productDetailResponseDtoList;
@@ -80,7 +80,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         ProductDetail productDetail = productDetailRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
 
-        productDetail.setDeleted(!productDetail.isDeleted());
+        productDetail.setDeleted(!productDetail.getDeleted());
         productDetailRepository.save(productDetail);
         return true;
     }

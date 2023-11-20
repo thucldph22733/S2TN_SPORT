@@ -12,5 +12,5 @@ public interface BrandRepository extends JpaRepository<Brand,Long> {
     Boolean existsByBrandName(String brandName);
 
     // Lọc những bản ghi chưa bị xóa mềm
-    List<Brand> findByIsDeletedFalse();
+//    List<Brand> findByIsDeletedFalse();
 }

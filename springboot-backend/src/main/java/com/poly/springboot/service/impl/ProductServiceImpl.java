@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
 
-        product.setDeleted(!product.isDeleted());
+        product.setDeleted(!product.getDeleted());
         productRepository.save(product);
         return true;
     }

@@ -5,6 +5,8 @@ const path_name = {
     sell: '/ban-hang',
     login: '/dang-nhap',
     product: '/san-pham',
+    brand: '/thuong-hieu',
+    color: '/mau-sac',
     order: '/hoa-don',
     customer: '/khach-hang',
     employee: '/nhan-vien',

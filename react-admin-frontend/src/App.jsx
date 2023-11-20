@@ -13,6 +13,8 @@ import { AuthProvider } from './components/AuthContext';
 import MainLayout from './layouts/MainLayout';
 import Voucher from './pages/Vouchers/Voucher';
 import Employee from './pages/Employee/Employee';
+import Brand from './pages/Products/Brand';
+import Color from './pages/Products/Color';
 function App() {
     const router = createBrowserRouter([
         {
@@ -36,6 +38,14 @@ function App() {
                 {
                     path: path_name.product,
                     element: <Product />,
+                },
+                {
+                    path: path_name.brand,
+                    element: <Brand />,
+                },
+                {
+                    path: path_name.color,
+                    element: <Color />,
                 },
                 {
                     path: path_name.order,

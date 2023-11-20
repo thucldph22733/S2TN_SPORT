@@ -15,5 +15,4 @@ public interface VoucherRepository extends JpaRepository<Voucher,Long> {
     List<Voucher> searchVoucher(@Param("keyword") String keyword, Pageable pageable);
 
     // Lọc những bản ghi chưa bị xóa mềm
-    List<Brand> findByIsDeletedFalse();
 }

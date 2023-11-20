@@ -1,7 +1,6 @@
 package com.poly.springboot.repository;
 
 import com.poly.springboot.entity.Delivery;
-import com.poly.springboot.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +12,4 @@ public interface DeliveryRepository extends JpaRepository<Delivery,Long> {
     Boolean existsByDeliveryName(String deliveryName);
 
     // Lọc những bản ghi chưa bị xóa mềm
-    List<User> findByIsDeletedFalse();
 }

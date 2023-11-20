@@ -15,7 +15,6 @@ public class ProductMapper {
         product.setProductHot(productRequestDto.getProductHot());
         product.setProductSale(productRequestDto.getProductSale());
         product.setProductNew(productRequestDto.getProductNew());
-        product.setViewCount(productRequestDto.getViewCount());
         product.setProductName(productRequestDto.getProductName());
         product.setDeleted(productRequestDto.getStatus());
 
@@ -34,9 +33,8 @@ public class ProductMapper {
         productResponseDto.setProductHot(product.getProductHot());
         productResponseDto.setProductSale(product.getProductSale());
         productResponseDto.setProductNew(product.getProductNew());
-        productResponseDto.setViewCount(product.getViewCount());
         productResponseDto.setProductName(product.getProductName());
-        productResponseDto.setStatus(product.isDeleted());
+        productResponseDto.setStatus(product.getDeleted());
 
         return productResponseDto;
     }

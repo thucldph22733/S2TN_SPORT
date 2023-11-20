@@ -40,10 +40,12 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Boolean deleteBrand(Long id) {
-        if (brandRepository.existsById(id)){
-           throw  new ResourceNotFoundException("Không tìm thấy id thương hiệu này!");
-        }
-        brandRepository.deleteById(brand.getId());
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(()->  new ResourceNotFoundException("Không tìm thấy id thương hiệu này!"));
+
+        brand.setDeleted(!brand.getDeleted());
+
+        brandRepository.save(brand);
         return true;
     }
 

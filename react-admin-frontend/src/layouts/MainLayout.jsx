@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import './MainLayout.css';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
-    UserOutlined
+    UserOutlined,
+    BarChartOutlined,
+    LogoutOutlined,
+    FileDoneOutlined,
+    UsergroupAddOutlined,
+    BarsOutlined,
+    TagsOutlined,
+    QrcodeOutlined,
+    SlackOutlined
 } from '@ant-design/icons';
 import logo from '~/assets/images/logo2.jpg'
-import { GiShoppingCart } from "react-icons/gi";
-import { IoIosLogOut } from "react-icons/io";
-import { AiOutlineFileText, AiOutlineTags, AiOutlineUsergroupAdd, AiOutlineBarChart, AiOutlineBars, AiOutlineSlack } from "react-icons/ai";
 import { Layout, Menu, Button, theme, Avatar, Tooltip } from 'antd';
 import path_name from '~/constants/routers';
 import { useLocation, useNavigate } from "react-router-dom";
@@ -43,82 +48,82 @@ const MainLayout = () => {
                     items={[
                         {
                             key: path_name.dashboard,
-                            icon: <AiOutlineBarChart style={{ fontSize: "16px" }} />,
+                            icon: <BarChartOutlined style={{ fontSize: "16px" }} />,
                             label: 'Thống kê',
                         },
                         {
                             key: path_name.sell,
-                            icon: <GiShoppingCart style={{ fontSize: "16px" }} />,
+                            icon: <QrcodeOutlined style={{ fontSize: "16px" }} />,
                             label: 'Bán hàng',
 
                         },
                         {
                             key: path_name.order,
-                            icon: <AiOutlineFileText style={{ fontSize: "16px" }} />,
+                            icon: <FileDoneOutlined style={{ fontSize: "16px" }} />,
                             label: 'Đơn hàng',
                         },
                         {
-                            icon: <AiOutlineBars style={{ fontSize: "16px" }} />,
+                            icon: <BarsOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý sản phẩm',
                             children: [
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: path_name.product,
                                     label: 'Sản phẩm',
                                 },
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: 'category',
                                     label: 'Loại sản phẩm',
                                 },
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
-                                    key: 'color',
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
+                                    key: path_name.color,
                                     label: 'Màu sắc',
                                 },
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: 'size',
                                     label: 'Kích thước',
                                 },
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
-                                    key: '',
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
+                                    key: 'cc',
                                     label: 'Chất liệu',
                                 },
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
-                                    key: 'brand',
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
+                                    key: path_name.brand,
                                     label: 'Thương hiệu',
                                 },
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: 'club',
                                     label: 'Câu lạc bộ',
                                 },
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
-                                    key: 'club',
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
+                                    key: 'ncc',
                                     label: 'Nhà cung cấp',
                                 },
                             ]
                         },
                         {
                             key: path_name.voucher,
-                            icon: <AiOutlineTags style={{ fontSize: "16px" }} />,
+                            icon: <TagsOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý giảm giá',
                         },
                         {
-                            icon: <AiOutlineUsergroupAdd style={{ fontSize: "16px" }} />,
+                            icon: <UsergroupAddOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý người dùng',
                             children: [
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: path_name.employee,
                                     label: 'Nhân viên',
                                 },
                                 {
-                                    icon: <AiOutlineSlack style={{ fontSize: "10px" }} />,
+                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: path_name.customer,
                                     label: 'Khách hàng',
                                 },
@@ -126,7 +131,7 @@ const MainLayout = () => {
                         },
                         {
                             key: path_name.logout,
-                            icon: <IoIosLogOut style={{ fontSize: "16px" }} />,
+                            icon: <LogoutOutlined style={{ fontSize: "16px" }} />,
                             label: 'Đăng xuất',
                         },
                     ]}

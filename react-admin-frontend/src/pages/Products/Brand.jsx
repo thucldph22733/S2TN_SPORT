@@ -1,5 +1,5 @@
-import React, { useState, useRef, useMemo } from 'react';
-import { Table, Space, Button, Pagination, Input, Form, Modal, notification, Radio } from 'antd';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
+import { Table, Space, Button, Pagination, Input, Form, Modal, notification, Radio, Popconfirm } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -9,57 +9,59 @@ import {
 } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 // import './Products.css'
+// import Message from '~/components/Message'
+import BrandService from '~/service/BrandService';
+import FormatDate from '~/utils/format-date';
 
 
-const data = [
-    {
-        key: '1',
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: 'Đang hoạt động',
-    },
-    {
-        key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: 'Ngừng hoạt động',
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sydney No. 1 Lake Park',
-        tags: 'Đang hoạt động',
-    },
-    {
-        key: '1',
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: 'Đang hoạt động',
-    },
-    {
-        key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: 'Ngừng hoạt động',
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sydney No. 1 Lake Park',
-        tags: 'Đang hoạt động',
-    },
-];
 // const Context = React.createContext({
 //     name: 'Default',
 // });
+const getStatusBadgeStyle = (text) => {
+    const backgroundColor = text === true ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)';
+    return {
+        display: 'inline-block',
+        padding: '4px 8px',
+        borderRadius: '4px',
+        textAlign: 'center',
+        cursor: 'pointer',
+        backgroundColor,
+        color: 'white',
+    };
+};
 
+const getStatusText = (text) => {
+    return text === true ? 'Đang hoạt động' : 'Ngừng hoạt động';
+};
 function Brand() {
+
+    const [brands, setBrands] = useState([]);
+
+    // const [totalPages, setTotalPages] = useState(1);
+
+    const [loading, setLoading] = useState(false);
+
+
+    useEffect(() => {
+        fetchBrands(1);
+    }, []);
+
+
+
+    const fetchBrands = async () => {
+        setLoading(true);
+        await BrandService.getAll()
+            .then(response => {
+                setBrands(response.data);
+                // setTotalPages(response.data.);
+                console.log(response.data)
+            }).catch(error => {
+                console.error(error);
+            }).finally(() => {
+                setLoading(false);
+            });
+    }
+
 
     const [open, setOpen] = useState({ isModal: false, isMode: '' });
     const showModal = (mode) => {
@@ -176,59 +178,49 @@ function Brand() {
         },
         {
             title: 'Tên thương hiệu',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'brandName',
+            key: 'brandName',
             width: '20%',
-            ...getColumnSearchProps('name')
+            ...getColumnSearchProps('brandName')
         },
         {
             title: 'Mô tả',
-            dataIndex: 'age',
-            key: 'age',
+            dataIndex: 'brandDescribe',
+            key: 'brandDescribe',
             width: '19%',
         },
         {
             title: 'Ngày tạo',
-            dataIndex: 'address',
-            key: 'address',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
             width: '15%',
         },
         {
             title: 'Người tạo',
-            dataIndex: 'address',
-            key: 'address',
+            dataIndex: 'createdBy',
+            key: 'createdBy',
             width: '15%',
         },
         {
             title: 'Trạng thái',
-            key: 'tags',
-            dataIndex: 'tags',
+            key: 'deleted',
+            dataIndex: 'deleted',
             width: '16%',
             filters: [
                 {
                     text: 'Đang hoạt động',
-                    value: 'Đang hoạt động',
+                    value: true,
                 },
                 {
                     text: 'Ngừng hoạt động',
-                    value: 'Ngừng hoạt động',
+                    value: false,
                 },
             ],
-            onFilter: (value, record) => record.tags.indexOf(value) === 0,
+            onFilter: (value, record) => record.deleted.indexOf(value) === 0,
 
             render: (text) => (
-                <span
-                    style={{
-                        display: 'inline-block',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        backgroundColor: text === 'Đang hoạt động' ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)',
-                        color: 'white',
-                    }}
-                >
-                    {text === 'Đang hoạt động' ? 'Đang hoạt động' : 'Ngừng hoạt động'}
+                <span style={getStatusBadgeStyle(text)}>
+                    {getStatusText(text)}
                 </span>
             ),
         },
@@ -239,73 +231,67 @@ function Brand() {
             render: () => (
                 <Space size="middle">
                     <Button type="text" icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />} onClick={() => showModal("edit")} />
-                    <Button type="text" icon={<DeleteOutlined style={{ color: 'red' }} />} />
+                    <Popconfirm
+                        title="Xóa thương hiệu"
+                        description="Bạn có chắc chắn xóa thương hiệu này không?"
+                        placement="leftTop"
+                        // onConfirm
+                        // onCancel
+                        okText="Đồng ý"
+                        cancelText="Hủy bỏ"
+                    >
+                        <Button type="text" icon={<DeleteOutlined style={{ color: 'red' }} />} />
+                    </Popconfirm>
+
                 </Space>
             )
         },
     ];
 
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const pageSize = 5; // Số mục trên mỗi trang
-
-    const handleChangePage = (page) => {
-        setCurrentPage(page);
-    };
-
-    const paginatedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
 
+    // const [api, contextHolder] = notification.useNotification();
 
-    const [api, contextHolder] = notification.useNotification();
 
-    const openNotification = (type) => {
-        if (type === 'success') {
-            api.success({
-                message: 'Thông báo',
-                description: 'Xử lý thành công!!!',
-                placement: 'topRight',
-            });
-        } else if (type === 'error') {
-            api.error({
-                message: 'Thông báo',
-                description: 'Xử lý thất bại!!!',
-                placement: 'topRight',
-            });
-        }
-    };
     const onOk = () => {
         console.log("first")
-        const isSuccess = true;
+        // const isSuccess = true;
 
-        if (isSuccess) {
-            openNotification('success');
-        } else {
-            openNotification('error');
-        }
+        // if (isSuccess) {
+        //     Message(api).openNotification('success');
+        // } else {
+        //     Message.openNotification('error');
+        // }
         hideModal();
 
     }
 
     return (
         <>
-            {contextHolder}
-            <h5 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách thương hiệu</h5>
+            {/* {contextHolder} */}
+            <h2 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách thương hiệu</h2>
             <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal("add")} style={{ marginBottom: '16px', float: 'right', borderRadius: '2px' }} >
                 Thêm mới
             </Button>
 
             <Button type="primary" icon={<RedoOutlined style={{ fontSize: '18px' }} />} style={{ marginBottom: '16px', float: 'right', marginRight: '6px', borderRadius: '4px', }} />
 
-            <Table columns={columns} dataSource={paginatedData} pagination={false} />
+            <Table
+                dataSource={brands.map((brand, index) => ({
+                    ...brand,
+                    key: index + 1,
+                    createdAt: FormatDate(brand.createdAt)
+                }))}
+                loading={loading}
+                columns={columns}
+                pagination={{
+                    pageSize: 2,
+                    // total: ,
+                    onChange: (pageNo) => {
+                        fetchBrands(pageNo);
+                    },
+                }}></Table>
 
-            <Pagination
-                current={currentPage}
-                total={data.length}
-                pageSize={pageSize}
-                onChange={handleChangePage}
-                style={{ marginTop: '16px', textAlign: 'right' }}
-            />
 
             {open.isModal && <Modal
                 title={open.isMode === "edit" ? "Cập nhật thương hiệu" : "Thêm mới một thương hiệu"}

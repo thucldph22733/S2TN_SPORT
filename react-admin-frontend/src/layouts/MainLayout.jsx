@@ -14,7 +14,7 @@ import {
     QrcodeOutlined,
     SlackOutlined
 } from '@ant-design/icons';
-import logo from '~/assets/images/logo2.jpg'
+import logo from '~/assets/images/logo.jpg'
 import { Layout, Menu, Button, theme, Avatar, Tooltip } from 'antd';
 import path_name from '~/constants/routers';
 import { useLocation, useNavigate } from "react-router-dom";
@@ -38,7 +38,6 @@ const MainLayout = () => {
                 <div className="logo" style={{ width: collapsed ? 64 : 230 }}>
                     <img src={logo} width={collapsed ? 50 : 130} alt="Logo"></img>
                 </div>
-                <hr />
                 <Menu
                     onClick={(item) => {
                         navigate(item.key);

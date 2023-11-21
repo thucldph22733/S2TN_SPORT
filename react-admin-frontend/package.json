@@ -12,6 +12,7 @@
         "axios": "^1.6.1",
         "browserify-zlib": "^0.2.0",
         "css-reset-and-normalize": "^2.3.6",
+        "dayjs": "^1.11.10",
         "events": "^3.3.0",
         "https-browserify": "^1.0.0",
         "react": "^18.2.0",

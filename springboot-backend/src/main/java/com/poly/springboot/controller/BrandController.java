@@ -9,12 +9,16 @@ import com.poly.springboot.service.BrandService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -28,9 +32,15 @@ public class BrandController {
     private BrandService brandService;
 
     @GetMapping("getAll")
-    public ResponseEntity<List<Brand>> getBrands() {
-        List<Brand> brandList = brandService.getBrands();
-        return ResponseEntity.status(HttpStatus.OK).body(brandList);
+    public ResponseEntity<List<Brand>> getBrands(@RequestParam(defaultValue = "0") Integer pageNo,
+                                                 @RequestParam(defaultValue = "10") Integer pageSize,
+                                                 @RequestParam(required = false) String name,
+                                                 @RequestParam(required = false) List<Boolean> status) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+        List<Brand> brandList = brandService.getBrands(name,status,pageable).getContent();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(brandList);
     }
 
     @PostMapping("create")

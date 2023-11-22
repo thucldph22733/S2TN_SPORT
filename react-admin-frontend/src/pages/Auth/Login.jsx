@@ -18,7 +18,7 @@ const Login = () => {
             <h2 className='title_login'>ĐĂNG NHẬP</h2>
             <Form.Item
                 name="username"
-                placeholder="Nhập địa chỉ email..."
+
                 rules={[
                     {
                         required: true,
@@ -26,7 +26,7 @@ const Login = () => {
                     },
                 ]}
             >
-                <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+                <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Nhập địa chỉ email..." />
             </Form.Item>
             <Form.Item
                 name="password"
@@ -40,11 +40,11 @@ const Login = () => {
                 <Input
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     type="password"
-                    placeholder="Password"
+                    placeholder="Nhập mật khẩu..."
                 />
             </Form.Item>
             <Form.Item>
-                <Form.Item name="remember" valuePropName="checked" noStyle>
+                <Form.Item name="remember" valuePropName="checked" noStyle >
                     <Checkbox>Ghi nhớ</Checkbox>
                 </Form.Item>
 

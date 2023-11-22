@@ -42,6 +42,7 @@ public class BrandServiceImpl implements BrandService {
 
         brand.setBrandDescribe(brandRequestDto.getBrandDescribe());
         brand.setBrandName(brandRequestDto.getBrandName());
+        brand.setDeleted(brandRequestDto.getDeleted());
 
         if (brandRepository.existsByBrandName(brandRequestDto.getBrandName())){
             throw  new AlreadyExistsException("Tên thương hiệu đã tồn tại!");
@@ -69,6 +70,7 @@ public class BrandServiceImpl implements BrandService {
                 () -> new ResourceNotFoundException("Không tìm thấy id thương hiệu này!"));
         brand.setBrandName(brandRequestDto.getBrandName());
         brand.setBrandDescribe(brandRequestDto.getBrandDescribe());
+        brand.setDeleted(brandRequestDto.getDeleted());
         brandRepository.save(brand);
 
         return true;

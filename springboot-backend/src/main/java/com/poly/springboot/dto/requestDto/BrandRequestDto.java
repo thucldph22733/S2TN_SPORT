@@ -17,4 +17,5 @@ public class BrandRequestDto {
 
     private String brandDescribe;
 
+    private Boolean deleted;
 }

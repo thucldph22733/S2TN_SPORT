@@ -9,7 +9,6 @@ import com.poly.springboot.service.BrandService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,11 +31,11 @@ public class BrandController {
     private BrandService brandService;
 
     @GetMapping("getAll")
-    public ResponseEntity<List<Brand>> getBrands(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                 @RequestParam(defaultValue = "10") Integer pageSize,
+    public ResponseEntity<List<Brand>> getBrands(@RequestParam Integer pageNo,
+                                                 @RequestParam Integer pageSize,
                                                  @RequestParam(required = false) String name,
                                                  @RequestParam(required = false) List<Boolean> status) {
-        Pageable pageable = PageRequest.of(pageNo,pageSize);
+        Pageable pageable = PageRequest.of(pageNo-1,pageSize);
         List<Brand> brandList = brandService.getBrands(name,status,pageable).getContent();
         return ResponseEntity
                 .status(HttpStatus.OK)

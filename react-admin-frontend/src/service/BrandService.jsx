@@ -1,52 +1,26 @@
-// services/apiService.js
 import HttpClient from '~/utils/http-client';
 
-const API_URL = 'brands/'; // Thay đổi đường dẫn API tùy thuộc vào ứng dụng của bạn
+const API_URL = 'brands/';
 
 const BrandService = {
-    getAll: async (pageNo, pageSize, name, status) => {
-
+    getAll: async (pageNo, pageSize) => {
         return await HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, status },
-        });
-
+            params: { pageNo, pageSize }
+        }
+        );
     },
 
-    //   getById: async (id) => {
-    //     try {
-    //       const response = await HttpClient.get(`${API_URL}/${id}`);
-    //       return response.data;
-    //     } catch (error) {
-    //       throw error;
-    //     }
-    //   },
+    create: async (data) => {
+        return await HttpClient.post(`${API_URL}create`, data);
+    },
 
-    //   create: async (data) => {
-    //     try {
-    //       const response = await HttpClient.post(API_URL, data);
-    //       return response.data;
-    //     } catch (error) {
-    //       throw error;
-    //     }
-    //   },
+    update: async (id, data) => {
+        return await HttpClient.put(`${API_URL}update?id=${id}`, data);
+    },
 
-    //   update: async (id, data) => {
-    //     try {
-    //       const response = await HttpClient.put(`${API_URL}/${id}`, data);
-    //       return response.data;
-    //     } catch (error) {
-    //       throw error;
-    //     }
-    //   },
-
-    //   delete: async (id) => {
-    //     try {
-    //       const response = await HttpClient.delete(`${API_URL}/${id}`);
-    //       return response.data;
-    //     } catch (error) {
-    //       throw error;
-    //     }
-    //   },
+    delete: async (id) => {
+        return await HttpClient.delete(`${API_URL}/${id}`);
+    },
 };
 
 export default BrandService;

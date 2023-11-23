@@ -3,9 +3,9 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'brands/';
 
 const BrandService = {
-    getAll: async (pageNo, pageSize) => {
+    getAll: async (pageNo, pageSize, name, status) => {
         return await HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize }
+            params: { pageNo, pageSize, name, status }
         }
         );
     },
@@ -19,7 +19,7 @@ const BrandService = {
     },
 
     delete: async (id) => {
-        return await HttpClient.delete(`${API_URL}/${id}`);
+        return await HttpClient.delete(`${API_URL}delete?id=${id}`);
     },
 };
 

@@ -15,6 +15,7 @@ import Voucher from './pages/Vouchers/Voucher';
 import Employee from './pages/Employee/Employee';
 import Brand from './pages/Products/Brand';
 import Color from './pages/Products/Color';
+import Error500 from './pages/Error/Error500';
 function App() {
     const router = createBrowserRouter([
         {
@@ -24,6 +25,10 @@ function App() {
         {
             path: path_name.forgot_password,
             element: <ForgotPassword />,
+        },
+        {
+            path: '/500',
+            element: <Error500 />,
         },
         {
             // element: <AuthProvider/>,

@@ -23,8 +23,8 @@ public class Club extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "category_club")
-    private Integer categoryClub;
+    @Column(name = "type_club")
+    private String typeClub;
 
     @Column(name = "club_name")
     private String clubName;

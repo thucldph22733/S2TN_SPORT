@@ -3,11 +3,16 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.SupplierRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.ResponseHandler;
+import com.poly.springboot.entity.Supplier;
 import com.poly.springboot.entity.Supplier;
 import com.poly.springboot.service.SupplierService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,14 +31,19 @@ public class SupplierController {
     private SupplierService supplierService;
 
     @GetMapping("getAll")
-    public ResponseEntity<List<Supplier>> getSuppliers() {
-        List<Supplier> supplierList = supplierService.getSuppliers();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(supplierList);
-
+    public ResponseEntity<?> getSuppliers(@RequestParam(defaultValue = "0") Integer pageNo,
+                                      @RequestParam(defaultValue = "10") Integer pageSize,
+                                      @RequestParam(required = false) String name,
+                                      @RequestParam(required = false) List<Boolean> status) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Supplier> SupplierPage = supplierService.getSuppliers(name, status, pageable);
+        List<Supplier> SupplierList = SupplierPage.getContent();
+        return ResponseHandler
+                .generateResponse(
+                        HttpStatus.OK,
+                        SupplierList,
+                        SupplierPage);
     }
-
     @PostMapping("create")
     public ResponseEntity<ResponseDto>createSupplier(@Valid  @RequestBody SupplierRequestDto supplierRequestDto){
         Boolean isCreated = supplierService.createSupplier(supplierRequestDto);
@@ -48,7 +58,7 @@ public class SupplierController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<ResponseDto> updateSupplier(@Valid @RequestParam SupplierRequestDto supplierRequestDto,@PathVariable Long id){
+    public ResponseEntity<ResponseDto> updateSupplier(@Valid @RequestParam SupplierRequestDto supplierRequestDto,@RequestParam Long id){
 
         Boolean isUpdated = supplierService.updateSupplier(supplierRequestDto,id);
 

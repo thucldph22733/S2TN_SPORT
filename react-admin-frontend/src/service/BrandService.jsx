@@ -3,23 +3,42 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'brands/';
 
 const BrandService = {
-    getAll: async (pageNo, pageSize, name, status) => {
-        return await HttpClient.get(`${API_URL}getAll`, {
+    getAll: (pageNo, pageSize, name, status) => {
+        return HttpClient.get(`${API_URL}getAll`, {
             params: { pageNo, pageSize, name, status }
-        }
-        );
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
     },
 
-    create: async (data) => {
-        return await HttpClient.post(`${API_URL}create`, data);
+    create: (data) => {
+        return HttpClient.post(`${API_URL}create`, data)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in create:', error);
+                throw error;
+            });
     },
 
-    update: async (id, data) => {
-        return await HttpClient.put(`${API_URL}update?id=${id}`, data);
+    update: (id, data) => {
+        return HttpClient.put(`${API_URL}update?id=${id}`, data)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in update:', error);
+                throw error;
+            });
     },
 
-    delete: async (id) => {
-        return await HttpClient.delete(`${API_URL}delete?id=${id}`);
+    delete: (id) => {
+        return HttpClient.delete(`${API_URL}delete?id=${id}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in delete:', error);
+                throw error;
+            });
     },
 };
 

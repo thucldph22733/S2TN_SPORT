@@ -7,7 +7,6 @@ import {
     DeleteOutlined,
     SearchOutlined,
 } from '@ant-design/icons';
-import Highlighter from 'react-highlight-words';
 import './Product.css'
 import BrandService from '~/service/BrandService';
 import FormatDate from '~/utils/format-date';
@@ -32,23 +31,13 @@ const getStatusText = (text) => {
 };
 function Brand() {
 
-    const [filteredStatus, setFilteredStatus] = useState(null);
-
-    // const handleStatusFilterChange = (value) => {
-    //     setFilteredStatus(value);
-    // };
-
-    const [searchText, setSearchText] = useState(null);
-
-    const [brands, setBrands] = useState([]);
-
-    const [totalCount, setTotalCount] = useState(1);
-
-    const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
-
     const [loading, setLoading] = useState(false);
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
+
+    // const handleStatusFilterChange = ({value:''}) => {
+    //         setFilteredStatus(value);
+    //     };
 
     const showModal = (mode, record) => {
         setOpen({
@@ -62,19 +51,25 @@ function Brand() {
         setOpen({ isModal: false });
     };
 
-    useEffect(() => {
-        fetchBrands();
-    }, [pagination]);
+    const [brands, setBrands] = useState([]);
+
+    const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
+
+    const [filteredStatus, setFilteredStatus] = useState(null);
+
+    const searchText = useRef(null);
+
+    const [totalCount, setTotalCount] = useState(1);
 
     const fetchBrands = async () => {
         setLoading(true);
 
-        await BrandService.getAll(pagination.pageNo - 1, pagination.pageSize, searchText, filteredStatus)
+        await BrandService.getAll(pagination.pageNo - 1, pagination.pageSize, searchText.current, filteredStatus)
             .then(response => {
 
-                setBrands(response.data.data);
+                setBrands(response.data);
 
-                setTotalCount(response.data.totalCount);
+                setTotalCount(response.totalCount);
 
                 setLoading(false);
 
@@ -82,6 +77,11 @@ function Brand() {
                 console.error(error);
             })
     }
+
+    useEffect(() => {
+        fetchBrands();
+    }, [pagination]);
+
 
     const handleDelete = async (id) => {
 
@@ -103,26 +103,23 @@ function Brand() {
     };
 
     const handleResetPage = () => {
-        setSearchText(null);
         setFilteredStatus(null);
         setPagination({ pageNo: 1, pageSize: 5 });
         fetchBrands();
     };
 
-    const [searchedColumn, setSearchedColumn] = useState('');
-    const searchInput = useRef(null);
-
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
-        setSearchText(selectedKeys[0]);
-        setSearchedColumn(dataIndex);
+        searchText.current = selectedKeys[0];
+        fetchBrands();
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        // setSearchText('');
+        searchText.current = null;
+        fetchBrands();
     };
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, clearFilters, close }) => (
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
             <div
                 style={{
                     padding: 8,
@@ -130,11 +127,11 @@ function Brand() {
                 onKeyDown={(e) => e.stopPropagation()}
             >
                 <Input
-                    ref={searchInput}
+                    ref={searchText}
                     placeholder={`Search ${dataIndex}`}
                     value={selectedKeys[0]}
                     onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, dataIndex)}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
                     style={{
                         marginBottom: 8,
                         display: 'block',
@@ -143,7 +140,7 @@ function Brand() {
                 <Space>
                     <Button
                         type="primary"
-                        onClick={() => handleSearch(selectedKeys, dataIndex)}
+                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
                         icon={<SearchOutlined />}
                         size="small"
                         style={{
@@ -161,16 +158,6 @@ function Brand() {
                     >
                         Reset
                     </Button>
-
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            close();
-                        }}
-                    >
-                        close
-                    </Button>
                 </Space>
             </div>
         ),
@@ -185,23 +172,9 @@ function Brand() {
             record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownOpenChange: (visible) => {
             if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
+                setTimeout(() => searchText.current?.select(), 1000);
             }
         },
-        render: (text) =>
-            searchedColumn === dataIndex ? (
-                <Highlighter
-                    highlightStyle={{
-                        backgroundColor: '#ffc069',
-                        padding: 0,
-                    }}
-                    searchWords={[searchText]}
-                    autoEscape
-                    textToHighlight={text ? text.toString() : ''}
-                />
-            ) : (
-                text
-            ),
     });
 
     const columns = [
@@ -251,7 +224,7 @@ function Brand() {
                     value: false,
                 },
             ],
-            onFilter: (value, record) => record.address.indexOf(value) === 0,
+            // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
             render: (text) => (
                 <span style={getStatusBadgeStyle(text)}>
                     {getStatusText(text)}
@@ -308,9 +281,11 @@ function Brand() {
                     key: index + 1,
                     createdAt: FormatDate(brand.createdAt)
                 }))}
-                onChange={(_, filter) => {
-                    console.log(filter)
-                }}
+                // onChange={(_, filters) => {
+                //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
+                //     setFilteredStatus(status);
+                //     fetchBrands();
+                // }}
 
                 loading={loading}
                 columns={columns}
@@ -322,7 +297,6 @@ function Brand() {
                     onChange: (pageNo, pageSize) => {
                         setPagination({ pageNo, pageSize })
                     },
-
                 }}></Table >
 
             {open.isModal && <BrandModal

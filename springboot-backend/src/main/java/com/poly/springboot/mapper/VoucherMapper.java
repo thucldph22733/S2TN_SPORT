@@ -8,7 +8,7 @@ public class VoucherMapper {
 
     public static Voucher mapToVoucherRequest(Voucher voucher, VoucherRequestDto voucherRequestDto){
 
-        voucher.setCategoryVoucher(voucherRequestDto.getCategoryVoucher());
+        voucher.setCategoryVoucher(voucherRequestDto.getTypeVoucher());
         voucher.setVoucherName(voucherRequestDto.getVoucherName());
         voucher.setStartDate(voucherRequestDto.getStartDate());
         voucher.setEndDate(voucherRequestDto.getEndDate());
@@ -17,7 +17,7 @@ public class VoucherMapper {
         voucher.setOrderMinimum(voucherRequestDto.getOrderMinimum());
         voucher.setDiscountRate(voucherRequestDto.getDiscountRate());
         voucher.setVoucherDescribe(voucherRequestDto.getVoucherDescribe());
-        voucher.setStatus(voucherRequestDto.getStatus());
+        voucher.setStatus(voucherRequestDto.getDeleted());
 
         return voucher;
     }
@@ -33,7 +33,7 @@ public class VoucherMapper {
         voucherResponseDto.setOrderMinimum(voucher.getOrderMinimum());
         voucherResponseDto.setDiscountRate(voucher.getDiscountRate());
         voucherResponseDto.setVoucherDescribe(voucher.getVoucherDescribe());
-        voucherResponseDto.setStatus(voucher.getStatus());
+        voucherResponseDto.setDeleted(voucher.getStatus());
 
         return voucherResponseDto;
     }

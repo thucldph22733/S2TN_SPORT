@@ -1,8 +1,8 @@
 import HttpClient from '~/utils/http-client';
 
-const API_URL = 'colors/';
+const API_URL = 'materials/';
 
-const ColorService = {
+const MaterialService = {
     getAll: (pageNo, pageSize, name, status) => {
         return HttpClient.get(`${API_URL}getAll`, {
             params: { pageNo, pageSize, name, status }
@@ -42,4 +42,4 @@ const ColorService = {
     },
 };
 
-export default ColorService;
+export default MaterialService;

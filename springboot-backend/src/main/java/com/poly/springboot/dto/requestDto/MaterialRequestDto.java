@@ -16,4 +16,6 @@ public class MaterialRequestDto {
     private String materialName;
 
     private String materialDescribe;
+
+    private Boolean deleted;
 }

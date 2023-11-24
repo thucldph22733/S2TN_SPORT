@@ -3,10 +3,14 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.ClubRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.ResponseHandler;
 import com.poly.springboot.entity.Club;
 import com.poly.springboot.service.ClubService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,12 +29,18 @@ public class ClubController {
     private ClubService clubService;
 
     @GetMapping("getAll")
-    public ResponseEntity<List<Club>> getClubs() {
-        List<Club> clubList = clubService.getClubs();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(clubList);
-
+    public ResponseEntity<?> getClubs(@RequestParam(defaultValue = "0") Integer pageNo,
+                                       @RequestParam(defaultValue = "10") Integer pageSize,
+                                       @RequestParam(required = false) String name,
+                                       @RequestParam(required = false) List<Boolean> status) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Club> clubPage = clubService.getClubs(name, status, pageable);
+        List<Club> clubList = clubPage.getContent();
+        return ResponseHandler
+                .generateResponse(
+                        HttpStatus.OK,
+                        clubList,
+                        clubPage);
     }
 
     @PostMapping("create")

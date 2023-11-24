@@ -8,6 +8,7 @@ import com.poly.springboot.mapper.VoucherMapper;
 import com.poly.springboot.repository.VoucherRepository;
 import com.poly.springboot.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,12 +30,8 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public List<VoucherResponseDto> getPagination(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo,10);
-        List<VoucherResponseDto> voucherResponseDtoList = voucherRepository.findAll(pageable).stream().map(
-                voucher -> VoucherMapper.mapToVoucherResponse(voucher,new VoucherResponseDto())
-        ).collect(Collectors.toList());
-        return voucherResponseDtoList;
+    public Page<VoucherResponseDto> getPagination(Pageable pageable) {
+        return voucherRepository.findAll(pageable);
     }
 
     @Override
@@ -70,7 +67,9 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucher = voucherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id giảm giá này!"));
 
-        voucherRepository.deleteById(voucher.getId());
+        voucher.setDeleted(!voucher.getDeleted());
+
+        voucherRepository.save(voucher);
 
         return true;
     }

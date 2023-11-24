@@ -3,12 +3,17 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.SizeRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.ResponseHandler;
+import com.poly.springboot.entity.Size;
 import com.poly.springboot.entity.Size;
 import com.poly.springboot.service.SizeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,13 +32,20 @@ public class SizeController {
     private SizeService sizeService;
 
     @GetMapping("getAll")
-    public ResponseEntity<List<Size>> getSizes() {
-        List<Size> sizeList = sizeService.getSizes();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(sizeList);
-
+    public ResponseEntity<?> getSizes(@RequestParam(defaultValue = "0") Integer pageNo,
+                                          @RequestParam(defaultValue = "10") Integer pageSize,
+                                          @RequestParam(required = false) String name,
+                                          @RequestParam(required = false) List<Boolean> status) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Size> SizePage = sizeService.getSizes(name, status, pageable);
+        List<Size> SizeList = SizePage.getContent();
+        return ResponseHandler
+                .generateResponse(
+                        HttpStatus.OK,
+                        SizeList,
+                        SizePage);
     }
+
 
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createSize(@Valid @RequestBody SizeRequestDto sizeRequestDto){
@@ -48,8 +60,8 @@ public class SizeController {
         }
     }
 
-    @PutMapping("update/{id}")
-    public ResponseEntity<ResponseDto> updateSize(@Valid @RequestBody SizeRequestDto sizeRequestDto, @PathVariable Long id){
+    @PutMapping("update")
+    public ResponseEntity<ResponseDto> updateSize(@Valid @RequestBody SizeRequestDto sizeRequestDto, @RequestParam Long id){
         Boolean isUpdated = sizeService.updateSize(sizeRequestDto,id);
 
         if (isUpdated){

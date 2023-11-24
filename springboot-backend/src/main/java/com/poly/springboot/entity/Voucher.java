@@ -25,8 +25,8 @@ public class Voucher extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "category_voucher")
-    private Integer categoryVoucher;
+    @Column(name = "type_voucher")
+    private Integer typeVoucher;
 
     @Column(name = "voucher_name")
     private String voucherName;
@@ -51,9 +51,5 @@ public class Voucher extends BaseEntity{
 
     @Column(name = "voucher_describe")
     private String voucherDescribe;
-
-    @Column(name = "voucher_status")
-    private Boolean status;
-
 
 }

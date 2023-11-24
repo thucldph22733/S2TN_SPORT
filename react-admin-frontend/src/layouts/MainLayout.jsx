@@ -36,9 +36,10 @@ const MainLayout = () => {
         <Layout className="container_layout">
             <Sider trigger={null} collapsible collapsed={collapsed} theme='light' width={230}>
                 <div className="logo_layout" style={{ margin: collapsed ? 14 : 0 }}>
-                    <img src={logo} width={collapsed ? 50 : 130} alt="Logo"></img>
+                    <img src={logo} width={collapsed ? 50 : 160} alt="Logo"></img>
                 </div>
                 <Menu
+                    style={{ margin: '20px 1px' }}
                     onClick={(item) => {
                         navigate(item.key);
                     }}
@@ -72,7 +73,7 @@ const MainLayout = () => {
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: 'category',
+                                    key: path_name.category,
                                     label: 'Loại sản phẩm',
                                 },
                                 {
@@ -82,12 +83,12 @@ const MainLayout = () => {
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: 'size',
+                                    key: path_name.size,
                                     label: 'Kích thước',
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: 'cc',
+                                    key: path_name.material,
                                     label: 'Chất liệu',
                                 },
                                 {
@@ -97,12 +98,12 @@ const MainLayout = () => {
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: 'club',
+                                    key: path_name.club,
                                     label: 'Câu lạc bộ',
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: 'ncc',
+                                    key: path_name.supplier,
                                     label: 'Nhà cung cấp',
                                 },
                             ]
@@ -119,12 +120,12 @@ const MainLayout = () => {
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: path_name.employee,
-                                    label: 'Nhân viên',
+                                    label: 'Tài khoản',
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: path_name.customer,
-                                    label: 'Khách hàng',
+                                    label: 'Vai trò',
                                 },
                             ]
                         },

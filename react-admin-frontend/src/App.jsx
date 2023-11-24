@@ -1,6 +1,6 @@
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-
+import 'bootstrap/dist/css/bootstrap.css';
 import path_name from '~/constants/routers';
 // pages
 import Sell from './pages/Sell/Sell';
@@ -16,6 +16,11 @@ import Employee from './pages/Employee/Employee';
 import Brand from './pages/Products/Brand';
 import Color from './pages/Products/Color';
 import Error500 from './pages/Error/Error500';
+import Category from './pages/Products/Category';
+import Size from './pages/Products/Size';
+import Material from './pages/Products/Material';
+import Club from './pages/Products/Club';
+import Supplier from './pages/Products/Supplier';
 function App() {
     const router = createBrowserRouter([
         {
@@ -51,6 +56,26 @@ function App() {
                 {
                     path: path_name.color,
                     element: <Color />,
+                },
+                {
+                    path: path_name.category,
+                    element: <Category />,
+                },
+                {
+                    path: path_name.club,
+                    element: <Club />,
+                },
+                {
+                    path: path_name.supplier,
+                    element: <Supplier />,
+                },
+                {
+                    path: path_name.size,
+                    element: <Size />,
+                },
+                {
+                    path: path_name.material,
+                    element: <Material />,
                 },
                 {
                     path: path_name.order,

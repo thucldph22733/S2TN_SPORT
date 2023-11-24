@@ -29,9 +29,9 @@ public class BrandServiceImpl implements BrandService {
         }else if (name == null){
             brandList = brandRepository.findByDeletedIn(status,pageable);
         }else if (status == null){
-            brandList = brandRepository.findByBrandName(name,pageable);
+            brandList = brandRepository.findByBrandNameContaining(name,pageable);
         }else {
-            brandList = brandRepository.findByBrandNameAndDeletedIn(name,status,pageable);
+            brandList = brandRepository.findByBrandNameContainingAndDeletedIn(name,status,pageable);
         }
         return brandList;
     }

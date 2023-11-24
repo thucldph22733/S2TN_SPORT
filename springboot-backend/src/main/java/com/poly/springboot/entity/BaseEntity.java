@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class BaseEntity {
 
     @Column(name = "is_deleted")
-    private Boolean deleted = false;
+    private Boolean deleted = true;
 
     @CreatedDate
     @Column(name = "create_date", updatable = false)

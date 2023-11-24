@@ -34,6 +34,6 @@ public class VoucherResponseDto {
 
     private String voucherDescribe;
 
-    private Boolean status;
+    private Boolean deleted;
 
 }

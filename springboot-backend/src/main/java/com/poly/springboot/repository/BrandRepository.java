@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface BrandRepository extends JpaRepository<Brand,Long> {
     Boolean existsByBrandName(String brandName);
-    Page<Brand> findByBrandName(String name, Pageable pageable);
+    Page<Brand> findByBrandNameContaining(String name, Pageable pageable);
     Page<Brand> findByDeletedIn(List<Boolean> status, Pageable pageable);
-    Page<Brand> findByBrandNameAndDeletedIn(String name, List<Boolean> status, Pageable pageable);
+    Page<Brand> findByBrandNameContainingAndDeletedIn(String name, List<Boolean> status, Pageable pageable);
 }

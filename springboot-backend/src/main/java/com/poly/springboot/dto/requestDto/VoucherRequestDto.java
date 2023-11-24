@@ -18,7 +18,7 @@ import java.sql.Date;
 @ToString
 public class VoucherRequestDto {
 
-    private Integer categoryVoucher;
+    private Integer typeVoucher;
 
     @NotBlank(message = "Tên mã giảm giá không được để trống!")
     private String voucherName;
@@ -43,6 +43,6 @@ public class VoucherRequestDto {
 
     private String voucherDescribe;
 
-    private Boolean status;
+    private Boolean deleted;
 
 }

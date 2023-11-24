@@ -2,13 +2,14 @@ package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 import com.poly.springboot.dto.responseDto.VoucherResponseDto;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface VoucherService {
     List<VoucherResponseDto> getVouchers();
 
-    List<VoucherResponseDto> getPagination(Integer pageNo);
+    List<VoucherResponseDto> getPagination(Pageable pageable);
 
     List<VoucherResponseDto> searchVoucher(Integer pageNo,String keyword);
 

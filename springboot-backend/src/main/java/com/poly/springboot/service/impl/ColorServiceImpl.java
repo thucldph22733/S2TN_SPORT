@@ -7,6 +7,8 @@ import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.ColorRepository;
 import com.poly.springboot.service.ColorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,15 +20,31 @@ public class ColorServiceImpl implements ColorService {
     private ColorRepository colorRepository;
 
     @Override
-    public List<Color> getColors() {
-        return colorRepository.findAll();
+    public Page<Color> getColors(String name, List<Boolean> status, Pageable pageable) {
+
+        Page<Color> ColorList;
+
+        if (name == null && status == null){
+            ColorList = colorRepository.findAll(pageable);
+        }else if (name == null){
+            ColorList = colorRepository.findByDeletedIn(status,pageable);
+        }else if (status == null){
+            ColorList = colorRepository.findByColorNameContaining(name,pageable);
+        }else {
+            ColorList = colorRepository.findByColorNameContainingAndDeletedIn(name,status,pageable);
+        }
+        return ColorList;
     }
 
     @Override
     public Boolean deleteColor(Long id) {
         Color color = colorRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id màu sắc bộ này!"));
-        colorRepository.deleteById(color.getId());
+
+        color.setDeleted(!color.getDeleted());
+
+        colorRepository.save(color);
+
         return true;
     }
 
@@ -37,6 +55,7 @@ public class ColorServiceImpl implements ColorService {
 
         color.setColorDescribe(colorRequestDto.getColorDescribe());
         color.setColorName(colorRequestDto.getColorName());
+        color.setDeleted(colorRequestDto.getDeleted());
         if (colorRepository.existsByColorName(colorRequestDto.getColorName())){
             throw  new AlreadyExistsException("Tên thương hiệu đã tồn tại!");
         }
@@ -52,6 +71,7 @@ public class ColorServiceImpl implements ColorService {
 
         color.setColorDescribe(colorRequestDto.getColorDescribe());
         color.setColorName(colorRequestDto.getColorName());
+        color.setDeleted(colorRequestDto.getDeleted());
 
         colorRepository.save(color);
         return true;

@@ -14,11 +14,11 @@
 //
 //public interface UserService {
 //
-//    List<UserResponseDto> getStaffs();
+////    List<UserResponseDto> getStaffs();
 //
-//    List<UserResponseDto> getPagination(Integer pageNo);
+////    List<UserResponseDto> getPagination(Integer pageNo);
 //
-//    List<UserResponseDto> searchStaff(String keyword, Integer pageNo);
+////    List<UserResponseDto> searchStaff(String keyword, Integer pageNo);
 //
 //    Boolean createStaff(UserRequestDto requestDto);
 //

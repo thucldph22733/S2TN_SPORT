@@ -1,5 +1,6 @@
 package com.poly.springboot.entity;
 
+import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +11,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
+
 import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Setter
@@ -25,17 +31,18 @@ public class Voucher extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "type_voucher")
-    private Integer typeVoucher;
+
+    @Column(name = "voucher_code")
+    private String voucherCode;
 
     @Column(name = "voucher_name")
     private String voucherName;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -49,7 +56,10 @@ public class Voucher extends BaseEntity{
     @Column(name = "discount_rate")  // ty le chiet khau
     private Integer discountRate;
 
-    @Column(name = "voucher_describe")
-    private String voucherDescribe;
+    @Column(name = "note")
+    private String note;
 
+    public Voucher(VoucherRequestDto req) {
+        BeanUtils.copyProperties(req, this);
+    }
 }

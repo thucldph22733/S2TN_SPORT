@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthenticationRequestDto {
+public class LoginRequestDto {
 
     private String email;
 

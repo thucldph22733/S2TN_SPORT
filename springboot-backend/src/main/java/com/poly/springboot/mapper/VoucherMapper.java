@@ -8,7 +8,7 @@ public class VoucherMapper {
 
     public static Voucher mapToVoucherRequest(Voucher voucher, VoucherRequestDto voucherRequestDto){
 
-        voucher.setCategoryVoucher(voucherRequestDto.getTypeVoucher());
+        voucher.setVoucherCode(voucherRequestDto.getVoucherCode());
         voucher.setVoucherName(voucherRequestDto.getVoucherName());
         voucher.setStartDate(voucherRequestDto.getStartDate());
         voucher.setEndDate(voucherRequestDto.getEndDate());
@@ -16,15 +16,15 @@ public class VoucherMapper {
         voucher.setMaxReduce(voucherRequestDto.getMaxReduce());
         voucher.setOrderMinimum(voucherRequestDto.getOrderMinimum());
         voucher.setDiscountRate(voucherRequestDto.getDiscountRate());
-        voucher.setVoucherDescribe(voucherRequestDto.getVoucherDescribe());
-        voucher.setStatus(voucherRequestDto.getDeleted());
+        voucher.setNote(voucherRequestDto.getNote());
+        voucher.setDeleted(voucherRequestDto.getDeleted());
 
         return voucher;
     }
 
     public static VoucherResponseDto mapToVoucherResponse(Voucher voucher, VoucherResponseDto voucherResponseDto){
 
-        voucherResponseDto.setCategoryVoucher(voucher.getCategoryVoucher());
+        voucherResponseDto.setVoucherCode(voucher.getVoucherCode());
         voucherResponseDto.setVoucherName(voucher.getVoucherName());
         voucherResponseDto.setStartDate(voucher.getStartDate());
         voucherResponseDto.setEndDate(voucher.getEndDate());
@@ -32,8 +32,8 @@ public class VoucherMapper {
         voucherResponseDto.setMaxReduce(voucher.getMaxReduce());
         voucherResponseDto.setOrderMinimum(voucher.getOrderMinimum());
         voucherResponseDto.setDiscountRate(voucher.getDiscountRate());
-        voucherResponseDto.setVoucherDescribe(voucher.getVoucherDescribe());
-        voucherResponseDto.setDeleted(voucher.getStatus());
+        voucherResponseDto.setNote(voucher.getNote());
+        voucherResponseDto.setDeleted(voucher.getDeleted());
 
         return voucherResponseDto;
     }

@@ -30,7 +30,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Page<VoucherResponseDto> getPagination(Pageable pageable) {
+    public Page<Voucher> getPagination(Pageable pageable) {
         return voucherRepository.findAll(pageable);
     }
 
@@ -58,6 +58,7 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucher = voucherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id giảm giá này!"));
         VoucherMapper.mapToVoucherRequest(voucher,voucherRequestDto);
+        voucherRepository.save(voucher);
         return true;
     }
 

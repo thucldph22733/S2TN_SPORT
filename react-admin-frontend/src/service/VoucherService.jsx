@@ -3,9 +3,9 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'vouchers/';
 
 const VoucherService = {
-    getAll: (pageNo, pageSize, name, status) => {
-        return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, status }
+    getAll: (pageNo, pageSize) => {
+        return HttpClient.get(`${API_URL}pagination`, {
+            params: { pageNo, pageSize }
         })
             .then(response => response.data)
             .catch(error => {

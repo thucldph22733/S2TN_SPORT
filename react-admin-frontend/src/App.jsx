@@ -1,6 +1,5 @@
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.css';
 import path_name from '~/constants/routers';
 // pages
 import Sell from './pages/Sell/Sell';
@@ -21,7 +20,12 @@ import Size from './pages/Products/Size';
 import Material from './pages/Products/Material';
 import Club from './pages/Products/Club';
 import Supplier from './pages/Products/Supplier';
+import Dashboard from './pages/Dashboard/Dashboard';
+import { useState } from 'react';
 function App() {
+
+    // const [loading, setLoading] = useState(true);
+
     const router = createBrowserRouter([
         {
             path: path_name.login,
@@ -44,6 +48,10 @@ function App() {
                 {
                     path: path_name.sell,
                     element: <Sell />,
+                },
+                {
+                    path: path_name.dashboard,
+                    element: <Dashboard />,
                 },
                 {
                     path: path_name.product,

@@ -2,6 +2,8 @@ package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 import com.poly.springboot.dto.responseDto.VoucherResponseDto;
+import com.poly.springboot.entity.Voucher;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.List;
 public interface VoucherService {
     List<VoucherResponseDto> getVouchers();
 
-    List<VoucherResponseDto> getPagination(Pageable pageable);
+    Page<Voucher> getPagination(Pageable pageable);
 
     List<VoucherResponseDto> searchVoucher(Integer pageNo,String keyword);
 

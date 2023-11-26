@@ -260,7 +260,7 @@ function Material() {
 
     return (
         <>
-            <h2 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách chất liệu</h2>
+            <h3 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách chất liệu</h3>
 
             <Button type="primary"
                 icon={<PlusOutlined />}

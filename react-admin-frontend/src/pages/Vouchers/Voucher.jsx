@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, DatePicker, InputNumber } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -10,9 +10,9 @@ import {
 import './Voucher.css'
 import VoucherService from '~/service/VoucherService';
 import FormatDate from '~/utils/format-date';
-
+import dayjs from 'dayjs';
 const { TextArea } = Input;
-
+const { Option } = Select;
 const getStatusBadgeStyle = (text) => {
     const backgroundColor = text === true ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)';
     return {
@@ -27,7 +27,7 @@ const getStatusBadgeStyle = (text) => {
 };
 
 const getStatusText = (text) => {
-    return text === true ? 'Đang hoạt động' : 'Ngừng hoạt động';
+    return text === true ? 'Hoạt động' : 'Hết hạn';
 };
 function Voucher() {
 
@@ -51,7 +51,7 @@ function Voucher() {
         setOpen({ isModal: false });
     };
 
-    const [Vouchers, setVouchers] = useState([]);
+    const [vouchers, setVouchers] = useState([]);
 
     const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
 
@@ -61,25 +61,32 @@ function Voucher() {
 
     const [totalCount, setTotalCount] = useState(1);
 
-    // const fetchVouchers = async () => {
-    //     setLoading(true);
+    const fetchVouchers = async () => {
+        setLoading(true);
 
-    //     await VoucherService.getAll(pagination.pageNo - 1, pagination.pageSize, searchText.current, filteredStatus)
-    //         .then(response => {
+        await VoucherService.getAll(pagination.pageNo - 1, pagination.pageSize)
+            .then(response => {
 
-    //             setVouchers(response.data);
+                const formattedData = response.data.map((voucher, index) => ({
+                    ...voucher,
+                    key: index + 1,
+                    startDate: FormatDate(voucher.startDate),
+                    endDate: FormatDate(voucher.endDate)
+                }));
 
-    //             setTotalCount(response.totalCount);
+                setVouchers(formattedData);
 
-    //             setLoading(false);
+                setTotalCount(response.totalCount);
 
-    //         }).catch(error => {
-    //             console.error(error);
-    //         })
-    // }
+                setLoading(false);
+
+            }).catch(error => {
+                console.error(error);
+            })
+    }
 
     useEffect(() => {
-        // fetchVouchers();
+        fetchVouchers();
     }, [pagination]);
 
 
@@ -91,7 +98,7 @@ function Voucher() {
                 message: 'Thông báo',
                 description: 'Xóa thành công!',
             });
-            // fetchVouchers();
+            fetchVouchers();
         }).catch(error => {
             console.error(error);
             notification.error({
@@ -105,18 +112,18 @@ function Voucher() {
     const handleResetPage = () => {
         setFilteredStatus(null);
         setPagination({ pageNo: 1, pageSize: 5 });
-        // fetchVouchers();
+        fetchVouchers();
     };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
         searchText.current = selectedKeys[0];
-        // fetchVouchers();
+        fetchVouchers();
     };
     const handleReset = (clearFilters) => {
         clearFilters();
         searchText.current = null;
-        // fetchVouchers();
+        fetchVouchers();
     };
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -185,18 +192,19 @@ function Voucher() {
             width: '4%',
         },
         {
-            title: 'Tên giảm giá',
+            title: 'Mã',
+            dataIndex: 'voucherCode',
+            key: 'voucherCode',
+            width: '7%',
+        },
+        {
+            title: 'Tên',
             dataIndex: 'voucherName',
             key: 'voucherName',
             width: '10%',
             ...getColumnSearchProps('voucherName')
         },
-        {
-            title: 'Kiểu giảm',
-            dataIndex: 'typeVoucher',
-            key: 'typeVoucher',
-            width: '7%',
-        },
+
         {
             title: 'Giảm giá',
             dataIndex: 'discountRate',
@@ -241,11 +249,11 @@ function Voucher() {
             width: '10%',
             filters: [
                 {
-                    text: 'Đang hoạt động',
+                    text: 'Hoạt động',
                     value: true,
                 },
                 {
-                    text: 'Ngừng hoạt động',
+                    text: 'Hết hạn',
                     value: false,
                 },
             ],
@@ -259,14 +267,14 @@ function Voucher() {
         {
             title: 'Hành động',
             key: 'action',
-            width: '8%',
+            width: '7%',
             render: (record) => {
 
                 return <Space size="middle">
                     <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModal("edit", record)} />
-                    {record.deleted && <Popconfirm
+                    {/* {record.deleted && <Popconfirm
                         title="Xóa giảm giá"
                         description="Bạn có chắc chắn xóa giảm giá này không?"
                         placement="leftTop"
@@ -275,7 +283,7 @@ function Voucher() {
                         cancelText="Hủy bỏ"
                     >
                         <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                    </Popconfirm>}
+                    </Popconfirm>} */}
 
                 </Space>
             }
@@ -285,7 +293,7 @@ function Voucher() {
 
     return (
         <>
-            <h2 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách giảm giá</h2>
+            <h3 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách giảm giá</h3>
 
             <Button type="primary"
                 icon={<PlusOutlined />}
@@ -301,11 +309,7 @@ function Voucher() {
             />
 
             <Table
-                dataSource={Vouchers.map((Voucher, index) => ({
-                    ...Voucher,
-                    key: index + 1,
-                    createdAt: FormatDate(Voucher.createdAt)
-                }))}
+                dataSource={vouchers}
                 // onChange={(_, filters) => {
                 //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
                 //     setFilteredStatus(status);
@@ -329,7 +333,7 @@ function Voucher() {
                 reacord={open.reacord}
                 hideModal={hideModal}
                 isModal={open.isModal}
-            // fetchVouchers={fetchVouchers} 
+                fetchVouchers={fetchVouchers}
             />}
         </>
     )
@@ -352,7 +356,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                         message: 'Thông báo',
                         description: 'Thêm mới thành công!',
                     });
-                    // fetchVouchers();
+                    fetchVouchers();
                     // Đóng modal
                     hideModal();
                 })
@@ -372,15 +376,15 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
     const handleUpdate = () => {
         form.validateFields().then(async () => {
 
-            const data = form.getFieldsValue();
+            const values = await form.validateFields();
 
-            await VoucherService.update(reacord.id, data)
+            await VoucherService.update(reacord.id, values)
                 .then(() => {
                     notification.success({
                         message: 'Thông báo',
                         description: 'Cập nhật thành công!',
                     });
-                    // fetchVouchers();
+                    fetchVouchers();
                     // Đóng modal
                     hideModal();
                 })
@@ -397,11 +401,24 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
         })
 
     }
+    const selectAfter = (
+        <Select
+            defaultValue="%"
+            style={{
+                width: 90,
+            }}
+        >
+            <Option value="USD">%</Option>
+            <Option value="EUR">VND</Option>
+
+        </Select>
+    );
 
     return (
-        <div className='container'>
-            <div className='col-8 offset-2'>
+        <Row>
+            <Col span={24}>
                 <Modal
+                    width={800}
                     title={isMode === "edit" ? "Cập nhật giảm giá" : "Thêm mới một giảm giá"}
                     open={isModal}
                     onOk={isMode === "edit" ? handleUpdate : handleCreate}
@@ -411,74 +428,118 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                 >
                     <Form
                         name="wrap"
-                        labelCol={{ flex: '90px' }}
+                        labelCol={{ flex: '100px' }}
                         labelAlign="left"
-                        // labelWrap/
-                        // wrapperCol={{ flex: 1 }}
+                        // labelWrap
                         colon={false}
                         form={form}
-                        initialValues={{ ...reacord }}
+                        initialValues={{
+                            ...reacord,
+                        }}
 
                     >
-                        <Form.Item label="Tên:" name="voucherName" rules={[{ required: true, message: 'Vui lòng nhập tên giảm giá!' }]}>
-                            <Input placeholder="Nhập tên..." />
-                        </Form.Item>
-
-                        <Form.Item label="Kiểu giảm:" name="typeVoucher" rules={[{ required: true, message: 'Vui lòng nhập email!' }]}>
-                            <Input placeholder="Nhập email..." />
-                        </Form.Item>
-
-
-                        <div className='row'>
-                            <Form.Item label="Ngày kết thúc:" name="endDate" className='col-md-6'>
-                                <DatePicker />
-                            </Form.Item>
-                            <Form.Item label="Ngày bắt đầu:" name="startDate" className='col-md-6'>
-                                <DatePicker />
-                            </Form.Item>
-                        </div>
-
-                        <div className='row'>
-                            <Form.Item label="Giảm giá:" name="discountRate" className='col-md-6'>
-                                <Input placeholder="Nhập dịa chỉ..." />
-                            </Form.Item>
-                            <Form.Item label="Số lượng:" name="quantity" className='col-md-6' rules={[
-                                {
-                                    type: 'number',
-                                    min: 0,
-                                    max: 99,
-                                },
-                            ]}
-                                initialValue={100}>
-                                <InputNumber style={{ width: '100%' }} />
-                            </Form.Item>
-                        </div>
-                        <div className='row'>
-                            <Form.Item label="Tối thiểu:" name="orderMinimum" className='col-md-6'>
-                                <Input placeholder="Nhập dịa chỉ..." />
-                            </Form.Item>
-                            <Form.Item label="Giảm max:" name="maxReduce" className='col-md-6'>
-                                <Input placeholder="Nhập dịa chỉ..." />
-                            </Form.Item>
-                        </div>
+                        <Row>
+                            <Col span={11}>
+                                <Form.Item label="Mã:" name="voucherCode" rules={[{ required: true, message: 'Vui lòng nhập mã giảm giá!' }]}>
+                                    <Input placeholder="Nhập mã..." />
+                                </Form.Item>
+                            </Col>
+                            <Col span={1}>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="Tên:" name="voucherName" rules={[{ required: true, message: 'Vui lòng nhập tên giảm giá!' }]}>
+                                    <Input placeholder="Nhập tên..." />
+                                </Form.Item>
+                            </Col>
+                        </Row>
 
 
-                        <Form.Item label="Mô tả:" name="VoucherDescribe" >
-                            <TextArea rows={4} placeholder="Nhập mô tả giảm giá..." />
+
+                        <Row >
+                            <Col span={11}>
+                                <Form.Item label="Giảm giá:" name="discountRate" rules={[
+                                    {
+                                        required: true,
+                                        type: 'number',
+                                        min: 0,
+                                    }]}>
+                                    <InputNumber style={{ width: '100%' }} addonAfter={selectAfter} />
+                                </Form.Item>
+                            </Col>
+                            <Col span={1}></Col>
+                            <Col span={12}>
+                                <Form.Item label="Số lượng:" name="quantity" rules={[
+                                    {
+                                        required: true,
+                                        type: 'number',
+                                        min: 1,
+                                    },
+                                ]} >
+                                    <InputNumber style={{ width: '100%' }} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col span={11}>
+                                <Form.Item label="Ngày bắt đầu:" name="startDate" rules={[{ required: true, message: 'Vui lòng nhập ngày bắt đầu!' }]}>
+                                    <DatePicker style={{ width: '100%' }} showTime format="HH:mm:ss - DD/MM/YYYY'" />
+                                </Form.Item>
+                            </Col>
+                            <Col span={1}></Col>
+                            <Col span={12}>
+                                <Form.Item label="Ngày kết thúc:" name="endDate" rules={[{ required: true, message: 'Vui lòng nhập ngày kết thúc!' }]}>
+                                    <DatePicker style={{ width: '100%' }} showTime format="HH:mm:ss - DD/MM/YYYY'" />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+
+
+
+                        <Row>
+                            <Col span={11}>
+                                <Form.Item label="Tối thiểu:" name="orderMinimum" rules={[
+                                    {
+                                        required: true,
+                                        type: 'number',
+                                        min: 0,
+                                    },
+                                ]} >
+                                    <InputNumber style={{ width: '100%' }} />
+                                </Form.Item>
+                            </Col>
+                            <Col span={1}></Col>
+                            <Col span={12}>
+                                <Form.Item label="Giảm max:" name="maxReduce" rules={[
+                                    {
+                                        required: true,
+                                        type: 'number',
+                                        min: 0,
+                                    },
+                                ]} >
+                                    <InputNumber style={{ width: '100%' }} />
+                                </Form.Item>
+                            </Col>
+
+
+                        </Row>
+
+
+                        <Form.Item label="Ghi chú:" name="note" >
+                            <TextArea rows={4} placeholder="Nhập ghi chú..." />
                         </Form.Item>
 
                         <Form.Item label="Trạng thái:" name="deleted" initialValue={true} >
                             <Radio.Group name="radiogroup" style={{ float: 'left' }}>
-                                <Radio value={true}>Đang hoạt động</Radio>
-                                <Radio value={false}>Ngừng hoạt động</Radio>
+                                <Radio value={true}>Hoạt động</Radio>
+                                <Radio value={false}>Hết hạn</Radio>
                             </Radio.Group>
                         </Form.Item>
-
                     </Form>
                 </Modal>
-            </div>
-        </div>
+            </Col>
 
+        </Row >
     );
 };
 

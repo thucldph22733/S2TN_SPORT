@@ -2,25 +2,17 @@
 //
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import com.poly.springboot.config.JwtService;
-//import com.poly.springboot.dto.requestDto.AuthenticationRequestDto;
 //import com.poly.springboot.dto.requestDto.UserRequestDto;
-//import com.poly.springboot.dto.responseDto.AuthenticationResponseDto;
-//import com.poly.springboot.dto.responseDto.UserResponseDto;
+//
 //import com.poly.springboot.entity.User;
-//import com.poly.springboot.entity.Token;
 //import com.poly.springboot.entity.TokenType;
 //import com.poly.springboot.exception.AlreadyExistsException;
 //import com.poly.springboot.exception.ResourceNotFoundException;
-//import com.poly.springboot.mapper.UserMapper;
 //import com.poly.springboot.repository.UserRepository;
-//import com.poly.springboot.repository.TokenRepository;
-//import com.poly.springboot.service.UserService;
 //import jakarta.servlet.http.HttpServletRequest;
 //import jakarta.servlet.http.HttpServletResponse;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.data.domain.Pageable;
 //import org.springframework.http.HttpHeaders;
 //import org.springframework.security.authentication.AuthenticationManager;
 //import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,8 +21,6 @@
 //
 //import java.io.IOException;
 //import java.util.List;
-//
-//import java.util.stream.Collectors;
 //
 //@Service
 //@RequiredArgsConstructor
@@ -43,40 +33,41 @@
 //
 //    private final AuthenticationManager authenticationManager;
 //
-//    private final TokenRepository tokenRepository;
+//    @Autowired
+//    private  TokenRepository tokenRepository;
 //    private final Integer pageSize = 10;
 //
 //    private final PasswordEncoder passwordEncoder;
 //
 //    //Phương thức lấy ra danh sách nhân viên
-//    @Override
-//    public List<UserResponseDto> getStaffs() {
-//        return userRepository.findAll().stream().map(
-//                UserMapper::mapToStaffResponse
-//        ).collect(Collectors.toList());
-//    }
+////    @Override
+////    public List<UserResponseDto> getStaffs() {
+////        return userRepository.findAll().stream().map(
+////                UserMapper::mapToStaffResponse
+////        ).collect(Collectors.toList());
+////    }
 //
 //    //Phương thức lấy ra danh sách nhân viên có phân trang
-//    @Override
-//    public List<UserResponseDto> getPagination(Integer pageNo) {
-//
-//        Pageable pageable = PageRequest.of(pageNo, pageSize);
-//
-//        return userRepository.findAll(pageable).stream().map(
-//                UserMapper::mapToStaffResponse
-//        ).collect(Collectors.toList());
-//    }
+////    @Override
+////    public List<UserResponseDto> getPagination(Integer pageNo) {
+////
+////        Pageable pageable = PageRequest.of(pageNo, pageSize);
+////
+////        return userRepository.findAll(pageable).stream().map(
+////                UserMapper::mapToStaffResponse
+////        ).collect(Collectors.toList());
+////    }
 //
 //    //Phương thức lấy ra danh sách nhân viên có phân trang theo từ khóa tìm kiếm
-//    @Override
-//    public List<UserResponseDto> searchStaff(String keyword, Integer pageNo) {
-//
-//        Pageable pageable = PageRequest.of(pageNo, pageSize);
-//
-//        return userRepository.searchStaff(keyword, pageable).stream().map(
-//                UserMapper::mapToStaffResponse
-//        ).collect(Collectors.toList());
-//    }
+////    @Override
+////    public List<UserResponseDto> searchStaff(String keyword, Integer pageNo) {
+////
+////        Pageable pageable = PageRequest.of(pageNo, pageSize);
+////
+////        return userRepository.searchStaff(keyword, pageable).stream().map(
+////                UserMapper::mapToStaffResponse
+////        ).collect(Collectors.toList());
+////    }
 //
 //    //Phương thức tạo mới một nhân viên
 //    @Override
@@ -98,8 +89,8 @@
 //        User saveStaff = userRepository.save(staff);
 //
 //        //Tạo Token và refreshToken
-////        String jwtToken = jwtService.generateToken(staff);
-////        String refreshToken = jwtService.generateRefreshToken(staff);
+//        String jwtToken = jwtService.generateToken(staff);
+//        String refreshToken = jwtService.generateRefreshToken(staff);
 //
 //        return true;
 //    }
@@ -167,7 +158,6 @@
 //                .refreshToken(refreshToken)
 //                .build();
 //    }
-//
 //    @Override
 //    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
 //

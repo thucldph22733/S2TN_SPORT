@@ -1,6 +1,7 @@
 package com.poly.springboot.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,7 @@ public class Role extends BaseEntity{
     @Column(name = "role_describe")
     private String roleDescribe;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
 }

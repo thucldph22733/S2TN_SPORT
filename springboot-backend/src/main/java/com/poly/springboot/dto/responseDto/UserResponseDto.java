@@ -16,11 +16,7 @@ public class UserResponseDto {
 
     private Long id;
 
-//    private Role role;
-
     private String userName;
-
-    private String avatar;
 
     private String phoneNumber;
 
@@ -30,10 +26,8 @@ public class UserResponseDto {
 
     private Date birthOfDay;
 
-    private String address;
+    private Boolean deleted;
 
-    private Boolean status;
-
-    private LocalDateTime createDate;
+    private LocalDateTime createdAt;
 
 }

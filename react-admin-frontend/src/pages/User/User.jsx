@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, DatePicker, Row, Col } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -7,12 +7,11 @@ import {
     DeleteOutlined,
     SearchOutlined,
 } from '@ant-design/icons';
-import './Voucher.css'
-import VoucherService from '~/service/VoucherService';
+import UserService from '~/service/UserService';
 import FormatDate from '~/utils/format-date';
-import dayjs from 'dayjs';
+
 const { TextArea } = Input;
-const { Option } = Select;
+
 const getStatusBadgeStyle = (text) => {
     const backgroundColor = text === true ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)';
     return {
@@ -27,9 +26,9 @@ const getStatusBadgeStyle = (text) => {
 };
 
 const getStatusText = (text) => {
-    return text === true ? 'Hoạt động' : 'Hết hạn';
+    return text === true ? 'Đang hoạt động' : 'Ngừng hoạt động';
 };
-function Voucher() {
+function User() {
 
     const [loading, setLoading] = useState(false);
 
@@ -51,7 +50,7 @@ function Voucher() {
         setOpen({ isModal: false });
     };
 
-    const [vouchers, setVouchers] = useState([]);
+    const [Users, setUsers] = useState([]);
 
     const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
 
@@ -61,20 +60,13 @@ function Voucher() {
 
     const [totalCount, setTotalCount] = useState(1);
 
-    const fetchVouchers = async () => {
+    const fetchUsers = async () => {
         setLoading(true);
 
-        await VoucherService.getAll(pagination.pageNo - 1, pagination.pageSize)
+        await UserService.getAll(pagination.pageNo - 1, pagination.pageSize)
             .then(response => {
 
-                const formattedData = response.data.map((voucher, index) => ({
-                    ...voucher,
-                    key: index + 1,
-                    startDate: FormatDate(voucher.startDate),
-                    endDate: FormatDate(voucher.endDate)
-                }));
-
-                setVouchers(formattedData);
+                setUsers(response.data);
 
                 setTotalCount(response.totalCount);
 
@@ -86,19 +78,19 @@ function Voucher() {
     }
 
     useEffect(() => {
-        fetchVouchers();
+        fetchUsers();
     }, [pagination]);
 
 
     const handleDelete = async (id) => {
 
-        await VoucherService.delete(id).then(response => {
+        await UserService.delete(id).then(response => {
             console.log(response.data);
             notification.success({
                 message: 'Thông báo',
                 description: 'Xóa thành công!',
             });
-            fetchVouchers();
+            fetchUsers();
         }).catch(error => {
             console.error(error);
             notification.error({
@@ -112,18 +104,18 @@ function Voucher() {
     const handleResetPage = () => {
         setFilteredStatus(null);
         setPagination({ pageNo: 1, pageSize: 5 });
-        fetchVouchers();
+        fetchUsers();
     };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
         searchText.current = selectedKeys[0];
-        fetchVouchers();
+        fetchUsers();
     };
     const handleReset = (clearFilters) => {
         clearFilters();
         searchText.current = null;
-        fetchVouchers();
+        fetchUsers();
     };
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -189,71 +181,60 @@ function Voucher() {
             title: '#',
             dataIndex: 'key',
             key: 'key',
-            width: '4%',
-        },
-        {
-            title: 'Mã',
-            dataIndex: 'voucherCode',
-            key: 'voucherCode',
-            width: '7%',
+            width: '5%',
         },
         {
             title: 'Tên',
-            dataIndex: 'voucherName',
-            key: 'voucherName',
+            dataIndex: 'userName',
+            key: 'userName',
+            width: '15%',
+            ...getColumnSearchProps('userName')
+        },
+        {
+            title: 'Số điện thoại',
+            dataIndex: 'phoneNumber',
+            key: 'phoneNumber',
+            width: '15%',
+        },
+        {
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
+            width: '15%',
+        },
+        {
+            title: 'Giới tính',
+            dataIndex: 'gender',
+            key: 'gender',
             width: '10%',
-            ...getColumnSearchProps('voucherName')
-        },
-
-        {
-            title: 'Giảm giá',
-            dataIndex: 'discountRate',
-            key: 'discountRate',
-            width: '7%',
+            render: (text) => {
+                return text === true ? "Nam" : "Nữ";
+            }
         },
         {
-            title: 'Ngày bắt đầu',
-            dataIndex: 'startDate',
-            key: 'startDate',
-            width: '10%',
-        },
-        {
-            title: 'Ngày kết thúc',
-            dataIndex: 'endDate',
-            key: 'endDate',
-            width: '10%',
-        },
-        {
-            title: 'Số lượng',
-            dataIndex: 'quantity',
-            key: 'quantity',
-            width: '7%',
-        },
-        {
-            title: 'Đơn tối thiểu',
-            dataIndex: 'orderMinimum',
-            key: 'orderMinimum',
+            title: 'Ngày sinh',
+            dataIndex: 'birthOfDay',
+            key: 'birthOfDay',
             width: '10%',
         },
         {
-            title: 'Giảm tối đa',
-            dataIndex: 'maxReduce',
-            key: 'maxReduce',
-            width: '10%',
+            title: 'Ngày tạo',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            width: '15%',
         },
-
         {
             title: 'Trạng thái',
             key: 'deleted',
             dataIndex: 'deleted',
-            width: '10%',
+            width: '15%',
             filters: [
                 {
-                    text: 'Hoạt động',
+                    text: 'Đang hoạt động',
                     value: true,
                 },
                 {
-                    text: 'Hết hạn',
+                    text: 'Ngừng hoạt động',
                     value: false,
                 },
             ],
@@ -267,23 +248,23 @@ function Voucher() {
         {
             title: 'Hành động',
             key: 'action',
-            width: '7%',
+            width: '10%',
             render: (record) => {
 
                 return <Space size="middle">
                     <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModal("edit", record)} />
-                    {/* {record.deleted && <Popconfirm
-                        title="Xóa giảm giá"
-                        description="Bạn có chắc chắn xóa giảm giá này không?"
+                    {record.deleted && <Popconfirm
+                        title="Xóa tài khoản"
+                        description="Bạn có chắc chắn xóa tài khoản này không?"
                         placement="leftTop"
                         onConfirm={() => handleDelete(record.id)}
                         okText="Đồng ý"
                         cancelText="Hủy bỏ"
                     >
                         <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                    </Popconfirm>} */}
+                    </Popconfirm>}
 
                 </Space>
             }
@@ -293,7 +274,7 @@ function Voucher() {
 
     return (
         <>
-            <h3 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách giảm giá</h3>
+            <h3 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách tài khoản</h3>
 
             <Button type="primary"
                 icon={<PlusOutlined />}
@@ -309,11 +290,15 @@ function Voucher() {
             />
 
             <Table
-                dataSource={vouchers}
+                dataSource={Users.map((user, index) => ({
+                    ...user,
+                    key: index + 1,
+                    createdAt: FormatDate(user.createdAt)
+                }))}
                 // onChange={(_, filters) => {
                 //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
                 //     setFilteredStatus(status);
-                //     fetchVouchers();
+                //     fetchUsers();
                 // }}
 
                 loading={loading}
@@ -328,35 +313,34 @@ function Voucher() {
                     },
                 }}></Table >
 
-            {open.isModal && <VoucherModal
+            {open.isModal && <UserModal
                 isMode={open.isMode}
                 reacord={open.reacord}
                 hideModal={hideModal}
                 isModal={open.isModal}
-                fetchVouchers={fetchVouchers}
-            />}
+                fetchUsers={fetchUsers} />}
         </>
     )
 };
-export default Voucher;
+export default User;
 
 
-const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) => {
+const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
     const [form] = Form.useForm();
 
     const handleCreate = () => {
         form.validateFields().then(async () => {
 
-            const values = await form.validateFields();
+            const data = form.getFieldsValue();
 
-            await VoucherService.create(values)
+            await UserService.create(data)
                 .then(() => {
                     notification.success({
                         message: 'Thông báo',
                         description: 'Thêm mới thành công!',
                     });
-                    fetchVouchers();
+                    fetchUsers();
                     // Đóng modal
                     hideModal();
                 })
@@ -376,15 +360,15 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
     const handleUpdate = () => {
         form.validateFields().then(async () => {
 
-            const values = await form.validateFields();
+            const data = form.getFieldsValue();
 
-            await VoucherService.update(reacord.id, values)
+            await UserService.update(reacord.id, data)
                 .then(() => {
                     notification.success({
                         message: 'Thông báo',
                         description: 'Cập nhật thành công!',
                     });
-                    fetchVouchers();
+                    fetchUsers();
                     // Đóng modal
                     hideModal();
                 })
@@ -401,147 +385,76 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
         })
 
     }
-    const selectAfter = (
-        <Select
-            defaultValue="%"
-            style={{
-                width: 90,
-            }}
-        >
-            <Option value="USD">%</Option>
-            <Option value="EUR">VND</Option>
-
-        </Select>
-    );
 
     return (
-        <Row>
-            <Col span={24}>
-                <Modal
-                    width={800}
-                    title={isMode === "edit" ? "Cập nhật giảm giá" : "Thêm mới một giảm giá"}
-                    open={isModal}
-                    onOk={isMode === "edit" ? handleUpdate : handleCreate}
-                    onCancel={hideModal}
-                    okText={isMode === "edit" ? "Cập nhật" : "Thêm mới"}
-                    cancelText="Hủy bỏ"
-                >
-                    <Form
-                        name="wrap"
-                        labelCol={{ flex: '100px' }}
-                        labelAlign="left"
-                        // labelWrap
-                        colon={false}
-                        form={form}
-                        initialValues={{
-                            ...reacord,
-                            ...(reacord?.startDate && { startDate: dayjs(reacord.startDate, "HH:mm:ss - DD/MM/YYYY") }),
-                            ...(reacord?.endDate && { endDate: dayjs(reacord.endDate, "HH:mm:ss - DD/MM/YYYY") }),
-                        }}
 
-                    >
-                        <Row>
-                            <Col span={11}>
-                                <Form.Item label="Mã:" name="voucherCode" rules={[{ required: true, message: 'Vui lòng nhập mã giảm giá!' }]}>
-                                    <Input placeholder="Nhập mã..." />
-                                </Form.Item>
-                            </Col>
-                            <Col span={1}>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item label="Tên:" name="voucherName" rules={[{ required: true, message: 'Vui lòng nhập tên giảm giá!' }]}>
-                                    <Input placeholder="Nhập tên..." />
-                                </Form.Item>
-                            </Col>
-                        </Row>
+        <Modal
+            width={650}
+            title={isMode === "edit" ? "Cập nhật tài khoản" : "Thêm mới một tài khoản"}
+            open={isModal}
+            onOk={isMode === "edit" ? handleUpdate : handleCreate}
+            onCancel={hideModal}
+            okText={isMode === "edit" ? "Cập nhật" : "Thêm mới"}
+            cancelText="Hủy bỏ"
+        >
+            <Form
+                name="wrap"
+                labelCol={{ flex: '110px' }}
+                labelAlign="left"
+                labelWrap
+                wrapperCol={{ flex: 1 }}
+                colon={false}
+                style={{ maxWidth: 600, marginTop: '25px' }}
+                form={form}
+                initialValues={{ ...reacord }}
+            >
+                <Form.Item label="Tên:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
+                    <Input placeholder="Nhập tên tài khoản..." />
+                </Form.Item>
 
+                <Form.Item label="Email:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
+                    <Input placeholder="Nhập tên tài khoản..." />
+                </Form.Item>
 
-
-                        <Row >
-                            <Col span={11}>
-                                <Form.Item label="Giảm giá:" name="discountRate" rules={[
-                                    {
-                                        required: true,
-                                        type: 'number',
-                                        min: 0,
-                                    }]}>
-                                    <InputNumber style={{ width: '100%' }} addonAfter={selectAfter} />
-                                </Form.Item>
-                            </Col>
-                            <Col span={1}></Col>
-                            <Col span={12}>
-                                <Form.Item label="Số lượng:" name="quantity" rules={[
-                                    {
-                                        required: true,
-                                        type: 'number',
-                                        min: 1,
-                                    },
-                                ]} >
-                                    <InputNumber style={{ width: '100%' }} />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-
-                        <Row>
-                            <Col span={11}>
-                                <Form.Item label="Ngày bắt đầu:" name="startDate" rules={[{ required: true, message: 'Vui lòng nhập ngày bắt đầu!' }]}>
-                                    <DatePicker style={{ width: '100%' }} showTime format="HH:mm:ss - DD/MM/YYYY" />
-                                </Form.Item>
-                            </Col>
-                            <Col span={1}></Col>
-                            <Col span={12}>
-                                <Form.Item label="Ngày kết thúc:" name="endDate" rules={[{ required: true, message: 'Vui lòng nhập ngày kết thúc!' }]}>
-                                    <DatePicker style={{ width: '100%' }} showTime format="HH:mm:ss - DD/MM/YYYY" />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-
-
-
-                        <Row>
-                            <Col span={11}>
-                                <Form.Item label="Tối thiểu:" name="orderMinimum" rules={[
-                                    {
-                                        required: true,
-                                        type: 'number',
-                                        min: 0,
-                                    },
-                                ]} >
-                                    <InputNumber style={{ width: '100%' }} />
-                                </Form.Item>
-                            </Col>
-                            <Col span={1}></Col>
-                            <Col span={12}>
-                                <Form.Item label="Giảm max:" name="maxReduce" rules={[
-                                    {
-                                        required: true,
-                                        type: 'number',
-                                        min: 0,
-                                    },
-                                ]} >
-                                    <InputNumber style={{ width: '100%' }} />
-                                </Form.Item>
-                            </Col>
-
-
-                        </Row>
-
-
-                        <Form.Item label="Ghi chú:" name="note" >
-                            <TextArea rows={4} placeholder="Nhập ghi chú..." />
+                <Form.Item label="Số điện thoại:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
+                    <Input placeholder="Nhập tên tài khoản..." />
+                </Form.Item>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item label="Ngày sinh:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
+                            <DatePicker placeholder="Chọn ngày sinh" style={{ width: '100%' }} />
                         </Form.Item>
-
-                        <Form.Item label="Trạng thái:" name="deleted" initialValue={true} >
+                    </Col>
+                    <Col span={1}>
+                    </Col>
+                    <Col span={11}>
+                        <Form.Item label="Giới tính:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
                             <Radio.Group name="radiogroup" style={{ float: 'left' }}>
-                                <Radio value={true}>Hoạt động</Radio>
-                                <Radio value={false}>Hết hạn</Radio>
+                                <Radio value={true}>Nam</Radio>
+                                <Radio value={false}>Nữ</Radio>
                             </Radio.Group>
                         </Form.Item>
-                    </Form>
-                </Modal>
-            </Col>
+                    </Col>
+                </Row>
 
-        </Row >
+
+                <Form.Item label="Mật khẩu:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
+                    <Input placeholder="Nhập tên tài khoản..." />
+                </Form.Item>
+
+                <Form.Item label="Mật khẩu:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
+                    <Input placeholder="Nhập tên tài khoản..." />
+                </Form.Item>
+
+                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]} >
+                    <Radio.Group name="radiogroup" style={{ float: 'left' }}>
+                        <Radio value={true}>Đang hoạt động</Radio>
+                        <Radio value={false}>Ngừng hoạt động</Radio>
+                    </Radio.Group>
+                </Form.Item>
+
+            </Form>
+        </Modal>
     );
 };
 

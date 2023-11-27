@@ -19,6 +19,7 @@ import { Layout, Menu, Button, theme, Avatar, Tooltip } from 'antd';
 import path_name from '~/constants/routers';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from 'react'
+import { useAuth } from '~/components/AuthContext';
 const { Header, Sider, Content } = Layout;
 
 const MainLayout = () => {
@@ -26,7 +27,12 @@ const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [selectedKeys, setSelectedKeys] = useState("/");
+    const { logout } = useAuth();
 
+    const handleLogout = () => {
+        logout();
+        navigate("/");
+    };
     useEffect(() => {
         const pathName = location.pathname;
         setSelectedKeys(pathName);
@@ -119,20 +125,21 @@ const MainLayout = () => {
                             children: [
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: path_name.employee,
+                                    key: path_name.user,
                                     label: 'Tài khoản',
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: path_name.customer,
+                                    key: path_name.role,
                                     label: 'Vai trò',
                                 },
                             ]
                         },
                         {
-                            key: path_name.logout,
+                            key: path_name.login,
                             icon: <LogoutOutlined style={{ fontSize: "16px" }} />,
                             label: 'Đăng xuất',
+                            onClick: handleLogout
                         },
                     ]}
                 />

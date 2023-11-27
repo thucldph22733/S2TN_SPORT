@@ -11,7 +11,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoleRequestDto {
+
     private String roleName;
+
     private String roleDescribe;
 
+    private Boolean deleted;
 }

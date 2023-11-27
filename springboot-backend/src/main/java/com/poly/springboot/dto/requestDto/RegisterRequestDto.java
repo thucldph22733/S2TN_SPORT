@@ -1,16 +1,20 @@
 package com.poly.springboot.dto.requestDto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record RegisterRequestDto(
-        String userName,
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegisterRequestDto{
 
-        String email,
-        String phoneNumber,
-        String password,
-        @JsonProperty("roles") List<String> roles)
-{
+        private String userName;
+        private String email;
+        private String phoneNumber;
+        private String password;
 
 }

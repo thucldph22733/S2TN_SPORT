@@ -1,9 +1,9 @@
 const path_name = {
-    dashboard: '/',
+    dashboard: '/dashboard',
     forgot_password: '/quen-mat-khau',
     logout: '/dang-xuat',
     sell: '/ban-hang',
-    login: '/dang-nhap',
+    login: '/',
     product: '/san-pham',
     brand: '/thuong-hieu',
     color: '/mau-sac',
@@ -13,8 +13,8 @@ const path_name = {
     size: '/kich-thuoc',
     club: '/cau-lac-bo',
     order: '/hoa-don',
-    customer: '/khach-hang',
-    employee: '/nhan-vien',
+    user: '/tai-khoan',
+    role: '/vai-tro',
     voucher: '/giam-gia',
 };
 

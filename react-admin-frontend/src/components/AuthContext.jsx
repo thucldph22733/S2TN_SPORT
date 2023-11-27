@@ -1,55 +1,70 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
-import axios from 'axios';
-const AuthContext = createContext();
+import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
+import HttpClient from '~/utils/http-client';
+const API_URL = 'auth/';
+const AuthContext = createContext();
 export function useAuth() {
     return useContext(AuthContext);
 }
-
-export function AuthProvider() {
-
+export function AuthProvider({ children }) {
+    // const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    let navigate = useNavigate();
 
-    useEffect(() => {
-        // Check if user has a valid JWT in localStorage
-        const token = localStorage.getItem('token');
-        if (token) {
-            // Make a request to the server to validate the token and get user data
-            // If token is valid, set user state with user data
-            // If token is invalid, remove the token from localStorage and set user state to null
-        }
 
-    }, []);
+    // useEffect(() => {
+    //     // Check if user has a valid JWT in localStorage
+    //     const token = localStorage.getItem('token');
+    //     if (token) {
+    //         // Make a request to the server to validate the token and get user data
+    //         // If token is valid, set user state with user data
+    //         // If token is invalid, remove the token from localStorage and set user state to null
+    //     }
 
-    function login(email, password) {
-        // Gửi yêu cầu tới server để xác thực người dùng
-        axios.post("http://localhost:8080/api/v1/auth/admin/login",
-            JSON.stringify({ email, password }),
-            {
-                headers: { 'Content-Type': 'application/json' },
-            }).then(function (response) {
-                console.log(response.data);
+    // }, []);
 
-                const token = response.data.access_token
-
-                localStorage.setItem('jsonwebtoken', token)
-                navigate("/");
+    function login(data) {
+        return HttpClient.post(`${API_URL}login`, data)
+            .then((response) => {
+                const { access_token, refresh_token } = response.data;
+                localStorage.setItem('token', access_token);
+                localStorage.setItem('refresh_token', refresh_token);
+                // navigate("/")
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch(error => {
+                console.error(error);
+                throw error;
             });
     }
+    function refreshToken() {
+        const refresh_token = localStorage.getItem('refresh_token');
+        if (!refresh_token) {
+            // navigate("/dang-nhap");
+        } else {
+            HttpClient.post(`${API_URL}refresh-token`, refresh_token)
+                .then((response) => {
 
+                    const new_access_token = response.data.access_token;
+
+                    localStorage.setItem('token', new_access_token);
+                })
+                .catch(error => {
+                    console.error(error);
+                    throw error;
+                });
+        }
+
+    }
     function logout() {
         // Xóa JWT khỏi localStorage và đặt trạng thái người dùng thành null
         localStorage.removeItem('token');
-        setUser(null);
+        localStorage.removeItem('refresh_token');
+        // setUser(null);
         // Chuyển hướng đến trang đăng nhập
-        navigate("/login");
+        // navigate("/dang-nhap");
     }
 
     const value = {
@@ -57,7 +72,9 @@ export function AuthProvider() {
         login,
         logout,
         loading,
+        refreshToken
     };
 
-    return <AuthContext.Provider value={value}><Outlet /></AuthContext.Provider>;
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+// export default AuthContext;

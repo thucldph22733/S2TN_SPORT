@@ -28,6 +28,7 @@ public class SecurityConfig {
     //mảng chứa các đường dẫn được cho phép truy cập mà không cần xác thực.
     private static final String[] WHITE_LIST_URL = {
             "" +
+                    "/api/v1/**",
             "/api/v1/auth/**",
             "/api/v1/roles/**",
             "/api/staffs**",
@@ -45,9 +46,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL) // Không yêu cầu xác thực
                                 .permitAll()
-                                .requestMatchers("/api/v1/brands/**").hasAnyAuthority("Admin","User")
-                                .requestMatchers("/api/v1/colors/**").hasAuthority("Admin")
-                                .requestMatchers("/api/v1/clubs/**").hasAuthority("User")
+//                                .requestMatchers("/api/v1/brands/**").hasAnyAuthority("ADMIN","USER")
+//                                .requestMatchers("/api/v1/colors/**").hasAuthority("ADMIN")
+//                                .requestMatchers("/api/v1/clubs/**").hasAuthority("USER")
                                 .anyRequest()
                                 .authenticated()
 

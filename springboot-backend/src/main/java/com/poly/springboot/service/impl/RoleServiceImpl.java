@@ -2,9 +2,13 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.RoleRequestDto;
 import com.poly.springboot.entity.Role;
+import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.RoleRepository;
 import com.poly.springboot.service.RoleService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,13 +21,40 @@ public class RoleServiceImpl implements RoleService {
     public Boolean createRole(RoleRequestDto roleRequestDto) {
         Role role = new Role();
         role.setRoleName(roleRequestDto.getRoleName());
-        role.setRoleDescribe(role.getRoleDescribe());
+        role.setRoleDescribe(roleRequestDto.getRoleDescribe());
+        role.setDeleted(roleRequestDto.getDeleted());
         roleRepository.save(role);
         return true;
     }
 
     @Override
-    public List<Role> getRoles() {
-        return roleRepository.findAll();
+    public Boolean updateRole(RoleRequestDto roleRequestDto,Long id) {
+        Role role = roleRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id vai trò này!"));
+
+        role.setRoleName(roleRequestDto.getRoleName());
+        role.setRoleDescribe(roleRequestDto.getRoleDescribe());
+        role.setDeleted(roleRequestDto.getDeleted());
+        roleRepository.save(role);
+
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public Boolean deleteRole(Long id) {
+        Role role = roleRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id vai trò này!"));
+
+        role.setDeleted(!role.getDeleted());
+
+        roleRepository.save(role);
+
+        return true;
+    }
+
+    @Override
+    public Page<Role> getRoles(Pageable pageable) {
+        return roleRepository.findAll(pageable);
     }
 }

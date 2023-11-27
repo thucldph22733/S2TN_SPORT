@@ -37,14 +37,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public RegisterResponseDto register(RegisterRequestDto registerRequestDto) {
 
-        List<Role> roles = roleRepository.findAllByRoleNameIn(registerRequestDto.roles());
+        // Kiểm tra xem vai trò "User" đã tồn tại hay chưa
+        Role userRole = roleRepository.findByRoleName("USER")
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy vai trò này!"));
+
         User user = User.builder()
-                .userName(registerRequestDto.userName())
-                .phoneNumber(registerRequestDto.phoneNumber())
-                .email(registerRequestDto.email())
-                .password(passwordEncoder.encode(registerRequestDto.password()))
-                .roles(roles)
+                .userName(registerRequestDto.getUserName())
+                .phoneNumber(registerRequestDto.getPhoneNumber())
+                .email(registerRequestDto.getEmail())
+                .password(passwordEncoder.encode(registerRequestDto.getPassword()))
+                .roles(List.of(userRole))
                 .build();
+
         userRepository.save(user);
         return this.userMapper(user);
     }
@@ -69,14 +73,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
-       String userEmail = jwtService.extractUsername(refreshTokenRequestDto.getToken());
+        String userEmail = jwtService.extractUsername(refreshTokenRequestDto.getToken());
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy email người  này!"));
-        //Kiểm Tra Tính Hợp Lệ của Refresh Token
-            if (jwtService.isTokenValid(refreshTokenRequestDto.getToken(), user)) {
-                // Xác thực thành công, tiếp tục quá trình refresh token.
-                String accessToken = jwtService.generateToken(user);
 
+            if (jwtService.isTokenValid(refreshTokenRequestDto.getToken(), user)) {
+                String accessToken = jwtService.generateToken(user);
 
                 //Trả về access token và refresh token mới thông qua đối tượng
                 return JwtAuthenticationResponseDto.builder()

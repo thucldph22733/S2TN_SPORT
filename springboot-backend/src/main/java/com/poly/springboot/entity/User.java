@@ -41,12 +41,12 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "_password")
     private String password;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER )
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roles = new ArrayList<>();
+    private List<Role> roles;
 
 //    private ERole role;
 
@@ -63,7 +63,6 @@ public class User extends BaseEntity implements UserDetails {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
         return authorities;
-//        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

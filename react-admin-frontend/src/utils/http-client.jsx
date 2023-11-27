@@ -11,11 +11,11 @@ const HttpClient = axios.create({
 // Middleware để xử lý request trước khi gửi đi
 HttpClient.interceptors.request.use(
     (config) => {
-        // config.headers = config.headers ?? {};
-        // const token = localStorage.getItem('token');
-        // if (token) {
-        //   config.headers['Authorization'] = `Bearer ${token}`;
-        // }
+        config.headers = config.headers ?? {};
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
         return config;
     },
     (error) => {

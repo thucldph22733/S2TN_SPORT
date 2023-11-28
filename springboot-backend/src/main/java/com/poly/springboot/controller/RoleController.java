@@ -42,6 +42,15 @@ public class RoleController {
                         roleList,
                         rolePage);
     }
+    @GetMapping("findAllByDeletedTrue")
+    public ResponseEntity<?> findAllByDeletedTrue() {
+
+        List<Role> roleList = roleService.findAllByDeletedTrue();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(roleList);
+    }
 
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createRole(@RequestBody RoleRequestDto roleRequestDto) {

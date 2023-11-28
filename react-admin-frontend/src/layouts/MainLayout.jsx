@@ -11,7 +11,7 @@ import {
     UsergroupAddOutlined,
     BarsOutlined,
     TagsOutlined,
-    QrcodeOutlined,
+    ShoppingCartOutlined,
     SlackOutlined
 } from '@ant-design/icons';
 import logo from '~/assets/images/logo.jpg'
@@ -59,7 +59,7 @@ const MainLayout = () => {
                         },
                         {
                             key: path_name.sell,
-                            icon: <QrcodeOutlined style={{ fontSize: "16px" }} />,
+                            icon: <ShoppingCartOutlined style={{ fontSize: "16px" }} />,
                             label: 'Bán hàng',
 
                         },

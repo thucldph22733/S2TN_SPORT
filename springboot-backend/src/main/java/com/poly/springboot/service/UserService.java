@@ -10,9 +10,9 @@ public interface UserService {
 
     Page<UserResponseDto> getUsers(Pageable pageable);
 
-//    Boolean createUser(UserRequestDto requestDto);
-//
-//    Boolean updateUser(UserRequestDto requestDto, Long id);
+    Boolean createUser(UserRequestDto requestDto);
+
+    Boolean updateUser(UserRequestDto requestDto, Long id);
 //
 //    Boolean deleteUser(Long id);
 

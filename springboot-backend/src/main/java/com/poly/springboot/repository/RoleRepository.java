@@ -12,5 +12,6 @@ public interface RoleRepository extends JpaRepository<Role,Long> {
 
     Optional<Role> findByRoleName(String name);
 
+    List<Role> findAllByDeletedTrue();
     List<Role> findAllByRoleNameIn(List<String> names);
 }

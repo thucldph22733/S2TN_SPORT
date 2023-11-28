@@ -13,8 +13,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u WHERE u.userName LIKE %:keyword% OR u.phoneNumber LIKE %:keyword% OR u.email LIKE %:keyword% ")
-    List<User> searchStaff(@Param("keyword") String keyword, Pageable pageable);
 
     Optional<User> findByEmail(String email);
 

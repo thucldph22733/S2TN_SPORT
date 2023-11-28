@@ -57,4 +57,9 @@ public class RoleServiceImpl implements RoleService {
     public Page<Role> getRoles(Pageable pageable) {
         return roleRepository.findAll(pageable);
     }
+
+    @Override
+    public List<Role> findAllByDeletedTrue() {
+        return roleRepository.findAllByDeletedTrue();
+    }
 }

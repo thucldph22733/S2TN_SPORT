@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -224,10 +224,9 @@ function Role() {
             ],
             // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
             render: (text) => (
-                <span style={getStatusBadgeStyle(text)}>
-                    {getStatusText(text)}
-                </span>
-            ),
+                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
+            )
         },
         {
             title: 'Hành động',
@@ -395,11 +394,11 @@ const RoleModal = ({ isMode, reacord, hideModal, isModal, fetchRoles }) => {
                     <Input placeholder="Nhập tên vai trò..." />
                 </Form.Item>
 
-                <Form.Item label="Mô tả:" name="roleDescribe" >
-                    <TextArea rows={4} placeholder="Nhập mô tả vai trò..." />
+                <Form.Item label="Ghi chú:" name="roleDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
                 </Form.Item>
 
-                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} >
+                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}>
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Đang hoạt động</Radio>
                         <Radio value={false}>Ngừng hoạt động</Radio>

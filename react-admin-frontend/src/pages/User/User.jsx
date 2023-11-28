@@ -1,5 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, DatePicker, Row, Col } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, DatePicker, Row, Col, Select, Tag } from 'antd';
+import { FaMapMarkedAlt } from "react-icons/fa";
+
 import {
     PlusOutlined,
     RedoOutlined,
@@ -9,25 +11,12 @@ import {
 } from '@ant-design/icons';
 import UserService from '~/service/UserService';
 import FormatDate from '~/utils/format-date';
+import dayjs from 'dayjs';
+import RoleService from '~/service/RoleService';
 
 const { TextArea } = Input;
 
-const getStatusBadgeStyle = (text) => {
-    const backgroundColor = text === true ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)';
-    return {
-        display: 'inline-block',
-        padding: '4px 8px',
-        borderRadius: '4px',
-        textAlign: 'center',
-        cursor: 'pointer',
-        backgroundColor,
-        color: 'white',
-    };
-};
 
-const getStatusText = (text) => {
-    return text === true ? 'Đang hoạt động' : 'Ngừng hoạt động';
-};
 function User() {
 
     const [loading, setLoading] = useState(false);
@@ -240,35 +229,24 @@ function User() {
             ],
             // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
             render: (text) => (
-                <span style={getStatusBadgeStyle(text)}>
-                    {getStatusText(text)}
-                </span>
-            ),
+                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
+            )
         },
         {
             title: 'Hành động',
             key: 'action',
             width: '10%',
             render: (record) => {
-
                 return <Space size="middle">
                     <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModal("edit", record)} />
-                    {record.deleted && <Popconfirm
-                        title="Xóa tài khoản"
-                        description="Bạn có chắc chắn xóa tài khoản này không?"
-                        placement="leftTop"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Đồng ý"
-                        cancelText="Hủy bỏ"
-                    >
-                        <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                    </Popconfirm>}
-
+                    <Button type="text"
+                        icon={<FaMapMarkedAlt />}
+                        style={{ color: '#5a76f3', fontSize: '16px' }} />
                 </Space>
             }
-
         },
     ];
 
@@ -293,7 +271,8 @@ function User() {
                 dataSource={Users.map((user, index) => ({
                     ...user,
                     key: index + 1,
-                    createdAt: FormatDate(user.createdAt)
+                    createdAt: FormatDate(user.createdAt),
+                    birthOfDay: dayjs(user.birthOfDay).format("DD/MM/YYYY")
                 }))}
                 // onChange={(_, filters) => {
                 //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
@@ -328,11 +307,26 @@ export default User;
 const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
     const [form] = Form.useForm();
+    const [roles, setRoles] = useState([]);
 
+    useEffect(() => {
+        fetchRoles()
+    }, []);
+    const fetchRoles = async () => {
+
+        await RoleService.findAllByDeletedTrue()
+            .then(response => {
+
+                setRoles(response.data)
+
+            }).catch(error => {
+                console.error(error);
+            })
+    }
     const handleCreate = () => {
         form.validateFields().then(async () => {
 
-            const data = form.getFieldsValue();
+            const data = await form.getFieldsValue();
 
             await UserService.create(data)
                 .then(() => {
@@ -360,7 +354,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
     const handleUpdate = () => {
         form.validateFields().then(async () => {
 
-            const data = form.getFieldsValue();
+            const data = await form.getFieldsValue();
 
             await UserService.update(reacord.id, data)
                 .then(() => {
@@ -386,11 +380,14 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
     }
 
+    const handleChange = (value) => {
+        console.log(`selected ${value}`);
+    };
     return (
 
         <Modal
             width={650}
-            title={isMode === "edit" ? "Cập nhật tài khoản" : "Thêm mới một tài khoản"}
+            title={isMode === "edit" ? "Cập nhật tài khoản người dùng" : "Thêm mới một tài khoản người dùng"}
             open={isModal}
             onOk={isMode === "edit" ? handleUpdate : handleCreate}
             onCancel={hideModal}
@@ -406,29 +403,32 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                 colon={false}
                 style={{ maxWidth: 600, marginTop: '25px' }}
                 form={form}
-                initialValues={{ ...reacord }}
+                initialValues={{
+                    ...reacord,
+                    ...(reacord?.birthOfDay && { birthOfDay: dayjs(reacord.birthOfDay, "DD/MM/YYYY") }),
+                }}
             >
                 <Form.Item label="Tên:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
-                    <Input placeholder="Nhập tên tài khoản..." />
+                    <Input placeholder="Nhập tên người dùng..." />
                 </Form.Item>
 
-                <Form.Item label="Email:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
-                    <Input placeholder="Nhập tên tài khoản..." />
+                <Form.Item label="Email:" name="email" rules={[{ required: true, message: 'Vui lòng nhập email!' }]}>
+                    <Input placeholder="Nhập email..." />
                 </Form.Item>
 
-                <Form.Item label="Số điện thoại:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
-                    <Input placeholder="Nhập tên tài khoản..." />
+                <Form.Item label="Số điện thoại:" name="phoneNumber" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                    <Input placeholder="Nhập số điện thoại..." />
                 </Form.Item>
                 <Row>
                     <Col span={12}>
-                        <Form.Item label="Ngày sinh:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
-                            <DatePicker placeholder="Chọn ngày sinh" style={{ width: '100%' }} />
+                        <Form.Item label="Ngày sinh:" name="birthOfDay" rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}>
+                            <DatePicker placeholder="Chọn ngày sinh" style={{ width: '100%' }} format="DD/MM/YYYY" />
                         </Form.Item>
                     </Col>
                     <Col span={1}>
                     </Col>
                     <Col span={11}>
-                        <Form.Item label="Giới tính:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
+                        <Form.Item label="Giới tính:" name="gender" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
                             <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                                 <Radio value={true}>Nam</Radio>
                                 <Radio value={false}>Nữ</Radio>
@@ -436,25 +436,30 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                         </Form.Item>
                     </Col>
                 </Row>
-
-
-                <Form.Item label="Mật khẩu:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
-                    <Input placeholder="Nhập tên tài khoản..." />
+                {isMode === "add" && <Form.Item label="Mật khẩu:" name="password" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}>
+                    <Input type="password" placeholder="Nhập tên mật khẩu..." />
+                </Form.Item>}
+                <Form.Item label="Vai trò:" name="roleList" rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}>
+                    <Select
+                        mode="tags"
+                        style={{
+                            width: '100%',
+                        }}
+                        placeholder="Chọn vai trò"
+                        onChange={handleChange}
+                        options={roles.map(option => ({ value: option.roleName, label: option.roleName }))}
+                    />
                 </Form.Item>
-
-                <Form.Item label="Mật khẩu:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
-                    <Input placeholder="Nhập tên tài khoản..." />
-                </Form.Item>
-
                 <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]} >
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Đang hoạt động</Radio>
                         <Radio value={false}>Ngừng hoạt động</Radio>
                     </Radio.Group>
                 </Form.Item>
-
             </Form>
         </Modal>
     );
 };
+
+
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col, Tag } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -13,22 +13,7 @@ import FormatDate from '~/utils/format-date';
 import dayjs from 'dayjs';
 const { TextArea } = Input;
 const { Option } = Select;
-const getStatusBadgeStyle = (text) => {
-    const backgroundColor = text === true ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)';
-    return {
-        display: 'inline-block',
-        padding: '4px 8px',
-        borderRadius: '4px',
-        textAlign: 'center',
-        cursor: 'pointer',
-        backgroundColor,
-        color: 'white',
-    };
-};
 
-const getStatusText = (text) => {
-    return text === true ? 'Hoạt động' : 'Hết hạn';
-};
 function Voucher() {
 
     const [loading, setLoading] = useState(false);
@@ -259,10 +244,9 @@ function Voucher() {
             ],
             // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
             render: (text) => (
-                <span style={getStatusBadgeStyle(text)}>
-                    {getStatusText(text)}
-                </span>
-            ),
+                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Hoạt động</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Hết hạn</Tag>
+            )
         },
         {
             title: 'Hành động',

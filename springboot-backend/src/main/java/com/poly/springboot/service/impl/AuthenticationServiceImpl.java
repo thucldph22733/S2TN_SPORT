@@ -42,7 +42,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy vai trò này!"));
 
         User user = User.builder()
-                .userName(registerRequestDto.getUserName())
+                .usersName(registerRequestDto.getUserName())
                 .phoneNumber(registerRequestDto.getPhoneNumber())
                 .email(registerRequestDto.getEmail())
                 .password(passwordEncoder.encode(registerRequestDto.getPassword()))

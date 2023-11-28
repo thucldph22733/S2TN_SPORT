@@ -24,7 +24,7 @@ public class User extends BaseEntity implements UserDetails {
     private Long id;
 
     @Column(name = "user_name")
-    private String userName;
+    private String usersName;
 
     @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
@@ -48,15 +48,14 @@ public class User extends BaseEntity implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
-//    private ERole role;
 
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(
-//            name = "user_address",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "address_id")
-//    )
-//    private List<Address> address;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_address",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id")
+    )
+    private List<Address> address;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -94,4 +93,5 @@ public class User extends BaseEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -27,6 +28,8 @@ public class UserResponseDto {
     private Date birthOfDay;
 
     private Boolean deleted;
+
+    private List<String> roleList;
 
     private LocalDateTime createdAt;
 

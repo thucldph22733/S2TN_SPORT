@@ -30,11 +30,13 @@ public class ClubController {
 
     @GetMapping("getAll")
     public ResponseEntity<?> getClubs(@RequestParam(defaultValue = "0") Integer pageNo,
-                                       @RequestParam(defaultValue = "10") Integer pageSize,
-                                       @RequestParam(required = false) String name,
-                                       @RequestParam(required = false) List<Boolean> status) {
+                                      @RequestParam(defaultValue = "10") Integer pageSize,
+                                      @RequestParam(required = false) String name,
+                                      @RequestParam(required = false) List<Boolean> status,
+                                      @RequestParam(required = false) List<String> typeClub
+    ) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Club> clubPage = clubService.getClubs(name, status, pageable);
+        Page<Club> clubPage = clubService.getClubs(name, status, typeClub, pageable);
         List<Club> clubList = clubPage.getContent();
         return ResponseHandler
                 .generateResponse(

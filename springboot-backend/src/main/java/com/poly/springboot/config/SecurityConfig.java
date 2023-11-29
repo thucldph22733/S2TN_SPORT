@@ -46,9 +46,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL) // Không yêu cầu xác thực
                                 .permitAll()
-//                                .requestMatchers("/api/v1/brands/**").hasAnyAuthority("ADMIN","USER")
-//                                .requestMatchers("/api/v1/colors/**").hasAuthority("ADMIN")
-//                                .requestMatchers("/api/v1/clubs/**").hasAuthority("USER")
+                                .requestMatchers("/api/v1/brands/**").hasAnyAuthority("ADMIN","USER")
+                                .requestMatchers("/api/v1/colors/**").hasAuthority("ADMIN")
+                                .requestMatchers("/api/v1/clubs/**").hasAuthority("USER")
+                                .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()
 

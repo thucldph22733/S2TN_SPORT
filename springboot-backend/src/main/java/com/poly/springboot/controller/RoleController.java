@@ -28,11 +28,14 @@ public class RoleController {
 
     @GetMapping("getAll")
     public ResponseEntity<?> getRoles(@RequestParam(defaultValue = "0") Integer pageNo,
-                                      @RequestParam(defaultValue = "10") Integer pageSize) {
+                                      @RequestParam(defaultValue = "10") Integer pageSize,
+                                      @RequestParam(required = false) String name,
+                                      @RequestParam(required = false) List<Boolean> status
+                                      ) {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
-        Page<Role> rolePage = roleService.getRoles(pageable);
+        Page<Role> rolePage = roleService.getRoles(name,status,pageable);
 
         List<Role> roleList = rolePage.getContent();
 

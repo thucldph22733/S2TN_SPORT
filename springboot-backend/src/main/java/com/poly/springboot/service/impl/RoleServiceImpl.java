@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.RoleRequestDto;
 import com.poly.springboot.entity.Role;
+import com.poly.springboot.entity.Size;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.RoleRepository;
 import com.poly.springboot.service.RoleService;
@@ -54,8 +55,19 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Page<Role> getRoles(Pageable pageable) {
-        return roleRepository.findAll(pageable);
+    public Page<Role> getRoles(String name, List<Boolean> status, Pageable pageable) {
+        Page<Role> rolePage;
+
+        if (name == null && status == null) {
+            rolePage = roleRepository.findAll(pageable);
+        } else if (name == null) {
+            rolePage = roleRepository.findByDeletedIn(status, pageable);
+        } else if (status == null) {
+            rolePage = roleRepository.findByRoleNameContaining(name, pageable);
+        } else {
+            rolePage = roleRepository.findByRoleNameContainingAndDeletedIn(name, status, pageable);
+        }
+        return rolePage;
     }
 
     @Override

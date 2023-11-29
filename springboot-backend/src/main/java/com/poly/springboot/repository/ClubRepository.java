@@ -15,5 +15,6 @@ public interface ClubRepository extends JpaRepository<Club,Long> {
     Boolean existsByClubName(String ClubName);
     Page<Club> findByClubNameContaining(String name, Pageable pageable);
     Page<Club> findByDeletedIn(List<Boolean> status, Pageable pageable);
-    Page<Club> findByClubNameContainingAndDeletedIn(String name, List<Boolean> status, Pageable pageable);
+    Page<Club> findByTypeClubIn(List<String> typeClub, Pageable pageable);
+    Page<Club> findByClubNameContainingAndDeletedInAndTypeClubIn(String name, List<Boolean> status,List<String> typeClub, Pageable pageable);
 }

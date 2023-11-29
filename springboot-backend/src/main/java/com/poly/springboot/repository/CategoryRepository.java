@@ -15,6 +15,7 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
     Boolean existsByCategoryName(String CategoryName);
     Page<Category> findByCategoryNameContaining(String name, Pageable pageable);
     Page<Category> findByDeletedIn(List<Boolean> status, Pageable pageable);
+
     Page<Category> findByCategoryNameContainingAndDeletedIn(String name, List<Boolean> status, Pageable pageable);
 
     }

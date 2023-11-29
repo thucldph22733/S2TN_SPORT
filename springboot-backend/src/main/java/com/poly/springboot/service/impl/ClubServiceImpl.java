@@ -20,18 +20,20 @@ public class ClubServiceImpl implements ClubService {
     private ClubRepository clubRepository;
 
     @Override
-    public Page<Club> getClubs(String name, List<Boolean> status, Pageable pageable) {
+    public Page<Club> getClubs(String name, List<Boolean> status,List<String> typeClub, Pageable pageable) {
 
         Page<Club> ClubList;
 
-        if (name == null && status == null){
+        if (name == null && status == null && typeClub == null){
             ClubList = clubRepository.findAll(pageable);
-        }else if (name == null){
+        }else if (name == null && typeClub == null){
             ClubList = clubRepository.findByDeletedIn(status,pageable);
-        }else if (status == null){
+        }else if (status == null && typeClub == null){
             ClubList = clubRepository.findByClubNameContaining(name,pageable);
-        }else {
-            ClubList = clubRepository.findByClubNameContainingAndDeletedIn(name,status,pageable);
+        }else if(name == null && status == null)
+            ClubList = clubRepository.findByTypeClubIn(typeClub,pageable);
+        else {
+            ClubList = clubRepository.findByClubNameContainingAndDeletedInAndTypeClubIn(name,status,typeClub,pageable);
         }
         return ClubList;
     }

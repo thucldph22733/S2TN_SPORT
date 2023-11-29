@@ -3,9 +3,9 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'users/';
 
 const UserService = {
-    getAll: (pageNo, pageSize) => {
+    getAll: (pageNo, pageSize, code, name, deleted) => {
         return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize }
+            params: { pageNo, pageSize, code, name, deleted }
         })
             .then(response => response.data)
             .catch(error => {

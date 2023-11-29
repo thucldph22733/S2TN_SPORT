@@ -32,55 +32,67 @@ public class SupplierController {
 
     @GetMapping("getAll")
     public ResponseEntity<?> getSuppliers(@RequestParam(defaultValue = "0") Integer pageNo,
-                                      @RequestParam(defaultValue = "10") Integer pageSize,
-                                      @RequestParam(required = false) String name,
-                                      @RequestParam(required = false) List<Boolean> status) {
+                                          @RequestParam(defaultValue = "10") Integer pageSize,
+                                          @RequestParam(required = false) String supplierName,
+                                          @RequestParam(required = false) String phoneNumber,
+                                          @RequestParam(required = false) String email,
+                                          @RequestParam(required = false) List<Boolean> deleted) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Supplier> SupplierPage = supplierService.getSuppliers(name, status, pageable);
-        List<Supplier> SupplierList = SupplierPage.getContent();
+        Page<Supplier> supplierPage = supplierService.getSuppliers(supplierName,phoneNumber,email,deleted,pageable);
+        List<Supplier> supplierList = supplierPage.getContent();
         return ResponseHandler
                 .generateResponse(
                         HttpStatus.OK,
-                        SupplierList,
-                        SupplierPage);
+                        supplierList,
+                        supplierPage);
     }
+
+    @GetMapping("findByDeletedTrue")
+    public ResponseEntity<List<Supplier>> findByDeletedTrue() {
+
+        List<Supplier> supplierList = supplierService.findByDeletedTrue();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(supplierList);
+    }
+
     @PostMapping("create")
-    public ResponseEntity<ResponseDto>createSupplier(@Valid  @RequestBody SupplierRequestDto supplierRequestDto){
+    public ResponseEntity<ResponseDto> createSupplier(@Valid @RequestBody SupplierRequestDto supplierRequestDto) {
         Boolean isCreated = supplierService.createSupplier(supplierRequestDto);
 
-        if (isCreated){
+        if (isCreated) {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
     @PutMapping("update")
-    public ResponseEntity<ResponseDto> updateSupplier(@Valid @RequestParam SupplierRequestDto supplierRequestDto,@RequestParam Long id){
+    public ResponseEntity<ResponseDto> updateSupplier(@Valid @RequestParam SupplierRequestDto supplierRequestDto, @RequestParam Long id) {
 
-        Boolean isUpdated = supplierService.updateSupplier(supplierRequestDto,id);
+        Boolean isUpdated = supplierService.updateSupplier(supplierRequestDto, id);
 
-        if (isUpdated){
+        if (isUpdated) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<ResponseDto> deleteSupplier(@RequestParam Long id){
+    public ResponseEntity<ResponseDto> deleteSupplier(@RequestParam Long id) {
         Boolean isDeleted = supplierService.deleteSupplier(id);
 
-        if (isDeleted){
+        if (isDeleted) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 

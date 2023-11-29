@@ -16,7 +16,7 @@ public interface RoleService {
 
     Boolean deleteRole(Long id);
 
-    Page<Role> getRoles(Pageable pageable);
+    Page<Role> getRoles(String name, List<Boolean> status, Pageable pageable);
 
     List<Role> findAllByDeletedTrue();
 }

@@ -20,10 +20,6 @@ function Supplier() {
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
 
-    // const handleStatusFilterChange = ({value:''}) => {
-    //         setFilteredStatus(value);
-    //     };
-
     const showModal = (mode, record) => {
         setOpen({
             isModal: true,
@@ -36,28 +32,30 @@ function Supplier() {
         setOpen({ isModal: false });
     };
 
-    const [Suppliers, setSuppliers] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
 
-    const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
-    const [filteredStatus, setFilteredStatus] = useState(null);
+    const [deleted, setDeleted] = useState(null);
 
-    const searchText = useRef(null);
+    const [searchName, setSearchName] = useState(null);
 
-    const [totalCount, setTotalCount] = useState(1);
+    const [searchPhone, setSearchPhone] = useState(null);
+
+    const [searchEmail, setSearchEmail] = useState(null);
+
 
     const fetchSuppliers = async () => {
         setLoading(true);
 
-        await SupplierService.getAll(pagination.pageNo - 1, pagination.pageSize, searchText.current, filteredStatus)
+        await SupplierService.getAll(pagination.current - 1, pagination.pageSize, searchName, searchPhone, searchEmail, deleted)
             .then(response => {
-
                 setSuppliers(response.data);
-
-                setTotalCount(response.totalCount);
-
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
                 setLoading(false);
-
             }).catch(error => {
                 console.error(error);
             })
@@ -65,7 +63,7 @@ function Supplier() {
 
     useEffect(() => {
         fetchSuppliers();
-    }, [pagination]);
+    }, [pagination.current, pagination.pageSize, searchName, searchPhone, searchEmail, deleted]);
 
 
     const handleDelete = async (id) => {
@@ -87,80 +85,77 @@ function Supplier() {
 
     };
 
-    const handleResetPage = () => {
-        setFilteredStatus(null);
-        setPagination({ pageNo: 1, pageSize: 5 });
-        fetchSuppliers();
+    const handleReset = () => {
+
+        setSearchEmail(null);
+        setSearchName(null);
+        setSearchPhone(null);
+        setDeleted(null);
+
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
+        handleTableChange(pagination, null)
     };
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        searchText.current = selectedKeys[0];
-        fetchSuppliers();
+
+    const handleTableChange = (pagination, filters) => {
+        console.log(filters)
+        setPagination({
+            ...pagination,
+        });
+
+
+        const searchNameFilter = filters?.supplierName;
+        if (searchNameFilter) {
+            setSearchName(searchNameFilter[0]);
+        } else {
+            setSearchName(null)
+        }
+
+        const searchPhoneFilter = filters?.phoneNumber;
+        if (searchPhoneFilter) {
+            setSearchPhone(searchPhoneFilter[0]);
+        } else {
+            setSearchPhone(null)
+        }
+
+        const searchEmailFilter = filters?.email;
+        if (searchEmailFilter) {
+            setSearchEmail(searchEmailFilter[0]);
+        } else {
+            setSearchEmail(null)
+        }
+
+        const statusFilter = filters?.deleted;
+        const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
+
+        if (!isNoStatusFilter) {
+            const isBothStatus = statusFilter.length === 2;
+
+            setDeleted(isBothStatus ? null : statusFilter[0]);
+        } else {
+            setDeleted(null);
+        }
     };
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        searchText.current = null;
-        fetchSuppliers();
-    };
+
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div
-                style={{
-                    padding: 8,
+        filteredValue: dataIndex === 'supplierName' ? [searchName] : dataIndex === 'phoneNumber' ? [searchPhone] : [searchEmail],
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+            <Input.Search
+                placeholder={`Nhập từ khóa...`}
+                value={selectedKeys[0]}
+                onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                onSearch={(value) => {
+                    setSelectedKeys(value ? [value.trim()] : []);
+                    confirm();
                 }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <Input
-                    ref={searchText}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
+                style={{ display: 'block' }}
             />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchText.current?.select(), 1000);
-            }
-        },
     });
+
 
     const columns = [
         {
@@ -174,19 +169,24 @@ function Supplier() {
             dataIndex: 'supplierName',
             key: 'supplierName',
             width: '15%',
-            ...getColumnSearchProps('SupplierName')
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
+            ...getColumnSearchProps('supplierName')
         },
         {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
             width: '15%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
+            ...getColumnSearchProps('email')
         },
         {
             title: 'Số điện thoại',
             dataIndex: 'phoneNumber',
             key: 'phoneNumber',
             width: '10%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
+            ...getColumnSearchProps('phoneNumber')
         },
         {
             title: 'Địa chỉ',
@@ -195,7 +195,7 @@ function Supplier() {
             width: '14%',
         },
         {
-            title: 'Mô tả',
+            title: 'Ghi chú',
             dataIndex: 'supplierDescribe',
             key: 'supplierDescribe',
             width: '15%',
@@ -215,7 +215,8 @@ function Supplier() {
                     value: false,
                 },
             ],
-            // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
+            validateFields: [deleted],
+            onFilter: (value, record) => record.deleted === value,
             render: (text) => (
                 text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
                     : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
@@ -262,31 +263,26 @@ function Supplier() {
             <Button type="primary"
                 icon={<RedoOutlined style={{ fontSize: '18px' }} />}
                 style={{ marginBottom: '16px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
-                onClick={handleResetPage}
+                onClick={handleReset}
             />
 
             <Table
-                dataSource={Suppliers.map((Supplier, index) => ({
-                    ...Supplier,
-                    key: index + 1,
-                    createdAt: FormatDate(Supplier.createdAt)
+                dataSource={suppliers.map((supplier) => ({
+                    ...supplier,
+                    key: supplier.id,
+                    createdAt: FormatDate(supplier.createdAt)
                 }))}
-                // onChange={(_, filters) => {
-                //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
-                //     setFilteredStatus(status);
-                //     fetchSuppliers();
-                // }}
 
+                onChange={handleTableChange}
                 loading={loading}
                 columns={columns}
                 pagination={{
+                    current: pagination.current,
+                    pageSize: pagination.pageSize,
                     defaultPageSize: 5,
                     pageSizeOptions: ['5', '10', '15'],
-                    total: totalCount,
+                    total: pagination.total,
                     showSizeChanger: true,
-                    onChange: (pageNo, pageSize) => {
-                        setPagination({ pageNo, pageSize })
-                    },
                 }}></Table >
 
             {open.isModal && <SupplierModal
@@ -399,11 +395,11 @@ const SupplierModal = ({ isMode, reacord, hideModal, isModal, fetchSuppliers }) 
                     <Input placeholder="Nhập dịa chỉ..." />
                 </Form.Item>
 
-                <Form.Item label="Mô tả:" name="supplierDescribe" >
-                    <TextArea rows={4} placeholder="Nhập mô tả nhà cung cấp..." />
+                <Form.Item label="Ghi chú:" name="supplierDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
                 </Form.Item>
 
-                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} >
+                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn tạng thái!' }]}>
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Đang hoạt động</Radio>
                         <Radio value={false}>Ngừng hoạt động</Radio>

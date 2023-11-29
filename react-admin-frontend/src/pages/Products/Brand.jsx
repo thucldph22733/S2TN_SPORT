@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag } from 'antd';
 import {
     PlusOutlined,
@@ -12,7 +12,6 @@ import BrandService from '~/service/BrandService';
 import FormatDate from '~/utils/format-date';
 
 const { TextArea } = Input;
-
 
 function Brand() {
 
@@ -104,7 +103,7 @@ function Brand() {
         const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
 
         if (searchFilter) {
-            setSearchText(filters.brandName[0]);
+            setSearchText(searchFilter[0]);
         } else {
             setSearchText(null)
         }
@@ -236,9 +235,9 @@ function Brand() {
             />
 
             <Table
-                dataSource={brands.map((brand, index) => ({
+                dataSource={brands.map((brand) => ({
                     ...brand,
-                    key: index + 1,
+                    key: brand.id,
                     createdAt: FormatDate(brand.createdAt)
                 }))}
 

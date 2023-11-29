@@ -12,31 +12,11 @@ import FormatDate from '~/utils/format-date';
 
 const { TextArea } = Input;
 
-const getStatusBadgeStyle = (text) => {
-    const backgroundColor = text === true ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)';
-    return {
-        display: 'inline-block',
-        padding: '4px 8px',
-        borderRadius: '4px',
-        textAlign: 'center',
-        cursor: 'pointer',
-        backgroundColor,
-        color: 'white',
-    };
-};
-
-const getStatusText = (text) => {
-    return text === true ? 'Đang hoạt động' : 'Ngừng hoạt động';
-};
 function Role() {
 
     const [loading, setLoading] = useState(false);
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
-
-    // const handleStatusFilterChange = ({value:''}) => {
-    //         setFilteredStatus(value);
-    //     };
 
     const showModal = (mode, record) => {
         setOpen({
@@ -50,37 +30,32 @@ function Role() {
         setOpen({ isModal: false });
     };
 
-    const [Roles, setRoles] = useState([]);
+    const [roles, setRoles] = useState([]);
 
-    const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
 
-    const [filteredStatus, setFilteredStatus] = useState(null);
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
-    const searchText = useRef(null);
+    const [deleted, setDeleted] = useState(null);
 
-    const [totalCount, setTotalCount] = useState(1);
+    const [searchText, setSearchText] = useState(null);
 
     const fetchRoles = async () => {
         setLoading(true);
 
-        await RoleService.getAll(pagination.pageNo - 1, pagination.pageSize)
+        await RoleService.getAll(pagination.current - 1, pagination.pageSize, searchText, deleted)
             .then(response => {
 
                 setRoles(response.data);
-                setTotalCount(response.totalCount);
-
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
                 setLoading(false);
 
             }).catch(error => {
                 console.error(error);
             })
     }
-
-    useEffect(() => {
-        fetchRoles();
-    }, [pagination]);
-
-
     const handleDelete = async (id) => {
 
         await RoleService.delete(id).then(response => {
@@ -99,81 +74,65 @@ function Role() {
         });
 
     };
-
-    const handleResetPage = () => {
-        setFilteredStatus(null);
-        setPagination({ pageNo: 1, pageSize: 5 });
+    useEffect(() => {
         fetchRoles();
+    }, [pagination.current, pagination.pageSize, searchText, deleted]);
+
+
+    const handleReset = () => {
+
+        setSearchText(null);
+        setDeleted(null);
+
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
+        handleTableChange(pagination, null)
     };
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        searchText.current = selectedKeys[0];
-        fetchRoles();
-    };
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        searchText.current = null;
-        fetchRoles();
+
+    const handleTableChange = (pagination, filters) => {
+
+        setPagination({
+            ...pagination,
+        });
+        const statusFilter = filters?.deleted;
+        const searchFilter = filters?.roleName;
+        // Kiểm tra nếu statusFilter không tồn tại hoặc là mảng rỗng
+        const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
+
+        if (searchFilter) {
+            setSearchText(searchFilter[0]);
+        } else {
+            setSearchText(null)
+        }
+        // Kiểm tra nếu có lựa chọn bộ lọc và không phải là trường hợp không chọn
+        if (!isNoStatusFilter) {
+            const isBothStatus = statusFilter.length === 2;
+            // Sử dụng biểu thức điều kiện để xác định trạng thái để lọc
+            setDeleted(isBothStatus ? null : statusFilter[0]);
+        } else {
+            // Nếu không có lựa chọn bộ lọc, đặt trạng thái deleted về null hoặc giá trị mặc định
+            setDeleted(null);
+        }
     };
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div
-                style={{
-                    padding: 8,
+        filteredValue: [searchText] || null,
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+            <Input.Search
+                placeholder={`Nhập tên...`}
+                value={selectedKeys[0]}
+                onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                onSearch={(value) => {
+                    setSelectedKeys(value ? [value.trim()] : []);
+                    confirm();
                 }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <Input
-                    ref={searchText}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
+                style={{ display: 'block' }}
             />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchText.current?.select(), 1000);
-            }
-        },
     });
+
 
     const columns = [
         {
@@ -187,10 +146,11 @@ function Role() {
             dataIndex: 'roleName',
             key: 'roleName',
             width: '20%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
             ...getColumnSearchProps('roleName')
         },
         {
-            title: 'Mô tả',
+            title: 'Ghi chú',
             dataIndex: 'roleDescribe',
             key: 'roleDescribe',
             width: '19%',
@@ -222,7 +182,7 @@ function Role() {
                     value: false,
                 },
             ],
-            // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
+            onFilter: (value, record) => record.deleted === value,
             render: (text) => (
                 text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
                     : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
@@ -269,31 +229,27 @@ function Role() {
             <Button type="primary"
                 icon={<RedoOutlined style={{ fontSize: '18px' }} />}
                 style={{ marginBottom: '16px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
-                onClick={handleResetPage}
+                onClick={handleReset}
             />
 
             <Table
-                dataSource={Roles.map((Role, index) => ({
-                    ...Role,
-                    key: index + 1,
-                    createdAt: FormatDate(Role.createdAt)
+                dataSource={roles.map((role, index) => ({
+                    ...role,
+                    key: role.id,
+                    createdAt: FormatDate(role.createdAt)
                 }))}
-                // onChange={(_, filters) => {
-                //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
-                //     setFilteredStatus(status);
-                //     fetchRoles();
-                // }}
+
+                onChange={handleTableChange}
 
                 loading={loading}
                 columns={columns}
                 pagination={{
+                    current: pagination.current,
+                    pageSize: pagination.pageSize,
                     defaultPageSize: 5,
                     pageSizeOptions: ['5', '10', '15'],
-                    total: totalCount,
+                    total: pagination.total,
                     showSizeChanger: true,
-                    onChange: (pageNo, pageSize) => {
-                        setPagination({ pageNo, pageSize })
-                    },
                 }}></Table >
 
             {open.isModal && <RoleModal

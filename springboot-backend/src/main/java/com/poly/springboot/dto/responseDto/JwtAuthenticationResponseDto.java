@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -16,4 +18,8 @@ public class JwtAuthenticationResponseDto {
     private String accessToken;
     @JsonProperty("refresh_token")
     private String refreshToken;
+
+    private String userName;
+
+    private List<String> roleList;
 }

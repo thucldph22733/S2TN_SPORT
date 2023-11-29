@@ -15,24 +15,15 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
 
-    // useEffect(() => {
-    //     // Check if user has a valid JWT in localStorage
-    //     const token = localStorage.getItem('token');
-    //     if (token) {
-    //         // Make a request to the server to validate the token and get user data
-    //         // If token is valid, set user state with user data
-    //         // If token is invalid, remove the token from localStorage and set user state to null
-    //     }
-
-    // }, []);
 
     function login(data) {
         return HttpClient.post(`${API_URL}login`, data)
             .then((response) => {
-                const { access_token, refresh_token } = response.data;
-                localStorage.setItem('token', access_token);
-                localStorage.setItem('refresh_token', refresh_token);
-                // navigate("/")
+
+                localStorage.setItem('token', response.data.access_token);
+                localStorage.setItem('refresh_token', response.data.refresh_token);
+                setUser(response.data);
+
             })
             .catch(error => {
                 console.error(error);
@@ -41,9 +32,7 @@ export function AuthProvider({ children }) {
     }
     function refreshToken() {
         const refresh_token = localStorage.getItem('refresh_token');
-        if (!refresh_token) {
-            // navigate("/dang-nhap");
-        } else {
+        if (refresh_token) {
             HttpClient.post(`${API_URL}refresh-token`, refresh_token)
                 .then((response) => {
 
@@ -62,7 +51,7 @@ export function AuthProvider({ children }) {
         // Xóa JWT khỏi localStorage và đặt trạng thái người dùng thành null
         localStorage.removeItem('token');
         localStorage.removeItem('refresh_token');
-        // setUser(null);
+        setUser(null);
         // Chuyển hướng đến trang đăng nhập
         // navigate("/dang-nhap");
     }

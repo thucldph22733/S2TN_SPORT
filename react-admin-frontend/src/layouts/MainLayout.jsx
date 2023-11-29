@@ -28,7 +28,7 @@ const MainLayout = () => {
     const location = useLocation();
     const [selectedKeys, setSelectedKeys] = useState("/");
     const { logout } = useAuth();
-
+    const { user } = useAuth();
     const handleLogout = () => {
         logout();
         navigate("/");
@@ -165,7 +165,7 @@ const MainLayout = () => {
                                 icon={<UserOutlined />}
                             />
                         </Tooltip>
-                        <p>Lê Đăng Thành</p>
+                        <p>Xin chào, {user?.userName}!</p>
                     </div>
                 </Header>
                 <Content

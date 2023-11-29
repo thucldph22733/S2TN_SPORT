@@ -4,9 +4,9 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'clubs/';
 
 const ClubService = {
-    getAll: (pageNo, pageSize, name, status) => {
+    getAll: (pageNo, pageSize, name, status, type) => {
         return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, status }
+            params: { pageNo, pageSize, name, status, type }
         })
             .then(response => response.data)
             .catch(error => {

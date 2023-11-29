@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ClubService {
-    Page<Club> getClubs(String name, List<Boolean> status, Pageable pageable);
+    Page<Club> getClubs(String name, List<Boolean> status,List<String> typeClub, Pageable pageable);
 
     Boolean createClub(ClubRequestDto clubRequestDto);
 

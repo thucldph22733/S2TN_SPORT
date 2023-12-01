@@ -215,7 +215,6 @@ function Supplier() {
                     value: false,
                 },
             ],
-            validateFields: [deleted],
             onFilter: (value, record) => record.deleted === value,
             render: (text) => (
                 text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>

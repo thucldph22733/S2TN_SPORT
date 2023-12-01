@@ -1,11 +1,11 @@
 import HttpClient from '~/utils/http-client';
 
-const API_URL = 'users/';
+const API_URL = 'address/';
 
-const UserService = {
-    getAll: (pageNo, pageSize, name, phoneNumber, email, deleted) => {
-        return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, phoneNumber, email, deleted }
+const AddressService = {
+    getAddressesByUserId: (userId) => {
+        return HttpClient.get(`${API_URL}getAddressesByUserId`, {
+            params: { userId }
         })
             .then(response => response.data)
             .catch(error => {
@@ -14,8 +14,8 @@ const UserService = {
             });
     },
 
-    create: (data) => {
-        return HttpClient.post(`${API_URL}create`, data)
+    create: (userId, data) => {
+        return HttpClient.post(`${API_URL}create?userId=${userId}`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in create:', error);
@@ -40,6 +40,7 @@ const UserService = {
                 throw error;
             });
     },
+
 };
 
-export default UserService;
+export default AddressService;

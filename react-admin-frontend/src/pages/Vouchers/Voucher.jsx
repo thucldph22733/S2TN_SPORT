@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col, Tag, Popconfirm } from 'antd';
 import {
     PlusOutlined,
@@ -181,40 +181,41 @@ function Voucher() {
             title: 'Giảm giá',
             dataIndex: 'discountRate',
             key: 'discountRate',
-            width: '7%',
+            width: '8%',
             sorter: (a, b) => a.discountRate - b.discountRate,
+            render: (text) => <span>{text} %</span>,
         },
         {
             title: 'Ngày bắt đầu',
             dataIndex: 'startDate',
             key: 'startDate',
-            width: '10%',
+            width: '9%',
         },
         {
             title: 'Ngày kết thúc',
             dataIndex: 'endDate',
             key: 'endDate',
-            width: '10%',
+            width: '9%',
         },
         {
             title: 'Số lượng',
             dataIndex: 'quantity',
             key: 'quantity',
-            width: '7%',
+            width: '9%',
             sorter: (a, b) => a.quantity - b.quantity,
         },
         {
             title: 'Đơn tối thiểu',
             dataIndex: 'orderMinimum',
             key: 'orderMinimum',
-            width: '10%',
+            width: '9%',
             sorter: (a, b) => a.orderMinimum - b.orderMinimum,
         },
         {
             title: 'Giảm tối đa',
             dataIndex: 'maxReduce',
             key: 'maxReduce',
-            width: '10%',
+            width: '9%',
             sorter: (a, b) => a.maxReduce - b.maxReduce,
 
         },
@@ -380,8 +381,6 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
             }}
         >
             <Option value="USD">%</Option>
-            <Option value="EUR">VND</Option>
-
         </Select>
     );
 
@@ -435,6 +434,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                                         required: true,
                                         type: 'number',
                                         min: 0,
+                                        max: 100,
                                     }]}>
                                     <InputNumber style={{ width: '100%' }} addonAfter={selectAfter} />
                                 </Form.Item>

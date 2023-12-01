@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, DatePicker, Row, Col, Select, Tag } from 'antd';
 import { FaMapMarkedAlt } from "react-icons/fa";
+import { PiLockKeyOpenFill, PiLockKeyFill } from "react-icons/pi";
 
 import {
     PlusOutlined,
@@ -13,6 +14,8 @@ import UserService from '~/service/UserService';
 import FormatDate from '~/utils/format-date';
 import dayjs from 'dayjs';
 import RoleService from '~/service/RoleService';
+import ShowsetAddressModal from './Address';
+import ShowAddressModal from './Address';
 
 const { TextArea } = Input;
 
@@ -21,11 +24,21 @@ function User() {
 
     const [loading, setLoading] = useState(false);
 
-    const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
 
-    // const handleStatusFilterChange = ({value:''}) => {
-    //         setFilteredStatus(value);
-    //     };
+    const [addressModal, setAddressModal] = useState({ isModal: false, reacord: null });
+
+    const showAddressModal = (record) => {
+        setAddressModal({
+            isModal: true,
+            reacord: record,
+        });
+    };
+
+    const hideAddressModal = () => {
+        setAddressModal({ isModal: false });
+    };
+
+    const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
 
     const showModal = (mode, record) => {
         setOpen({
@@ -39,26 +52,29 @@ function User() {
         setOpen({ isModal: false });
     };
 
-    const [Users, setUsers] = useState([]);
+    const [users, setUsers] = useState([]);
 
-    const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
-    const [filteredStatus, setFilteredStatus] = useState(null);
+    const [deleted, setDeleted] = useState(null);
 
-    const searchText = useRef(null);
+    const [searchName, setSearchName] = useState(null);
 
-    const [totalCount, setTotalCount] = useState(1);
+    const [searchPhone, setSearchPhone] = useState(null);
+
+    const [searchEmail, setSearchEmail] = useState(null);
 
     const fetchUsers = async () => {
         setLoading(true);
 
-        await UserService.getAll(pagination.pageNo - 1, pagination.pageSize)
+        await UserService.getAll(pagination.current - 1, pagination.pageSize, searchName, searchPhone, searchEmail, deleted)
             .then(response => {
 
                 setUsers(response.data);
-
-                setTotalCount(response.totalCount);
-
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
                 setLoading(false);
 
             }).catch(error => {
@@ -68,101 +84,96 @@ function User() {
 
     useEffect(() => {
         fetchUsers();
-    }, [pagination]);
+    }, [pagination.current, pagination.pageSize, searchName, searchPhone, searchEmail, deleted]);
 
 
     const handleDelete = async (id) => {
 
         await UserService.delete(id).then(response => {
-            console.log(response.data);
+            console.log(response.ata);
             notification.success({
                 message: 'Thông báo',
-                description: 'Xóa thành công!',
+                description: 'Xử lý thành công!',
             });
             fetchUsers();
         }).catch(error => {
             console.error(error);
             notification.error({
                 message: 'Thông báo',
-                description: 'Xóa thất bại!',
+                description: 'Đã lỗi xảy ra!',
             });
         });
 
     };
 
-    const handleResetPage = () => {
-        setFilteredStatus(null);
-        setPagination({ pageNo: 1, pageSize: 5 });
-        fetchUsers();
+    const handleReset = () => {
+
+        setSearchEmail(null);
+        setSearchName(null);
+        setSearchPhone(null);
+        setDeleted(null);
+
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
+        handleTableChange(pagination, null)
     };
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        searchText.current = selectedKeys[0];
-        fetchUsers();
+
+    const handleTableChange = (pagination, filters) => {
+        console.log(filters)
+        setPagination({
+            ...pagination,
+        });
+
+        const searchNameFilter = filters?.userName;
+        if (searchNameFilter) {
+            setSearchName(searchNameFilter[0]);
+        } else {
+            setSearchName(null)
+        }
+
+        const searchPhoneFilter = filters?.phoneNumber;
+        if (searchPhoneFilter) {
+            setSearchPhone(searchPhoneFilter[0]);
+        } else {
+            setSearchPhone(null)
+        }
+
+        const searchEmailFilter = filters?.email;
+        if (searchEmailFilter) {
+            setSearchEmail(searchEmailFilter[0]);
+        } else {
+            setSearchEmail(null)
+        }
+
+        const statusFilter = filters?.deleted;
+        const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
+
+        if (!isNoStatusFilter) {
+            const isBothStatus = statusFilter.length === 2;
+
+            setDeleted(isBothStatus ? null : statusFilter[0]);
+        } else {
+            setDeleted(null);
+        }
     };
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        searchText.current = null;
-        fetchUsers();
-    };
+
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div
-                style={{
-                    padding: 8,
+        filteredValue: dataIndex === 'userName' ? [searchName] : dataIndex === 'phoneNumber' ? [searchPhone] : [searchEmail],
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+            <Input.Search
+                placeholder={`Nhập từ khóa...`}
+                value={selectedKeys[0]}
+                onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                onSearch={(value) => {
+                    setSelectedKeys(value ? [value.trim()] : []);
+                    confirm();
                 }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <Input
-                    ref={searchText}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
+                style={{ display: 'block' }}
             />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchText.current?.select(), 1000);
-            }
-        },
     });
 
     const columns = [
@@ -177,6 +188,7 @@ function User() {
             dataIndex: 'userName',
             key: 'userName',
             width: '15%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
             ...getColumnSearchProps('userName')
         },
         {
@@ -184,12 +196,16 @@ function User() {
             dataIndex: 'phoneNumber',
             key: 'phoneNumber',
             width: '15%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
+            ...getColumnSearchProps('phoneNumber')
         },
         {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
             width: '15%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
+            ...getColumnSearchProps('email')
         },
         {
             title: 'Giới tính',
@@ -197,14 +213,15 @@ function User() {
             key: 'gender',
             width: '10%',
             render: (text) => {
-                return text === true ? "Nam" : "Nữ";
-            }
+                return text !== null ? (text === true ? "Nam" : "Nữ") : '';
+            },
         },
         {
             title: 'Ngày sinh',
             dataIndex: 'birthOfDay',
             key: 'birthOfDay',
             width: '10%',
+
         },
         {
             title: 'Ngày tạo',
@@ -227,7 +244,7 @@ function User() {
                     value: false,
                 },
             ],
-            // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
+            onFilter: (value, record) => record.deleted === value,
             render: (text) => (
                 text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
                     : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
@@ -238,13 +255,29 @@ function User() {
             key: 'action',
             width: '10%',
             render: (record) => {
-                return <Space size="middle">
+
+                return <Space size="middle" >
                     <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModal("edit", record)} />
+                    <Popconfirm
+                        title={record.deleted ? "Khóa tài khoản" : "Mở khóa tài khoản"}
+                        description={record.deleted ? "Bạn có chắc muốn khóa tài khoản này không?" : "Bạn có chắc muốn mở lại tài khoản này không?"}
+                        placement="leftTop"
+                        onConfirm={() => handleDelete(record.id)}
+                        okText="Đồng ý"
+                        cancelText="Hủy bỏ"
+                    >
+                        <Button
+                            type="text"
+                            icon={record.deleted ? <PiLockKeyOpenFill style={{ color: '#7859f2', fontSize: '17px' }} /> : <PiLockKeyFill style={{ color: '#7859f2', fontSize: '17px' }} />}
+                        />
+                    </Popconfirm>
                     <Button type="text"
                         icon={<FaMapMarkedAlt />}
-                        style={{ color: '#5a76f3', fontSize: '16px' }} />
+                        style={{ color: '#5a76f3', fontSize: '16px' }}
+                        onClick={() => showAddressModal(record)}
+                    />
                 </Space>
             }
         },
@@ -264,32 +297,27 @@ function User() {
             <Button type="primary"
                 icon={<RedoOutlined style={{ fontSize: '18px' }} />}
                 style={{ marginBottom: '16px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
-                onClick={handleResetPage}
+                onClick={handleReset}
             />
 
             <Table
-                dataSource={Users.map((user, index) => ({
+                dataSource={users.map((user, index) => ({
                     ...user,
                     key: index + 1,
                     createdAt: FormatDate(user.createdAt),
-                    birthOfDay: dayjs(user.birthOfDay).format("DD/MM/YYYY")
+                    birthOfDay: user.birthOfDay ? dayjs(user.birthOfDay).format("DD/MM/YYYY") : '',
                 }))}
-                // onChange={(_, filters) => {
-                //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
-                //     setFilteredStatus(status);
-                //     fetchUsers();
-                // }}
 
+                onChange={handleTableChange}
                 loading={loading}
                 columns={columns}
                 pagination={{
+                    current: pagination.current,
+                    pageSize: pagination.pageSize,
                     defaultPageSize: 5,
                     pageSizeOptions: ['5', '10', '15'],
-                    total: totalCount,
+                    total: pagination.total,
                     showSizeChanger: true,
-                    onChange: (pageNo, pageSize) => {
-                        setPagination({ pageNo, pageSize })
-                    },
                 }}></Table >
 
             {open.isModal && <UserModal
@@ -298,6 +326,13 @@ function User() {
                 hideModal={hideModal}
                 isModal={open.isModal}
                 fetchUsers={fetchUsers} />}
+
+
+            {addressModal.isModal && <ShowAddressModal
+                reacord={addressModal.reacord}
+                hideModal={hideAddressModal}
+                isModal={addressModal.isModal}
+            />}
         </>
     )
 };
@@ -460,6 +495,5 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
         </Modal>
     );
 };
-
 
 

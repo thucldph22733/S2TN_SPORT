@@ -1,5 +1,5 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -13,31 +13,11 @@ import FormatDate from '~/utils/format-date';
 
 const { TextArea } = Input;
 
-const getStatusBadgeStyle = (text) => {
-    const backgroundColor = text === true ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)';
-    return {
-        display: 'inline-block',
-        padding: '4px 8px',
-        borderRadius: '4px',
-        textAlign: 'center',
-        cursor: 'pointer',
-        backgroundColor,
-        color: 'white',
-    };
-};
-
-const getStatusText = (text) => {
-    return text === true ? 'Đang hoạt động' : 'Ngừng hoạt động';
-};
 function Brand() {
 
     const [loading, setLoading] = useState(false);
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
-
-    // const handleStatusFilterChange = ({value:''}) => {
-    //         setFilteredStatus(value);
-    //     };
 
     const showModal = (mode, record) => {
         setOpen({
@@ -53,26 +33,23 @@ function Brand() {
 
     const [brands, setBrands] = useState([]);
 
-    const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
-    const [filteredStatus, setFilteredStatus] = useState(null);
+    const [deleted, setDeleted] = useState(null);
 
-    const searchText = useRef(null);
-
-    const [totalCount, setTotalCount] = useState(1);
+    const [searchText, setSearchText] = useState(null);
 
     const fetchBrands = async () => {
-        setLoading(true);
-
-        await BrandService.getAll(pagination.pageNo - 1, pagination.pageSize, searchText.current, filteredStatus)
+        setLoading(true)
+        await BrandService.getAll(pagination.current - 1, pagination.pageSize, searchText, deleted)
             .then(response => {
 
                 setBrands(response.data);
-
-                setTotalCount(response.totalCount);
-
-                setLoading(false);
-
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
+                setLoading(false)
             }).catch(error => {
                 console.error(error);
             })
@@ -80,7 +57,7 @@ function Brand() {
 
     useEffect(() => {
         fetchBrands();
-    }, [pagination]);
+    }, [pagination.current, pagination.pageSize, searchText, deleted]);
 
 
     const handleDelete = async (id) => {
@@ -102,79 +79,59 @@ function Brand() {
 
     };
 
-    const handleResetPage = () => {
-        setFilteredStatus(null);
-        setPagination({ pageNo: 1, pageSize: 5 });
-        fetchBrands();
+    const handleReset = () => {
+
+        setSearchText(null);
+        setDeleted(null);
+
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
+        handleTableChange(pagination, null)
     };
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        searchText.current = selectedKeys[0];
-        fetchBrands();
-    };
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        searchText.current = null;
-        fetchBrands();
+
+    const handleTableChange = (pagination, filters) => {
+
+        setPagination({
+            ...pagination,
+        });
+        const statusFilter = filters?.deleted;
+        const searchFilter = filters?.brandName;
+        // Kiểm tra nếu statusFilter không tồn tại hoặc là mảng rỗng
+        const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
+
+        if (searchFilter) {
+            setSearchText(searchFilter[0]);
+        } else {
+            setSearchText(null)
+        }
+        // Kiểm tra nếu có lựa chọn bộ lọc và không phải là trường hợp không chọn
+        if (!isNoStatusFilter) {
+            const isBothStatus = statusFilter.length === 2;
+
+            // Sử dụng biểu thức điều kiện để xác định trạng thái để lọc
+            setDeleted(isBothStatus ? null : statusFilter[0]);
+        } else {
+            // Nếu không có lựa chọn bộ lọc, đặt trạng thái deleted về null hoặc giá trị mặc định
+            setDeleted(null);
+        }
     };
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div
-                style={{
-                    padding: 8,
+        filteredValue: [searchText] || null,
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+            <Input.Search
+                placeholder={`Nhập tên...`}
+                value={selectedKeys[0]}
+                onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                onSearch={(value) => {
+                    setSelectedKeys(value ? [value.trim()] : []);
+                    confirm();
                 }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <Input
-                    ref={searchText}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
+                style={{ display: 'block' }}
             />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchText.current?.select(), 1000);
-            }
-        },
     });
 
     const columns = [
@@ -189,10 +146,12 @@ function Brand() {
             dataIndex: 'brandName',
             key: 'brandName',
             width: '20%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
             ...getColumnSearchProps('brandName')
+
         },
         {
-            title: 'Mô tả',
+            title: 'Ghi chú',
             dataIndex: 'brandDescribe',
             key: 'brandDescribe',
             width: '19%',
@@ -224,12 +183,12 @@ function Brand() {
                     value: false,
                 },
             ],
-            // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
+
+            onFilter: (value, record) => record.deleted === value,
             render: (text) => (
-                <span style={getStatusBadgeStyle(text)}>
-                    {getStatusText(text)}
-                </span>
-            ),
+                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
+            )
         },
         {
             title: 'Hành động',
@@ -272,31 +231,26 @@ function Brand() {
             <Button type="primary"
                 icon={<RedoOutlined style={{ fontSize: '18px' }} />}
                 style={{ marginBottom: '16px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
-                onClick={handleResetPage}
+                onClick={handleReset}
             />
 
             <Table
-                dataSource={brands.map((brand, index) => ({
+                dataSource={brands.map((brand) => ({
                     ...brand,
-                    key: index + 1,
+                    key: brand.id,
                     createdAt: FormatDate(brand.createdAt)
                 }))}
-                // onChange={(_, filters) => {
-                //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
-                //     setFilteredStatus(status);
-                //     fetchBrands();
-                // }}
 
                 loading={loading}
                 columns={columns}
+                onChange={handleTableChange}
                 pagination={{
+                    current: pagination.current,
+                    pageSize: pagination.pageSize,
                     defaultPageSize: 5,
                     pageSizeOptions: ['5', '10', '15'],
-                    total: totalCount,
+                    total: pagination.total,
                     showSizeChanger: true,
-                    onChange: (pageNo, pageSize) => {
-                        setPagination({ pageNo, pageSize })
-                    },
                 }}></Table >
 
             {open.isModal && <BrandModal
@@ -397,11 +351,11 @@ const BrandModal = ({ isMode, reacord, hideModal, isModal, fetchBrands }) => {
                     <Input placeholder="Nhập tên thương hiệu..." />
                 </Form.Item>
 
-                <Form.Item label="Mô tả:" name="brandDescribe" >
-                    <TextArea rows={4} placeholder="Nhập mô tả thương hiệu..." />
+                <Form.Item label="Ghi chú:" name="brandDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
                 </Form.Item>
 
-                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} >
+                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn tạng thái!' }]}>
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Đang hoạt động</Radio>
                         <Radio value={false}>Ngừng hoạt động</Radio>

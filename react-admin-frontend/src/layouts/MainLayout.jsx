@@ -11,7 +11,7 @@ import {
     UsergroupAddOutlined,
     BarsOutlined,
     TagsOutlined,
-    QrcodeOutlined,
+    ShoppingCartOutlined,
     SlackOutlined
 } from '@ant-design/icons';
 import logo from '~/assets/images/logo.jpg'
@@ -19,6 +19,7 @@ import { Layout, Menu, Button, theme, Avatar, Tooltip } from 'antd';
 import path_name from '~/constants/routers';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from 'react'
+import { useAuth } from '~/components/AuthContext';
 const { Header, Sider, Content } = Layout;
 
 const MainLayout = () => {
@@ -26,7 +27,12 @@ const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [selectedKeys, setSelectedKeys] = useState("/");
-
+    const { logout } = useAuth();
+    const { user } = useAuth();
+    const handleLogout = () => {
+        logout();
+        navigate("/");
+    };
     useEffect(() => {
         const pathName = location.pathname;
         setSelectedKeys(pathName);
@@ -53,7 +59,7 @@ const MainLayout = () => {
                         },
                         {
                             key: path_name.sell,
-                            icon: <QrcodeOutlined style={{ fontSize: "16px" }} />,
+                            icon: <ShoppingCartOutlined style={{ fontSize: "16px" }} />,
                             label: 'Bán hàng',
 
                         },
@@ -119,20 +125,21 @@ const MainLayout = () => {
                             children: [
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: path_name.employee,
+                                    key: path_name.user,
                                     label: 'Tài khoản',
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: path_name.customer,
+                                    key: path_name.role,
                                     label: 'Vai trò',
                                 },
                             ]
                         },
                         {
-                            key: path_name.logout,
+                            key: path_name.login,
                             icon: <LogoutOutlined style={{ fontSize: "16px" }} />,
                             label: 'Đăng xuất',
+                            onClick: handleLogout
                         },
                     ]}
                 />
@@ -158,7 +165,7 @@ const MainLayout = () => {
                                 icon={<UserOutlined />}
                             />
                         </Tooltip>
-                        <p>Lê Đăng Thành</p>
+                        <p>Xin chào, {user?.userName}!</p>
                     </div>
                 </Header>
                 <Content

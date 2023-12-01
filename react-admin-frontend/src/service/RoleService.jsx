@@ -1,16 +1,23 @@
-
 import HttpClient from '~/utils/http-client';
 
-const API_URL = 'clubs/';
+const API_URL = 'roles/';
 
-const ClubService = {
-    getAll: (pageNo, pageSize, name, status, type) => {
+const RoleService = {
+    getAll: (pageNo, pageSize, name, status) => {
         return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, status, type }
+            params: { pageNo, pageSize, name, status }
         })
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
+    findAllByDeletedTrue: () => {
+        return HttpClient.get(`${API_URL}findAllByDeletedTrue`)
+            .then(response => response)
+            .catch(error => {
+                console.error('Error in findAllByDeletedTrue:', error);
                 throw error;
             });
     },
@@ -43,4 +50,4 @@ const ClubService = {
     },
 };
 
-export default ClubService;
+export default RoleService;

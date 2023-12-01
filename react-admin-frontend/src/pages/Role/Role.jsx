@@ -7,21 +7,16 @@ import {
     DeleteOutlined,
     SearchOutlined,
 } from '@ant-design/icons';
-import './Product.css'
-import MaterialService from '~/service/MaterialService';
+import RoleService from '~/service/RoleService';
 import FormatDate from '~/utils/format-date';
 
 const { TextArea } = Input;
 
-function Material() {
+function Role() {
 
     const [loading, setLoading] = useState(false);
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
-
-    // const handleStatusFilterChange = ({value:''}) => {
-    //         setFilteredStatus(value);
-    //     };
 
     const showModal = (mode, record) => {
         setOpen({
@@ -35,7 +30,8 @@ function Material() {
         setOpen({ isModal: false });
     };
 
-    const [materials, setMaterials] = useState([]);
+    const [roles, setRoles] = useState([]);
+
 
     const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
@@ -43,14 +39,13 @@ function Material() {
 
     const [searchText, setSearchText] = useState(null);
 
-    const fetchMaterials = async () => {
+    const fetchRoles = async () => {
         setLoading(true);
 
-        await MaterialService.getAll(pagination.current - 1, pagination.pageSize, searchText, deleted)
+        await RoleService.getAll(pagination.current - 1, pagination.pageSize, searchText, deleted)
             .then(response => {
 
-                setMaterials(response.data);
-
+                setRoles(response.data);
                 setPagination({
                     ...pagination,
                     total: response.totalCount,
@@ -61,21 +56,15 @@ function Material() {
                 console.error(error);
             })
     }
-
-    useEffect(() => {
-        fetchMaterials();
-    }, [pagination.current, pagination.pageSize, searchText, deleted]);
-
-
     const handleDelete = async (id) => {
 
-        await MaterialService.delete(id).then(response => {
+        await RoleService.delete(id).then(response => {
             console.log(response.data);
             notification.success({
                 message: 'Thông báo',
                 description: 'Xóa thành công!',
             });
-            fetchMaterials();
+            fetchRoles();
         }).catch(error => {
             console.error(error);
             notification.error({
@@ -85,6 +74,11 @@ function Material() {
         });
 
     };
+    useEffect(() => {
+        fetchRoles();
+    }, [pagination.current, pagination.pageSize, searchText, deleted]);
+
+
     const handleReset = () => {
 
         setSearchText(null);
@@ -97,13 +91,14 @@ function Material() {
         handleTableChange(pagination, null)
     };
 
+
     const handleTableChange = (pagination, filters) => {
 
         setPagination({
             ...pagination,
         });
         const statusFilter = filters?.deleted;
-        const searchFilter = filters?.materialName;
+        const searchFilter = filters?.roleName;
         // Kiểm tra nếu statusFilter không tồn tại hoặc là mảng rỗng
         const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
 
@@ -115,7 +110,6 @@ function Material() {
         // Kiểm tra nếu có lựa chọn bộ lọc và không phải là trường hợp không chọn
         if (!isNoStatusFilter) {
             const isBothStatus = statusFilter.length === 2;
-
             // Sử dụng biểu thức điều kiện để xác định trạng thái để lọc
             setDeleted(isBothStatus ? null : statusFilter[0]);
         } else {
@@ -139,6 +133,7 @@ function Material() {
         ),
     });
 
+
     const columns = [
         {
             title: '#',
@@ -147,17 +142,17 @@ function Material() {
             width: '5%',
         },
         {
-            title: 'Tên chất liệu',
-            dataIndex: 'materialName',
-            key: 'materialName',
+            title: 'Tên vai trò',
+            dataIndex: 'roleName',
+            key: 'roleName',
             width: '20%',
             filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
-            ...getColumnSearchProps('materialName')
+            ...getColumnSearchProps('roleName')
         },
         {
             title: 'Ghi chú',
-            dataIndex: 'materialDescribe',
-            key: 'materialDescribe',
+            dataIndex: 'roleDescribe',
+            key: 'roleDescribe',
             width: '19%',
         },
         {
@@ -204,8 +199,8 @@ function Material() {
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModal("edit", record)} />
                     {record.deleted && <Popconfirm
-                        title="Xóa chất liệu"
-                        description="Bạn có chắc chắn xóa chất liệu này không?"
+                        title="Xóa vai trò"
+                        description="Bạn có chắc chắn xóa vai trò này không?"
                         placement="leftTop"
                         onConfirm={() => handleDelete(record.id)}
                         okText="Đồng ý"
@@ -222,7 +217,7 @@ function Material() {
 
     return (
         <>
-            <h3 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách chất liệu</h3>
+            <h3 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách vai trò</h3>
 
             <Button type="primary"
                 icon={<PlusOutlined />}
@@ -238,13 +233,14 @@ function Material() {
             />
 
             <Table
-                dataSource={materials.map((material) => ({
-                    ...material,
-                    key: material.id,
-                    createdAt: FormatDate(material.createdAt)
+                dataSource={roles.map((role, index) => ({
+                    ...role,
+                    key: role.id,
+                    createdAt: FormatDate(role.createdAt)
                 }))}
 
                 onChange={handleTableChange}
+
                 loading={loading}
                 columns={columns}
                 pagination={{
@@ -256,19 +252,19 @@ function Material() {
                     showSizeChanger: true,
                 }}></Table >
 
-            {open.isModal && <MaterialModal
+            {open.isModal && <RoleModal
                 isMode={open.isMode}
                 reacord={open.reacord}
                 hideModal={hideModal}
                 isModal={open.isModal}
-                fetchMaterials={fetchMaterials} />}
+                fetchRoles={fetchRoles} />}
         </>
     )
 };
-export default Material;
+export default Role;
 
 
-const MaterialModal = ({ isMode, reacord, hideModal, isModal, fetchMaterials }) => {
+const RoleModal = ({ isMode, reacord, hideModal, isModal, fetchRoles }) => {
 
     const [form] = Form.useForm();
 
@@ -277,13 +273,13 @@ const MaterialModal = ({ isMode, reacord, hideModal, isModal, fetchMaterials }) 
 
             const data = form.getFieldsValue();
 
-            await MaterialService.create(data)
+            await RoleService.create(data)
                 .then(() => {
                     notification.success({
                         message: 'Thông báo',
                         description: 'Thêm mới thành công!',
                     });
-                    fetchMaterials();
+                    fetchRoles();
                     // Đóng modal
                     hideModal();
                 })
@@ -305,13 +301,13 @@ const MaterialModal = ({ isMode, reacord, hideModal, isModal, fetchMaterials }) 
 
             const data = form.getFieldsValue();
 
-            await MaterialService.update(reacord.id, data)
+            await RoleService.update(reacord.id, data)
                 .then(() => {
                     notification.success({
                         message: 'Thông báo',
                         description: 'Cập nhật thành công!',
                     });
-                    fetchMaterials();
+                    fetchRoles();
                     // Đóng modal
                     hideModal();
                 })
@@ -332,7 +328,7 @@ const MaterialModal = ({ isMode, reacord, hideModal, isModal, fetchMaterials }) 
     return (
 
         <Modal
-            title={isMode === "edit" ? "Cập nhật chất liệu" : "Thêm mới một chất liệu"}
+            title={isMode === "edit" ? "Cập nhật vai trò" : "Thêm mới một vai trò"}
             open={isModal}
             onOk={isMode === "edit" ? handleUpdate : handleCreate}
             onCancel={hideModal}
@@ -350,15 +346,15 @@ const MaterialModal = ({ isMode, reacord, hideModal, isModal, fetchMaterials }) 
                 form={form}
                 initialValues={{ ...reacord }}
             >
-                <Form.Item label="Tên:" name="materialName" rules={[{ required: true, message: 'Vui lòng nhập tên chất liệu!' }]}>
-                    <Input placeholder="Nhập tên chất liệu..." />
+                <Form.Item label="Tên:" name="roleName" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
+                    <Input placeholder="Nhập tên vai trò..." />
                 </Form.Item>
 
-                <Form.Item label="Ghi chú" name="materialDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                <Form.Item label="Ghi chú:" name="roleDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
                     <TextArea rows={4} placeholder="Nhập ghi chú..." />
                 </Form.Item>
 
-                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn tạng thái!' }]}>
+                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}>
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Đang hoạt động</Radio>
                         <Radio value={false}>Ngừng hoạt động</Radio>

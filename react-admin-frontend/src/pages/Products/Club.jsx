@@ -1,5 +1,5 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Select } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Select, Tag } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -13,31 +13,12 @@ import FormatDate from '~/utils/format-date';
 
 const { TextArea } = Input;
 
-const getStatusBadgeStyle = (text) => {
-    const backgroundColor = text === true ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)';
-    return {
-        display: 'inline-block',
-        padding: '4px 8px',
-        borderRadius: '4px',
-        textAlign: 'center',
-        cursor: 'pointer',
-        backgroundColor,
-        color: 'white',
-    };
-};
 
-const getStatusText = (text) => {
-    return text === true ? 'Đang hoạt động' : 'Ngừng hoạt động';
-};
 function Club() {
 
     const [loading, setLoading] = useState(false);
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
-
-    // const handleStatusFilterChange = ({value:''}) => {
-    //         setFilteredStatus(value);
-    //     };
 
     const showModal = (mode, record) => {
         setOpen({
@@ -51,26 +32,27 @@ function Club() {
         setOpen({ isModal: false });
     };
 
-    const [Clubs, setClubs] = useState([]);
+    const [clubs, setClubs] = useState([]);
 
-    const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
-    const [filteredStatus, setFilteredStatus] = useState(null);
+    const [deleted, setDeleted] = useState(null);
 
-    const searchText = useRef(null);
+    const [type, setType] = useState(null);
 
-    const [totalCount, setTotalCount] = useState(1);
+    const [searchText, setSearchText] = useState(null);
 
     const fetchClubs = async () => {
         setLoading(true);
 
-        await ClubService.getAll(pagination.pageNo - 1, pagination.pageSize, searchText.current, filteredStatus)
+        await ClubService.getAll(pagination.current - 1, pagination.pageSize, searchText, deleted, type)
             .then(response => {
 
                 setClubs(response.data);
-                console.log(response.data)
-                setTotalCount(response.totalCount);
-
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
                 setLoading(false);
 
             }).catch(error => {
@@ -80,8 +62,7 @@ function Club() {
 
     useEffect(() => {
         fetchClubs();
-    }, [pagination]);
-
+    }, [pagination.current, pagination.pageSize, searchText, deleted, type]);
 
     const handleDelete = async (id) => {
 
@@ -102,79 +83,71 @@ function Club() {
 
     };
 
-    const handleResetPage = () => {
-        setFilteredStatus(null);
-        setPagination({ pageNo: 1, pageSize: 5 });
-        fetchClubs();
+    const handleReset = () => {
+
+        setSearchText(null);
+        setDeleted(null);
+
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
+        handleTableChange(pagination, null)
     };
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        searchText.current = selectedKeys[0];
-        fetchClubs();
-    };
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        searchText.current = null;
-        fetchClubs();
+
+    const handleTableChange = (pagination, filters) => {
+        console.log(filters)
+        setPagination({
+            ...pagination,
+        });
+        const statusFilter = filters?.deleted;
+        const typeFilter = filters?.typeClub;
+        const searchFilter = filters?.clubName;
+        // Kiểm tra nếu statusFilter không tồn tại hoặc là mảng rỗng
+        const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
+        const isNoTypeFilter = !typeFilter || typeFilter.length === 0;
+
+        if (searchFilter) {
+            setSearchText(searchFilter[0]);
+        } else {
+            setSearchText(null)
+        }
+        // Kiểm tra nếu có lựa chọn bộ lọc và không phải là trường hợp không chọn
+
+
+        if (!isNoTypeFilter) {
+            const isBothType = typeFilter.length === 4;
+            // Sử dụng biểu thức điều kiện để xác định trạng thái để lọc
+            setType(isBothType ? null : typeFilter[0]);
+        } else {
+            // Nếu không có lựa chọn bộ lọc, đặt trạng thái deleted về null hoặc giá trị mặc định
+            setType(null);
+        }
+
+        if (!isNoStatusFilter) {
+            const isBothStatus = statusFilter.length === 2;
+            // Sử dụng biểu thức điều kiện để xác định trạng thái để lọc
+            setDeleted(isBothStatus ? null : statusFilter[0]);
+        } else {
+            // Nếu không có lựa chọn bộ lọc, đặt trạng thái deleted về null hoặc giá trị mặc định
+            setDeleted(null);
+        }
     };
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div
-                style={{
-                    padding: 8,
+        filteredValue: [searchText] || null,
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+            <Input.Search
+                placeholder={`Nhập tên...`}
+                value={selectedKeys[0]}
+                onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                onSearch={(value) => {
+                    setSelectedKeys(value ? [value.trim()] : []);
+                    confirm();
                 }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <Input
-                    ref={searchText}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
+                style={{ display: 'block' }}
             />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchText.current?.select(), 1000);
-            }
-        },
     });
 
     const columns = [
@@ -185,20 +158,41 @@ function Club() {
             width: '5%',
         },
         {
-            title: 'Tên câu lạc bộ',
+            title: 'Tên',
             dataIndex: 'clubName',
             key: 'clubName',
-            width: '20%',
+            width: '15%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
             ...getColumnSearchProps('clubName')
         },
         {
             title: 'Kiểu áo',
             dataIndex: 'typeClub',
             key: 'typeClub',
-            width: '10%',
+            width: '15%',
+            filters: [
+                {
+                    text: 'Đội tuyển quốc gia',
+                    value: 'Đội tuyển quốc gia',
+                },
+                {
+                    text: 'Câu lạc bộ',
+                    value: 'Câu lạc bộ',
+                },
+                {
+                    text: 'Áo không logo',
+                    value: 'Áo không logo',
+                },
+                {
+                    text: 'Áo khác',
+                    value: 'Áo khác',
+                },
+            ],
+            onFilter: (value, record) => record.typeClub === value,
+
         },
         {
-            title: 'Mô tả',
+            title: 'Ghi chú',
             dataIndex: 'clubDescribe',
             key: 'clubDescribe',
             width: '15%',
@@ -207,7 +201,7 @@ function Club() {
             title: 'Ngày tạo',
             dataIndex: 'createdAt',
             key: 'createdAt',
-            width: '14%',
+            width: '15%',
         },
         {
             title: 'Người tạo',
@@ -219,7 +213,7 @@ function Club() {
             title: 'Trạng thái',
             key: 'deleted',
             dataIndex: 'deleted',
-            width: '16%',
+            width: '15%',
             filters: [
                 {
                     text: 'Đang hoạt động',
@@ -230,12 +224,11 @@ function Club() {
                     value: false,
                 },
             ],
-            // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
+            onFilter: (value, record) => record.deleted === value,
             render: (text) => (
-                <span style={getStatusBadgeStyle(text)}>
-                    {getStatusText(text)}
-                </span>
-            ),
+                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
+            )
         },
         {
             title: 'Hành động',
@@ -278,31 +271,26 @@ function Club() {
             <Button type="primary"
                 icon={<RedoOutlined style={{ fontSize: '18px' }} />}
                 style={{ marginBottom: '16px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
-                onClick={handleResetPage}
+                onClick={handleReset}
             />
 
             <Table
-                dataSource={Clubs.map((Club, index) => ({
-                    ...Club,
-                    key: index + 1,
-                    createdAt: FormatDate(Club.createdAt)
+                dataSource={clubs.map((club, index) => ({
+                    ...club,
+                    key: club.id,
+                    createdAt: FormatDate(club.createdAt)
                 }))}
-                // onChange={(_, filters) => {
-                //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
-                //     setFilteredStatus(status);
-                //     fetchClubs();
-                // }}
 
+                onChange={handleTableChange}
                 loading={loading}
                 columns={columns}
                 pagination={{
+                    current: pagination.current,
+                    pageSize: pagination.pageSize,
                     defaultPageSize: 5,
                     pageSizeOptions: ['5', '10', '15'],
-                    total: totalCount,
+                    total: pagination.total,
                     showSizeChanger: true,
-                    onChange: (pageNo, pageSize) => {
-                        setPagination({ pageNo, pageSize })
-                    },
                 }}></Table >
 
             {open.isModal && <ClubModal
@@ -400,12 +388,13 @@ const ClubModal = ({ isMode, reacord, hideModal, isModal, fetchClubs }) => {
                 initialValues={{ ...reacord }}
             >
                 <Form.Item label="Tên:" name="clubName" rules={[{ required: true, message: 'Vui lòng nhập tên câu lạc bộ!' }]}>
-                    <Input placeholder="Nhập tên câu lạc bộ..." />
+                    <Input placeholder="Nhập tên..." />
                 </Form.Item>
 
                 <Form.Item label="Kiểu áo" name="typeClub" rules={[{ required: true, message: 'Vui lòng chọn kiểu áo!' }]}>
                     <Select style={{ width: '100%' }}
                         allowClear
+                        placeholder='Chọn kiểu áo'
                         options={[
                             {
                                 value: 'Đội tuyển quốc gia',
@@ -427,11 +416,11 @@ const ClubModal = ({ isMode, reacord, hideModal, isModal, fetchClubs }) => {
                     />
                 </Form.Item>
 
-                <Form.Item label="Mô tả:" name="clubDescribe" >
-                    <TextArea rows={4} placeholder="Nhập mô tả câu lạc bộ..." />
+                <Form.Item label="Ghi chú:" name="clubDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
                 </Form.Item>
 
-                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} >
+                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn tạng thái!' }]}>
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Đang hoạt động</Radio>
                         <Radio value={false}>Ngừng hoạt động</Radio>

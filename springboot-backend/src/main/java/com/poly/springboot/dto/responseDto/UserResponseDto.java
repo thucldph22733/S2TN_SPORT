@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -16,11 +17,7 @@ public class UserResponseDto {
 
     private Long id;
 
-//    private Role role;
-
     private String userName;
-
-    private String avatar;
 
     private String phoneNumber;
 
@@ -30,10 +27,10 @@ public class UserResponseDto {
 
     private Date birthOfDay;
 
-    private String address;
+    private Boolean deleted;
 
-    private Boolean status;
+    private List<String> roleList;
 
-    private LocalDateTime createDate;
+    private LocalDateTime createdAt;
 
 }

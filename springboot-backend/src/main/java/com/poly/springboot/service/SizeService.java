@@ -9,10 +9,7 @@ import java.util.List;
 
 public interface SizeService {
     Page<Size> getSizes(String name, List<Boolean> status, Pageable pageable);
-
-
     Boolean deleteSize(Long id);
-
 
     Boolean createSize(SizeRequestDto sizeRequestDto);
 

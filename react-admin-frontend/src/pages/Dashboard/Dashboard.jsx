@@ -93,7 +93,7 @@ function Dashboard() {
                 </Col>
             </Row>
 
-            <Row>
+            <Row >
                 <BarChart chartData={userData} />
             </Row>
             <Row >

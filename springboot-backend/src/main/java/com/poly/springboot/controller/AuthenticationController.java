@@ -31,15 +31,7 @@ public class AuthenticationController {
                 .status(HttpStatus.OK)
                 .body(registerResponseDto);
     }
-//@PostMapping("/register")
-//public ResponseEntity<User> register(
-//        @RequestBody RegisterRequestDto registerRequestDto
-//) {
-//    User registerResponseDto = authenticationService.register(registerRequestDto);
-//    return ResponseEntity
-//            .status(HttpStatus.OK)
-//            .body(registerResponseDto);
-//}
+
     @PostMapping("/login")
     public ResponseEntity<JwtAuthenticationResponseDto> login(
             @RequestBody LoginRequestDto loginRequestDto
@@ -49,12 +41,12 @@ public class AuthenticationController {
                 .status(HttpStatus.OK)
                 .body(jwtAuthenticationResponseDto);
     }
-//    @PostMapping("/refresh-token")
-//    public ResponseEntity<JwtAuthenticationResponseDto> refreshToken( @RequestBody RefreshTokenRequestDto refreshTokenRequestDto
-//    ) {
-//        JwtAuthenticationResponseDto  jwtAuthenticationResponseDto= authenticationService.refreshToken(refreshTokenRequestDto);
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(jwtAuthenticationResponseDto);
-//    }
+    @PostMapping("/refresh-token")
+    public ResponseEntity<JwtAuthenticationResponseDto> refreshToken( @RequestBody RefreshTokenRequestDto refreshTokenRequestDto
+    ) {
+        JwtAuthenticationResponseDto  jwtAuthenticationResponseDto= authenticationService.refreshToken(refreshTokenRequestDto);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(jwtAuthenticationResponseDto);
+    }
 }

@@ -1,12 +1,11 @@
-
 import HttpClient from '~/utils/http-client';
 
-const API_URL = 'clubs/';
+const API_URL = 'users/';
 
-const ClubService = {
-    getAll: (pageNo, pageSize, name, status, type) => {
+const UserService = {
+    getAll: (pageNo, pageSize, code, name, deleted) => {
         return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, status, type }
+            params: { pageNo, pageSize, code, name, deleted }
         })
             .then(response => response.data)
             .catch(error => {
@@ -33,14 +32,14 @@ const ClubService = {
             });
     },
 
-    delete: (id) => {
-        return HttpClient.delete(`${API_URL}delete?id=${id}`)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in delete:', error);
-                throw error;
-            });
-    },
+    // delete: (id) => {
+    //     return HttpClient.delete(`${API_URL}delete?id=${id}`)
+    //         .then(response => response.data)
+    //         .catch(error => {
+    //             console.error('Error in delete:', error);
+    //             throw error;
+    //         });
+    // },
 };
 
-export default ClubService;
+export default UserService;

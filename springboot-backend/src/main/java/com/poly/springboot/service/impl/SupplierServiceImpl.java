@@ -2,7 +2,6 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.SupplierRequestDto;
 import com.poly.springboot.entity.Supplier;
-import com.poly.springboot.entity.Supplier;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.mapper.SupplierMapper;
@@ -22,20 +21,26 @@ public class SupplierServiceImpl implements SupplierService {
     private SupplierRepository supplierRepository;
 
     @Override
-    public Page<Supplier> getSuppliers(String name, List<Boolean> status, Pageable pageable) {
+    public Page<Supplier> getSuppliers(String supplierName, String phoneNumber, String email,List<Boolean> status, Pageable pageable) {
 
-        Page<Supplier> SupplierList;
-
-        if (name == null && status == null){
-            SupplierList = supplierRepository.findAll(pageable);
-        }else if (name == null){
-            SupplierList = supplierRepository.findByDeletedIn(status,pageable);
-        }else if (status == null){
-            SupplierList = supplierRepository.findBySupplierNameContaining(name,pageable);
+        if (supplierName == null && phoneNumber == null && email == null && status == null){
+            return supplierRepository.findAll(pageable);
+        }else if(supplierName == null && phoneNumber == null && email == null){
+            return supplierRepository.findByDeletedIn(status,pageable);
+        }else if( phoneNumber == null && email == null && status == null){
+            return supplierRepository.findBySupplierNameContaining(supplierName,pageable);
+        }else if(email == null && status == null && supplierName == null){
+            return supplierRepository.findByPhoneNumberContaining(phoneNumber,pageable);
+        }else if(status == null && supplierName == null && phoneNumber == null){
+            return supplierRepository.findByEmailContaining(email,pageable);
         }else {
-            SupplierList = supplierRepository.findBySupplierNameContainingAndDeletedIn(name,status,pageable);
+            return supplierRepository.findByKeyword(supplierName,phoneNumber,email,status,pageable);
         }
-        return SupplierList;
+    }
+
+    @Override
+    public List<Supplier> findByDeletedTrue() {
+        return supplierRepository.findByDeletedTrue();
     }
 
     @Override

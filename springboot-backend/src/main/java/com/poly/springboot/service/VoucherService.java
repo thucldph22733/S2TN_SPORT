@@ -9,11 +9,9 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface VoucherService {
-    List<VoucherResponseDto> getVouchers();
+    List<Voucher> findByDeletedTrue();
 
-    Page<Voucher> getPagination(Pageable pageable);
-
-    List<VoucherResponseDto> searchVoucher(Integer pageNo,String keyword);
+    Page<Voucher> getVouchers(String code,String name, List<Boolean> status, Pageable pageable);
 
     Boolean createVoucher(VoucherRequestDto requestDto);
 

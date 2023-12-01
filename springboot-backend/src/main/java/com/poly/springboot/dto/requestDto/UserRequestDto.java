@@ -1,9 +1,11 @@
 package com.poly.springboot.dto.requestDto;
 
-//import com.poly.springboot.entity.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -12,10 +14,10 @@ import java.sql.Date;
 @Builder
 public class UserRequestDto {
 
+    @JsonIgnore
+    private Long id;
 //    @NotBlank(message = "Tên nhân viên không được để trống!")
     private String userName;
-
-//    private String avatar;
 
 //    @NotBlank(message = "Số điện thoại không được để trống!")
     private String phoneNumber;
@@ -29,13 +31,11 @@ public class UserRequestDto {
 //    @NotNull(message = "Ngày sinh không được để trống!")
     private Date birthOfDay;
 
-//    @NotBlank(message = "Địa chỉ không được để trống!")
-    private String address;
-
 //    @NotBlank(message = "Mật khẩu không được để trống!")
     private String password;
 
-    private Boolean status;
+    private Boolean deleted;
 
-//    private Role role;
+    private List<String> roleList;
+
 }

@@ -13,7 +13,6 @@ public interface CategoryService {
 
     Boolean deleteCategory(Long id);
 
-
     Boolean createCategory(CategoryRequestDto categoryRequestDto);
 
     Boolean updateCategory(CategoryRequestDto categoryRequestDto,Long id);

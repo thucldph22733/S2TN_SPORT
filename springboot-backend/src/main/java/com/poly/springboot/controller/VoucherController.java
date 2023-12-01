@@ -52,33 +52,30 @@ public class VoucherController {
         }
     }
 
-    @GetMapping("getAll")
-    public ResponseEntity<List<VoucherResponseDto>> getVouchers() {
-        List<VoucherResponseDto> voucherResponseDtoList = voucherService.getVouchers();
+    @GetMapping("findAllByDeletedTrue")
+    public ResponseEntity<List<Voucher>> findAllByDeletedTrue() {
+        List<Voucher> voucherList = voucherService.findByDeletedTrue();
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(voucherResponseDtoList);
+                .body(voucherList);
     }
 
-    @GetMapping("pagination")
+    @GetMapping("getAll")
     public ResponseEntity<?> getPagination(@RequestParam(defaultValue = "0") Integer pageNo,
-                                           @RequestParam(defaultValue = "10") Integer pageSize) {
+                                           @RequestParam(defaultValue = "10") Integer pageSize,
+                                           @RequestParam(required = false) String code,
+                                           @RequestParam(required = false) String name,
+                                           @RequestParam(required = false) List<Boolean> deleted) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
-        Page<Voucher> voucherPage = voucherService.getPagination(pageable);
+        Page<Voucher> voucherPage = voucherService.getVouchers(code,name,deleted,pageable);
 
         List<VoucherResponseDto> voucherResponseDtoList = voucherPage.getContent().stream().map(VoucherResponseDto::new).collect(Collectors.toList());
 
         return ResponseHandler.generateResponse(HttpStatus.OK, voucherResponseDtoList, voucherPage);
     }
 
-    @GetMapping("search")
-    public ResponseEntity<List<VoucherResponseDto>> searchVoucher(@RequestParam Optional<Integer> pageNo, @RequestParam String keyword) {
-        List<VoucherResponseDto> voucherResponseDtoList = voucherService.searchVoucher(pageNo.orElse(0), keyword);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(voucherResponseDtoList);
-    }
+
 
     @PutMapping("update")
     public ResponseEntity<ResponseDto> updateVoucher(@RequestBody VoucherRequestDto voucherRequestDto, @RequestParam Long id) {

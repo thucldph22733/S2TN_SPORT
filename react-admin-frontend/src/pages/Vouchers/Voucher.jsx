@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col, Tag, Popconfirm } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -13,31 +13,12 @@ import FormatDate from '~/utils/format-date';
 import dayjs from 'dayjs';
 const { TextArea } = Input;
 const { Option } = Select;
-const getStatusBadgeStyle = (text) => {
-    const backgroundColor = text === true ? 'rgb(66, 185, 126)' : 'rgb(243, 78, 28)';
-    return {
-        display: 'inline-block',
-        padding: '4px 8px',
-        borderRadius: '4px',
-        textAlign: 'center',
-        cursor: 'pointer',
-        backgroundColor,
-        color: 'white',
-    };
-};
 
-const getStatusText = (text) => {
-    return text === true ? 'Hoạt động' : 'Hết hạn';
-};
 function Voucher() {
 
     const [loading, setLoading] = useState(false);
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
-
-    // const handleStatusFilterChange = ({value:''}) => {
-    //         setFilteredStatus(value);
-    //     };
 
     const showModal = (mode, record) => {
         setOpen({
@@ -53,18 +34,18 @@ function Voucher() {
 
     const [vouchers, setVouchers] = useState([]);
 
-    const [pagination, setPagination] = useState({ pageNo: 1, pageSize: 5 });
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
-    const [filteredStatus, setFilteredStatus] = useState(null);
+    const [deleted, setDeleted] = useState(null);
 
-    const searchText = useRef(null);
+    const [searchName, setSearchName] = useState(null);
 
-    const [totalCount, setTotalCount] = useState(1);
+    const [searchCode, setSearchCode] = useState(null);
 
     const fetchVouchers = async () => {
         setLoading(true);
 
-        await VoucherService.getAll(pagination.pageNo - 1, pagination.pageSize)
+        await VoucherService.getAll(pagination.current - 1, pagination.pageSize, searchCode, searchName, deleted)
             .then(response => {
 
                 const formattedData = response.data.map((voucher, index) => ({
@@ -75,8 +56,10 @@ function Voucher() {
                 }));
 
                 setVouchers(formattedData);
-
-                setTotalCount(response.totalCount);
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
 
                 setLoading(false);
 
@@ -87,7 +70,7 @@ function Voucher() {
 
     useEffect(() => {
         fetchVouchers();
-    }, [pagination]);
+    }, [pagination.current, pagination.pageSize, searchCode, searchName, deleted]);
 
 
     const handleDelete = async (id) => {
@@ -109,81 +92,67 @@ function Voucher() {
 
     };
 
-    const handleResetPage = () => {
-        setFilteredStatus(null);
-        setPagination({ pageNo: 1, pageSize: 5 });
-        fetchVouchers();
+    const handleReset = () => {
+
+        setSearchName(null);
+        setSearchCode(null);
+        setDeleted(null);
+
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
+        handleTableChange(pagination, null)
     };
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        searchText.current = selectedKeys[0];
-        fetchVouchers();
-    };
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        searchText.current = null;
-        fetchVouchers();
+
+    const handleTableChange = (pagination, filters) => {
+
+        setPagination({
+            ...pagination,
+        });
+        const statusFilter = filters?.deleted;
+        const searchCodeFilter = filters?.voucherCode;
+        const searchNameFilter = filters?.voucherName;
+
+        // Kiểm tra nếu statusFilter không tồn tại hoặc là mảng rỗng
+        const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
+
+        if (searchCodeFilter) {
+            setSearchCode(searchCodeFilter[0]);
+        } else {
+            setSearchCode(null)
+        }
+        if (searchNameFilter) {
+            setSearchName(searchNameFilter[0]);
+        } else {
+            setSearchName(null)
+        }
+        // Kiểm tra nếu có lựa chọn bộ lọc và không phải là trường hợp không chọn
+        if (!isNoStatusFilter) {
+            const isBothStatus = statusFilter.length === 2;
+
+            // Sử dụng biểu thức điều kiện để xác định trạng thái để lọc
+            setDeleted(isBothStatus ? null : statusFilter[0]);
+        } else {
+            // Nếu không có lựa chọn bộ lọc, đặt trạng thái deleted về null hoặc giá trị mặc định
+            setDeleted(null);
+        }
     };
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div
-                style={{
-                    padding: 8,
+        filteredValue: dataIndex === 'voucherName' ? [searchName] : dataIndex === 'voucherCode' ? [searchCode] : null, filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+            <Input.Search
+                placeholder={`Nhập tên...`}
+                value={selectedKeys[0]}
+                onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                onSearch={(value) => {
+                    setSelectedKeys(value ? [value.trim()] : []);
+                    confirm();
                 }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <Input
-                    ref={searchText}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
+                style={{ display: 'block' }}
             />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchText.current?.select(), 1000);
-            }
-        },
     });
-
     const columns = [
         {
             title: '#',
@@ -196,12 +165,15 @@ function Voucher() {
             dataIndex: 'voucherCode',
             key: 'voucherCode',
             width: '7%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
+            ...getColumnSearchProps('voucherCode')
         },
         {
             title: 'Tên',
             dataIndex: 'voucherName',
             key: 'voucherName',
             width: '10%',
+            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
             ...getColumnSearchProps('voucherName')
         },
 
@@ -210,6 +182,7 @@ function Voucher() {
             dataIndex: 'discountRate',
             key: 'discountRate',
             width: '7%',
+            sorter: (a, b) => a.discountRate - b.discountRate,
         },
         {
             title: 'Ngày bắt đầu',
@@ -228,18 +201,22 @@ function Voucher() {
             dataIndex: 'quantity',
             key: 'quantity',
             width: '7%',
+            sorter: (a, b) => a.quantity - b.quantity,
         },
         {
             title: 'Đơn tối thiểu',
             dataIndex: 'orderMinimum',
             key: 'orderMinimum',
             width: '10%',
+            sorter: (a, b) => a.orderMinimum - b.orderMinimum,
         },
         {
             title: 'Giảm tối đa',
             dataIndex: 'maxReduce',
             key: 'maxReduce',
             width: '10%',
+            sorter: (a, b) => a.maxReduce - b.maxReduce,
+
         },
 
         {
@@ -257,12 +234,11 @@ function Voucher() {
                     value: false,
                 },
             ],
-            // onFilter: (filteredStatus, record) => record.deleted === filteredStatus,
+            onFilter: (value, record) => record.deleted === value,
             render: (text) => (
-                <span style={getStatusBadgeStyle(text)}>
-                    {getStatusText(text)}
-                </span>
-            ),
+                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Hoạt động</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Hết hạn</Tag>
+            )
         },
         {
             title: 'Hành động',
@@ -274,7 +250,7 @@ function Voucher() {
                     <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModal("edit", record)} />
-                    {/* {record.deleted && <Popconfirm
+                    {record.deleted && <Popconfirm
                         title="Xóa giảm giá"
                         description="Bạn có chắc chắn xóa giảm giá này không?"
                         placement="leftTop"
@@ -283,7 +259,7 @@ function Voucher() {
                         cancelText="Hủy bỏ"
                     >
                         <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                    </Popconfirm>} */}
+                    </Popconfirm>}
 
                 </Space>
             }
@@ -305,27 +281,22 @@ function Voucher() {
             <Button type="primary"
                 icon={<RedoOutlined style={{ fontSize: '18px' }} />}
                 style={{ marginBottom: '16px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
-                onClick={handleResetPage}
+                onClick={handleReset}
             />
 
             <Table
                 dataSource={vouchers}
-                // onChange={(_, filters) => {
-                //     const status = filters.deleted && filters.deleted.length > 0 ? filters.deleted[0] : null;
-                //     setFilteredStatus(status);
-                //     fetchVouchers();
-                // }}
+                onChange={handleTableChange}
 
                 loading={loading}
                 columns={columns}
                 pagination={{
+                    current: pagination.current,
+                    pageSize: pagination.pageSize,
                     defaultPageSize: 5,
                     pageSizeOptions: ['5', '10', '15'],
-                    total: totalCount,
+                    total: pagination.total,
                     showSizeChanger: true,
-                    onChange: (pageNo, pageSize) => {
-                        setPagination({ pageNo, pageSize })
-                    },
                 }}></Table >
 
             {open.isModal && <VoucherModal
@@ -348,9 +319,9 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
     const handleCreate = () => {
         form.validateFields().then(async () => {
 
-            const data = form.getFieldsValue();
+            const values = await form.validateFields();
 
-            await VoucherService.create(data)
+            await VoucherService.create(values)
                 .then(() => {
                     notification.success({
                         message: 'Thông báo',
@@ -435,6 +406,8 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                         form={form}
                         initialValues={{
                             ...reacord,
+                            ...(reacord?.startDate && { startDate: dayjs(reacord.startDate, "HH:mm:ss - DD/MM/YYYY") }),
+                            ...(reacord?.endDate && { endDate: dayjs(reacord.endDate, "HH:mm:ss - DD/MM/YYYY") }),
                         }}
 
                     >
@@ -483,13 +456,13 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                         <Row>
                             <Col span={11}>
                                 <Form.Item label="Ngày bắt đầu:" name="startDate" rules={[{ required: true, message: 'Vui lòng nhập ngày bắt đầu!' }]}>
-                                    <DatePicker style={{ width: '100%' }} showTime format="HH:mm:ss - DD/MM/YYYY'" />
+                                    <DatePicker style={{ width: '100%' }} showTime format="HH:mm:ss - DD/MM/YYYY" />
                                 </Form.Item>
                             </Col>
                             <Col span={1}></Col>
                             <Col span={12}>
                                 <Form.Item label="Ngày kết thúc:" name="endDate" rules={[{ required: true, message: 'Vui lòng nhập ngày kết thúc!' }]}>
-                                    <DatePicker style={{ width: '100%' }} showTime format="HH:mm:ss - DD/MM/YYYY'" />
+                                    <DatePicker style={{ width: '100%' }} showTime format="HH:mm:ss - DD/MM/YYYY" />
                                 </Form.Item>
                             </Col>
                         </Row>

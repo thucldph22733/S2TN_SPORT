@@ -48,7 +48,6 @@ public class User extends BaseEntity implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles = new ArrayList<>();
 
-//    private ERole role;
 
 //    @ManyToMany(fetch = FetchType.LAZY)
 //    @JoinTable(

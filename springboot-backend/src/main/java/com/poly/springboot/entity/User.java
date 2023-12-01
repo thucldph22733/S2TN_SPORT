@@ -1,5 +1,6 @@
 package com.poly.springboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,20 +42,15 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "_password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER )
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles;
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_address",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
+    @JsonIgnore
+    @ManyToMany(mappedBy = "users")
     private List<Address> address;
 
     @Override

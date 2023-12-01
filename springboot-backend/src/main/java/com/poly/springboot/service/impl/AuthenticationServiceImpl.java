@@ -60,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 loginRequestDto.getEmail(),
                 loginRequestDto.getPassword()));
 
-        var user = userRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow(()->new ResourceNotFoundException("Không tìm thấy email này!"));
+        var user = userRepository.findByEmailAndDeletedTrue(loginRequestDto.getEmail()).orElseThrow(()->new ResourceNotFoundException("Không tìm thấy email này!"));
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
@@ -76,7 +76,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public JwtAuthenticationResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
         String userEmail = jwtService.extractUsername(refreshTokenRequestDto.getToken());
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailAndDeletedTrue(userEmail)
                 .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy email người  này!"));
 
             if (jwtService.isTokenValid(refreshTokenRequestDto.getToken(), user)) {

@@ -33,10 +33,14 @@ public class UserController {
 
     @GetMapping("getAll")
     public ResponseEntity<?> getStaffs(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                           @RequestParam(defaultValue = "10") Integer pageSize){
+                                                           @RequestParam(defaultValue = "10") Integer pageSize,
+                                       @RequestParam(required = false) String name,
+                                       @RequestParam(required = false) String phoneNumber,
+                                       @RequestParam(required = false) String email,
+                                       @RequestParam(required = false) List<Boolean> deleted){
         Pageable pageable = PageRequest.of(pageNo,pageSize);
 
-        Page<UserResponseDto>  userResponseDtoPage = userService.getUsers(pageable);
+        Page<UserResponseDto>  userResponseDtoPage = userService.getUsers(name,phoneNumber,email,deleted,pageable);
 
         List<UserResponseDto> userResponseDtoList = userResponseDtoPage.getContent();
 
@@ -72,18 +76,18 @@ public class UserController {
                     .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
         }
     }
-//
-//    @DeleteMapping("delete")
-//    public ResponseEntity<ResponseDto> deleteStaff(@RequestParam Long id){
-//        Boolean isDeleted = userService .deleteStaff(id);
-//        if (isDeleted){
-//            return ResponseEntity
-//                    .status(HttpStatus.OK)
-//                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-//        }else {
-//            return ResponseEntity
-//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
-//        }
-//    }
+
+    @DeleteMapping("delete")
+    public ResponseEntity<ResponseDto> deleteStaff(@RequestParam Long id){
+        Boolean isDeleted = userService .deleteUser(id);
+        if (isDeleted){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
+    }
 }

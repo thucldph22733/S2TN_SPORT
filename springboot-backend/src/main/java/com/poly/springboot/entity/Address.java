@@ -1,20 +1,18 @@
 package com.poly.springboot.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import java.util.Set;
+import lombok.*;
+
+import java.util.List;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "address")
-public class Address {
+public class Address extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +36,11 @@ public class Address {
     @Column(name = "city")  //tinh/thanh pho
     private String city;
 
-    @ManyToMany(mappedBy = "address")
-    @JsonIgnore
-    private Set<User> users;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_address",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id")
+    )
+    private List<User> users;
 }

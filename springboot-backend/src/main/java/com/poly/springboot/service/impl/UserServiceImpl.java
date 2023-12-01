@@ -31,27 +31,24 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Page<UserResponseDto> getUsers(Pageable pageable) {
-
-        // Sử dụng Page<User> để lấy danh sách người dùng từ repository
-        Page<User> userPage = userRepository.findAll(pageable);
-
+    public Page<UserResponseDto> getUsers(String name, String phoneNumber, String email, List<Boolean> status, Pageable pageable) {
+        Page<User> userPage;
+        if (name == null && phoneNumber == null && email == null && status == null) {
+            userPage = userRepository.findAll(pageable);
+        } else if (name == null && phoneNumber == null && email == null) {
+            userPage = userRepository.findByDeletedIn(status, pageable);
+        } else if (phoneNumber == null && email == null && status == null) {
+            userPage = userRepository.findByUsersNameContaining(name, pageable);
+        } else if (email == null && status == null && name == null) {
+            userPage = userRepository.findByPhoneNumberContaining(phoneNumber, pageable);
+        } else if (status == null && name == null && phoneNumber == null) {
+            userPage = userRepository.findByEmailContaining(email, pageable);
+        } else {
+            userPage = userRepository.findByKeyword(name, phoneNumber, email, status, pageable);
+        }
         // Sử dụng map để chuyển đổi từ Page<User> sang Page<UserResponseDto>
-        Page<UserResponseDto> userResponseDtoPage = userPage.map(user -> {
-            return new UserResponseDto(
-                    user.getId(),
-                    user.getUsersName(),
-                    user.getPhoneNumber(),
-                    user.getEmail(),
-                    user.getGender(),
-                    user.getBirthOfDay(),
-                    user.getDeleted(),
-                    user.getRoles().stream().map(Role::getRoleName).toList(),
-                    user.getCreatedAt()
-            );
-        });
+        return userPage.map(this::mapUserToDto);
 
-        return userResponseDtoPage;
     }
 
     @Override
@@ -75,8 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean updateUser(UserRequestDto requestDto, Long id) {
-                User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
         List<Role> roleList = roleRepository.findAllByRoleNameIn(requestDto.getRoleList());
         user.setUsersName(requestDto.getUserName());
         user.setPhoneNumber(requestDto.getPhoneNumber());
@@ -90,4 +86,18 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    @Override
+    public Boolean deleteUser(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
+
+        user.setDeleted(!user.getDeleted());
+
+        userRepository.save(user);
+
+        return true;
+    }
+
+    private UserResponseDto mapUserToDto(User user) {
+        return new UserResponseDto(user.getId(), user.getUsersName(), user.getPhoneNumber(), user.getEmail(), user.getGender(), user.getBirthOfDay(), user.getDeleted(), user.getRoles().stream().map(Role::getRoleName).toList(), user.getCreatedAt());
+    }
 }

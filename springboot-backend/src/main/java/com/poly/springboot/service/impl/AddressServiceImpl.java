@@ -54,9 +54,9 @@ public class AddressServiceImpl implements AddressService {
         address.setCity(addressRequestDto.getCity());
         address.setAddressDetail(addressRequestDto.getAddressDetail());
         address.setRegion(addressRequestDto.getRegion());
-        if (addressRequestDto.getDeleted() != null){
-            addressRepository.updateDeleted(user.getId());
-        }
+//        if (addressRequestDto.getDeleted() != null){
+//            addressRepository.updateDeleted(user.getId());
+//        }
         address.setDeleted(addressRequestDto.getDeleted());
 
         if (user != null) {

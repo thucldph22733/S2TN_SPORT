@@ -23,6 +23,7 @@ import { useAuth } from '~/components/AuthContext';
 const { Header, Sider, Content } = Layout;
 
 const MainLayout = () => {
+
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();

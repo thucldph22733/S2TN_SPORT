@@ -1,20 +1,17 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, DatePicker, Row, Col, Select, Tag } from 'antd';
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiLockKeyOpenFill, PiLockKeyFill } from "react-icons/pi";
-
 import {
     PlusOutlined,
     RedoOutlined,
     FormOutlined,
-    DeleteOutlined,
     SearchOutlined,
 } from '@ant-design/icons';
 import UserService from '~/service/UserService';
 import FormatDate from '~/utils/format-date';
 import dayjs from 'dayjs';
 import RoleService from '~/service/RoleService';
-import ShowsetAddressModal from './Address';
 import ShowAddressModal from './Address';
 
 const { TextArea } = Input;
@@ -23,8 +20,7 @@ const { TextArea } = Input;
 function User() {
 
     const [loading, setLoading] = useState(false);
-
-
+    //Mở modal hiển thị address
     const [addressModal, setAddressModal] = useState({ isModal: false, reacord: null });
 
     const showAddressModal = (record) => {
@@ -333,6 +329,8 @@ function User() {
                 hideModal={hideAddressModal}
                 isModal={addressModal.isModal}
             />}
+
+
         </>
     )
 };

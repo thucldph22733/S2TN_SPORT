@@ -14,8 +14,8 @@ const AddressService = {
             });
     },
 
-    create: (userId, data) => {
-        return HttpClient.post(`${API_URL}create?userId=${userId}`, data)
+    create: (data) => {
+        return HttpClient.post(`${API_URL}create`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in create:', error);

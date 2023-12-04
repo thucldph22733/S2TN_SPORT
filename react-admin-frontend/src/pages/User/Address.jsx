@@ -1,26 +1,27 @@
-import { useEffect } from "react";
-import { useState } from "react";
+
 import AddressService from "~/service/AddressService";
 import { FaMapMarkedAlt } from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import { getAddressData, getDistrictsByCity, getWardsByDistrict } from '~/service/ApiService';
 const { PlusOutlined, FormOutlined, DeleteOutlined } = require("@ant-design/icons");
-const { Row, Col, Radio, Button, Modal, Tag, Form, Input, Select, Checkbox } = require("antd");
+const { Row, Col, Radio, Button, Modal, Tag, Form, Input, Select, Checkbox, notification, Popconfirm } = require("antd");
 
 const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
+    //Mở modal thêm sử address
+    const [addressModal2, setAddressModal2] = useState({ isModal: false, isMode: '', reacord: null });
 
-    // const [openAddressModal, setOpenAddressModal] = useState({ isModal: false, isMode: '', reacord: null });
+    const showAddressModal2 = (mode, record) => {
+        setAddressModal2({
+            isModal: true,
+            isMode: mode,
+            reacord: record,
+        });
+    };
 
-    // const showModalAddress = (mode, record) => {
-    //     setOpenAddressModal({
-    //         isModal: true,
-    //         isMode: mode,
-    //         reacord: record,
-    //     });
+    const hideAddressModal2 = () => {
+        setAddressModal2({ isModal: false });
+    };
 
-    // };
-
-    // const hideModalAddress = () => {
-    //     setOpenAddressModal({ isModal: false });
-    // };
     const [address, setAddress] = useState([]);
 
     const fetchAddress = async () => {
@@ -35,10 +36,29 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
     useEffect(() => {
         fetchAddress();
     }, [])
+
+    const handleDelete = async (id) => {
+
+        await AddressService.delete(id).then(response => {
+            console.log(response.data);
+            notification.success({
+                message: 'Thông báo',
+                description: 'Xóa thành công!',
+            });
+            fetchAddress();
+        }).catch(error => {
+            console.error(error);
+            notification.error({
+                message: 'Thông báo',
+                description: 'Xóa thất bại!',
+            });
+        });
+
+    };
     return (
         <>
             <Modal
-                title="Thêm mới"
+                title="Địa chỉ"
                 onCancel={hideModal}
                 footer={null}
                 open={isModal}
@@ -48,7 +68,7 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
                     <Col span={6}>
                         <Button type="primary"
                             icon={<PlusOutlined />}
-                            // onClick={() => showModalAddress("add")}
+                            onClick={() => showAddressModal2("add", reacord.id)}
                             style={{ marginBottom: '16px', borderRadius: '2px' }} >
                             Thêm mới
                         </Button>
@@ -64,7 +84,6 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
                         <Row key={index + 1} style={{ borderBottom: '1px solid #e8e8e8', paddingBottom: '8px', marginBottom: '8px' }}>
                             <Col span={21}>
                                 <p>
-                                    <Radio value={true} checked={address.deleted}></Radio>
                                     <b>{address?.recipientName}</b> | {address?.phoneNumber}
                                 </p>
                                 <p>{address?.addressDetail} - {address?.region} - {address?.district} - {address?.city}</p>
@@ -72,192 +91,257 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
                             </Col>
                             <Col span={3}>
                                 <Button type="text"
-                                    icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
+                                    icon={<FormOutlined
+                                        style={{ color: 'rgb(214, 103, 12)' }}
+                                        onClick={() => {
+                                            showAddressModal2("edit", address);
+                                        }} />}
                                 />
-                                <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
+                                {address.deleted != true && <Popconfirm
+                                    title="Xóa địa chỉ"
+                                    description="Bạn có chắc chắn xóa địa chỉ này không?"
+                                    placement="topRight"
+                                    onConfirm={() => handleDelete(address.id)}
+                                    okText="Đồng ý"
+                                    cancelText="Hủy bỏ"
+                                >
+                                    <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
+                                </Popconfirm>}
                             </Col>
                         </Row>
                     ))
                 )}
             </Modal>
-            {/* {openAddressModal.isModal && <AddressModal
-                isMode={openAddressModal.isMode}
-                reacord={openAddressModal.reacord}
-                hideModal={hideModalAddress}
-                isModal={openAddressModal.isModal}
-            />} */}
+            {addressModal2.isModal && (
+                <AddressModal
+                    isMode={addressModal2.isMode}
+                    reacord={addressModal2.reacord}
+                    hideModal={hideAddressModal2}
+                    isModal={addressModal2.isModal}
+                    fetchAddress={fetchAddress}
+                />
+            )}
         </>
     );
 };
-// const AddressModal = (isMode, reacord, hideModal, isModal) => {
-//     const [form] = Form.useForm();
-//     const handleCreate = () => {
-//         form.validateFields().then(async () => {
-
-//             const data = await form.getFieldsValue();
-
-//             await AddressService.create(data)
-//                 .then(() => {
-//                     notification.success({
-//                         message: 'Thông báo',
-//                         description: 'Thêm mới thành công!',
-//                     });
-//                     fetchUsers();
-//                     // Đóng modal
-//                     hideModal();
-//                 })
-//                 .catch(error => {
-//                     notification.error({
-//                         message: 'Thông báo',
-//                         description: 'Thêm mới thất bại!',
-//                     });
-//                     console.error(error);
-//                 });
-
-//         }).catch(error => {
-//             console.error(error);
-//         })
-
-//     }
-//     const handleUpdate = () => {
-//         form.validateFields().then(async () => {
-
-//             const data = await form.getFieldsValue();
-
-//             await UserService.update(reacord.id, data)
-//                 .then(() => {
-//                     notification.success({
-//                         message: 'Thông báo',
-//                         description: 'Cập nhật thành công!',
-//                     });
-//                     fetchUsers();
-//                     // Đóng modal
-//                     hideModal();
-//                 })
-//                 .catch(error => {
-//                     notification.error({
-//                         message: 'Thông báo',
-//                         description: 'Cập nhật thất bại!',
-//                     });
-//                     console.error(error);
-//                 });
-
-//         }).catch(error => {
-//             console.error(error);
-//         })
-
-//     }
-//     return (
-//         <>
-
-//             <Modal
-//                 title={isMode === "edit" ? "Cập nhật tài khoản người dùng" : "Thêm mới một tài khoản người dùng"}
-//                 open={isModal}  // Thay đổi từ "open" thành "visible"
-//                 onCancel={hideModal}
-//                 okText="Thêm mới"
-//                 cancelText="Hủy bỏ"
-//             >
-//                 <Form
-//                     name="validateOnly" layout="vertical" autoComplete="off"
-//                     style={{ maxWidth: 600, marginTop: '25px' }}
-//                     form={form}
-//                 >
-//                     <Form.Item label="Họ và tên:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
-//                         <Input placeholder="Họ và tên..." />
-//                     </Form.Item>
-//                     <Form.Item label="Số điện thoại:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
-//                         <Input placeholder="Số điện thoại..." />
-//                     </Form.Item>
-//                     <Row>
-//                         <Col span={11}>
-//                             <Form.Item label="Tỉnh/Thành phố:" name="" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
-//                                 <Select
-//                                     showSearch
-//                                     style={{
-//                                         width: '100%',
-//                                     }}
-//                                     placeholder="Chọn Tỉnh/Thành phố"
-//                                     // optionFilterProp="children"
-//                                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
-//                                     filterSort={(optionA, optionB) =>
-//                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-//                                     }
-//                                     options={[
-//                                         {
-//                                             value: '1',
-//                                             label: 'Not Identified',
-//                                         },
-
-//                                     ]}
-//                                 />
-
-//                             </Form.Item>
-//                         </Col>
-//                         <Col span={2} />
-//                         <Col span={11}>
-//                             <Form.Item label="Quận/Huyện:" name="" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
-//                                 <Select
-//                                     showSearch
-//                                     style={{
-//                                         width: '100%',
-//                                     }}
-//                                     placeholder="Chọn Quận/Huyện"
-//                                     optionFilterProp="children"
-//                                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
-//                                     filterSort={(optionA, optionB) =>
-//                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-//                                     }
-//                                     options={[
-//                                         {
-//                                             value: '1',
-//                                             label: 'Not Identified',
-//                                         },
-
-//                                     ]}
-//                                 />
-
-//                             </Form.Item>
-//                         </Col>
-//                     </Row>
-//                     <Row>
-//                         <Col span={11}>
-//                             <Form.Item label="Phường/Xã:" name="" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
-//                                 <Select
-//                                     showSearch
-//                                     style={{
-//                                         width: '100%',
-//                                     }}
-//                                     placeholder="Chọn Phường/Xã"
-//                                     // optionFilterProp="children"
-//                                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
-//                                     filterSort={(optionA, optionB) =>
-//                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-//                                     }
-//                                     options={[
-//                                         {
-//                                             value: '1',
-//                                             label: 'Not Identified',
-//                                         },
-
-//                                     ]}
-//                                 />
-
-//                             </Form.Item>
-//                         </Col>
-//                         <Col span={2} />
-//                         <Col span={11}>
-//                             <Form.Item label="Địa chỉ cụ thể:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
-//                                 <Input placeholder="Địa chỉ cụ thể..." />
-//                             </Form.Item>
-//                         </Col>
-//                     </Row>
-//                     <Form.Item>
-//                         <Checkbox>Đặt làm địa chỉ mặc định</Checkbox>
-//                     </Form.Item>
-//                 </Form>
-//             </Modal>
-
-//         </>
-//     );
-// };
 export default ShowAddressModal;
+
+const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => {
+
+    //Đoạn mã lấy api tỉnh thành, quận huyện, phường xã
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [selectedCity, setSelectedCity] = useState('');
+    const [selectedDistrict, setSelectedDistrict] = useState('');
+    const [selectedWard, setSelectedWard] = useState('');
+
+    useEffect(() => {
+        // Gọi hàm từ service API để lấy dữ liệu tỉnh/thành phố
+        getAddressData(1)
+            .then(data => setCities(data))
+            .catch(error => console.error('Lỗi khi lấy dữ liệu tỉnh/thành phố:', error));
+    }, []);
+
+    useEffect(() => {
+        // Gọi hàm từ service API để lấy dữ liệu quận/huyện dựa trên tỉnh/thành phố được chọn
+        if (selectedCity) {
+            getDistrictsByCity(selectedCity, 2)
+                .then(data => setDistricts(data))
+                .catch(error => console.error('Lỗi khi lấy dữ liệu quận/huyện:', error));
+        }
+    }, [selectedCity]);
+
+    useEffect(() => {
+        // Gọi hàm từ service API để lấy dữ liệu phường/xã dựa trên quận/huyện được chọn
+        if (selectedDistrict) {
+            getWardsByDistrict(selectedDistrict, 2)
+                .then(data => setWards(data))
+                .catch(error => console.error('Lỗi khi lấy dữ liệu phường/xã:', error));
+        }
+    }, [selectedDistrict]);
+
+    const handleCityChange = (value) => {
+        setSelectedCity(value);
+        setSelectedDistrict('');
+        setSelectedWard('');
+    };
+
+    const handleDistrictChange = (value) => {
+        setSelectedDistrict(value);
+        setSelectedWard('');
+    };
+
+    //---------------------------------------------------------------------------------------------
+
+    const [isDefaultAddress, setIsDefaultAddress] = useState(true);
+    const [form] = Form.useForm();
+    const getCodeLabel = (code, options) => {
+        const selectedOption = options.find(option => option.value === code);
+        return selectedOption ? selectedOption.label : '';
+    };
+    const handleCreate = () => {
+        form.validateFields().then(async () => {
+
+            const data = await form.getFieldsValue();
+            data.deleted = isDefaultAddress;
+            data.usersId = reacord;
+
+            // Chuyển đổi giá trị từ code sang label
+            data.city = getCodeLabel(data.city, cities);
+            data.district = getCodeLabel(data.district, districts);
+            data.region = getCodeLabel(data.region, wards);
+            console.log(data);
+            await AddressService.create(data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thành công!',
+                    });
+                    fetchAddress();
+                    // Đóng modal
+                    hideModal();
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thất bại!',
+                    });
+                    console.error(error);
+                });
+
+        }).catch(error => {
+            console.error(error);
+        })
+
+    }
+    const handleUpdate = () => {
+        form.validateFields().then(async () => {
+
+            const data = await form.getFieldsValue();
+            data.deleted = isDefaultAddress;
+            await AddressService.update(reacord.id, data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Cập nhật thành công!',
+                    });
+                    fetchAddress()
+                    // Đóng modal
+                    hideModal();
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Cập nhật thất bại!',
+                    });
+                    console.error(error);
+                });
+
+        }).catch(error => {
+            console.error(error);
+        })
+
+    }
+    return (
+        <>
+            <Modal
+                width={600}
+                title={isMode === "edit" ? "Cập nhật địa chỉ" : "Thêm mới một địa chỉ"}
+                open={isModal}
+                onCancel={hideModal}
+                onOk={isMode === "edit" ? handleUpdate : handleCreate}
+                okText={isMode === "edit" ? "Cập nhật" : "Thêm mới"}
+                cancelText="Hủy bỏ"
+            >
+                <Form
+                    name="validateOnly" layout="vertical" autoComplete="off"
+                    style={{ maxWidth: 600, marginTop: '25px' }}
+                    form={form}
+                    initialValues={{
+                        ...reacord,
+                    }}
+                >
+                    <Form.Item label="Họ và tên:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
+                        <Input placeholder="Họ và tên..." />
+                    </Form.Item>
+                    <Form.Item label="Số điện thoại:" name="phoneNumber" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                        <Input placeholder="Số điện thoại..." />
+                    </Form.Item>
+                    <Row>
+                        <Col span={11}>
+                            <Form.Item label="Tỉnh/Thành phố:" name="city" rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố!' }]}>
+                                <Select
+                                    showSearch
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    onChange={handleCityChange}
+                                    placeholder="Chọn Tỉnh/Thành phố"
+                                    filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    options={cities.map(city => ({ value: city.code, label: city.name }))}
+                                />
+
+                            </Form.Item>
+                        </Col>
+                        <Col span={2} />
+                        <Col span={11}>
+                            <Form.Item label="Quận/Huyện:" name="district" rules={[{ required: true, message: 'Vui lòng chọn quận/huyện!' }]}>
+                                <Select
+                                    showSearch
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    onChange={handleDistrictChange}
+                                    placeholder="Chọn Quận/Huyện"
+                                    filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    disabled={!selectedCity}
+                                    options={districts.map(district => ({ value: district.code, label: district.name }))}
+                                />
+
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={11}>
+                            <Form.Item label="Phường/Xã:" name="region" rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]}>
+                                <Select
+                                    showSearch
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    placeholder="Chọn Phường/Xã"
+                                    onChange={value => setSelectedWard(value)}
+                                    filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    disabled={!selectedDistrict}
+                                    options={wards.map(ward => ({ value: ward.code, label: ward.name }))}
+                                />
+
+                            </Form.Item>
+                        </Col>
+                        <Col span={2} />
+                        <Col span={11}>
+                            <Form.Item label="Địa chỉ cụ thể:" name="addressDetail" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
+                                <Input placeholder="Địa chỉ cụ thể..." />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.Item name="deleted">
+                        <Checkbox checked={isDefaultAddress}
+                            onChange={(e) => setIsDefaultAddress(e.target.checked)}>Đặt làm địa chỉ mặc định</Checkbox>
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+        </>
+    );
+};

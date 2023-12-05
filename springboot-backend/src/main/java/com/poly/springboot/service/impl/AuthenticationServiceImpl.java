@@ -68,7 +68,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return JwtAuthenticationResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .userName(user.getUsername())
+                .userName(user.getUsersName())
                 .roleList(user.getRoles().stream().map(Role::getRoleName).toList())
                 .build();
     }
@@ -86,7 +86,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 return JwtAuthenticationResponseDto.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshTokenRequestDto.getToken())
-                        .userName(user.getUsername())
+                        .userName(user.getUsersName())
                         .roleList(user.getRoles().stream().map(Role::getRoleName).toList())
                         .build();
             }

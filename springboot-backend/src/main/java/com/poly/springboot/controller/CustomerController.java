@@ -143,10 +143,12 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("getAll/{id}")
-    public ResponseEntity<CustomerResponseDto> getCustomerById(@PathVariable Long id) {
-        CustomerResponseDto customer = customerService.getCustomerById(id);
-        return ResponseEntity.ok(customer);
+    @GetMapping("getCustomerById")
+    public ResponseEntity<Customer> getCustomerById(@RequestParam Long id) {
+        Customer customer = customerService.getCustomerById(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(customer);
     }
 
 

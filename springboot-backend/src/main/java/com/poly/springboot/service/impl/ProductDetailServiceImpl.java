@@ -4,6 +4,7 @@ import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
 import com.poly.springboot.entity.Product;
 import com.poly.springboot.entity.ProductDetail;
+import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.*;
 import com.poly.springboot.service.ProductDetailService;
@@ -43,6 +44,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 productDetail -> new ProductDetailResponseDto(
                         productDetail.getId(),
                         productDetail.getProduct().getProductName(),
+                        productDetail.getProduct().getProductAvatar(),
                         productDetail.getColor().getColorName(),
                         productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),
@@ -62,6 +64,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 productDetail -> new ProductDetailResponseDto(
                         productDetail.getId(),
                         productDetail.getProduct().getProductName(),
+                        productDetail.getProduct().getProductAvatar(),
                         productDetail.getColor().getColorName(),
                         productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),
@@ -88,11 +91,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return true;
     }
 
-//    @Override
-//    public ProductDetail findById(Long id) {
-//        Optional<ProductDetail> result = productDetailRepository.findById(id);
-//        return result.isPresent() ? result.get() : null;
-//    }
+    @Override
+    public ProductDetail findByIdProductDetailsId(Long id) {
+        ProductDetail productDetail = productDetailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("hóa đơn", String.valueOf(id)));
+        return productDetail;
+    }
 
 
     @Override

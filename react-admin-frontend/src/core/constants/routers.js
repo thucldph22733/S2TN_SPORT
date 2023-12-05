@@ -1,6 +1,8 @@
 const path_name = {
     home: '/',
-    sell: '/sell',
+    newSell: '/NewSell',
+    orderDetail: '/orderdetail',
+    orderView: '/orderview',
     login: '/login',
     product: '/product',
     order: '/order',

@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
+import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
 import com.poly.springboot.entity.*;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.*;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
     private CustomerRepository customerRepository;
     private StaffRepository staffRepository;
 
+    private VoucherRepository voucherRepository;
+
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
@@ -35,7 +39,8 @@ public class OrderServiceImpl implements OrderService {
                             DeliveryRepository shippingMethodRepository,
                             PaymentRepository paymentMethodRepository,
                             CustomerRepository customerRepository,
-                            StaffRepository staffRepository) {
+                            StaffRepository staffRepository,
+                            VoucherRepository voucherRepository) {
         this.orderRepository = orderRepository;
         this.orderStatusRepository = orderStatusRepository;
         this.addressRepository = addressRepository;
@@ -43,25 +48,60 @@ public class OrderServiceImpl implements OrderService {
         this.paymentMethodRepository = paymentMethodRepository;
         this.customerRepository = customerRepository;
         this.staffRepository = staffRepository;
+        this.voucherRepository = voucherRepository;
     }
 
 
     @Override
-    public List<OrderResponseDto> getOrders() {
-        return orderRepository.findAll().stream().map(
+    public List<OrderResponseDto> getAllOrdersCompleted() {
+        return orderRepository.findAllByStatusId().stream().map(
                 order -> new OrderResponseDto(
                         order.getId(),
+                        order.getVoucher() != null ? order.getVoucher().getId() : null,
+                        order.getCustomer() != null ? order.getCustomer().getId() : null,
                         order.getOrderDate(),
                         order.getStaff() != null ? order.getStaff().getStaffName() : "",
-                        order.getCustomer()!= null ?order.getCustomer().getCustomerName():"",
-                        order.getDelivery()!= null ?order.getDelivery().getDeliveryName():"",
-                        order.getPayment()!= null ?order.getPayment().getPaymentName():"",
-                        order.getAddress()!= null ?order.getAddress().getAddressDetail():"",
-                        order.getOrderStatus()!= null ?order.getOrderStatus().getStatusName():"",
+                        order.getCustomer() != null ? order.getCustomer().getCustomerName() : "",
+                        order.getCustomer() != null ? order.getCustomer().getPhoneNumber() : "",
+                        order.getDelivery() != null ? order.getDelivery().getDeliveryName() : "",
+                        order.getPayment() != null ? order.getPayment().getPaymentName() : "",
+                        order.getAddress() != null ? order.getAddress().getAddressDetail() : "",
+                        order.getVoucher() != null ? order.getVoucher().getVoucherName() : "",
+                        order.getOrderStatus() != null ? order.getOrderStatus().getStatusName() : "",
                         order.getDeliveryDate(),
                         order.getReceivedDate(),
                         order.getCategoryOrder(),
-                        order.getNote()
+                        order.getNote(),
+                        order.getOrderTotal(),
+                        order.getOrderTotalInitial(),
+                        order.getDiscountMoney()
+                )
+        ).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OrderResponseDto> getAllOrders() {
+        return orderRepository.findAll().stream().map(
+                order -> new OrderResponseDto(
+                        order.getId(),
+                        order.getVoucher() != null ? order.getVoucher().getId() : null,
+                        order.getCustomer() != null ? order.getCustomer().getId() : null,
+                        order.getOrderDate(),
+                        order.getStaff() != null ? order.getStaff().getStaffName() : "",
+                        order.getCustomer() != null ? order.getCustomer().getCustomerName() : "",
+                        order.getCustomer() != null ? order.getCustomer().getPhoneNumber() : "",
+                        order.getDelivery() != null ? order.getDelivery().getDeliveryName() : "",
+                        order.getPayment() != null ? order.getPayment().getPaymentName() : "",
+                        order.getAddress() != null ? order.getAddress().getAddressDetail() : "",
+                        order.getVoucher() != null ? order.getVoucher().getVoucherName() : "",
+                        order.getOrderStatus() != null ? order.getOrderStatus().getStatusName() : "",
+                        order.getDeliveryDate(),
+                        order.getReceivedDate(),
+                        order.getCategoryOrder(),
+                        order.getNote(),
+                        order.getOrderTotal(),
+                        order.getOrderTotalInitial(),
+                        order.getDiscountMoney()
                 )
         ).collect(Collectors.toList());
     }
@@ -73,6 +113,20 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("hóa đơn", String.valueOf(id)));
 
         return order;
+    }
+
+    @Override
+    public Customer findCustomerByOrderId(Long orderId) {
+        Customer customer = orderRepository.findCustomerByOrderId(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("hóa đơn", String.valueOf(orderId)));
+        return customer;
+    }
+
+    @Override
+    public Voucher findVoucherByOrderId(Long orderId) {
+        Voucher voucher = orderRepository.findVoucherByOrderId(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("hóa đơn", String.valueOf(orderId)));
+        return voucher;
     }
 
 
@@ -97,7 +151,7 @@ public class OrderServiceImpl implements OrderService {
         Delivery delivery = deliveryId != null ? shippingMethodRepository.findById(deliveryId).orElse(null) : null;
 
 // Tìm đối tượng OrderStatus (set luôn là null nếu không tìm thấy)
-        OrderStatus orderStatus = orderStatusRepository.findById(Long.valueOf(1000)).orElse(null);
+        OrderStatus orderStatus = orderStatusRepository.findById(1L).orElse(null);
 
 // Kiểm tra và tạo đối tượng Address
         Address newAddress = new Address();
@@ -115,9 +169,9 @@ public class OrderServiceImpl implements OrderService {
         order.setCustomer(customer);
         order.setStaff(staff);
         order.setDelivery(delivery);
-        order.setPayment(payment);
+        order.setPayment(payment);  
         order.setOrderStatus(orderStatus);
-        order.setAddress(address);
+        order.setAddress(null);
         order.setCategoryOrder(orderRequestDto.getCategoryOrder());
         order.setOrderTotal(orderRequestDto.getOrderTotal());
         order.setNote(orderRequestDto.getNote());
@@ -129,44 +183,68 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Boolean updateOrder(OrderRequestDto orderRequestDto, Long id) {
+        try {
+            // Lấy thông tin các đối tượng liên quan từ ID
+            Customer customer = orderRequestDto.getCustomerId() != null ? customerRepository.findById(orderRequestDto.getCustomerId()).orElse(null) : null;
+            Staff staff = orderRequestDto.getStaffId() != null ? staffRepository.findById(orderRequestDto.getStaffId()).orElse(null) : null;
+            Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
+            Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
+            OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
+            Address address = orderRequestDto.getAddressId() != null ? addressRepository.findById(orderRequestDto.getAddressId()).orElse(null) : null;
+            Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
 
-        //Get customer by id
-        Customer customer = customerRepository.findById(orderRequestDto.getCustomerId()).orElse(null);
-        //Get staff by id
-        Staff staff = staffRepository.findById(orderRequestDto.getStaffId()).orElse(null);
-        //Get paymentMethod by id
-        Payment payment = paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null);
-        //Get shippingMethod by id
-        Delivery delivery = shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null);
-        //Get orderStatus by id
-        OrderStatus orderStatus = orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null);
-        //Get address by id
-        Address address = addressRepository.findById(orderRequestDto.getAddressId()).orElse(null);
+            // Lấy thông tin đơn hàng từ ID
+            Order order = orderRepository.findById(id)
+                    .orElseThrow(() -> {
+                        System.out.println("Order not found with id: " + id);
+                        return new ResourceNotFoundException("Hóa đơn", String.valueOf(id));
+                    });
 
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("hóa đơn", String.valueOf(id)));  //Find order by id
+            // Cập nhật thông tin đơn hàng
+            order.setCustomer(customer);
+            order.setStaff(staff);
+            order.setDelivery(delivery);
+            order.setPayment(payment);
+            order.setOrderStatus(orderStatus);
+            order.setAddress(address);
+            order.setVoucher(voucher);
+            order.setCategoryOrder(orderRequestDto.getCategoryOrder());
+            order.setOrderTotal(orderRequestDto.getOrderTotal());
+            order.setNote(orderRequestDto.getNote());
+            order.setOrderTotalInitial(order.getOrderTotalInitial());
 
-        //Neu tim thay update lai
-        order.setCustomer(customer);
-        order.setStaff(staff);
-        order.setDelivery(delivery);
-        order.setPayment(payment);
-        order.setOrderStatus(orderStatus);
-        order.setAddress(address);
-        order.setCategoryOrder(orderRequestDto.getCategoryOrder());
-        order.setOrderTotal(orderRequestDto.getOrderTotal());
-        order.setNote(orderRequestDto.getNote());
+            // Tính toán giảm giá và cập nhật
+            if (voucher != null) {
+                double discountRate = voucher.getDiscountRate();
+                double giamGia = (orderRequestDto.getOrderTotalInitial() * discountRate) / 100;
+                order.setDiscountMoney(giamGia);
+                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
+            }
 
-        //Kiem tra trang thai
-        //Neu trang thai co tên = dang giao thi cap nhat ngay giao
-        if (orderStatus.getStatusName() == "Đang giao") {
-            order.setDeliveryDate(new Date());
-        } else if (orderStatus.getStatusName() == "Đã nhận") {  //Neu trang thai co ten la da nhan thi cap nhat ngay nhan
-            order.setReceivedDate(new Date());
+            orderRepository.save(order);
+            return true;
+        } catch (Exception e) {
+            // Xử lý ngoại lệ và log lỗi nếu cần
+            e.printStackTrace();
+            return false;
         }
-        orderRepository.save(order);
-        return true;
     }
+
+
+
+
+    @Override
+    public List<SecondOrderResponseDto> getAllOrde() {
+        return orderRepository.findAllOrdersWithDetails().stream().map(
+                order -> new SecondOrderResponseDto(
+                        order.getId(),
+                        order.getOrderDate(),
+                        order.getOrderStatus() != null ? order.getOrderStatus().getStatusName() : "",
+                        order.getOrderTotal()
+                )
+        ).collect(Collectors.toList());
+    }
+
 
 //    @Override
 //    public List<OrderResponseDto> searchOrder(Integer pageNo, String keyword) {
@@ -180,17 +258,25 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAll(pageable).stream().map(
                 order -> new OrderResponseDto(
                         order.getId(),
+                        order.getVoucher().getId(),
+                        order.getCustomer().getId(),
                         order.getOrderDate(),
                         order.getStaff().getStaffName(),
                         order.getCustomer().getCustomerName(),
+                        order.getCustomer().getPhoneNumber(),
                         order.getDelivery().getDeliveryName(),
                         order.getPayment().getPaymentName(),
                         order.getAddress().getAddressDetail(),
+                        order.getVoucher().getVoucherName(),
                         order.getOrderStatus().getStatusName(),
                         order.getDeliveryDate(),
                         order.getReceivedDate(),
                         order.getCategoryOrder(),
-                        order.getNote())
+                        order.getNote(),
+                        order.getOrderTotal(),
+                        order.getOrderTotalInitial(),
+                        order.getDiscountMoney()
+                )
         ).collect(Collectors.toList());
     }
 }

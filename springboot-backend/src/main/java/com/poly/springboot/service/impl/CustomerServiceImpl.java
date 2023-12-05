@@ -9,6 +9,7 @@ import com.google.cloud.storage.StorageOptions;
 import com.poly.springboot.dto.requestDto.CustomerRequestDto;
 import com.poly.springboot.dto.responseDto.CustomerResponseDto;
 import com.poly.springboot.entity.Customer;
+import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.mapper.CustomerMapper;
@@ -44,15 +45,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDto getCustomerById(Long id) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        if (optionalCustomer.isPresent()) {
-            Customer customer = optionalCustomer.get();
-            CustomerResponseDto responseDto = CustomerMapper.mapToCustomerResponse(customer, new CustomerResponseDto());
-            return responseDto;
-        } else {
-            throw new ResourceNotFoundException("Khách hàng", String.valueOf(id));
-        }
+    public Customer getCustomerById(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+
+        return customer;
     }
 
 

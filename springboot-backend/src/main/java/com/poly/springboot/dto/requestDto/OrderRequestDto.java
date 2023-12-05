@@ -24,6 +24,8 @@ public class OrderRequestDto {
 
     private Long addressId;
 
+    private Long voucherId;
+
     private Long StatusId;
 
     private Date deliveryDate;
@@ -33,6 +35,10 @@ public class OrderRequestDto {
     private String categoryOrder;
 
     private Double orderTotal;
+
+    private Double orderTotalInitial; //tổng tiền ban đầu
+
+    private Double discountMoney; // tiền giảm giá
 
     private String note;
 

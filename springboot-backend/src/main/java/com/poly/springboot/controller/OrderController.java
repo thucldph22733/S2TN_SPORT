@@ -4,7 +4,10 @@ import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
+import com.poly.springboot.entity.Customer;
 import com.poly.springboot.entity.Order;
+import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,7 +34,23 @@ public class OrderController {
     @GetMapping("getAll")
     public ResponseEntity<List<OrderResponseDto>> getOrders(){
 
-        List<OrderResponseDto> orderResponseDtoList = orderService.getOrders();
+        List<OrderResponseDto> orderResponseDtoList = orderService.getAllOrders()  ;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(orderResponseDtoList);
+    }
+    @GetMapping("getAllCompletedOrder")
+    public ResponseEntity<List<OrderResponseDto>> getAllOrdersCompleted(){
+
+        List<OrderResponseDto> orderResponseDtoList = orderService.getAllOrdersCompleted()  ;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(orderResponseDtoList);
+    }
+    @GetMapping("getAllList")
+    public ResponseEntity<List<SecondOrderResponseDto>> getOrderList(){
+
+        List<SecondOrderResponseDto> orderResponseDtoList = orderService.getAllOrde();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(orderResponseDtoList);
@@ -77,5 +96,21 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
         }
+    }
+
+    @GetMapping("findCustomerByOrderId")
+    public ResponseEntity<Customer> getCustomerByOrderId(@RequestParam Long id) {
+        Customer customer = orderService.findCustomerByOrderId(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(customer);
+    }
+
+    @GetMapping("findVoucherByOrderId")
+    public ResponseEntity<Voucher> getVoucherByOrderId(@RequestParam Long id) {
+        Voucher voucher = orderService.findVoucherByOrderId(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(voucher);
     }
 }

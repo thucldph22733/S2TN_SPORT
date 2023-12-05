@@ -2,6 +2,7 @@ package com.poly.springboot.repository;
 
 
 import com.poly.springboot.entity.Customer;
+import com.poly.springboot.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,4 +26,5 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
     @Query("SELECT c FROM Customer c WHERE c.phoneNumber LIKE %:keyword% OR c.customerName LIKE %:keyword%  OR c.email LIKE %:keyword% ")
     List<Customer> searchCustomer(@Param("keyword") String keyword, Pageable pageable);
 
-}
+
+ }

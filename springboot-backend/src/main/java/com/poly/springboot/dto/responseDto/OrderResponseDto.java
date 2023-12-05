@@ -1,5 +1,6 @@
 package com.poly.springboot.dto.responseDto;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,11 +17,17 @@ public class OrderResponseDto {
 
     private Long id;
 
+    private Long idVoucher;
+
+    private Long idCustomer;
+
     private LocalDateTime orderDate;
 
     private String staffName;
 
     private String customerName;
+
+    private String phoneNumber;
 
     private String shippingName;
 
@@ -28,7 +35,9 @@ public class OrderResponseDto {
 
     private String address;
 
-    private String StatusName;
+    private String voucherName;
+
+    private String statusName;
 
     private Date deliveryDate;
 
@@ -37,4 +46,10 @@ public class OrderResponseDto {
     private String categoryOrder;
 
     private String note;
+
+    private Double orderTotal;
+
+    private Double orderTotalInitial; //tổng tiền ban đầu
+
+    private Double discountMoney; // tiền giảm giá
 }

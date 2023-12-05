@@ -75,5 +75,12 @@ public class VoucherServiceImpl implements VoucherService {
         return true;
     }
 
+    @Override
+    public Voucher findVoucherById(Long id) {
+        Voucher voucher = voucherRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("hóa đơn", String.valueOf(id)));
+        return voucher;
+    }
+
 
 }

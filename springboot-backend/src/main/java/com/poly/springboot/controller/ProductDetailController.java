@@ -5,6 +5,7 @@ import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.ProductDetail;
+import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.service.ProductDetailService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,5 +73,13 @@ public class ProductDetailController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
         }
+    }
+
+    @GetMapping("findProductDetailById")
+    public ResponseEntity<ProductDetail> finddProductDetailById(@RequestParam Long id){
+        ProductDetail productDetail = productDetailService.findByIdProductDetailsId(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(productDetail);
     }
 }

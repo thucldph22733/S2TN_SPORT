@@ -19,7 +19,7 @@ function Slider() {
 
             <ul className="list-unstyled components">
                 <li>
-                    <Link to={path_name.sell}>
+                    <Link to={path_name.newSell}>
                         <AiOutlineShoppingCart className="icon_slider" />
                         Bán hàng
                     </Link>

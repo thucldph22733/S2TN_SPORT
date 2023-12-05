@@ -4,7 +4,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import path_name from '~/core/constants/routers';
 // pages
-import Sell from './pages/Sell/Sell';
 import Product from './pages/Products/Product';
 import LogIn from './pages/Auth/LogIn';
 import Order from './pages/Orders/Order';
@@ -16,6 +15,10 @@ import Size from './pages/Products/Sizes';
 import OderStatus from './pages/Orders/oderStatus';
 import EditProduct from './pages/Products/EditProduct';
 import AddProduct from './pages/Products/AddProduct';
+import NewSell from './pages/Sell/NewSell';
+import OrderStatus from './pages/Sell/OrderDetail';
+import OrderDetail from './pages/Sell/OrderDetail';
+import OrderView from './pages/Orders/orderView';
 
 function App() {
     const router = createBrowserRouter([
@@ -28,8 +31,16 @@ function App() {
             element: <MainLayout />,
             children: [
                 {
-                    path: path_name.sell,
-                    element: <Sell />,
+                    path: path_name.newSell,
+                    element: <NewSell />,
+                },
+                {
+                    path: path_name.orderDetail + '/:id',
+                    element: <OrderDetail />,
+                },
+                {
+                    path: path_name.orderView + '/:id',
+                    element: <OrderView />,
                 },
                 {
                     path: path_name.product,

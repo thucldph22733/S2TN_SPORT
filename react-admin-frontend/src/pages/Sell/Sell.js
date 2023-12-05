@@ -1,87 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { AutoComplete, Button, Col, Modal, Row, Select, Table, Tabs, theme } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { AutoComplete, Button, Col, Modal, Row, Select, Table, Tabs, theme, Image, InputNumber } from 'antd';
 import {
+    DeleteOutlined,
     PlusCircleFilled,
     PlusOutlined,
     QrcodeOutlined,
-    QuestionCircleOutlined,
     ReloadOutlined,
     SearchOutlined,
 } from '@ant-design/icons';
 import Search from 'antd/es/input/Search';
 import axios from 'axios';
-const onChanges = (key) => {
-    console.log(key);
-};
+//-------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------
 
-const columns = [
-    {
-        title: '#',
-        dataIndex: 'index',
-        width: 50,
-        render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
-    },
-    {
-        title: 'Ảnh',
-        dataIndex: 'name',
-        width: 110,
-    },
-    {
-        title: 'Sản phẩm',
-        dataIndex: 'age',
-        width: 70,
-    },
-    {
-        title: 'Số lượng',
-        dataIndex: 'address',
-        width: 60,
-    },
-    {
-        title: 'Tổng tiền',
-        dataIndex: 'address',
-        width: 60,
-    },
-    {
-        title: 'Hành động',
-        dataIndex: 'address',
-        width: 70,
-    },
-];
-const columnSanPham = [
-    {
-        title: '#',
-        dataIndex: 'index',
-        width: 50,
-        render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
-    },
+//-----------------------------CoLumn của hóa đơn chi tiết-------------------------------------------------------------------------
 
-    {
-        title: 'Sản phẩm',
-        dataIndex: 'age',
-        width: 70,
-    },
-    {
-        title: 'Số lượng',
-        dataIndex: 'address',
-        width: 60,
-    },
-    {
-        title: 'Đơn giá',
-        dataIndex: 'address',
-        width: 60,
-    },
-    {
-        title: 'Cổ áo',
-        dataIndex: 'address',
-        width: 70,
-    },
-    {
-        title: 'Hành động',
-        dataIndex: 'address',
-        width: 70,
-    },
-];
-const onSearch = (value, _e, info) => console.log(info?.source, value);
+//-----------------------------CoLumn của hóa đơn chi tiết-------------------------------------------------------------------------
+
 const fetchOrders = async () => {
     try {
         const response = await axios.get('http://localhost:8080/api/orders/getAll'); // Thay 'URL_API_getAll' bằng URL thực tế của API
@@ -92,19 +27,137 @@ const fetchOrders = async () => {
         return [];
     }
 };
+
 export default function Sell() {
     const {
         token: { colorBgContainer },
     } = theme.useToken();
     const modalFooter = null;
-    const [activeKey, setActiveKey] = useState(localStorage.getItem('activeTabKey') || '1');
+    const [activeKey, setActiveKey] = useState('');
     const [items, setItems] = useState([]);
     const [open, setOpen] = useState(false);
-    const onChange = (key) => {
+    const [productDetails, setProductDetails] = useState('');
+    const [orderDetails, setOrderDetails] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [tabClicked, setTabClicked] = useState(false);
+
+    const onChanges = (key) => {
         console.log('Active key changed:', key);
-        localStorage.setItem('activeTabKey', key);
         setActiveKey(key);
+    
+        // ... phần còn lại của hàm
+    
+        console.log('Updated Active Key:', activeKey);
     };
+
+
+    useEffect(() => {
+        loadOrders();
+        loadProductDetails();
+    }, []);
+
+
+
+    const columnProduct = [
+        {
+            title: '#',
+            dataIndex: 'index',
+            width: 40,
+            render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
+        },
+        {
+            title: 'Sản phẩm',
+            dataIndex: '',
+            width: 110,
+            render: (record) => (
+                <Row gutter={[5]}>
+                    <Col span={12}>
+                        <Image width={130} src={record.productAvatar} alt="Avatar" />
+                    </Col>
+                    <Col span={12}>
+                        {record.productName} x [{record.colorName} - {record.sizeName}] <br />
+                        Màu:{record.colorName} - kích cỡ:{record.sizeName}
+                    </Col>
+                </Row>
+            ),
+        },
+        {
+            title: 'Số lượng',
+            dataIndex: 'quantity',
+            width: 50,
+        },
+        {
+            title: 'Đơn giá',
+            dataIndex: 'price',
+            width: 50,
+        },
+        {
+            title: <div style={{ textAlign: 'center' }}>Hành động</div>,
+            dataIndex: '',
+            width: 50,
+            render: (record) => (
+                <div style={{ textAlign: 'center' }}>
+                    <button className="btn btn-outline-warning" onClick={() => handleAddToProductDetail(record.id)}>
+                        Chọn
+                    </button>
+                </div>
+            ),
+        },
+    ];
+    const columnCart = [
+        {
+            title: '#',
+            dataIndex: 'index',
+            width: 50,
+            render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
+        },
+        {
+            title: 'Ảnh',
+            dataIndex: 'productAvatar',
+            width: 110,
+            render: (record) => <Image width={130} src={record} alt="Avatar" />,
+        },
+        // {
+        //     title: 'Sản phẩm',
+        //     dataIndex: '',
+        //     width: 70,
+        //     render: (record) => (
+        //         <Row gutter={[5]}>
+        //             <Col span={16}>
+        //                 {record.productName} x [{record.colorName} - {record.sizeName}] <br />
+        //                 Màu:{record.colorName} - kích cỡ:{record.sizeName}
+        //             </Col>
+        //             <Col span={16}>
+        //                 Đơn giá:<span style={{ color: 'red' }}>{record.price}</span>
+        //             </Col>
+        //         </Row>
+        //     ),
+        // },
+        {
+            title: 'Số lượng',
+            dataIndex: 'quantity',
+            width: 60,
+            render: (record) => <InputNumber min={1} max={10} defaultValue={record} />,
+        },
+        {
+            title: 'Tổng tiền',
+            dataIndex: 'price',
+            width: 60,
+        },
+        {
+            title: <div style={{ textAlign: 'center' }}>Hành động</div>,
+            dataIndex: '',
+            width: 50,
+            render: (render) => (
+                <div style={{ textAlign: 'center' }}>
+                    <button className="btn btn-outline-warning">
+                        <DeleteOutlined />
+                    </button>
+                </div>
+            ),
+        },
+    ];
     const createTabContent = () => (
         <div>
             <div className="name">
@@ -114,7 +167,7 @@ export default function Sell() {
                 </Button>
                 <Button
                     type="primary"
-                    onClick={() => setOpen(true)}
+                    onClick={showModal}
                     icon={<PlusOutlined />}
                     style={{ float: 'right', marginRight: '5px' }}
                 >
@@ -131,16 +184,19 @@ export default function Sell() {
                 }}
             >
                 <div className="tieu-de">Giỏ hàng</div>
+                {console.log('Order details:', currentTabData)}
                 <Table
-                    columns={columns}
-                    dataSource={null}
+                    columns={columnCart}
+                    dataSource={currentTabData}
                     pagination={{
                         pageSize: 50,
                     }}
                     scroll={{
                         y: 240,
                     }}
+                    key={forceRender}
                 />
+                {/* table hóa đơn chi tiết */}
             </div>
             <div
                 style={{
@@ -180,41 +236,48 @@ export default function Sell() {
     );
     const loadOrders = async () => {
         try {
-            const orders = await fetchOrders();
-            const defaultPanes = orders.map((order) => {
-                return {
+            const response = await axios.get('http://localhost:8080/api/orders/getAll');
+            const orders = response.data;
+            setItems(
+                orders.map((order) => ({
                     label: `HD${order.id}`,
-                    children: createTabContent(order),
+                    children: createTabContent(order.id), // Truyền ID của order thay vì orderDetails
                     key: String(order.id),
-                };
-            });
-            setItems(defaultPanes);
-            const newActiveKey = defaultPanes.length > 0 ? defaultPanes[defaultPanes.length - 1].key : '1';
-            setActiveKey(newActiveKey);
-            localStorage.setItem('activeTabKey', newActiveKey);
-            // console.log('Load orders and set active key:', newActiveKey);
-            // console.log('Updated items:', defaultPanes);
+                    orderDetails: [],
+                })),
+            );
         } catch (error) {
-            console.error('Lỗi khi load danh sách hóa đơn:', error);
+            console.error('Lỗi khi lấy danh sách hóa đơn:', error);
         }
     };
 
-    useEffect(() => {
-        loadOrders();
-    }, []);
+    const loadProductDetails = async () => {
+        const response = await axios.get('http://localhost:8080/api/productDetails/getAll');
+        setProductDetails(response.data);
+    };
+    const loadOrderDetails = async () => {
+            if (!tabClicked) {
+                return; // Nếu chưa click vào tab, không thực hiện gì
+            }
+    };
+    
+    
 
     const createOrder = async () => {
         try {
-            // Gọi API để tạo đơn hàng mới
             const response = await axios.post('http://localhost:8080/api/orders/create', {
                 // Thêm dữ liệu cần thiết cho đơn hàng mới vào đây
             });
 
-            // Kiểm tra phản hồi từ máy chủ và xử lý theo ý muốn
             if (response.status === 201) {
                 const responseData = response.data;
                 const newOrderId = responseData?.data?.id; // Kiểm tra xem có ID hay không
+
                 console.log('ID của order mới:', newOrderId);
+
+                // Cập nhật orderDetails với dữ liệu mới
+                loadOrderDetails(newOrderId);
+
                 return newOrderId; // Trả về ID của order để sử dụng sau này
             }
         } catch (error) {
@@ -247,8 +310,36 @@ export default function Sell() {
             remove(targetKey);
         }
     };
+    const onSearch = (value, _e, info) => console.log(info?.source, value);
 
-    const itemss = [
+    const handleAddToProductDetail = async (productId) => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/orderDetails/create', {
+                orderId: activeKey,
+                productDetailId: productId,
+                quantity: 1,
+                price: 0,
+                note: '',
+            });
+
+            if (response.status === 201) {
+                console.log('Sản phẩm đã được thêm vào đơn hàng');
+                // Sau khi thêm sản phẩm, gọi lại loadOrderDetails với giá trị activeKey hiện tại
+                loadOrderDetails();
+            } else {
+                console.error('Có lỗi xảy ra khi thêm sản phẩm vào đơn hàng');
+            }
+        } catch (error) {
+            console.error('Lỗi khi gọi API:', error);
+        }
+    };
+    const handleTabSelect = (key) => {
+        setTabClicked(true);
+        loadOrderDetails(key);
+    };
+    
+      
+    const itemsMainTab = [
         {
             key: '1',
             label: 'Tạo mới',
@@ -262,8 +353,9 @@ export default function Sell() {
                         <Button onClick={add}>Tạo đơn hàng mới</Button>
                     </div>
                     <Tabs
+                         onSelect={(key) => handleTabSelect(key)}
                         hideAdd
-                        onChange={onChange}
+                        onChange={onChanges}
                         activeKey={activeKey}
                         type="editable-card"
                         onEdit={onEdit}
@@ -279,6 +371,15 @@ export default function Sell() {
         },
     ];
     const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
     return (
         <div
             style={{
@@ -290,9 +391,9 @@ export default function Sell() {
         >
             <Modal
                 title="Danh sách sản phẩm"
-                open={open}
-                onOk={() => setOpen(false)}
-                onCancel={() => setOpen(false)}
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
                 width={1000}
                 footer={modalFooter}
             >
@@ -328,7 +429,7 @@ export default function Sell() {
                             allowClear
                             placeholder="Select a person"
                             optionFilterProp="children"
-                            onChange={onChange}
+                            onChange={null}
                             onSearch={onSearch}
                             filterOption={filterOption}
                             options={[
@@ -356,7 +457,7 @@ export default function Sell() {
                             allowClear
                             placeholder="Select a person"
                             optionFilterProp="children"
-                            onChange={onChange}
+                            onChange={null}
                             onSearch={onSearch}
                             filterOption={filterOption}
                             options={[
@@ -392,7 +493,7 @@ export default function Sell() {
                             allowClear
                             placeholder="Select a person"
                             optionFilterProp="children"
-                            onChange={onChange}
+                            onChange={null}
                             onSearch={onSearch}
                             filterOption={filterOption}
                             options={[
@@ -420,7 +521,7 @@ export default function Sell() {
                             allowClear
                             placeholder="Select a person"
                             optionFilterProp="children"
-                            onChange={onChange}
+                            onChange={null}
                             onSearch={onSearch}
                             filterOption={filterOption}
                             options={[
@@ -453,8 +554,8 @@ export default function Sell() {
                     </Col>
                 </Row>
                 <Table
-                    columns={columnSanPham}
-                    dataSource={null}
+                    columns={columnProduct}
+                    dataSource={productDetails}
                     pagination={{
                         pageSize: 50,
                     }}
@@ -464,7 +565,7 @@ export default function Sell() {
                 />
             </Modal>
 
-            <Tabs defaultActiveKey="1" items={itemss} onChange={onChanges} />
+            <Tabs defaultActiveKey="1" items={itemsMainTab} onChange={null} />
         </div>
     );
 }

@@ -13,7 +13,7 @@ public interface ProductDetailService {
 
     Boolean deleteProductDetail(Long id);
 
-//    List<ProductDetail> findByIdProductDetailsId(Long id);
+    ProductDetail findByIdProductDetailsId(Long id);
 
     Boolean createProductDetail(ProductDetailRequestDto productDetailRequestDto);
 

@@ -1,6 +1,11 @@
+import { faPlus, faShop, faTruckFast } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Space, Table, Tabs, Tag, theme } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { FaEye } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import path_name from '~/core/constants/routers';
 const onChange = (key) => {
     console.log(key);
 };
@@ -8,22 +13,72 @@ const onChange = (key) => {
 const itemStyle = {
     paddingRight: '30px', // Thay đổi khoảng cách tại đây
 };
-const columns = [
+const columnGetAllOrder = [
     {
-        title: 'id',
-        dataIndex: 'id',
-        key: 'id',
-        render: (text) => <a>{text}</a>,
+        title: '#',
+        dataIndex: 'index',
+        width: 50,
+        render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
     },
     {
-        title: 'customer',
+        title: 'Mã',
+        dataIndex: 'id',
+        key: 'id',
+        render: (text) => <a>HD{text}</a>,
+    },
+    {
+        title: 'Khách hàng',
         dataIndex: 'customerName',
         key: 'customerName',
     },
     {
-        title: 'Address',
-        dataIndex: 'address',
-        key: 'address',
+        title: 'SDT',
+        dataIndex: 'phoneNumber',
+        key: 'phoneNumber',
+    },
+    {
+        title: 'Tổng tiền',
+        dataIndex: 'orderTotal',
+        key: 'orderTotal',
+    },
+    {
+        title: 'Loại đơn hàng',
+        dataIndex: 'categoryOrder',
+        key: 'categoryOrder',
+        render: (text, record) => {
+            let backgroundColor, textColor, icon;
+
+            switch (record.categoryOrder) {
+                case 'Tại quầy':
+                    backgroundColor = '#7af57e';
+                    textColor = 'white';
+                    icon = faShop;
+                    break;
+                case 'Đơn mới':
+                    backgroundColor = '#42baff';
+                    textColor = 'white';
+                    icon = faPlus;
+                    break;
+                case 'Trạng thái khác':
+                    backgroundColor = 'blue';
+                    break;
+                default:
+                    // backgroundColor = 'gray';
+                    break;
+            }
+
+            return (
+                <span style={{ backgroundColor, color: textColor, padding: '5px', borderRadius: '4px' }}>
+                {icon && <FontAwesomeIcon icon={icon} style={{ marginRight: '5px' }} />}
+                {text}
+            </span>
+            );
+        },
+    },
+    {
+        title: 'Ngày tạo',
+        dataIndex: 'orderDate',
+        key: 'orderDate',
     },
     // {
     //     title: 'Tags',
@@ -46,13 +101,14 @@ const columns = [
     //     ),
     // },
     {
-        title: 'Action',
+        title: <div style={{ textAlign: 'center' }}>Hành động</div>,
         key: 'action',
-        render: (_, record) => (
-            <Space size="middle">
-                <a>Invite {record.name}</a>
-                <a>Delete</a>
-            </Space>
+        render: (record) => (
+            <div style={{ textAlign: 'center' }}>
+                <Link to={`${path_name.orderView}/${record.id}`} className="btn btn-outline-warning">
+                    <FaEye />
+                </Link>
+            </div>
         ),
     },
 ];
@@ -67,7 +123,7 @@ function Order() {
     }, []);
     const creatTabContent = () => (
         <div>
-            <Table columns={columns} dataSource={order} />
+            <Table columns={columnGetAllOrder} dataSource={order} />
         </div>
     );
     const items = [

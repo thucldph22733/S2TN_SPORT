@@ -14,7 +14,7 @@ import java.util.List;
 public interface CustomerService {
 
     List<CustomerResponseDto> getCustomers();
-    CustomerResponseDto getCustomerById(Long id);
+    Customer getCustomerById(Long id);
 
     Customer add(CustomerRequestDto customerRequestDto, String avatarUrl) throws Exception;
 

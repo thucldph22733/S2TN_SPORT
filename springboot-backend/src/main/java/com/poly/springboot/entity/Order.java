@@ -51,6 +51,10 @@ public class Order {
     private Address address;
 
     @ManyToOne
+    @JoinColumn(name = "voucher_id")
+    private Voucher voucher;
+
+    @ManyToOne
     @JoinColumn(name = "status_id")
     private OrderStatus orderStatus;
 
@@ -68,7 +72,13 @@ public class Order {
     private String categoryOrder;
 
     @Column(name = "orderTotal")
-    private Double orderTotal;
+    private Double orderTotal; // tổng tiền
+
+    @Column(name = "orderTotal_initial")
+    private Double orderTotalInitial; //tổng tiền ban đầu
+
+    @Column(name = "discount_money")
+    private Double discountMoney; // tiền giảm giá
 
     @Column(name = "note")
     private String note;

@@ -45,7 +45,15 @@ public class SizeController {
                         SizeList,
                         SizePage);
     }
+    @GetMapping("findAllByDeletedTrue")
+    public ResponseEntity<?> findAllByDeletedTrue() {
 
+        List<Size> sizeList = sizeService.findAllByDeletedTrue();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(sizeList);
+    }
 
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createSize(@Valid @RequestBody SizeRequestDto sizeRequestDto){

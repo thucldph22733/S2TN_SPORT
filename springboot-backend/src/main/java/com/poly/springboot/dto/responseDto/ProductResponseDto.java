@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,28 +15,28 @@ public class ProductResponseDto {
 
     private Long id;
 
+    private String productName;
+
     private String categoryName;
 
-    private String clubName;
+    private String materialName;
 
     private String brandName;
 
     private String supplierName;
 
-    private String productName;
+    private  Boolean deleted;
 
-    private String avatar;
+    private LocalDateTime createdAt;
+
+    private String createdBy;
+
+    private String productDescribe;
+
+    private Boolean productNew;
 
     private Boolean productHot;
 
     private Boolean productSale;
-
-    private Boolean productNew;
-
-    private Integer viewCount;
-
-    private  Boolean status;
-
-    private String productDescribe;
 
 }

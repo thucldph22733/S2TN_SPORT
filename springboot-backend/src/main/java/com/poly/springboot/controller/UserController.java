@@ -2,6 +2,7 @@ package com.poly.springboot.controller;
 
 
 import com.poly.springboot.constants.NotificationConstants;
+import com.poly.springboot.dto.requestDto.ChangePasswordRequestDto;
 import com.poly.springboot.dto.requestDto.UserRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseHandler;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -48,6 +50,22 @@ public class UserController {
     }
 
 
+    @PatchMapping("changePassword")
+    public ResponseEntity<?> changePassword(
+            @RequestBody ChangePasswordRequestDto request,
+            Principal connectedUser
+    ) {
+        Boolean isChangePassword = userService.changePassword(request, connectedUser);
+        if (isChangePassword){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
+    }
 
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createStaff(@Valid @RequestBody UserRequestDto userRequestDto){

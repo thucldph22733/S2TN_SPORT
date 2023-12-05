@@ -183,7 +183,7 @@ function User() {
             title: 'Tên',
             dataIndex: 'userName',
             key: 'userName',
-            width: '15%',
+            width: '20%',
             filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
             ...getColumnSearchProps('userName')
         },
@@ -229,21 +229,21 @@ function User() {
             title: 'Trạng thái',
             key: 'deleted',
             dataIndex: 'deleted',
-            width: '15%',
+            width: '10%',
             filters: [
                 {
-                    text: 'Đang hoạt động',
+                    text: 'Hoạt động',
                     value: true,
                 },
                 {
-                    text: 'Ngừng hoạt động',
+                    text: 'Tạm khóa',
                     value: false,
                 },
             ],
             onFilter: (value, record) => record.deleted === value,
             render: (text) => (
-                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
-                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
+                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Hoạt động</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Tạm khóa</Tag>
             )
         },
         {
@@ -413,9 +413,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
     }
 
-    const handleChange = (value) => {
-        console.log(`selected ${value}`);
-    };
+
     return (
 
         <Modal
@@ -479,14 +477,14 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                             width: '100%',
                         }}
                         placeholder="Chọn vai trò"
-                        onChange={handleChange}
+
                         options={roles.map(option => ({ value: option.roleName, label: option.roleName }))}
                     />
                 </Form.Item>
                 <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]} >
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
-                        <Radio value={true}>Đang hoạt động</Radio>
-                        <Radio value={false}>Ngừng hoạt động</Radio>
+                        <Radio value={true}>Hoạt động</Radio>
+                        <Radio value={false}>Tạm khóa</Radio>
                     </Radio.Group>
                 </Form.Item>
             </Form>

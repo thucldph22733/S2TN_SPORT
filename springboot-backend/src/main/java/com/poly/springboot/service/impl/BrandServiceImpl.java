@@ -75,4 +75,9 @@ public class BrandServiceImpl implements BrandService {
 
         return true;
     }
+
+    @Override
+    public List<Brand> findAllByDeletedTrue() {
+        return brandRepository.findAllByDeletedTrue();
+    }
 }

@@ -14,4 +14,6 @@ public interface SizeService {
     Boolean createSize(SizeRequestDto sizeRequestDto);
 
     Boolean updateSize(SizeRequestDto sizeRequestDto,Long id);
+
+    List<Size> findAllByDeletedTrue();
 }

@@ -16,4 +16,6 @@ public interface BrandService {
 
     Boolean updateBrand(BrandRequestDto brandRequestDto,Long id);
 
+    List<Brand> findAllByDeletedTrue();
+
 }

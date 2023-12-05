@@ -44,7 +44,15 @@ public class ColorController {
                         ColorList,
                         ColorPage);
     }
+    @GetMapping("findAllByDeletedTrue")
+    public ResponseEntity<?> findAllByDeletedTrue() {
 
+        List<Color> colorList = colorService.findAllByDeletedTrue();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(colorList);
+    }
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createColor(@Valid @RequestBody ColorRequestDto colorRequestDto) {
         Boolean isCreated = colorService.createColor(colorRequestDto);

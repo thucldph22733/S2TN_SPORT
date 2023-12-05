@@ -78,4 +78,9 @@ public class SizeServiceImpl implements SizeService {
 
         return true;
     }
+
+    @Override
+    public List<Size> findAllByDeletedTrue() {
+        return sizeRepository.findAllByDeletedTrue();
+    }
 }

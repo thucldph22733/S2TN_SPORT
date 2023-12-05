@@ -3,8 +3,8 @@ import AddressService from "~/service/AddressService";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import React, { useState, useEffect } from 'react';
 import { getAddressData, getDistrictsByCity, getWardsByDistrict } from '~/service/ApiService';
-const { PlusOutlined, FormOutlined, DeleteOutlined } = require("@ant-design/icons");
-const { Row, Col, Radio, Button, Modal, Tag, Form, Input, Select, Checkbox, notification, Popconfirm } = require("antd");
+import { PlusOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Row, Col, Radio, Button, Modal, Tag, Form, Input, Select, Checkbox, Popconfirm, notification } from 'antd';
 
 const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
     //Mở modal thêm sử address
@@ -174,23 +174,13 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
 
     //---------------------------------------------------------------------------------------------
 
-    const [isDefaultAddress, setIsDefaultAddress] = useState(true);
     const [form] = Form.useForm();
-    const getCodeLabel = (code, options) => {
-        const selectedOption = options.find(option => option.value === code);
-        return selectedOption ? selectedOption.label : '';
-    };
     const handleCreate = () => {
         form.validateFields().then(async () => {
 
             const data = await form.getFieldsValue();
-            data.deleted = isDefaultAddress;
             data.usersId = reacord;
 
-            // Chuyển đổi giá trị từ code sang label
-            data.city = getCodeLabel(data.city, cities);
-            data.district = getCodeLabel(data.district, districts);
-            data.region = getCodeLabel(data.region, wards);
             console.log(data);
             await AddressService.create(data)
                 .then(() => {
@@ -219,7 +209,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
         form.validateFields().then(async () => {
 
             const data = await form.getFieldsValue();
-            data.deleted = isDefaultAddress;
+
             await AddressService.update(reacord.id, data)
                 .then(() => {
                     notification.success({
@@ -284,7 +274,6 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                                     }
                                     options={cities.map(city => ({ value: city.code, label: city.name }))}
                                 />
-
                             </Form.Item>
                         </Col>
                         <Col span={2} />
@@ -335,9 +324,8 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Form.Item name="deleted">
-                        <Checkbox checked={isDefaultAddress}
-                            onChange={(e) => setIsDefaultAddress(e.target.checked)}>Đặt làm địa chỉ mặc định</Checkbox>
+                    <Form.Item name="deleted" valuePropName="checked">
+                        <Checkbox >Đặt làm địa chỉ mặc định</Checkbox>
                     </Form.Item>
                 </Form>
             </Modal>

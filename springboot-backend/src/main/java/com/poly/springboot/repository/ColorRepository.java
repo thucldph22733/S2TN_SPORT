@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface ColorRepository extends JpaRepository<Color,Long> {
 
+    List<Color> findAllByDeletedTrue();
     Boolean existsByColorName(String ColorName);
     Page<Color> findByColorNameContaining(String name, Pageable pageable);
     Page<Color> findByDeletedIn(List<Boolean> status, Pageable pageable);

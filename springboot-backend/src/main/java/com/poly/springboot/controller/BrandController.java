@@ -47,6 +47,16 @@ public class BrandController {
                         brandPage);
     }
 
+    @GetMapping("findAllByDeletedTrue")
+    public ResponseEntity<?> findAllByDeletedTrue() {
+
+        List<Brand> brandList = brandService.findAllByDeletedTrue();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(brandList);
+    }
+
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createBrand(@Valid @RequestBody BrandRequestDto brandRequestDto) {
         Boolean isCreated = brandService.createBrand(brandRequestDto);

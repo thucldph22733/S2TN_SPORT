@@ -19,9 +19,6 @@ function Category() {
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
 
-    // const handleStatusFilterChange = ({value:''}) => {
-    //         setFilteredStatus(value);
-    //     };
 
     const showModal = (mode, record) => {
         setOpen({
@@ -148,7 +145,7 @@ function Category() {
             width: '5%',
         },
         {
-            title: 'Tên loại sản phẩm',
+            title: 'Tên danh mục',
             dataIndex: 'categoryName',
             key: 'categoryName',
             width: '20%',
@@ -206,7 +203,7 @@ function Category() {
                         onClick={() => showModal("edit", record)} />
                     {record.deleted && <Popconfirm
                         title="Xóa loại sản phẩm"
-                        description="Bạn có chắc chắn xóa loại sản phẩm này không?"
+                        description="Bạn có chắc chắn xóa danh mục này không?"
                         placement="leftTop"
                         onConfirm={() => handleDelete(record.id)}
                         okText="Đồng ý"
@@ -334,7 +331,7 @@ const CategoryModal = ({ isMode, reacord, hideModal, isModal, fetchCategorys }) 
     return (
 
         <Modal
-            title={isMode === "edit" ? "Cập nhật loại sản phẩm" : "Thêm mới một loại sản phẩm"}
+            title={isMode === "edit" ? "Cập nhật danh mục" : "Thêm mới một danh mục"}
             open={isModal}
             onOk={isMode === "edit" ? handleUpdate : handleCreate}
             onCancel={hideModal}
@@ -352,7 +349,7 @@ const CategoryModal = ({ isMode, reacord, hideModal, isModal, fetchCategorys }) 
                 form={form}
                 initialValues={{ ...reacord }}
             >
-                <Form.Item label="Tên:" name="categoryName" rules={[{ required: true, message: 'Vui lòng nhập tên loại sản phẩm!' }]}>
+                <Form.Item label="Tên:" name="categoryName" rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}>
                     <Input placeholder="Nhập tên loại sản phẩm..." />
                 </Form.Item>
 

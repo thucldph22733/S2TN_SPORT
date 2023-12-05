@@ -4,7 +4,6 @@ import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 
 import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.exception.ResourceNotFoundException;
-import com.poly.springboot.mapper.VoucherMapper;
 import com.poly.springboot.repository.VoucherRepository;
 import com.poly.springboot.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,7 @@ public class VoucherServiceImpl implements VoucherService {
     public Boolean createVoucher(VoucherRequestDto voucherRequestDto) {
 
         Voucher voucher = new Voucher();
-        VoucherMapper.mapToVoucherRequest(voucher, voucherRequestDto);
+        mapToVoucherRequest(voucher, voucherRequestDto);
         voucherRepository.save(voucher);
         return true;
     }
@@ -58,7 +57,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         Voucher voucher = voucherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id giảm giá này!"));
-        VoucherMapper.mapToVoucherRequest(voucher, voucherRequestDto);
+        mapToVoucherRequest(voucher, voucherRequestDto);
         voucherRepository.save(voucher);
         return true;
     }
@@ -75,6 +74,20 @@ public class VoucherServiceImpl implements VoucherService {
 
         return true;
     }
+    private   Voucher mapToVoucherRequest(Voucher voucher, VoucherRequestDto voucherRequestDto){
 
+        voucher.setVoucherCode(voucherRequestDto.getVoucherCode());
+        voucher.setVoucherName(voucherRequestDto.getVoucherName());
+        voucher.setStartDate(voucherRequestDto.getStartDate());
+        voucher.setEndDate(voucherRequestDto.getEndDate());
+        voucher.setQuantity(voucherRequestDto.getQuantity());
+        voucher.setMaxReduce(voucherRequestDto.getMaxReduce());
+        voucher.setOrderMinimum(voucherRequestDto.getOrderMinimum());
+        voucher.setDiscountRate(voucherRequestDto.getDiscountRate());
+        voucher.setNote(voucherRequestDto.getNote());
+        voucher.setDeleted(voucherRequestDto.getDeleted());
+
+        return voucher;
+    }
 
 }

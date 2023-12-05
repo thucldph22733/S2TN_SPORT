@@ -11,6 +11,8 @@ import java.util.List;
 @Repository
 public interface MaterialRepository extends JpaRepository<Material,Long> {
 
+    Material findByMaterialName(String name);
+    List<Material> findAllByDeletedTrue();
     Boolean existsByMaterialName(String MaterialName);
     Page<Material> findByMaterialNameContaining(String name, Pageable pageable);
     Page<Material> findByDeletedIn(List<Boolean> status, Pageable pageable);

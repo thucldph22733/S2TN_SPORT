@@ -1,6 +1,8 @@
 package com.poly.springboot.repository;
 
 import com.poly.springboot.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +13,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     Boolean existsByProductName(String productName);
 
-    // Lọc những bản ghi chưa bị xóa mềm
+    Page<Product> findByProductNameContaining(String name, Pageable pageable);
+    Page<Product> findByDeletedIn(List<Boolean> status, Pageable pageable);
+    Page<Product> findByProductNameContainingAndDeletedIn(String name, List<Boolean> status, Pageable pageable);
 }

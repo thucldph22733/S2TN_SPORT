@@ -98,7 +98,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
         productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
-        productDetail.setMaterial(materialRepository.findById(productDetailRequestDto.getMaterialId()).orElse(null));
         productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
@@ -117,7 +116,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
         productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
-        productDetail.setMaterial(materialRepository.findById(productDetailRequestDto.getMaterialId()).orElse(null));
         productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());

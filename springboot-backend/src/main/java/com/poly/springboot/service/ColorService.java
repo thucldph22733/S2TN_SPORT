@@ -16,4 +16,6 @@ public interface ColorService {
     Boolean createColor(ColorRequestDto colorRequestDto);
 
     Boolean updateColor(ColorRequestDto colorRequestDto,Long id);
+
+    List<Color> findAllByDeletedTrue();
 }

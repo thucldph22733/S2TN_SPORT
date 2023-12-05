@@ -81,4 +81,9 @@ public class CategoryServiceImpl implements CategoryService {
 
         return true;
     }
+
+    @Override
+    public List<Category> findAllByDeletedTrue() {
+        return categoryRepository.findAllByDeletedTrue();
+    }
 }

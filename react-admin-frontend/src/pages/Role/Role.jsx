@@ -233,7 +233,7 @@ function Role() {
             />
 
             <Table
-                dataSource={roles.map((role, index) => ({
+                dataSource={roles.map((role) => ({
                     ...role,
                     key: role.id,
                     createdAt: FormatDate(role.createdAt)

@@ -15,7 +15,7 @@ import {
     SlackOutlined
 } from '@ant-design/icons';
 import logo from '~/assets/images/logo.jpg'
-import { Layout, Menu, Button, theme, Avatar, Tooltip } from 'antd';
+import { Layout, Menu, Button, Avatar, Tooltip } from 'antd';
 import path_name from '~/constants/routers';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from 'react'
@@ -81,7 +81,7 @@ const MainLayout = () => {
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: path_name.category,
-                                    label: 'Loại sản phẩm',
+                                    label: 'Danh mục',
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,

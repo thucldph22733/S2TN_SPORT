@@ -47,7 +47,7 @@ public class SupplierController {
                         supplierPage);
     }
 
-    @GetMapping("findByDeletedTrue")
+    @GetMapping("findAllByDeletedTrue")
     public ResponseEntity<List<Supplier>> findByDeletedTrue() {
 
         List<Supplier> supplierList = supplierService.findByDeletedTrue();

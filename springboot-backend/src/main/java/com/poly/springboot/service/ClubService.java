@@ -16,4 +16,5 @@ public interface ClubService {
 
     Boolean deleteClub(Long id);
 
+    List<Club> findAllByDeletedTrue();
 }

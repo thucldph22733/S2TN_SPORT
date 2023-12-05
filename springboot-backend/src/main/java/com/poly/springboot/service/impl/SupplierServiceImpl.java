@@ -4,7 +4,6 @@ import com.poly.springboot.dto.requestDto.SupplierRequestDto;
 import com.poly.springboot.entity.Supplier;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
-import com.poly.springboot.mapper.SupplierMapper;
 import com.poly.springboot.repository.SupplierRepository;
 import com.poly.springboot.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +59,7 @@ public class SupplierServiceImpl implements SupplierService {
     public Boolean createSupplier(SupplierRequestDto supplierRequestDto) {
         Supplier supplier = new Supplier();
 
-        SupplierMapper.mapToSupplierRequest(supplier,supplierRequestDto);
+        mapToSupplierRequest(supplier,supplierRequestDto);
         if (supplierRepository.existsBySupplierName(supplierRequestDto.getSupplierName())){
             throw new AlreadyExistsException("Tên nhà cung cấp đã tồn tại!");
         }
@@ -73,9 +72,25 @@ public class SupplierServiceImpl implements SupplierService {
         Supplier supplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhà cung cấp này!"));
 
-        SupplierMapper.mapToSupplierRequest(supplier,supplierRequestDto);
+        mapToSupplierRequest(supplier,supplierRequestDto);
 
         supplierRepository.save(supplier);
         return true;
+    }
+
+    @Override
+    public List<Supplier> findAllByDeletedTrue() {
+        return supplierRepository.findAllByDeletedTrue();
+    }
+
+    private Supplier mapToSupplierRequest(Supplier supplier, SupplierRequestDto supplierRequestDto){
+
+        supplier.setSupplierName(supplierRequestDto.getSupplierName());
+        supplier.setEmail(supplierRequestDto.getEmail());
+        supplier.setAddress(supplierRequestDto.getAddress());
+        supplier.setPhoneNumber(supplierRequestDto.getPhoneNumber());
+        supplier.setSupplierDescribe(supplierRequestDto.getSupplierDescribe());
+        supplier.setDeleted(supplierRequestDto.getDeleted());
+        return supplier;
     }
 }

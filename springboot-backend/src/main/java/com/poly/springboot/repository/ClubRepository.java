@@ -1,5 +1,6 @@
 package com.poly.springboot.repository;
 
+import com.poly.springboot.entity.Category;
 import com.poly.springboot.entity.Club;
 import com.poly.springboot.entity.Club;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ import java.util.List;
 @Repository
 public interface ClubRepository extends JpaRepository<Club,Long> {
 
+    Club findByClubName(String name);
+    List<Club> findAllByDeletedTrue();
     Boolean existsByClubName(String ClubName);
     Page<Club> findByClubNameContaining(String name, Pageable pageable);
     Page<Club> findByDeletedIn(List<Boolean> status, Pageable pageable);

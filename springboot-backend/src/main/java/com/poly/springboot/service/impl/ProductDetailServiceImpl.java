@@ -45,11 +45,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                         productDetail.getId(),
                         productDetail.getProduct().getProductName(),
                         productDetail.getColor().getColorName(),
-                        productDetail.getMaterial().getMaterialName(),
+//                        productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),
                         productDetail.getQuantity(),
                         productDetail.getPrice(),
-                        productDetail.getPromotionPrice(),
+//                        productDetail.getPromotionPrice(),
                         productDetail.getDeleted())
 
         ).collect(Collectors.toList());
@@ -64,11 +64,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                         productDetail.getId(),
                         productDetail.getProduct().getProductName(),
                         productDetail.getColor().getColorName(),
-                        productDetail.getMaterial().getMaterialName(),
+//                        productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),
                         productDetail.getQuantity(),
                         productDetail.getPrice(),
-                        productDetail.getPromotionPrice(),
+//                        productDetail.getPromotionPrice(),
                         productDetail.getDeleted())
 
         ).collect(Collectors.toList());
@@ -101,7 +101,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
-        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
+//        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
         productDetail.setDeleted(productDetailRequestDto.getStatus());
 
         productDetailRepository.save(productDetail);
@@ -119,7 +119,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
-        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
+//        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
         productDetail.setDeleted(productDetailRequestDto.getStatus());
 
         productDetailRepository.save(productDetail);

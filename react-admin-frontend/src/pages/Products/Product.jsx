@@ -6,6 +6,7 @@ import {
     FormOutlined,
     DeleteOutlined,
     SearchOutlined,
+    EyeOutlined,
 } from '@ant-design/icons';
 import './Product.css'
 import FormatDate from '~/utils/format-date';
@@ -15,12 +16,26 @@ import BrandService from '~/service/BrandService';
 import ClubService from '~/service/ClubService';
 import SuppplierService from '~/service/SupplierService';
 import MaterialService from '~/service/MaterialService';
+import ShowProductDetailModal from './ProductDetail';
 
 const { TextArea } = Input;
 
 function Product() {
 
     const [loading, setLoading] = useState(false);
+
+    const [productDetalModal, setProductDetalModal] = useState({ isModal: false, reacord: null });
+
+    const showProductDetalModal = (record) => {
+        setProductDetalModal({
+            isModal: true,
+            reacord: record,
+        });
+    };
+
+    const hideProductDetalModal = () => {
+        setProductDetalModal({ isModal: false });
+    };
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
 
@@ -233,8 +248,9 @@ function Product() {
                         cancelText="Hủy bỏ"
                     >
                         <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                    </Popconfirm>}
 
+                    </Popconfirm>}
+                    <Button type="text" icon={<EyeOutlined />} style={{ color: '#5a76f3', fontSize: '16px' }} onClick={() => showProductDetalModal(record)} />
                 </Space>
             }
 
@@ -283,6 +299,12 @@ function Product() {
                 hideModal={hideModal}
                 isModal={open.isModal}
                 fetchProducts={fetchProducts} />}
+
+            {productDetalModal.isModal && <ShowProductDetailModal
+                reacord={productDetalModal.reacord}
+                hideModal={hideProductDetalModal}
+                isModal={productDetalModal.isModal}
+            />}
         </>
     )
 };
@@ -369,7 +391,11 @@ const ProductModal = ({ isMode, reacord, hideModal, isModal, fetchProducts }) =>
         form.validateFields().then(async () => {
 
             const data = form.getFieldsValue();
-            console.log(data)
+
+            data.productNew = data.productNew ? true : false
+            data.productSale = data.productSale ? true : false
+            data.productHot = data.productHot ? true : false
+
             await ProductService.create(data)
                 .then(() => {
                     notification.success({
@@ -398,7 +424,6 @@ const ProductModal = ({ isMode, reacord, hideModal, isModal, fetchProducts }) =>
         form.validateFields().then(async () => {
 
             const data = form.getFieldsValue(true);
-
             await ProductService.update(reacord.id, data)
                 .then(() => {
                     notification.success({

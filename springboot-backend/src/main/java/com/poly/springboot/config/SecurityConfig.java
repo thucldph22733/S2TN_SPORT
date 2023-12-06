@@ -30,8 +30,6 @@ public class SecurityConfig {
             "" +
                     "/api/v1/**",
             "/api/v1/auth/**",
-            "/api/v1/roles/**",
-            "/api/staffs**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -47,9 +45,14 @@ public class SecurityConfig {
                         req.requestMatchers(WHITE_LIST_URL) // Không yêu cầu xác thực
                                 .permitAll()
                                 .requestMatchers("/api/v1/brands/**").hasAnyAuthority("ADMIN","USER")
-                                .requestMatchers("/api/v1/colors/**").hasAuthority("ADMIN")
-                                .requestMatchers("/api/v1/clubs/**").hasAuthority("USER")
-                                .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")
+                                .requestMatchers("/api/v1/colors/**").hasAnyAuthority("ADMIN","USER")
+                                .requestMatchers("/api/v1/clubs/**").hasAnyAuthority("ADMIN","USER")
+                                .requestMatchers("/api/v1/users/**").hasAnyAuthority("ADMIN","USER")
+                                .requestMatchers("/api/v1/address/**").hasAnyAuthority("ADMIN","USER")
+                                .requestMatchers("/api/v1/materials/**").hasAnyAuthority("ADMIN","USER")
+                                .requestMatchers("/api/v1/suppliers/**").hasAnyAuthority("ADMIN","USER")
+                                .requestMatchers("/api/v1/sizes/**").hasAnyAuthority("ADMIN","USER")
+                                .requestMatchers("/api/v1/vouchers/**").hasAnyAuthority("ADMIN","USER")
                                 .anyRequest()
                                 .authenticated()
 

@@ -39,8 +39,8 @@ public class Address extends BaseEntity{
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_address",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
+            joinColumns = @JoinColumn(name = "address_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> users;
 }

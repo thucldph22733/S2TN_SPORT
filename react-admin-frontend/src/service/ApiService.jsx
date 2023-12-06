@@ -2,11 +2,20 @@ import axios from 'axios';
 
 const host = "https://provinces.open-api.vn/api/";
 
-const getAddressData = (depth) => {
+const getProvinces = (depth) => {
     return axios.get(`${host}?depth=${depth}`)
         .then(response => response.data)
         .catch(error => {
             console.error('Lỗi khi lấy dữ liệu địa chỉ:', error);
+            throw error;
+        });
+};
+
+const findProvincesByCode = (code) => {
+    return axios.get(`${host}p/${code}`)
+        .then(response => response.data.name)
+        .catch(error => {
+            console.error('Lỗi khi tìm dữ liệu địa chỉ:', error);
             throw error;
         });
 };
@@ -20,6 +29,15 @@ const getDistrictsByCity = (cityCode, depth) => {
         });
 };
 
+const findDistrictsByCode = (code) => {
+    return axios.get(`${host}d/${code}`)
+        .then(response => response.data)
+        .catch(error => {
+            console.error('Lỗi khi tìm dữ liệu quận huyện:', error);
+            throw error;
+        });
+};
+
 const getWardsByDistrict = (districtCode, depth) => {
     return axios.get(`${host}d/${districtCode}?depth=${depth}`)
         .then(response => response.data.wards)
@@ -28,5 +46,17 @@ const getWardsByDistrict = (districtCode, depth) => {
             throw error;
         });
 };
+const findWardsByCode = (code) => {
+    return axios.get(`${host}w/${code}`)
+        .then(response => response.data)
+        .catch(error => {
+            console.error('Lỗi khi tìm dữ liệu phường xã:', error);
+            throw error;
+        });
+};
 
-export { getAddressData, getDistrictsByCity, getWardsByDistrict };
+
+export {
+    getProvinces, getDistrictsByCity, getWardsByDistrict,
+    findDistrictsByCode, findProvincesByCode, findWardsByCode
+};

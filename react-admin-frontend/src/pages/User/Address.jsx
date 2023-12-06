@@ -2,11 +2,29 @@
 import AddressService from "~/service/AddressService";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import React, { useState, useEffect } from 'react';
-import { getAddressData, getDistrictsByCity, getWardsByDistrict } from '~/service/ApiService';
+import { findProvincesByCode, getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
 import { PlusOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Row, Col, Radio, Button, Modal, Tag, Form, Input, Select, Checkbox, Popconfirm, notification } from 'antd';
 
 const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+
+    const getCityNameByCode = (cityCode) => {
+        const city = cities.find(city => city.code === cityCode);
+        return city ? city.name : 'Unknown city';
+    };
+    // console.log(getCityNameByCode(48))
+    const getDistrictNameByCode = (districtCode) => {
+        const district = districts.find(district => district.code === districtCode);
+        return district ? district.name : 'Unknown District';
+    };
+
+    const getWardNameByCode = (wardCode) => {
+        const ward = wards.find(ward => ward.code === wardCode);
+        return ward ? ward.name : 'Unknown Ward';
+    };
     //Mở modal thêm sử address
     const [addressModal2, setAddressModal2] = useState({ isModal: false, isMode: '', reacord: null });
 
@@ -22,6 +40,9 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
         setAddressModal2({ isModal: false });
     };
 
+
+
+
     const [address, setAddress] = useState([]);
 
     const fetchAddress = async () => {
@@ -36,6 +57,7 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
     useEffect(() => {
         fetchAddress();
     }, [])
+
 
     const handleDelete = async (id) => {
 
@@ -86,7 +108,7 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
                                 <p>
                                     <b>{address?.recipientName}</b> | {address?.phoneNumber}
                                 </p>
-                                <p>{address?.addressDetail} - {address?.region} - {address?.district} - {address?.city}</p>
+                                <p>{address?.addressDetail} - {address?.region} - {address?.district} - {getCityNameByCode(address?.city)}</p>
                                 {address.deleted && <Tag color='red'>Mặc định</Tag>}
                             </Col>
                             <Col span={3}>
@@ -119,6 +141,13 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
                     hideModal={hideAddressModal2}
                     isModal={addressModal2.isModal}
                     fetchAddress={fetchAddress}
+                    cities={cities}
+                    setCities={setCities}
+                    districts={districts}
+                    setDistricts={setDistricts}
+                    wards={wards}
+                    setWards={setWards}
+
                 />
             )}
         </>
@@ -126,19 +155,19 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
 };
 export default ShowAddressModal;
 
-const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => {
+const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, cities, setCities, districts, setDistricts, wards, setWards }) => {
 
     //Đoạn mã lấy api tỉnh thành, quận huyện, phường xã
-    const [cities, setCities] = useState([]);
-    const [districts, setDistricts] = useState([]);
-    const [wards, setWards] = useState([]);
+
     const [selectedCity, setSelectedCity] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [selectedWard, setSelectedWard] = useState('');
 
+
     useEffect(() => {
+
         // Gọi hàm từ service API để lấy dữ liệu tỉnh/thành phố
-        getAddressData(1)
+        getProvinces(1)
             .then(data => setCities(data))
             .catch(error => console.error('Lỗi khi lấy dữ liệu tỉnh/thành phố:', error));
     }, []);
@@ -165,6 +194,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
         setSelectedCity(value);
         setSelectedDistrict('');
         setSelectedWard('');
+
     };
 
     const handleDistrictChange = (value) => {
@@ -178,10 +208,9 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
     const handleCreate = () => {
         form.validateFields().then(async () => {
 
-            const data = await form.getFieldsValue();
+            const data = await form.getFieldsValue(true);
             data.usersId = reacord;
-
-            console.log(data);
+            data.deleted = data.deleted ? true : false
             await AddressService.create(data)
                 .then(() => {
                     notification.success({
@@ -208,7 +237,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
     const handleUpdate = () => {
         form.validateFields().then(async () => {
 
-            const data = await form.getFieldsValue();
+            const data = await form.getFieldsValue(true);
 
             await AddressService.update(reacord.id, data)
                 .then(() => {
@@ -293,7 +322,6 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                                     disabled={!selectedCity}
                                     options={districts.map(district => ({ value: district.code, label: district.name }))}
                                 />
-
                             </Form.Item>
                         </Col>
                     </Row>
@@ -314,7 +342,6 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                                     disabled={!selectedDistrict}
                                     options={wards.map(ward => ({ value: ward.code, label: ward.name }))}
                                 />
-
                             </Form.Item>
                         </Col>
                         <Col span={2} />

@@ -34,9 +34,9 @@ public class ProductDetail extends BaseEntity{
     @JoinColumn(name = "color_id")
     private Color color;
 
-    @ManyToOne
-    @JoinColumn(name = "material_id")
-    private Material material;
+//    @ManyToOne
+//    @JoinColumn(name = "material_id")
+//    private Material material;
 
     @ManyToOne
     @JoinColumn(name = "size_id")
@@ -47,9 +47,5 @@ public class ProductDetail extends BaseEntity{
 
     @Column(name = "price")
     private Double price;
-
-    @Column(name = "promotion_price")
-    private Double promotionPrice;
-
 
 }

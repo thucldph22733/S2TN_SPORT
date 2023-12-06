@@ -15,7 +15,6 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
 
-
     function login(data) {
         return HttpClient.post(`${API_URL}login`, data)
             .then((response) => {
@@ -30,6 +29,7 @@ export function AuthProvider({ children }) {
                 throw error;
             });
     }
+
     function refreshToken() {
         const refresh_token = localStorage.getItem('refresh_token');
         if (refresh_token) {
@@ -47,13 +47,14 @@ export function AuthProvider({ children }) {
         }
 
     }
+
     function logout() {
         // Xóa JWT khỏi localStorage và đặt trạng thái người dùng thành null
         localStorage.removeItem('token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_name')
         setUser(null);
-        // Chuyển hướng đến trang đăng nhập
-        // navigate("/dang-nhap");
+
     }
 
     const value = {

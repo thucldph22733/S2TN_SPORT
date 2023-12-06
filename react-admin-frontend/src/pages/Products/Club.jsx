@@ -49,6 +49,7 @@ function Club() {
             .then(response => {
 
                 setClubs(response.data);
+                console.log(response.data)
                 setPagination({
                     ...pagination,
                     total: response.totalCount,

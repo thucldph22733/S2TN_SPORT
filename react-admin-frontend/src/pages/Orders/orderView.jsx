@@ -59,16 +59,16 @@ export default function OrderView() {
     }, []);
 
     const loadOrder = async () => {
-        const result = await axios.get(`http://localhost:8080/api/orders/findOrderById?id=${id}`);
+        const result = await axios.get(`http://localhost:8080/api/v1/orders/findOrderById?id=${id}`);
         setOrder(result.data);
     };
     const loadTimeLine = async () => {
-        const result = await axios.get(`http://localhost:8080/api/timeline/findByOrderIdAndStatus?id=${id}`);
+        const result = await axios.get(`http://localhost:8080/api/v1/timeline/findByOrderIdAndStatus?id=${id}`);
         setTimeLines(result.data);
     };
     const findAllTimeLineByOrderId = async () => {
         try {
-            const result = await axios.get(`http://localhost:8080/api/timeline/findAllTimelineByOrderId?id=${id}`);
+            const result = await axios.get(`http://localhost:8080/api/v1/timeline/findAllTimelineByOrderId?id=${id}`);
             const convertedTimeline = result.data.map((event) => ({
                 title: getStatusTitle(event.status),
                 subtitle: formatDate(event.createDate),
@@ -115,10 +115,10 @@ export default function OrderView() {
         const formattedAmount = new Intl.NumberFormat('vi-VN').format(roundedAmount);
         return `${formattedAmount.replace('.', ',')} đ`;
     };
-    
+
     const loadOrderDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/orderDetails/getByOrderId?id=${id}`);
+            const response = await axios.get(`http://localhost:8080/api/v1/orderDetails/getByOrderId?id=${id}`);
             if (response.status === 200) {
                 const updatedOrderDetails = response.data.map((orderDetail) => {
                     const productDetailId = orderDetail.productDetail?.id;

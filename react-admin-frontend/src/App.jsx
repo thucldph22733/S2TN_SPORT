@@ -84,8 +84,12 @@ function App() {
                     element: <Material />,
                 },
                 {
-                    path: path_name.order,
+                    path: path_name.newSell,
                     element: <NewSell />,
+                },
+                {
+                    path: path_name.order,
+                    element: <Order />,
                 },
                 {
                     path: path_name.user,

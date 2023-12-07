@@ -12,9 +12,10 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/timeline/")
+@RequestMapping("/api/v1/timeline/")
 //@Tag(name = "Customers", description = "( Rest API Hiển thị, thêm, sửa, xóa, tìm kiếm, phân trang nhân viên )")
 public class TimeLineController {
+
     @Autowired
     private TimeLineService timeLineService;
 

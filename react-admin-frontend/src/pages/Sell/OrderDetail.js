@@ -743,7 +743,7 @@ export default function OrderDetail() {
     const handleCreateOrder = async () => {
         try {
             setIsCreatingOrder(true);
-            const response = await axios.put(`http://localhost:8080/api/v1/orders/updatetimeline?id=${id}`, {
+            const response = await axios.put(`http://localhost:8080/api/v1/orders/updateTimeLine?id=${id}`, {
                 voucherId: selectedVoucherId,
                 orderTotal: orderTotal,
                 customerId: selectedCustomer ? selectedCustomer.id : null,

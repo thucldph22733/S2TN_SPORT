@@ -98,9 +98,9 @@ public class OrderController {
         }
     }
 
-    @PutMapping ("updatetimeline")
+    @PutMapping ("updateTimeLine")
     public ResponseEntity<ResponseDto> updateOrderTimeLine(@Valid @RequestBody OrderRequestDto orderRequestDto,@RequestParam Long id){
-        Boolean isUpdated = orderService.updateOrder(orderRequestDto,id);
+        Boolean isUpdated = orderService.updateOrders(orderRequestDto,id);
         if (isUpdated){
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));

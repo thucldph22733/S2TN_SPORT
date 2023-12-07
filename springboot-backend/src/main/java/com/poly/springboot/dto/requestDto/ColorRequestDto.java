@@ -16,4 +16,6 @@ public class ColorRequestDto {
     private String colorName;
 
     private String colorDescribe;
+
+    private Boolean deleted;
 }

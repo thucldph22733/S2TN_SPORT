@@ -3,11 +3,15 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.MaterialRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.ResponseHandler;
 import com.poly.springboot.entity.Material;
 import com.poly.springboot.service.MaterialService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +21,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/materials/")
+@RequestMapping("/api/v1/materials/")
 @Tag(name = "Materials",description = "( Rest API Hiển thị, thêm, sửa, xóa chất liệu )")
 @Validated
 public class MaterialController {
@@ -26,12 +30,18 @@ public class MaterialController {
     private MaterialService materialService;
 
     @GetMapping("getAll")
-    public ResponseEntity<List<Material>> getMaterials() {
-        List<Material> materialList = materialService.getMaterials();
-        return ResponseEntity.
-                status(HttpStatus.OK)
-                .body(materialList);
-
+    public ResponseEntity<?> getMaterials(@RequestParam(defaultValue = "0") Integer pageNo,
+                                      @RequestParam(defaultValue = "10") Integer pageSize,
+                                      @RequestParam(required = false) String name,
+                                      @RequestParam(required = false) List<Boolean> status) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Material> MaterialPage = materialService.getMaterials(name, status, pageable);
+        List<Material> MaterialList = MaterialPage.getContent();
+        return ResponseHandler
+                .generateResponse(
+                        HttpStatus.OK,
+                        MaterialList,
+                        MaterialPage);
     }
 
 

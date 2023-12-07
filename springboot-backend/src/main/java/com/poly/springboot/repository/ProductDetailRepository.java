@@ -10,4 +10,6 @@ import java.util.List;
 
 @Repository
 public interface ProductDetailRepository extends JpaRepository<ProductDetail,Long> {
+
+    // Lọc những bản ghi chưa bị xóa mềm
 }

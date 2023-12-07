@@ -6,7 +6,11 @@
         "@testing-library/jest-dom": "^5.17.0",
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^13.5.0",
+<<<<<<< HEAD
+        "antd": "^5.11.0",
+=======
         "antd": "^5.10.2",
+>>>>>>> 8a3ff0ec1e4aaf0ae2838c4d81cb010e4e8fb668
         "bootstrap": "^5.3.2",
         "css-reset-and-normalize": "^2.3.6",
         "react": "^18.2.0",

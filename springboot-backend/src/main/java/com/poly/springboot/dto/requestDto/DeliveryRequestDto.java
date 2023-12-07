@@ -20,4 +20,6 @@ public class DeliveryRequestDto {
     private Double price;
 
     private String deliveryDescribe;
+
+    private Boolean deleted;
 }

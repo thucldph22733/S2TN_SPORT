@@ -2,14 +2,16 @@ package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.CategoryRequestDto;
 import com.poly.springboot.entity.Category;
+import com.poly.springboot.entity.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> getCategories();
+    Page<Category> getCategories(String name, List<Boolean> status, Pageable pageable);
 
     Boolean deleteCategory(Long id);
-
 
     Boolean createCategory(CategoryRequestDto categoryRequestDto);
 

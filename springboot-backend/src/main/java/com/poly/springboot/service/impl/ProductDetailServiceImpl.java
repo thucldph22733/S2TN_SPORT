@@ -23,6 +23,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     private ColorRepository colorRepository;
     private MaterialRepository materialRepository;
     private SizeRepository sizeRepository;
+
     @Autowired
     public ProductDetailServiceImpl(ProductDetailRepository productDetailRepository,
                                     ProductRepository productRepository,
@@ -51,7 +52,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                         productDetail.getQuantity(),
                         productDetail.getPrice(),
                         productDetail.getPromotionPrice(),
-                        productDetail.getStatus())
+                        productDetail.getDeleted())
 
         ).collect(Collectors.toList());
     }
@@ -71,7 +72,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                         productDetail.getQuantity(),
                         productDetail.getPrice(),
                         productDetail.getPromotionPrice(),
-                        productDetail.getStatus())
+                        productDetail.getDeleted())
 
         ).collect(Collectors.toList());
         return productDetailResponseDtoList;
@@ -80,13 +81,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public Boolean deleteProductDetail(Long id) {
         ProductDetail productDetail = productDetailRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("sản phẩm chi tiết",String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
 
-        if (productDetail.getStatus() == 0){
-            productDetail.setStatus(1);
-        }else {
-            productDetail.setStatus(0);
-        }
+        productDetail.setDeleted(!productDetail.getDeleted());
         productDetailRepository.save(productDetail);
         return true;
     }
@@ -110,9 +107,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
         productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
-        productDetail.setStatus(0);
-        productDetail.setCreateBy(productDetailRequestDto.getCreateBy());
-        productDetail.setUpdateBy(productDetailRequestDto.getUpdateBy());
+        productDetail.setDeleted(productDetailRequestDto.getStatus());
 
         productDetailRepository.save(productDetail);
         return true;
@@ -122,7 +117,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto, Long id) {
         ProductDetail productDetail = productDetailRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("sản phẩm chi tiết",String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
 
         productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
         productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
@@ -131,9 +126,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
         productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
-        productDetail.setStatus(0);
-        productDetail.setCreateBy(productDetailRequestDto.getCreateBy());
-        productDetail.setUpdateBy(productDetailRequestDto.getUpdateBy());
+        productDetail.setDeleted(productDetailRequestDto.getStatus());
 
         productDetailRepository.save(productDetail);
         return true;

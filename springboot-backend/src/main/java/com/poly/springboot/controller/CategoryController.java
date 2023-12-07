@@ -3,11 +3,16 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.CategoryRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.ResponseHandler;
+import com.poly.springboot.entity.Brand;
 import com.poly.springboot.entity.Category;
 import com.poly.springboot.service.CategoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +22,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/categories/")
+@RequestMapping("/api/v1/categories/")
 @Tag(name = "Categories",description = "( Rest API Hiển thị, thêm, sửa, xóa loại sản phẩm )")
 @Validated
 public class CategoryController {
@@ -26,12 +31,18 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping("getAll")
-    public ResponseEntity<List<Category>> getCategories() {
-        List<Category> categoryList = categoryService.getCategories();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(categoryList);
-
+    public ResponseEntity<?> getCategories(@RequestParam(defaultValue = "0") Integer pageNo,
+                                       @RequestParam(defaultValue = "10") Integer pageSize,
+                                       @RequestParam(required = false) String name,
+                                       @RequestParam(required = false) List<Boolean> status) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Category> categoryPage = categoryService.getCategories(name, status, pageable);
+        List<Category> categoryList = categoryPage.getContent();
+        return ResponseHandler
+                .generateResponse(
+                        HttpStatus.OK,
+                        categoryList,
+                        categoryPage);
     }
 
 

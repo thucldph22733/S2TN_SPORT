@@ -10,8 +10,10 @@ import Blog from './pages/Blog/Blog';
 import Contact from './pages/Contact/Contact';
 import MainLayout from './layouts/MainLayout/MainLayout';
 import Home from './pages/Home/Home';
-import SliderLayout from './layouts/SliderLayout/SliderLayout';
-import '~/assets/css/style.css';
+// import '~/assets/css/style.css';
+import HomeLayout from './layouts/HomeLayout/HomeLayout';
+import ShoppingCart from './pages/ShoppingCart/ShoppingCart';
+import Checkout from './pages/Checkout/Checkout';
 
 function App() {
     const router = createBrowserRouter([
@@ -29,7 +31,7 @@ function App() {
         },
         {
             path: path_name.home,
-            element: <SliderLayout />,
+            element: <HomeLayout />,
             children: [
                 {
                     path: path_name.home,
@@ -56,6 +58,14 @@ function App() {
                 {
                     path: path_name.contact,
                     element: <Contact />,
+                },
+                {
+                    path: path_name.shopping_cart,
+                    element: <ShoppingCart />,
+                },
+                {
+                    path: path_name.checkout,
+                    element: <Checkout />,
                 },
             ],
         },

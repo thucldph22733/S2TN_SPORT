@@ -11,15 +11,12 @@ public class ProductMapper {
     public static Product mapToProductRequest(Product product, ProductRequestDto productRequestDto) {
 
         product.setProductName(productRequestDto.getProductName());
-        product.setProductAvatar(productRequestDto.getProductAvatar());
+        product.setAvatar(productRequestDto.getAvatar());
         product.setProductHot(productRequestDto.getProductHot());
         product.setProductSale(productRequestDto.getProductSale());
         product.setProductNew(productRequestDto.getProductNew());
-        product.setViewCount(productRequestDto.getViewCount());
         product.setProductName(productRequestDto.getProductName());
-        product.setStatus(productRequestDto.getStatus());
-        product.setCreateBy(productRequestDto.getCreateBy());
-        product.setUpdateBy(productRequestDto.getUpdateBy());
+        product.setDeleted(productRequestDto.getStatus());
 
         return product;
     }
@@ -32,13 +29,12 @@ public class ProductMapper {
         productResponseDto.setBrandName(product.getBrand().getBrandName());
         productResponseDto.setSupplierName(product.getSupplier().getSupplierName());
         productResponseDto.setProductName(product.getProductName());
-        productResponseDto.setProductAvatar(product.getProductAvatar());
+        productResponseDto.setAvatar(product.getAvatar());
         productResponseDto.setProductHot(product.getProductHot());
         productResponseDto.setProductSale(product.getProductSale());
         productResponseDto.setProductNew(product.getProductNew());
-        productResponseDto.setViewCount(product.getViewCount());
         productResponseDto.setProductName(product.getProductName());
-        productResponseDto.setStatus(product.getStatus());
+        productResponseDto.setStatus(product.getDeleted());
 
         return productResponseDto;
     }

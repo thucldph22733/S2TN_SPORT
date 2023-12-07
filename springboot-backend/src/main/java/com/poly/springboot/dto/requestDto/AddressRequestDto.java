@@ -1,10 +1,12 @@
 package com.poly.springboot.dto.requestDto;
 
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 
 @Getter
@@ -30,5 +32,9 @@ public class AddressRequestDto {
 
 //    @NotBlank(message = "Tỉnh/thành phố không được để trống!")
     private String city;
+
+    private Boolean deleted;
+
+    private Long usersId;
 
 }

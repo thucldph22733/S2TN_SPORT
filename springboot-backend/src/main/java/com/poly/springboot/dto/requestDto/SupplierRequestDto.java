@@ -28,5 +28,5 @@ public class SupplierRequestDto {
 
     private String supplierDescribe;
 
-
+    private Boolean deleted;
 }

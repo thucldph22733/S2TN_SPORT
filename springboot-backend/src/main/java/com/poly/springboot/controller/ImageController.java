@@ -26,7 +26,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/images/")
+@RequestMapping("/api/v1/images/")
 @Tag(name = "Images",description = "( Rest API Hiển thị, thêm, sửa, xóa ảnh )")
 @Validated
 public class ImageController {

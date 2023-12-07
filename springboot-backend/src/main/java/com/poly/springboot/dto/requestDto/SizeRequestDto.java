@@ -16,4 +16,6 @@ public class SizeRequestDto {
     private String sizeName;
 
     private String sizeDescribe;
+
+    private Boolean deleted;
 }

@@ -7,7 +7,12 @@ import java.util.List;
 
 
 public interface AddressService {
-    List<Address> getAddress();
+     List<Address> getAddressesByUserId(Long userId);
 
+     Boolean createAddress(AddressRequestDto addressRequestDto);
+
+     Boolean updateAddress(Long id,AddressRequestDto addressRequestDto);
+
+     Boolean deleteAddress(Long id);
 
 }

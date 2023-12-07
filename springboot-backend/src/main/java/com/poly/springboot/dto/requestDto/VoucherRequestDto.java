@@ -1,5 +1,6 @@
 package com.poly.springboot.dto.requestDto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -17,17 +19,18 @@ import java.sql.Date;
 @NoArgsConstructor
 @ToString
 public class VoucherRequestDto {
+    @JsonIgnore
+    private Long id;
 
-    private Integer categoryVoucher;
+    @NotBlank(message = "Mã giảm giá không được để trống!")
+    private String voucherCode;
 
-    @NotBlank(message = "Tên mã giảm giá không được để trống!")
+    @NotBlank(message = "Tên giảm giá không được để trống!")
     private String voucherName;
 
-    @NotNull(message = "Ngày bắt đầu không được để trống!")
-    private Date startDate;
+    private LocalDateTime startDate;
 
-    @NotNull(message = "Ngày kết thúc không được để trống!")
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @NotNull(message = "Đơn tối thiểu không được để trống!")
     private Integer orderMinimum;  //Đơn tối thiểu
@@ -41,8 +44,8 @@ public class VoucherRequestDto {
     @NotNull(message = "Tỉ lệ chiết khấu không được để trống!")
     private Integer discountRate;
 
-    private String voucherDescribe;
+    private String note;
 
-    private Boolean voucherStatus;
+    private Boolean deleted;
 
 }

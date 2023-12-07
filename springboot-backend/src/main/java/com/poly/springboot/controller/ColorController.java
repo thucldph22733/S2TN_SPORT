@@ -3,11 +3,16 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.ColorRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.ResponseHandler;
+import com.poly.springboot.entity.Color;
 import com.poly.springboot.entity.Color;
 import com.poly.springboot.service.ColorService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +22,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/colors/")
+@RequestMapping("/api/v1/colors/")
 @Tag(name = "Colors",description = "( Rest API Hiển thị, thêm, sửa, xóa màu sắc )")
 @Validated
 public class ColorController {
@@ -26,12 +31,18 @@ public class ColorController {
 
 
     @GetMapping("getAll")
-    public ResponseEntity<List<Color>> getColors() {
-        List<Color> colorList = colorService.getColors();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(colorList);
-
+    public ResponseEntity<?> getColors(@RequestParam(defaultValue = "0") Integer pageNo,
+                                          @RequestParam(defaultValue = "10") Integer pageSize,
+                                          @RequestParam(required = false) String name,
+                                          @RequestParam(required = false) List<Boolean> status) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Color> ColorPage = colorService.getColors(name, status, pageable);
+        List<Color> ColorList = ColorPage.getContent();
+        return ResponseHandler
+                .generateResponse(
+                        HttpStatus.OK,
+                        ColorList,
+                        ColorPage);
     }
 
     @PostMapping("create")
@@ -58,7 +69,7 @@ public class ColorController {
         }
     }
 
-    @DeleteMapping("color")
+    @DeleteMapping("delete")
     public ResponseEntity<ResponseDto> deleteColor(@RequestParam Long id) {
         Boolean isDeleted = colorService.deleteColor(id);
         if (isDeleted) {

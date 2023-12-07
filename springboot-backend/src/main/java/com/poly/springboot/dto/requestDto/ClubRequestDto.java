@@ -12,10 +12,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ClubRequestDto {
 
-    private Integer categoryClub;
+    private String typeClub;
 
     @NotBlank(message = "Tên câu lạc bộ không được để trống!")
     private String clubName;
 
     private String clubDescribe;
+
+    private Boolean deleted;
 }

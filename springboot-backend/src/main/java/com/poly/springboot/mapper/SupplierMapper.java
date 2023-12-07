@@ -12,7 +12,7 @@ public class SupplierMapper {
         supplier.setAddress(supplierRequestDto.getAddress());
         supplier.setPhoneNumber(supplierRequestDto.getPhoneNumber());
         supplier.setSupplierDescribe(supplierRequestDto.getSupplierDescribe());
-
+        supplier.setDeleted(supplierRequestDto.getDeleted());
         return supplier;
     }
 }

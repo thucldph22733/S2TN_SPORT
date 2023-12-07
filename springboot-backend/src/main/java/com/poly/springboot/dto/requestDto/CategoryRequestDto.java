@@ -16,4 +16,6 @@ public class CategoryRequestDto {
     private String categoryName;
 
     private String categoryDescribe;
+
+    private Boolean deleted;
 }

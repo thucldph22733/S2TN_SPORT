@@ -23,17 +23,17 @@ public class ProductResponseDto {
 
     private String productName;
 
-    private String productAvatar;
+    private String avatar;
 
-    private Integer productHot;
+    private Boolean productHot;
 
-    private Integer productSale;
+    private Boolean productSale;
 
-    private Integer productNew;
+    private Boolean productNew;
 
     private Integer viewCount;
 
-    private  Integer status;
+    private  Boolean status;
 
     private String productDescribe;
 

@@ -3,18 +3,21 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.DeliveryRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.ResponseHandler;
 import com.poly.springboot.entity.Delivery;
 import com.poly.springboot.service.DeliveryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +29,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/deliveries/")
+@RequestMapping("/api/v1/deliveries/")
 @Tag(name = "Deliveries",description = "( Rest API Hiển thị, thêm, sửa, xóa phương thức vận chuyển )")
 @Validated
 public class DeliveryController {
@@ -34,13 +37,20 @@ public class DeliveryController {
     @Autowired
     private DeliveryService deliveryService;
 
-    // get alldelivery rest api
+    // get all delivery rest api
     @GetMapping("getAll")
-    public ResponseEntity<List<Delivery>> getDeliveries(){
-        List<Delivery>  deliveryList= deliveryService.getDeliveries();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(deliveryList);
+    public ResponseEntity<?> getDeliveries(@RequestParam(defaultValue = "0") Integer pageNo,
+                                      @RequestParam(defaultValue = "10") Integer pageSize,
+                                      @RequestParam(required = false) String name,
+                                      @RequestParam(required = false) List<Boolean> status) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Delivery> deliveryPage = deliveryService.getDeliveries(name, status, pageable);
+        List<Delivery> deliveryList = deliveryPage.getContent();
+        return ResponseHandler
+                .generateResponse(
+                        HttpStatus.OK,
+                        deliveryList,
+                        deliveryPage);
     }
 
 

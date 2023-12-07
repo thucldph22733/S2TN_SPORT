@@ -2,11 +2,14 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.DeliveryRequestDto;
 import com.poly.springboot.entity.Delivery;
+import com.poly.springboot.entity.Delivery;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.DeliveryRepository;
 import com.poly.springboot.service.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,10 +22,20 @@ public class DeliveryServiceImpl implements DeliveryService {
     private DeliveryRepository deliveryRepository;
 
     @Override
-    public List<Delivery> getDeliveries() {
+    public Page<Delivery> getDeliveries(String name, List<Boolean> status, Pageable pageable) {
 
-        return deliveryRepository.findAll();
+        Page<Delivery> DeliveryList;
 
+        if (name == null && status == null){
+            DeliveryList = deliveryRepository.findAll(pageable);
+        }else if (name == null){
+            DeliveryList = deliveryRepository.findByDeletedIn(status,pageable);
+        }else if (status == null){
+            DeliveryList = deliveryRepository.findByDeliveryNameContaining(name,pageable);
+        }else {
+            DeliveryList = deliveryRepository.findByDeliveryNameContainingAndDeletedIn(name,status,pageable);
+        }
+        return DeliveryList;
     }
 
     @Override    //Phuong thuc them Delivery
@@ -46,7 +59,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Boolean updateDelivery(DeliveryRequestDto deliveryRequestDto, Long id) {
 
         Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("phương thức giao hàng",String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id phương thức giao hàng này!"));
 
         delivery.setDeliveryName(deliveryRequestDto.getDeliveryName());
         delivery.setPrice(deliveryRequestDto.getPrice());
@@ -62,9 +75,12 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Boolean deleteDelivery(Long id) {
 
         Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("phương thức vận chuyển",String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id phương thức giao hàng này!"));
 
-        deliveryRepository.deleteById(delivery.getId());
+        delivery.setDeleted(!delivery.getDeleted());
+
+        deliveryRepository.save(delivery);
+
         return true;
     }
 }

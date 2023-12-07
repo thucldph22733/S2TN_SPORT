@@ -12,10 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -23,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,37 +46,19 @@ public class Product {
     private String productName;
 
     @Column(name = "product_avatar")
-    private String productAvatar;
+    private String avatar;
 
     @Column(name = "product_hot")
-    private Integer productHot;
+    private Boolean productHot;
 
     @Column(name = "product_sale")
-    private Integer productSale;
+    private Boolean productSale;
 
     @Column(name = "product_new")
-    private Integer productNew;
-
-    @Column(name = "view_count")
-    private Integer viewCount;
+    private Boolean productNew;
 
     @Column(name = "product_describe")
     private String productDescribe;
 
-    @Column(name = "product_status")
-    private Integer status;
 
-    @CreationTimestamp
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @Column(name = "create_by")
-    private String createBy;
-
-    @UpdateTimestamp
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
-
-    @Column(name = "update_by")
-    private String updateBy;
 }

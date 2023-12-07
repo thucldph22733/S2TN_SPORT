@@ -4,15 +4,16 @@ import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 import com.poly.springboot.dto.responseDto.VoucherResponseDto;
 import com.poly.springboot.entity.Order;
 import com.poly.springboot.entity.Voucher;
+import com.poly.springboot.entity.Voucher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface VoucherService {
-    List<VoucherResponseDto> getVouchers();
+    List<Voucher> findByDeletedTrue();
 
-    List<VoucherResponseDto> getPagination(Integer pageNo);
-
-    List<VoucherResponseDto> searchVoucher(Integer pageNo,String keyword);
+    Page<Voucher> getVouchers(String code,String name, List<Boolean> status, Pageable pageable);
 
     Boolean createVoucher(VoucherRequestDto requestDto);
 
@@ -21,5 +22,6 @@ public interface VoucherService {
     Boolean deleteVoucher(Long id);
 
     Voucher findVoucherById(Long id);
+
 
 }

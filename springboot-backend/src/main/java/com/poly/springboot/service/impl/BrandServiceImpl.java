@@ -7,10 +7,11 @@ import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.BrandRepository;
 import com.poly.springboot.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BrandServiceImpl implements BrandService {
@@ -19,8 +20,20 @@ public class BrandServiceImpl implements BrandService {
     private BrandRepository brandRepository;
 
     @Override
-    public List<Brand> getBrands() {
-        return brandRepository.findAll();
+    public Page<Brand> getBrands(String name, List<Boolean> status, Pageable pageable) {
+
+        Page<Brand> brandList;
+
+        if (name == null && status == null){
+            brandList = brandRepository.findAll(pageable);
+        }else if (name == null){
+            brandList = brandRepository.findByDeletedIn(status,pageable);
+        }else if (status == null){
+            brandList = brandRepository.findByBrandNameContaining(name,pageable);
+        }else {
+            brandList = brandRepository.findByBrandNameContainingAndDeletedIn(name,status,pageable);
+        }
+        return brandList;
     }
 
     @Override
@@ -29,6 +42,7 @@ public class BrandServiceImpl implements BrandService {
 
         brand.setBrandDescribe(brandRequestDto.getBrandDescribe());
         brand.setBrandName(brandRequestDto.getBrandName());
+        brand.setDeleted(brandRequestDto.getDeleted());
 
         if (brandRepository.existsByBrandName(brandRequestDto.getBrandName())){
             throw  new AlreadyExistsException("Tên thương hiệu đã tồn tại!");
@@ -40,9 +54,12 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Boolean deleteBrand(Long id) {
-        Brand brand = brandRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(
-                "Brand", String.valueOf(id)));
-        brandRepository.deleteById(brand.getId());
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(()->  new ResourceNotFoundException("Không tìm thấy id thương hiệu này!"));
+
+        brand.setDeleted(!brand.getDeleted());
+
+        brandRepository.save(brand);
         return true;
     }
 
@@ -50,9 +67,10 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Boolean updateBrand(BrandRequestDto brandRequestDto, Long id) {
         Brand brand = brandRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Thương hiệu", String.valueOf(id)));
+                () -> new ResourceNotFoundException("Không tìm thấy id thương hiệu này!"));
         brand.setBrandName(brandRequestDto.getBrandName());
         brand.setBrandDescribe(brandRequestDto.getBrandDescribe());
+        brand.setDeleted(brandRequestDto.getDeleted());
         brandRepository.save(brand);
 
         return true;

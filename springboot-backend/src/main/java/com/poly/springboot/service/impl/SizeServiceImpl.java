@@ -7,6 +7,8 @@ import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.SizeRepository;
 import com.poly.springboot.service.SizeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,16 +20,32 @@ public class SizeServiceImpl implements SizeService {
     private SizeRepository sizeRepository;
 
     @Override
-    public List<Size> getSizes() {
-        return sizeRepository.findAll();
+    public Page<Size> getSizes(String name, List<Boolean> status, Pageable pageable) {
+
+        Page<Size> SizeList;
+
+        if (name == null && status == null) {
+            SizeList = sizeRepository.findAll(pageable);
+        } else if (name == null) {
+            SizeList = sizeRepository.findByDeletedIn(status, pageable);
+        } else if (status == null) {
+            SizeList = sizeRepository.findBySizeNameContaining(name, pageable);
+        } else {
+            SizeList = sizeRepository.findBySizeNameContainingAndDeletedIn(name, status, pageable);
+        }
+        return SizeList;
     }
 
     @Override
     public Boolean deleteSize(Long id) {
 
         Size size = sizeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("kích thước", String.valueOf(id)));
-        sizeRepository.deleteById(size.getId());
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id kích thước này!"));
+
+        size.setDeleted(!size.getDeleted());
+
+        sizeRepository.save(size);
+
         return true;
     }
 
@@ -37,8 +55,9 @@ public class SizeServiceImpl implements SizeService {
 
         size.setSizeName(sizeRequestDto.getSizeName());
         size.setSizeDescribe(sizeRequestDto.getSizeDescribe());
+        size.setDeleted(sizeRequestDto.getDeleted());
 
-        if (sizeRepository.existsBySizeName(sizeRequestDto.getSizeName())){
+        if (sizeRepository.existsBySizeName(sizeRequestDto.getSizeName())) {
             throw new AlreadyExistsException("Tên kích thức đã tồn tại!");
         }
         sizeRepository.save(size);
@@ -50,11 +69,11 @@ public class SizeServiceImpl implements SizeService {
     public Boolean updateSize(SizeRequestDto sizeRequestDto, Long id) {
 
         Size size = sizeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("kích thước", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id kích thước này!"));
 
         size.setSizeName(sizeRequestDto.getSizeName());
         size.setSizeDescribe(sizeRequestDto.getSizeDescribe());
-
+        size.setDeleted(sizeRequestDto.getDeleted());
         sizeRepository.save(size);
 
         return true;

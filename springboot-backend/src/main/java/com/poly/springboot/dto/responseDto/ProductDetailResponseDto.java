@@ -29,6 +29,6 @@ public class ProductDetailResponseDto {
 
     private Double promotionPrice;
 
-    private Integer status;
+    private Boolean status;
 
 }

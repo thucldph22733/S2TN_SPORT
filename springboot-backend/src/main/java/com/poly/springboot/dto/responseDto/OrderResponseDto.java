@@ -19,13 +19,11 @@ public class OrderResponseDto {
 
     private Long idVoucher;
 
-    private Long idCustomer;
+    private Long idUser;
 
     private LocalDateTime orderDate;
 
-    private String staffName;
-
-    private String customerName;
+    private String userName;
 
     private String phoneNumber;
 

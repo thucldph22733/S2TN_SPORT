@@ -43,7 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
     public Boolean updatePayment(PaymentRequestDto paymentRequestDto, Long id) {
 
         Payment payment = paymentRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id phương thức thanh toán này!"));
+                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id phương thức thanh toán này!", String.valueOf(id)));
 
         payment.setPaymentName(paymentRequestDto.getPaymentName());
         payment.setPaymentDescribe(paymentRequestDto.getPaymentDescribe());
@@ -57,7 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
     public Boolean deletePayment(Long id) {
 
         Payment payment = paymentRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id phương thức thanh toán này!"));
+                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id phương thức thanh toán này!", String.valueOf(id)));
 
         paymentRepository.deleteById(payment.getId());
         return true;

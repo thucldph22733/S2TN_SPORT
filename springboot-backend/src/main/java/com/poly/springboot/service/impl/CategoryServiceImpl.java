@@ -2,7 +2,6 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CategoryRequestDto;
 import com.poly.springboot.entity.Category;
-import com.poly.springboot.entity.Category;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.CategoryRepository;
@@ -41,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Boolean deleteCategory(Long id) {
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id loại sản phẩm này!"));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id loại sản phẩm này!", String.valueOf(id)));
 
         category.setDeleted(!category.getDeleted());
 
@@ -72,7 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Boolean updateCategory(CategoryRequestDto categoryRequestDto, Long id) {
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id loại sản phẩm này!"));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id loại sản phẩm này!", String.valueOf(id)));
 
         category.setCategoryDescribe(categoryRequestDto.getCategoryDescribe());
         category.setCategoryName(categoryRequestDto.getCategoryName());

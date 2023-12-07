@@ -25,7 +25,6 @@ public class VoucherMapper {
     public static VoucherResponseDto mapToVoucherResponse(Voucher voucher, VoucherResponseDto voucherResponseDto){
 
         voucherResponseDto.setId(voucher.getId());
-        voucherResponseDto.setCategoryVoucher(voucher.getCategoryVoucher());
         voucherResponseDto.setVoucherCode(voucher.getVoucherCode());
         voucherResponseDto.setVoucherName(voucher.getVoucherName());
         voucherResponseDto.setStartDate(voucher.getStartDate());

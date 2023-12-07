@@ -1,7 +1,7 @@
 package com.poly.springboot.repository;
 
-import com.poly.springboot.entity.Customer;
 import com.poly.springboot.entity.Order;
+import com.poly.springboot.entity.User;
 import com.poly.springboot.entity.Voucher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,8 +25,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "group by c.id, c.order_date, c.status_id",nativeQuery = true)
     List<Order> findAllOrdersWithDetails();
 
-    @Query("SELECT c FROM Customer c JOIN Order o ON c.id = o.customer.id WHERE o.id = :orderId")
-    Optional<Customer> findCustomerByOrderId(Long orderId);
+    @Query("SELECT c FROM User c JOIN Order o ON c.id = o.user.id WHERE o.id = :orderId")
+    Optional<User> findUserByOrderId(Long orderId);
 
     @Query("SELECT c FROM Voucher c JOIN Order o ON c.id = o.voucher.id WHERE o.id = :orderId")
     Optional<Voucher> findVoucherByOrderId(Long orderId);

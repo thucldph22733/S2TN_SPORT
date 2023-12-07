@@ -6,6 +6,7 @@ import com.poly.springboot.dto.requestDto.UserRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseHandler;
 import com.poly.springboot.dto.responseDto.UserResponseDto;
+import com.poly.springboot.entity.User;
 import com.poly.springboot.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -89,5 +90,12 @@ public class UserController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
         }
+    }
+    @GetMapping("getUserById")
+    public ResponseEntity<User> getUserById(@RequestParam Long id) {
+        User User = userService.getUserById(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(User);
     }
 }

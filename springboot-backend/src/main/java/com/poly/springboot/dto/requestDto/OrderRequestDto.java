@@ -14,9 +14,7 @@ import java.sql.Date;
 @AllArgsConstructor
 public class OrderRequestDto {
 
-    private Long staffId;
-
-    private Long customerId;
+    private Long userId;
 
     private Long deliveryId;
 

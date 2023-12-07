@@ -30,7 +30,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Boolean updateRole(RoleRequestDto roleRequestDto,Long id) {
         Role role = roleRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id vai trò này!"));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id vai trò này!", String.valueOf(id)));
 
         role.setRoleName(roleRequestDto.getRoleName());
         role.setRoleDescribe(roleRequestDto.getRoleDescribe());
@@ -44,7 +44,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     public Boolean deleteRole(Long id) {
         Role role = roleRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id vai trò này!"));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id vai trò này!", String.valueOf(id)));
 
         role.setDeleted(!role.getDeleted());
         roleRepository.save(role);

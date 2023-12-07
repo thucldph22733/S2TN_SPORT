@@ -19,7 +19,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/orderDetails/")
+@RequestMapping("/api/v1/orderDetails/")
 @Tag(name = "OrderDetails",description = "( Rest API Hiển thị, thêm, sửa hóa đơn chi tiết )")
 @Validated
 public class OrderDetailController {

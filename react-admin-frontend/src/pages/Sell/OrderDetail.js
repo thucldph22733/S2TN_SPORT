@@ -107,7 +107,7 @@ export default function OrderDetail() {
             try {
                 if (selectedVoucherId) {
                     const voucherResponse = await axios.get(
-                        `http://localhost:8080/api/vouchers/findVoucherById?id=${selectedVoucherId}`,
+                        `http://localhost:8080/api/v1/vouchers/findVoucherById?id=${selectedVoucherId}`,
                     );
 
                     if (voucherResponse.status === 200) {
@@ -131,7 +131,7 @@ export default function OrderDetail() {
             try {
                 if (selectedCustomerId) {
                     const CustomerResponse = await axios.get(
-                        `http://localhost:8080/api/customers/getCustomerById?id=${selectedCustomerId}`,
+                        `http://localhost:8080/api/v1/users/getUserById?id=${selectedCustomerId}`,
                     );
 
                     if (CustomerResponse.status === 200) {
@@ -189,7 +189,7 @@ export default function OrderDetail() {
 
     const handleAddToProductDetail = async (productId) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/orderDetails/create', {
+            const response = await axios.post('http://localhost:8080/api/v1/orderDetails/create', {
                 orderId: id,
                 productDetailId: productId,
                 quantity: quantity,
@@ -199,7 +199,7 @@ export default function OrderDetail() {
 
             if (response.status === 201) {
                 console.log('Sản phẩm đã được thêm vào đơn hàng');
-                const orderResponse = await axios.get(`http://localhost:8080/api/orders/findOrderById?id=${id}`);
+                const orderResponse = await axios.get(`http://localhost:8080/api/v1/orders/findOrderById?id=${id}`);
                 if (orderResponse.status === 200) {
                     const order = orderResponse.data;
 
@@ -210,7 +210,7 @@ export default function OrderDetail() {
                     const orderTotal = orderTotalInitial - giamGia;
                     // Cập nhật state để hiển thị trên giao diện
 
-                    const updateOrderResponse = await axios.put(`http://localhost:8080/api/orders/update?id=${id}`, {
+                    const updateOrderResponse = await axios.put(`http://localhost:8080/api/v1/orders/update?id=${id}`, {
                         voucherId: order.voucher ? order.voucher.id : null,
                         orderTotal: orderTotal,
                         customerId: order.customer ? order.customer.id : null,
@@ -242,7 +242,7 @@ export default function OrderDetail() {
 
     const loadOrderDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/orderDetails/getByOrderId?id=${id}`);
+            const response = await axios.get(`http://localhost:8080/api/v1/orderDetails/getByOrderId?id=${id}`);
             if (response.status === 200) {
                 const updatedOrderDetails = response.data.map((orderDetail) => {
                     const productDetailId = orderDetail.productDetail?.id;
@@ -263,11 +263,11 @@ export default function OrderDetail() {
 
     const loadProductDetails = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/productDetails/getAll');
+            const response = await axios.get('http://localhost:8080/api/v1/productDetails/getAll');
             if (Array.isArray(response.data)) {
                 setProductDetails(response.data);
             } else {
-                console.error('API trả về không phải là một mảng:', response.data);
+                console.error('API trả về không phải là một mảng: a', response.data);
             }
         } catch (error) {
             console.error('Lỗi khi gọi API:', error);
@@ -275,23 +275,24 @@ export default function OrderDetail() {
     };
     const loadCustomerOptions = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/customers/getAll');
-            if (Array.isArray(response.data)) {
-                const options = response.data.map((customer) => ({
-                    value: customer.id,
-                    label: `${customer.customerName} - ${customer.phoneNumber}`,
-                    data: customer,
+            const response = await axios.get('http://localhost:8080/api/v1/users/getAll');
+            if (Array.isArray(response.data.data)) {
+                const options = response.data.data.map((user) => ({
+                    value: user.id,
+                    label: `${user.userName} - ${user.phoneNumber}`,
+                    data: user,
                 }));
                 setCustomerOptions(options);
                 // Làm mới AutoComplete bằng cách thay đổi giá trị key
                 setAutoCompleteOptionsKey((prevKey) => prevKey + 1);
             } else {
-                console.error('API trả về không phải là một mảng:', response.data);
+                console.error('API trả về không phải là một mảng: b', response.data);
             }
         } catch (error) {
             console.error('Lỗi khi gọi API:', error);
         }
     };
+
     const handleCustomerSelect = async (value, option) => {
         console.log('aaaaaaaaaaaaaaaa', value);
         setSelectedCustomerId(value);
@@ -327,7 +328,7 @@ export default function OrderDetail() {
                 console.log('aaaaa', id);
 
                 // Gọi API để cập nhật số lượng trên server
-                const response = await axios.put(`http://localhost:8080/api/orderDetails/update?id=${record.id}`, {
+                const response = await axios.put(`http://localhost:8080/api/v1/orderDetails/update?id=${record.id}`, {
                     orderId: record.idOrder,
                     productDetailId: record.idProductDetail,
                     quantity: value,
@@ -336,7 +337,7 @@ export default function OrderDetail() {
                 if (response.status === 200) {
                     console.log('Số lượng sản phẩm đã được cập nhật');
                     // Gọi API để lấy thông tin order sau khi cập nhật số lượng
-                    const orderResponse = await axios.get(`http://localhost:8080/api/orders/findOrderById?id=${id}`);
+                    const orderResponse = await axios.get(`http://localhost:8080/api/v1/orders/findOrderById?id=${id}`);
                     if (orderResponse.status === 200) {
                         const order = orderResponse.data;
 
@@ -348,7 +349,7 @@ export default function OrderDetail() {
                         // Cập nhật state để hiển thị trên giao diện
 
                         const updateOrderResponse = await axios.put(
-                            `http://localhost:8080/api/orders/update?id=${record.idOrder}`,
+                            `http://localhost:8080/api/v1/orders/update?id=${record.idOrder}`,
                             {
                                 voucherId: order.voucher ? order.voucher.id : null,
                                 orderTotal: orderTotal,
@@ -385,9 +386,9 @@ export default function OrderDetail() {
 
     const loadVoucherOptions = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/vouchers/getAll');
-            if (Array.isArray(response.data)) {
-                const options = response.data.map((voucher) => ({
+            const response = await axios.get('http://localhost:8080/api/v1/vouchers/getAll');
+            if (Array.isArray(response.data.data)) {
+                const options = response.data.data.map((voucher) => ({
                     value: voucher.id, // Chỉ lấy id của voucher làm giá trị value
                     label: (
                         <div>
@@ -426,7 +427,7 @@ export default function OrderDetail() {
 
                 // Gọi API để lấy thông tin voucher
                 const voucherResponse = await axios.get(
-                    `http://localhost:8080/api/vouchers/findVoucherById?id=${voucherId}`,
+                    `http://localhost:8080/api/v1/vouchers/findVoucherById?id=${voucherId}`,
                 );
 
                 if (voucherResponse.status === 200) {
@@ -435,7 +436,7 @@ export default function OrderDetail() {
 
                     // Gọi API hoặc phương thức khác để lấy customerId
                     // const customerIdResponse = await axios.get(
-                    //     `http://localhost:8080/api/orders/findCustomerByOrderId?id=${id}`,
+                    //     `http://localhost:8080/api/v1/orders/findCustomerByOrderId?id=${id}`,
                     // );
 
                     let shouldContinue = true;
@@ -469,7 +470,7 @@ export default function OrderDetail() {
 
                     if (shouldContinue) {
                         // Cập nhật thông tin order trên server
-                        // const response = await axios.put(`http://localhost:8080/api/orders/update?id=${id}`, {
+                        // const response = await axios.put(`http://localhost:8080/api/v1/orders/update?id=${id}`, {
                         //     voucherId: voucherId,
                         //     orderTotal: orderTotal,
                         //     customerId: customerId,
@@ -657,7 +658,7 @@ export default function OrderDetail() {
     ];
 
     const loadOrder = async () => {
-        const result = await axios.get(`http://localhost:8080/api/orders/findOrderById?id=${id}`);
+        const result = await axios.get(`http://localhost:8080/api/v1/orders/findOrderById?id=${id}`);
         if (result.data) {
             const { orderTotal, orderTotalInitial, discountMoney, idCustomer } = result.data;
             setOrderTotal(orderTotal);
@@ -687,7 +688,7 @@ export default function OrderDetail() {
         try {
             // Gọi API để xóa sản phẩm trong chi tiết đơn hàng
             const response = await axios.delete(
-                `http://localhost:8080/api/orderDetails/deleteProducts?id=${orderDetailId}`,
+                `http://localhost:8080/api/v1/orderDetails/deleteProducts?id=${orderDetailId}`,
             );
 
             if (response.status === 200) {
@@ -742,7 +743,7 @@ export default function OrderDetail() {
     const handleCreateOrder = async () => {
         try {
             setIsCreatingOrder(true);
-            const response = await axios.put(`http://localhost:8080/api/orders/update?id=${id}`, {
+            const response = await axios.put(`http://localhost:8080/api/v1/orders/updatetimeline?id=${id}`, {
                 voucherId: selectedVoucherId,
                 orderTotal: orderTotal,
                 customerId: selectedCustomer ? selectedCustomer.id : null,
@@ -831,7 +832,7 @@ export default function OrderDetail() {
         try {
             const qrText = result.text;
             const response = await axios.get(
-                `http://localhost:8080/api/productDetails/findProductDetailById?id=${qrText}`,
+                `http://localhost:8080/api/v1/productDetails/findProductDetailById?id=${qrText}`,
             );
             // Lấy giá trị text từ data
 
@@ -843,7 +844,7 @@ export default function OrderDetail() {
             // Tiếp tục xử lý, kiểm tra và thêm sản phẩm vào đơn hàng
             if (productData) {
                 // Thực hiện thêm sản phẩm vào chi tiết đơn hàng với thông tin từ QR
-                const response = await axios.post('http://localhost:8080/api/orderDetails/create', {
+                const response = await axios.post('http://localhost:8080/api/v1/orderDetails/create', {
                     orderId: id,
                     productDetailId: productData.id,
                     quantity: 1,
@@ -872,7 +873,7 @@ export default function OrderDetail() {
     // Hàm cập nhật đơn hàng và state
     const updateOrderDetailsAndState = async () => {
         // Cập nhật đơn hàng và state
-        const orderResponse = await axios.get(`http://localhost:8080/api/orders/findOrderById?id=${id}`);
+        const orderResponse = await axios.get(`http://localhost:8080/api/v1/orders/findOrderById?id=${id}`);
         if (orderResponse.status === 200) {
             const order = orderResponse.data;
             console.log('Updated order:', order);
@@ -883,7 +884,7 @@ export default function OrderDetail() {
             const orderTotal = orderTotalInitial - giamGia;
             // Cập nhật state để hiển thị trên giao diện
 
-            const updateOrderResponse = await axios.put(`http://localhost:8080/api/orders/update?id=${id}`, {
+            const updateOrderResponse = await axios.put(`http://localhost:8080/api/v1/orders/update?id=${id}`, {
                 voucherId: order.voucher ? order.voucher.id : null,
                 orderTotal: orderTotal,
                 customerId: order.customer ? order.customer.id : null,
@@ -1181,7 +1182,7 @@ export default function OrderDetail() {
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                 }}
-                                            >{`Chọn thành công khách hàng "${selectedCustomer.customerName}"`}</h7>
+                                            >{`Chọn thành công khách hàng "${selectedCustomer.usersName}"`}</h7>
                                         }
                                         type="success"
                                         closable
@@ -1222,7 +1223,7 @@ export default function OrderDetail() {
                     {console.log('Selected Customer:', selectedCustomer)} */}
                     {selectedCustomer && (
                         <>
-                            <p>{`Tên: ${selectedCustomer.customerName}`}</p>
+                            <p>{`Tên: ${selectedCustomer.usersName}`}</p>
                             <p>{`Email: ${selectedCustomer.email}`}</p>
                             <p>{`Số điện thoại: ${selectedCustomer.phoneNumber}`}</p>
                             {/* Thêm các trường khác nếu cần */}
@@ -1249,24 +1250,34 @@ export default function OrderDetail() {
                             {isDeliveryEnabled && (
                                 <Row gutter={[8, 16]}>
                                     <Col span={12}>
-                                        <div class="col-md-12">
-                                            <label for="validationCustom01" class="form-label">
+                                        <div className="col-md-12">
+                                            <label for="validationCustom01" className="form-label">
                                                 Họ và tên
                                             </label>
-                                            <input type="text" class="form-control" id="validationCustom01" required />
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="validationCustom01"
+                                                required
+                                            />
                                         </div>
                                     </Col>
                                     <Col span={12}>
-                                        <div class="col-md-12">
-                                            <label for="validationCustom01" class="form-label">
+                                        <div className="col-md-12">
+                                            <label for="validationCustom01" className="form-label">
                                                 Số điện thoại
                                             </label>
-                                            <input type="text" class="form-control" id="validationCustom01" required />
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="validationCustom01"
+                                                required
+                                            />
                                         </div>
                                     </Col>
                                     <Col span={8}>
-                                        <div class="col-md-12">
-                                            <label for="validationCustom01" class="form-label">
+                                        <div className="col-md-12">
+                                            <label for="validationCustom01" className="form-label">
                                                 Tỉnh/Thành phố
                                             </label>
                                             <br />
@@ -1286,8 +1297,8 @@ export default function OrderDetail() {
                                         </div>
                                     </Col>
                                     <Col span={8}>
-                                        <div class="col-md-12">
-                                            <label for="validationCustom01" class="form-label">
+                                        <div className="col-md-12">
+                                            <label for="validationCustom01" className="form-label">
                                                 Quận/huyện
                                             </label>
                                             <br />
@@ -1307,8 +1318,8 @@ export default function OrderDetail() {
                                         </div>
                                     </Col>
                                     <Col span={8}>
-                                        <div class="col-md-12">
-                                            <label for="validationCustom01" class="form-label">
+                                        <div className="col-md-12">
+                                            <label for="validationCustom01" className="form-label">
                                                 Xã/phường/thị trấn
                                             </label>
                                             <br />
@@ -1328,11 +1339,16 @@ export default function OrderDetail() {
                                         </div>
                                     </Col>
                                     <Col span={14}>
-                                        <div class="col-md-12">
-                                            <label for="validationCustom01" class="form-label">
+                                        <div className="col-md-12">
+                                            <label for="validationCustom01" className="form-label">
                                                 Địa chỉ cụ thể
                                             </label>
-                                            <input type="text" class="form-control" id="validationCustom01" required />
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="validationCustom01"
+                                                required
+                                            />
                                         </div>
                                     </Col>
                                 </Row>

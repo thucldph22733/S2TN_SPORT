@@ -3,8 +3,8 @@ package com.poly.springboot.service;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
-import com.poly.springboot.entity.Customer;
 import com.poly.springboot.entity.Order;
+import com.poly.springboot.entity.User;
 import com.poly.springboot.entity.Voucher;
 
 import java.util.List;
@@ -25,11 +25,13 @@ public interface OrderService {
 
     Boolean updateOrder(OrderRequestDto orderRequestDto,Long id);
 
+    Boolean updateOrders(OrderRequestDto orderRequestDto, Long id);
+
 //    List<OrderResponseDto> searchOrder(Integer pageNo,String keyword);
 
     List<SecondOrderResponseDto> getAllOrde();
 
-    Customer findCustomerByOrderId(Long orderId);
+    User findUserByOrderId(Long orderId);
     Voucher findVoucherByOrderId(Long orderId);
 
 }

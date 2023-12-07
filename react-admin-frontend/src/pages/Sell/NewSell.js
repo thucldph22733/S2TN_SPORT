@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { FaEdit } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import path_name from '~/core/constants/routers';
+import path_name from '~/constants/routers';
 
 export default function NewSell() {
     const {
@@ -19,7 +19,7 @@ export default function NewSell() {
     }, []);
 
     const loadOrder = async () => {
-        const result = await axios.get('http://localhost:8080/api/orders/getAllCompletedOrder');
+        const result = await axios.get('http://localhost:8080/api/v1/orders/getAllCompletedOrder');
         setOrder(result.data);
     };
 
@@ -34,7 +34,7 @@ export default function NewSell() {
     const createOrder = async () => {
         try {
             // Gọi API để tạo đơn hàng mới
-            const response = await axios.post('http://localhost:8080/api/orders/create', {
+            const response = await axios.post('http://localhost:8080/api/v1/orders/create', {
                 StatusId: 4,
                 // Thêm dữ liệu cần thiết cho đơn hàng mới vào đây
             });
@@ -57,7 +57,6 @@ export default function NewSell() {
         await createOrder();
         loadOrder(); // Load lại danh sách đơn hàng
     };
-
 
     const columnCart = [
         {
@@ -103,7 +102,12 @@ export default function NewSell() {
                 background: colorBgContainer,
             }}
         >
-            <Button type="primary" onClick={add} icon={<PlusOutlined />} style={{ float: 'right', marginLeft: '5px', marginBottom: '15px' }}>
+            <Button
+                type="primary"
+                onClick={add}
+                icon={<PlusOutlined />}
+                style={{ float: 'right', marginLeft: '5px', marginBottom: '15px' }}
+            >
                 Tạo đơn hàng
             </Button>
             <Table

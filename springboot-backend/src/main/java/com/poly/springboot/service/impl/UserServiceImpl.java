@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean updateUser(UserRequestDto requestDto, Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!", String.valueOf(id)));
         List<Role> roleList = roleRepository.findAllByRoleNameIn(requestDto.getRoleList());
         user.setUsersName(requestDto.getUserName());
         user.setPhoneNumber(requestDto.getPhoneNumber());
@@ -88,13 +88,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean deleteUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!", String.valueOf(id)));
 
         user.setDeleted(!user.getDeleted());
 
         userRepository.save(user);
 
         return true;
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+
+        return user;
     }
 
     private UserResponseDto mapUserToDto(User user) {

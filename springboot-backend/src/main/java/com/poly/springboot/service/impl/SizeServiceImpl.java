@@ -40,7 +40,7 @@ public class SizeServiceImpl implements SizeService {
     public Boolean deleteSize(Long id) {
 
         Size size = sizeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id kích thước này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id kích thước này!", String.valueOf(id)));
 
         size.setDeleted(!size.getDeleted());
 
@@ -69,7 +69,7 @@ public class SizeServiceImpl implements SizeService {
     public Boolean updateSize(SizeRequestDto sizeRequestDto, Long id) {
 
         Size size = sizeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id kích thước này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id kích thước này!", String.valueOf(id)));
 
         size.setSizeName(sizeRequestDto.getSizeName());
         size.setSizeDescribe(sizeRequestDto.getSizeDescribe());

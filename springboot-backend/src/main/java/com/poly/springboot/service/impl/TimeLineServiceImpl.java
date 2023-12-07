@@ -29,7 +29,7 @@ public class TimeLineServiceImpl implements TimeLineService {
                         o.getStatus(),
                         o.getOrder() != null ? o.getOrder().getId() : null,
                         o.getOrder() != null ? o.getOrder().getOrderTotal() : null,
-                        o.getOrder() != null && o.getOrder().getStaff() != null ? o.getOrder().getStaff().getStaffName() : null,
+                        o.getOrder() != null && o.getOrder().getUser() != null ? o.getOrder().getUser().getUsersName() : null,
                         o.getOrder() != null && o.getOrder().getPayment() != null ? o.getOrder().getPayment().getPaymentName() : null
 
                 )
@@ -51,7 +51,7 @@ public class TimeLineServiceImpl implements TimeLineService {
                         o.getStatus(),
                         o.getOrder() != null ? o.getOrder().getId() : null,
                         o.getOrder() != null ? o.getOrder().getOrderTotal() : null,
-                        o.getOrder() != null && o.getOrder().getStaff() != null ? o.getOrder().getStaff().getStaffName() : null,
+                        o.getOrder() != null && o.getOrder().getUser() != null ? o.getOrder().getUser().getUsersName() : null,
                         o.getOrder() != null && o.getOrder().getPayment() != null ? o.getOrder().getPayment().getPaymentName() : null
                 )
         ).collect(Collectors.toList());

@@ -58,13 +58,13 @@ const MainLayout = () => {
                             label: 'Thống kê',
                         },
                         {
-                            key: path_name.sell,
+                            key: path_name.order,
                             icon: <ShoppingCartOutlined style={{ fontSize: "16px" }} />,
                             label: 'Bán hàng',
 
                         },
                         {
-                            key: path_name.order,
+                            key: path_name.orderView,
                             icon: <FileDoneOutlined style={{ fontSize: "16px" }} />,
                             label: 'Đơn hàng',
                         },

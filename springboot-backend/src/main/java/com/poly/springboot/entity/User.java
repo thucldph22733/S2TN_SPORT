@@ -39,7 +39,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "birth_of_day")
     private Date birthOfDay;
 
-    @Column(name = "_password")
+    @Column(name = "password")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)

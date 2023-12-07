@@ -26,9 +26,7 @@ public class OrderServiceImpl implements OrderService {
     private AddressRepository addressRepository;
     private DeliveryRepository shippingMethodRepository;
     private PaymentRepository paymentMethodRepository;
-    private CustomerRepository customerRepository;
-    private StaffRepository staffRepository;
-
+    private UserRepository userRepository;
     private VoucherRepository voucherRepository;
 
     private TimeLineRepository timeLineRepository;
@@ -40,17 +38,15 @@ public class OrderServiceImpl implements OrderService {
                             AddressRepository addressRepository,
                             DeliveryRepository shippingMethodRepository,
                             PaymentRepository paymentMethodRepository,
-                            CustomerRepository customerRepository,
-                            StaffRepository staffRepository,
+                            UserRepository userRepository,
                             VoucherRepository voucherRepository,
                             TimeLineRepository timeLineRepository) {
         this.orderRepository = orderRepository;
         this.orderStatusRepository = orderStatusRepository;
         this.addressRepository = addressRepository;
         this.shippingMethodRepository = shippingMethodRepository;
+        this.userRepository = userRepository;
         this.paymentMethodRepository = paymentMethodRepository;
-        this.customerRepository = customerRepository;
-        this.staffRepository = staffRepository;
         this.voucherRepository = voucherRepository;
         this.timeLineRepository = timeLineRepository;
     }
@@ -62,11 +58,10 @@ public class OrderServiceImpl implements OrderService {
                 order -> new OrderResponseDto(
                         order.getId(),
                         order.getVoucher() != null ? order.getVoucher().getId() : null,
-                        order.getCustomer() != null ? order.getCustomer().getId() : null,
+                        order.getUser() != null ? order.getUser().getId() : null,
                         order.getOrderDate(),
-                        order.getStaff() != null ? order.getStaff().getStaffName() : "",
-                        order.getCustomer() != null ? order.getCustomer().getCustomerName() : "",
-                        order.getCustomer() != null ? order.getCustomer().getPhoneNumber() : "",
+                        order.getUser() != null ? order.getUser().getUsersName() : "",  // Thay thế từ getCustomer() sang getUser()
+                        order.getUser() != null ? order.getUser().getPhoneNumber() : "",  // Thay thế từ getCustomer() sang getUser()
                         order.getDelivery() != null ? order.getDelivery().getDeliveryName() : "",
                         order.getPayment() != null ? order.getPayment().getPaymentName() : "",
                         order.getAddress() != null ? order.getAddress().getAddressDetail() : "",
@@ -79,6 +74,7 @@ public class OrderServiceImpl implements OrderService {
                         order.getOrderTotal(),
                         order.getOrderTotalInitial(),
                         order.getDiscountMoney()
+
                 )
         ).collect(Collectors.toList());
     }
@@ -89,11 +85,10 @@ public class OrderServiceImpl implements OrderService {
                 order -> new OrderResponseDto(
                         order.getId(),
                         order.getVoucher() != null ? order.getVoucher().getId() : null,
-                        order.getCustomer() != null ? order.getCustomer().getId() : null,
+                        order.getUser() != null ? order.getUser().getId() : null,
                         order.getOrderDate(),
-                        order.getStaff() != null ? order.getStaff().getStaffName() : "",
-                        order.getCustomer() != null ? order.getCustomer().getCustomerName() : "",
-                        order.getCustomer() != null ? order.getCustomer().getPhoneNumber() : "",
+                        order.getUser() != null ? order.getUser().getUsersName() : "",  // Thay thế từ getCustomer() sang getUser()
+                        order.getUser() != null ? order.getUser().getPhoneNumber() : "",  // Thay thế từ getCustomer() sang getUser()
                         order.getDelivery() != null ? order.getDelivery().getDeliveryName() : "",
                         order.getPayment() != null ? order.getPayment().getPaymentName() : "",
                         order.getAddress() != null ? order.getAddress().getAddressDetail() : "",
@@ -120,10 +115,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Customer findCustomerByOrderId(Long orderId) {
-        Customer customer = orderRepository.findCustomerByOrderId(orderId)
+    public User findUserByOrderId(Long orderId) {
+        User user = orderRepository.findUserByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("hóa đơn", String.valueOf(orderId)));
-        return customer;
+        return user;
     }
 
     @Override
@@ -137,16 +132,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Boolean createOrder(OrderRequestDto orderRequestDto) {
 
-        Long customerId = orderRequestDto.getCustomerId();
-        Long staffId = orderRequestDto.getStaffId();
+        Long userId = orderRequestDto.getUserId();
         Long paymentId = orderRequestDto.getPaymentId();
         Long deliveryId = orderRequestDto.getDeliveryId();
 
 // Kiểm tra và tìm đối tượng Customer
-        Customer customer = customerId != null ? customerRepository.findById(customerId).orElse(null) : null;
-
-// Kiểm tra và tìm đối tượng Staff
-        Staff staff = staffId != null ? staffRepository.findById(staffId).orElse(null) : null;
+        User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
 
 // Kiểm tra và tìm đối tượng Payment
         Payment payment = paymentId != null ? paymentMethodRepository.findById(paymentId).orElse(null) : null;
@@ -170,8 +161,7 @@ public class OrderServiceImpl implements OrderService {
 
 // Tạo đối tượng Order và set các giá trị đã tìm được
         Order order = new Order();
-        order.setCustomer(customer);
-        order.setStaff(staff);
+        order.setUser(user);
         order.setDelivery(delivery);
         order.setPayment(payment);  
         order.setOrderStatus(orderStatus);
@@ -195,8 +185,7 @@ public class OrderServiceImpl implements OrderService {
     public Boolean updateOrder(OrderRequestDto orderRequestDto, Long id) {
         try {
             // Lấy thông tin các đối tượng liên quan từ ID
-            Customer customer = orderRequestDto.getCustomerId() != null ? customerRepository.findById(orderRequestDto.getCustomerId()).orElse(null) : null;
-            Staff staff = orderRequestDto.getStaffId() != null ? staffRepository.findById(orderRequestDto.getStaffId()).orElse(null) : null;
+            User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
             Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
             Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
             OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
@@ -211,8 +200,55 @@ public class OrderServiceImpl implements OrderService {
                     });
 
             // Cập nhật thông tin đơn hàng
-            order.setCustomer(customer);
-            order.setStaff(staff);
+            order.setUser(user);
+            order.setDelivery(delivery);
+            order.setPayment(payment);
+            order.setOrderStatus(orderStatus);
+            order.setAddress(address);
+            order.setVoucher(voucher);
+            order.setCategoryOrder(orderRequestDto.getCategoryOrder());
+            order.setOrderTotal(orderRequestDto.getOrderTotal());
+            order.setNote(orderRequestDto.getNote());
+            order.setOrderTotalInitial(order.getOrderTotalInitial());
+
+            // Tính toán giảm giá và cập nhật
+            if (voucher != null) {
+                double discountRate = voucher.getDiscountRate();
+                double giamGia = (orderRequestDto.getOrderTotalInitial() * discountRate) / 100;
+                order.setDiscountMoney(giamGia);
+                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
+            }
+
+            // Lưu đơn hàng và trả về true
+            orderRepository.save(order);
+            return true;
+        } catch (Exception e) {
+            // Xử lý ngoại lệ và log lỗi nếu cần
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean updateOrders(OrderRequestDto orderRequestDto, Long id) {
+        try {
+            // Lấy thông tin các đối tượng liên quan từ ID
+            User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
+            Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
+            Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
+            OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
+            Address address = orderRequestDto.getAddressId() != null ? addressRepository.findById(orderRequestDto.getAddressId()).orElse(null) : null;
+            Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
+
+            // Lấy thông tin đơn hàng từ ID
+            Order order = orderRepository.findById(id)
+                    .orElseThrow(() -> {
+                        System.out.println("Order not found with id: " + id);
+                        return new ResourceNotFoundException("Hóa đơn", String.valueOf(id));
+                    });
+
+            // Cập nhật thông tin đơn hàng
+            order.setUser(user);
             order.setDelivery(delivery);
             order.setPayment(payment);
             order.setOrderStatus(orderStatus);
@@ -285,11 +321,10 @@ public class OrderServiceImpl implements OrderService {
                 order -> new OrderResponseDto(
                         order.getId(),
                         order.getVoucher().getId(),
-                        order.getCustomer().getId(),
+                        order.getUser().getId(),
                         order.getOrderDate(),
-                        order.getStaff().getStaffName(),
-                        order.getCustomer().getCustomerName(),
-                        order.getCustomer().getPhoneNumber(),
+                        order.getUser().getUsersName(),
+                        order.getUser().getPhoneNumber(),
                         order.getDelivery().getDeliveryName(),
                         order.getPayment().getPaymentName(),
                         order.getAddress().getAddressDetail(),

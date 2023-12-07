@@ -2,7 +2,6 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.MaterialRequestDto;
 import com.poly.springboot.entity.Material;
-import com.poly.springboot.entity.Material;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.MaterialRepository;
@@ -41,7 +40,7 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public Boolean deleteMaterial(Long id) {
         Material material = materialRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id chất liệu này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id chất liệu này!", String.valueOf(id)));
 
         material.setDeleted(!material.getDeleted());
 
@@ -72,7 +71,7 @@ public class MaterialServiceImpl implements MaterialService {
     public Boolean updateMaterial(MaterialRequestDto materialRequestDto, Long id) {
 
         Material material = materialRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id chất liệu này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id chất liệu này!", String.valueOf(id)));
 
         material.setMaterialName(materialRequestDto.getMaterialName());
         material.setMaterialDescribe(materialRequestDto.getMaterialDescribe());

@@ -21,6 +21,9 @@ import Supplier from './pages/Products/Supplier';
 import Dashboard from './pages/Dashboard/Dashboard';
 import User from './pages/User/User';
 import Role from './pages/Role/Role';
+import NewSell from './pages/Sell/NewSell';
+import OrderDetail from './pages/Sell/OrderDetail';
+import OrderView from './pages/Orders/orderView';
 function App() {
 
     const router = createBrowserRouter([
@@ -82,7 +85,7 @@ function App() {
                 },
                 {
                     path: path_name.order,
-                    element: <Order />,
+                    element: <NewSell />,
                 },
                 {
                     path: path_name.user,
@@ -95,6 +98,14 @@ function App() {
                 {
                     path: path_name.voucher,
                     element: <Voucher />,
+                },
+                {
+                    path: path_name.orderDetail + '/:id',
+                    element: <OrderDetail />,
+                },
+                {
+                    path: path_name.orderView + '/:id',
+                    element: <OrderView />,
                 },
             ],
 

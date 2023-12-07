@@ -5,8 +5,8 @@ import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
-import com.poly.springboot.entity.Customer;
 import com.poly.springboot.entity.Order;
+import com.poly.springboot.entity.User;
 import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/orders/")
+@RequestMapping("/api/v1/orders/")
 @Tag(name = "Orders",description = "( Rest API Hiển thị, thêm, sửa, phân trang, tìm kiếm, lọc hóa đơn )")
 @Validated
 public class OrderController {
@@ -98,12 +98,24 @@ public class OrderController {
         }
     }
 
+    @PutMapping ("updatetimeline")
+    public ResponseEntity<ResponseDto> updateOrderTimeLine(@Valid @RequestBody OrderRequestDto orderRequestDto,@RequestParam Long id){
+        Boolean isUpdated = orderService.updateOrder(orderRequestDto,id);
+        if (isUpdated){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
+    }
+
     @GetMapping("findCustomerByOrderId")
-    public ResponseEntity<Customer> getCustomerByOrderId(@RequestParam Long id) {
-        Customer customer = orderService.findCustomerByOrderId(id);
+    public ResponseEntity<User> getCustomerByOrderId(@RequestParam Long id) {
+        User user = orderService.findUserByOrderId(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(customer);
+                .body(user);
     }
 
     @GetMapping("findVoucherByOrderId")

@@ -62,7 +62,7 @@ public class ProductServiceImpl implements ProductService {
     public Boolean deleteProduct(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!", String.valueOf(id)));
 
         product.setDeleted(!product.getDeleted());
         productRepository.save(product);
@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Boolean updateProduct(ProductRequestDto productRequestDto, Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!", String.valueOf(id)));
 
         product.setCategory(categoryRepository.findById(productRequestDto.getCategoryId()).orElse(null));
         product.setClub(clubRepository.findById(productRequestDto.getClubId()).orElse(null));
@@ -106,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
     public Product findProductById(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!", String.valueOf(id)));
 
         return product;
     }

@@ -32,11 +32,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "staff_id")
-    private Staff staff;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "delivery_id")

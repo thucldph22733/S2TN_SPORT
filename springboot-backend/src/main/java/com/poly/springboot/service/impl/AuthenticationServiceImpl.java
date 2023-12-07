@@ -13,13 +13,14 @@ import com.poly.springboot.repository.RoleRepository;
 import com.poly.springboot.repository.UserRepository;
 import com.poly.springboot.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Kiểm tra xem vai trò "User" đã tồn tại hay chưa
         Role userRole = roleRepository.findByRoleName("USER")
-                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy vai trò này!"));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy vai trò này!", String.valueOf(id)));
 
         User user = User.builder()
                 .usersName(registerRequestDto.getUserName())
@@ -60,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 loginRequestDto.getEmail(),
                 loginRequestDto.getPassword()));
 
-        var user = userRepository.findByEmailAndDeletedTrue(loginRequestDto.getEmail()).orElseThrow(()->new ResourceNotFoundException("Không tìm thấy email này!"));
+        var user = userRepository.findByEmailAndDeletedTrue(loginRequestDto.getEmail()).orElseThrow(()->new ResourceNotFoundException("Không tìm thấy email này!", String.valueOf(id)));
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
@@ -77,7 +78,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuthenticationResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
         String userEmail = jwtService.extractUsername(refreshTokenRequestDto.getToken());
         User user = userRepository.findByEmailAndDeletedTrue(userEmail)
-                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy email người  này!"));
+                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy email người  này!", String.valueOf(id)));
 
             if (jwtService.isTokenValid(refreshTokenRequestDto.getToken(), user)) {
                 String accessToken = jwtService.generateToken(user);

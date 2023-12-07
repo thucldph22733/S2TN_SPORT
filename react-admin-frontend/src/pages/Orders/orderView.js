@@ -40,22 +40,190 @@ import { useParams } from 'react-router-dom';
 import TextArea from 'antd/es/input/TextArea';
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline';
 import { FaBug, FaRegCalendarCheck, FaRegFileAlt } from 'react-icons/fa';
+import { Scrollbars } from 'react-custom-scrollbars';
 export default function OrderView() {
     const {
         token: { colorBgContainer },
     } = theme.useToken();
     const { id } = useParams();
     const [order, setOrder] = useState({}); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
+    const [timeLine, setTimeLine] = useState([]); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
+    const [timeLines, setTimeLines] = useState([]); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
+    const [productDetails, setProductDetails] = useState([]);
 
     useEffect(() => {
         loadOrder();
+        findAllTimeLineByOrderId();
+        loadTimeLine();
+        loadOrderDetails();
     }, []);
 
     const loadOrder = async () => {
         const result = await axios.get(`http://localhost:8080/api/orders/findOrderById?id=${id}`);
         setOrder(result.data);
     };
+    const loadTimeLine = async () => {
+        const result = await axios.get(`http://localhost:8080/api/timeline/findByOrderIdAndStatus?id=${id}`);
+        setTimeLines(result.data);
+    };
+    const findAllTimeLineByOrderId = async () => {
+        try {
+            const result = await axios.get(`http://localhost:8080/api/timeline/findAllTimelineByOrderId?id=${id}`);
+            const convertedTimeline = result.data.map((event) => ({
+                title: getStatusTitle(event.status),
+                subtitle: formatDate(event.createDate),
+                color: getStatusColor(event.status),
+                icon: getIconByStatus(event.status),
+            }));
+            setTimeLine(convertedTimeline);
+        } catch (error) {
+            console.error('Error fetching timeline:', error);
+        }
+    };
 
+    const getStatusTitle = (status) => {
+        // Logic chuyển đổi status sang title tương ứng
+        // Ví dụ:
+        if (status === 1) {
+            return 'Tạo hóa đơn';
+        } else if (status === 2) {
+            return 'Đã thanh toán';
+        }
+        return 'Khác';
+    };
+
+    const formatDate = (dateString) => {
+        // Logic chuyển đổi ngày tháng nếu cần thiết
+        // Ví dụ: return new Date(dateString).toLocaleString();
+        return dateString;
+    };
+
+    const getStatusColor = (status) => {
+        // Logic chuyển đổi màu sắc tùy thuộc vào status
+        // Ví dụ:
+        return status === 1 ? 'green' : '#87a2c7';
+    };
+
+    const getIconByStatus = (status) => {
+        // Logic chuyển đổi biểu tượng tùy thuộc vào status
+        // Ví dụ:
+        return status === 1 ? FaRegFileAlt : FaRegCalendarCheck;
+    };
+
+    const formatCurrency = (amount) => {
+        const roundedAmount = Math.floor(amount);
+        const formattedAmount = new Intl.NumberFormat('vi-VN').format(roundedAmount);
+        return `${formattedAmount.replace('.', ',')} đ`;
+    };
+    
+    const loadOrderDetails = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/orderDetails/getByOrderId?id=${id}`);
+            if (response.status === 200) {
+                const updatedOrderDetails = response.data.map((orderDetail) => {
+                    const productDetailId = orderDetail.productDetail?.id;
+                    orderDetail.productDetailId = productDetailId;
+                    return orderDetail;
+                });
+                setProductDetails(updatedOrderDetails);
+                // loadCustomerById();
+            } else {
+                console.error('Đơn hàng đang trống');
+            }
+        } catch (error) {
+            console.error('Error loading order details:', error);
+        }
+    };
+
+    const columnCart = [
+        {
+            title: '#',
+            dataIndex: 'index',
+            width: 50,
+            render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
+        },
+        {
+            title: 'Số tiền',
+            dataIndex: 'orderTotal',
+            width: 60,
+            render: (text, record) => formatCurrency(record.orderTotal),
+        },
+        {
+            title: 'Thời gian',
+            dataIndex: 'createDate',
+            width: 100,
+        },
+        {
+            title: 'Phương thức thanh toán',
+            dataIndex: 'paymentName',
+            width: 60,
+        },
+        {
+            title: 'Nhân viên xác nhận',
+            dataIndex: 'staffName',
+            width: 60,
+        },
+        {
+            title: 'Ghi chú',
+            dataIndex: 'note',
+            width: 60,
+        },
+    ];
+    const columnProduct = [
+        {
+            title: '#',
+            dataIndex: 'index',
+            width: 40,
+            render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
+        },
+        {
+            title: 'Ảnh',
+            dataIndex: '',
+            width: 80,
+            render: (record) => (
+                <Row gutter={[5]}>
+                    <Col span={12}>
+                        <Image width={150} height={130} src={record.productAvatar} alt="Avatar" />
+                    </Col>
+                </Row>
+            ),
+        },
+        {
+            title: 'Sản phẩm',
+            dataIndex: '',
+            width: 110,
+            render: (record) => (
+                <Row>
+                    <Col span={16}>
+                        <h5>
+                            {record.productName} [{record.colorName} - {record.sizeName}]
+                        </h5>
+                    </Col>
+                    <Col span={16}>
+                        <h6>
+                            Đơn giá: <span style={{ color: 'red' }}>{formatCurrency(record.priceSecond)}</span>
+                        </h6>
+                    </Col>
+                </Row>
+            ),
+        },
+        {
+            title: 'Số lượng',
+            dataIndex: 'quantity',
+            width: 50,
+        },
+        {
+            title: 'Tổng tiền',
+            dataIndex: 'price',
+            width: 50,
+            render: (text, record) => ({
+                children: formatCurrency(record.price),
+                props: {
+                    style: { color: 'red' }, // Màu sắc bạn muốn đặt
+                },
+            }),
+        },
+    ];
     return (
         <>
             <div
@@ -68,6 +236,31 @@ export default function OrderView() {
                     background: colorBgContainer,
                 }}
             >
+                <div>
+                    <Scrollbars
+                        autoHide={false}
+                        style={{
+                            display: 'flex',
+                            height: '240px',
+                            flexWrap: 'nowrap',
+                            overflowX: 'scroll',
+                        }}
+                    >
+                        <Timeline minEvents={9} placeholder>
+                            {timeLine.map((event, index) => (
+                                <TimelineEvent
+                                    key={index}
+                                    style={{ display: 'inline-block', marginRight: '20px' }}
+                                    color={event.color}
+                                    icon={event.icon}
+                                    title={event.title}
+                                    subtitle={event.subtitle}
+                                />
+                            ))}
+                        </Timeline>
+                    </Scrollbars>
+                </div>
+
                 <div style={{ background: '#b6cdd1' }}>
                     <h4>Thông tin đơn hàng</h4>
                 </div>
@@ -76,7 +269,7 @@ export default function OrderView() {
                         <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span>Trạng thái</span>
                             <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {order.orderStatus && order.orderStatus.statusName}
+                                {order.orderStatus && order.orderStatus.statusName}
                             </span>
                         </Col>
 
@@ -91,16 +284,14 @@ export default function OrderView() {
                         <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span>Tổng tiền</span>
                             <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {order.orderTotal}
+                                {formatCurrency(order.orderTotal)}
                             </span>
                         </Col>
                     </Col>
                     <Col span={8}>
                         <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span>Mã đơn hàng</span>
-                            <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                                #HD{order.id}
-                            </span>
+                            <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>#HD{order.id}</span>
                         </Col>
                         <br />
                         <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -115,20 +306,47 @@ export default function OrderView() {
                         <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span>Số điện thoại</span>
                             <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {order.customer && order.customer.phoneNumber}
-                            {!order.customer && <p>Không có</p>}
+                                {order.customer && order.customer.phoneNumber}
+                                {!order.customer && <p>Không có</p>}
                             </span>
                         </Col>
                         <br />
                         <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span>địa chỉ</span>
                             <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {order.customer && order.customer.address}
-                            {!order.customer && <p>Không có</p>}
+                                {order.customer && order.customer.address}
+                                {!order.customer && <p>Không có</p>}
                             </span>
                         </Col>
                     </Col>
                 </Row>
+                <div style={{ borderBottom: '2px solid black' }}>
+                    <h4>Lịch sử thanh toán</h4>
+                </div>
+                <Table
+                    columns={columnCart}
+                    dataSource={timeLines}
+                    pagination={{
+                        pageSize: 50,
+                    }}
+                    scroll={{
+                        y: 240,
+                    }}
+                />
+                <div style={{ borderBottom: '2px solid black' }}>
+                    <h4>Sản phẩm</h4>
+                </div>
+                <Table
+                    key={productDetails.length} // Thay đổi key khi có sự thay đổi trong productDetails
+                    columns={columnProduct}
+                    dataSource={productDetails}
+                    pagination={{
+                        pageSize: 50,
+                    }}
+                    scroll={{
+                        y: 240,
+                    }}
+                />
             </div>
         </>
     );

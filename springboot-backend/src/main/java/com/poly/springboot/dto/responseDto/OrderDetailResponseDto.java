@@ -30,6 +30,8 @@ public class OrderDetailResponseDto {
 
     private Double price;
 
+    private Double priceSecond;
+
     private Double orderTotal;
 
     private Integer status;

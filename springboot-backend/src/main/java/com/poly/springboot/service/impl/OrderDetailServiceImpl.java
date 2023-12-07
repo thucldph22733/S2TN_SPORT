@@ -50,6 +50,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
                                 orderDetail.getQuantity(),
                                 orderDetail.getPrice(),
+                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getPrice(): 0,
                                 orderDetail.getOrder().getOrderTotal(),
                                 orderDetail.getStatus(),
                                 orderDetail.getNote())
@@ -163,6 +164,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
                         orderDetail.getQuantity(),
                         orderDetail.getPrice(),
+                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getPrice(): 0,
                         orderDetail.getOrder().getOrderTotal(),
                         orderDetail.getStatus(),
                         orderDetail.getNote())

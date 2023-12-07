@@ -25,7 +25,7 @@ public class AddressRequestDto {
     private String addressDetail;
 
     @NotBlank(message = "Phường/xã không được để trống!")
-    private String region;
+    private String ward;
 
     @NotBlank(message = "Quận/huyện phố không được để trống!")
     private  String district;

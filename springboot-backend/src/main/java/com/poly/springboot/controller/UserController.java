@@ -35,7 +35,7 @@ public class UserController {
 
     @GetMapping("getAll")
     public ResponseEntity<?> getStaffs(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                           @RequestParam(defaultValue = "10") Integer pageSize,
+                                       @RequestParam(defaultValue = "10") Integer pageSize,
                                        @RequestParam(required = false) String name,
                                        @RequestParam(required = false) String phoneNumber,
                                        @RequestParam(required = false) String email,

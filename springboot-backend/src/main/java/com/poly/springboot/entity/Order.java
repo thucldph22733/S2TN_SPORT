@@ -46,16 +46,16 @@ public class Order {
     private String note;
 
     @Column(name = "recipient_name")
-    private String recipientName;
+    private String recipientName;   // ten nguoi nhan
 
     @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "address_detail")
-    private String addressDetail;
+    private String addressDetail;   // so nha, ngo, duong
 
-    @Column(name = "region")  // phuong/ xa
-    private String region;
+    @Column(name = "ward")  // phuong/ xa
+    private String ward;
 
     @Column(name = "district") //quan/ huyen
     private String district;

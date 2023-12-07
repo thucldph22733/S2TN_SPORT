@@ -46,14 +46,13 @@ public class AddressServiceImpl implements AddressService {
         addressRepository.save(address);
         return true;
     }
-
     private void mapAddressRequestDtoToEntity(AddressRequestDto addressRequestDto, Address address, User user) {
         address.setRecipientName(addressRequestDto.getRecipientName());
         address.setPhoneNumber(addressRequestDto.getPhoneNumber());
         address.setDistrict(addressRequestDto.getDistrict());
         address.setCity(addressRequestDto.getCity());
         address.setAddressDetail(addressRequestDto.getAddressDetail());
-        address.setRegion(addressRequestDto.getRegion());
+        address.setWard(addressRequestDto.getWard());
         address.setDeleted(addressRequestDto.getDeleted());
 
         if (user != null) {

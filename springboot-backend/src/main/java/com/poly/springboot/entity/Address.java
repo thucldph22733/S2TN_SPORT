@@ -27,8 +27,8 @@ public class Address extends BaseEntity{
     @Column(name = "address_detail")
     private String addressDetail;
 
-    @Column(name = "region")  // phuong/ xa
-    private String region;
+    @Column(name = "ward")  // phuong/ xa
+    private String ward;
 
     @Column(name = "district") //quan/ huyen
     private String district;

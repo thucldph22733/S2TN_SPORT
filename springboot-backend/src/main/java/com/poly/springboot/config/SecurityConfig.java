@@ -3,6 +3,7 @@ package com.poly.springboot.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST_URL = {
             "" +
                     "/api/v1/**",
+            "/api/v1/roles/**",
             "/api/v1/auth/**",
             "/v2/api-docs",
             "/v3/api-docs",
@@ -39,8 +41,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
-                .csrf(AbstractHttpConfigurer::disable)  //Vô hiệu hóa CSRF (Cross-Site Request Forgery) vì ứng dụng sử dụng token JWT để xác thực thay vì CSRF token.
+                .csrf(AbstractHttpConfigurer::disable)//Vô hiệu hóa CSRF (Cross-Site Request Forgery) vì ứng dụng sử dụng token JWT để xác thực thay vì CSRF token.
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL) // Không yêu cầu xác thực
                                 .permitAll()

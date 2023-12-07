@@ -31,6 +31,8 @@ public class OrderServiceImpl implements OrderService {
 
     private VoucherRepository voucherRepository;
 
+    private TimeLineRepository timeLineRepository;
+
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
@@ -40,7 +42,8 @@ public class OrderServiceImpl implements OrderService {
                             PaymentRepository paymentMethodRepository,
                             CustomerRepository customerRepository,
                             StaffRepository staffRepository,
-                            VoucherRepository voucherRepository) {
+                            VoucherRepository voucherRepository,
+                            TimeLineRepository timeLineRepository) {
         this.orderRepository = orderRepository;
         this.orderStatusRepository = orderStatusRepository;
         this.addressRepository = addressRepository;
@@ -49,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
         this.customerRepository = customerRepository;
         this.staffRepository = staffRepository;
         this.voucherRepository = voucherRepository;
+        this.timeLineRepository = timeLineRepository;
     }
 
 
@@ -178,6 +182,12 @@ public class OrderServiceImpl implements OrderService {
 
 // Lưu vào cơ sở dữ liệu
         orderRepository.save(order);
+
+        TimeLine timeLine = new TimeLine();
+        timeLine.setOrder(order);
+        timeLine.setStatus(1);
+        timeLineRepository.save(timeLine);
+
         return true;
     }
 
@@ -221,6 +231,21 @@ public class OrderServiceImpl implements OrderService {
                 order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
             }
 
+            // Kiểm tra xem có TimeLine nào đã được tạo mới cho đơn hàng với trạng thái là 2 không
+            TimeLine existingTimeLine = timeLineRepository.findByOrderAndStatus(order, 2);
+
+            if (existingTimeLine == null) {
+                // Nếu không có, hãy tạo mới TimeLine
+                TimeLine timeLine = new TimeLine();
+                timeLine.setOrder(order);
+                timeLine.setStatus(2);
+                timeLine.setNote("Đã thanh toán");
+                timeLineRepository.save(timeLine);
+            } else {
+                // TimeLine đã tồn tại
+            }
+
+            // Lưu đơn hàng và trả về true
             orderRepository.save(order);
             return true;
         } catch (Exception e) {
@@ -229,6 +254,7 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
     }
+
 
 
 

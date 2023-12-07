@@ -20,6 +20,7 @@ import {
     Popconfirm,
     Input,
     Radio,
+    Switch,
 } from 'antd';
 import { useState } from 'react';
 import {
@@ -82,6 +83,7 @@ export default function OrderDetail() {
     const [orderTotalInitial, setOrderTotalInitial] = useState(0);
     const [customerPayment, setCustomerPayment] = useState(0);
     const [canCreateOrder, setCanCreateOrder] = useState(false);
+    const [isCreatingOrder, setIsCreatingOrder] = useState(false);
     const { id } = useParams();
     const { Option } = Select;
     const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
@@ -259,17 +261,6 @@ export default function OrderDetail() {
         }
     };
 
-    // const loadCustomerById = async () => {
-    //     try {
-    //         const response = await axios.get(`http://localhost:8080/api/orders/findCustomerByOrderId?id=${id}`);
-    //         setCustomer(response.data);
-    //     } catch (error) {
-    //         console.error('Error loading customer:', error);
-    //         // Xử lý lỗi ở đây nếu cần
-    //         return null;
-    //     }
-    // };
-
     const loadProductDetails = async () => {
         try {
             const response = await axios.get('http://localhost:8080/api/productDetails/getAll');
@@ -302,36 +293,12 @@ export default function OrderDetail() {
         }
     };
     const handleCustomerSelect = async (value, option) => {
-        // const customerId = value;
         console.log('aaaaaaaaaaaaaaaa', value);
         setSelectedCustomerId(value);
-        // handleCustomerSelection(customerId);
         try {
-            // Gọi API để cập nhật order với thông tin khách hàng mới
-            // const response = await axios.put(`http://localhost:8080/api/orders/update?id=${id}`, {
-            //     customerId: customerId,
-            //     orderTotal: orderTotal,
-            //     discountMoney: disCountMoney,
-            //     orderTotalInitial: orderTotalInitial,
-            //     deliveryId: '',
-            //     paymentId: selectedPaymentId,
-            //     addressId: '',
-            //     statusId: 1,
-            //     note: note,
-            //     categoryOrder: 'Đơn mới',
-            //     // Các trường khác...
-            // });
-
-            // if (response.status === 200) {
             console.log('Order đã được cập nhật với khách hàng mới');
-            // Load lại danh sách khách hàng
             loadCustomerOptions();
-            // loadCustomerById();
-            setShowSuccessAlertCustonmer(true); // Hiển thị Alert khi cập nhật thành công
-
-            // } else {
-            //     console.error('Có lỗi xảy ra khi cập nhật order');
-            // }
+            setShowSuccessAlertCustonmer(true);
         } catch (error) {
             console.error('Lỗi khi gọi API:', error);
         }
@@ -347,17 +314,6 @@ export default function OrderDetail() {
         setSelectedCustomer(null);
         setSelectedCustomerId(null);
         // Các bước xử lý khác (nếu cần)
-    };
-
-    const handleCustomerSelection = (customerId) => {
-        // Thực hiện các thao tác khi chọn khách hàng, ví dụ: lưu ID vào state order
-        setOrder({
-            ...order,
-            customerId: customerId,
-        });
-
-        // Gọi hàm để load thông tin khách hàng từ server
-        // loadCustomerById();
     };
 
     const handleQuantityChange = async (record, value) => {
@@ -785,11 +741,7 @@ export default function OrderDetail() {
     };
     const handleCreateOrder = async () => {
         try {
-            // const customerIdResponse = await axios.get(
-            //     `http://localhost:8080/api/orders/findCustomerByOrderId?id=${id}`,
-            // );
-            // const customerId = customerIdResponse.data.id;
-            // Thực hiện cập nhật thông tin trên server
+            setIsCreatingOrder(true);
             const response = await axios.put(`http://localhost:8080/api/orders/update?id=${id}`, {
                 voucherId: selectedVoucherId,
                 orderTotal: orderTotal,
@@ -807,15 +759,14 @@ export default function OrderDetail() {
 
             if (response.status === 200) {
                 console.log('Order đã được cập nhật với thông tin mới');
-
-                // Hiển thị thông báo thành công nếu đủ tiền
                 message.success('Đơn hàng đã được tạo thành công');
             }
         } catch (error) {
             console.error('Lỗi khi cập nhật thông tin đơn hàng:', error);
-
             // Hiển thị thông báo lỗi nếu có lỗi
             message.error('Có lỗi xảy ra khi tạo đơn hàng');
+        } finally {
+            setIsCreatingOrder(false);
         }
     };
 
@@ -953,6 +904,11 @@ export default function OrderDetail() {
             console.error('Có lỗi xảy ra khi lấy thông tin order');
             return null;
         }
+    };
+    const [isDeliveryEnabled, setDeliveryEnabled] = useState(false);
+
+    const handleSwitchChange = (checked) => {
+        setDeliveryEnabled(checked);
     };
     return (
         <>
@@ -1289,12 +1245,107 @@ export default function OrderDetail() {
                         Khách hàng
                     </div>
                     <Row>
-                        <Col span={16}></Col>
+                        <Col span={16}>
+                            {isDeliveryEnabled && (
+                                <Row gutter={[8, 16]}>
+                                    <Col span={12}>
+                                        <div class="col-md-12">
+                                            <label for="validationCustom01" class="form-label">
+                                                Họ và tên
+                                            </label>
+                                            <input type="text" class="form-control" id="validationCustom01" required />
+                                        </div>
+                                    </Col>
+                                    <Col span={12}>
+                                        <div class="col-md-12">
+                                            <label for="validationCustom01" class="form-label">
+                                                Số điện thoại
+                                            </label>
+                                            <input type="text" class="form-control" id="validationCustom01" required />
+                                        </div>
+                                    </Col>
+                                    <Col span={8}>
+                                        <div class="col-md-12">
+                                            <label for="validationCustom01" class="form-label">
+                                                Tỉnh/Thành phố
+                                            </label>
+                                            <br />
+                                            <Select
+                                                defaultValue="lucy"
+                                                style={{
+                                                    width: '100%',
+                                                }}
+                                                allowClear
+                                                options={[
+                                                    {
+                                                        value: 'lucy',
+                                                        label: 'Lucy',
+                                                    },
+                                                ]}
+                                            />
+                                        </div>
+                                    </Col>
+                                    <Col span={8}>
+                                        <div class="col-md-12">
+                                            <label for="validationCustom01" class="form-label">
+                                                Quận/huyện
+                                            </label>
+                                            <br />
+                                            <Select
+                                                defaultValue="lucy"
+                                                style={{
+                                                    width: '100%',
+                                                }}
+                                                allowClear
+                                                options={[
+                                                    {
+                                                        value: 'lucy',
+                                                        label: 'Lucy',
+                                                    },
+                                                ]}
+                                            />
+                                        </div>
+                                    </Col>
+                                    <Col span={8}>
+                                        <div class="col-md-12">
+                                            <label for="validationCustom01" class="form-label">
+                                                Xã/phường/thị trấn
+                                            </label>
+                                            <br />
+                                            <Select
+                                                defaultValue="lucy"
+                                                style={{
+                                                    width: '100%',
+                                                }}
+                                                allowClear
+                                                options={[
+                                                    {
+                                                        value: 'lucy',
+                                                        label: 'Lucy',
+                                                    },
+                                                ]}
+                                            />
+                                        </div>
+                                    </Col>
+                                    <Col span={14}>
+                                        <div class="col-md-12">
+                                            <label for="validationCustom01" class="form-label">
+                                                Địa chỉ cụ thể
+                                            </label>
+                                            <input type="text" class="form-control" id="validationCustom01" required />
+                                        </div>
+                                    </Col>
+                                </Row>
+                            )}
+                        </Col>
                         <Col span={8}>
                             {/* <h5>
                                 <ShopOutlined /> Thông tin thanh toán
                             </h5> */}
                             <Row gutter={[20, 8]}>
+                                <Col span={24}>
+                                    <Switch onChange={handleSwitchChange} /> Giao Hàng
+                                </Col>
                                 <Col span={24}>
                                     {' '}
                                     <AutoComplete

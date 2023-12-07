@@ -2,29 +2,13 @@
 import AddressService from "~/service/AddressService";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import React, { useState, useEffect } from 'react';
-import { findProvincesByCode, getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
+import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
 import { PlusOutlined, FormOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Row, Col, Radio, Button, Modal, Tag, Form, Input, Select, Checkbox, Popconfirm, notification } from 'antd';
+import { Row, Col, Button, Modal, Tag, Form, Input, Select, Checkbox, Popconfirm, notification } from 'antd';
 
 const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
-    const [cities, setCities] = useState([]);
-    const [districts, setDistricts] = useState([]);
-    const [wards, setWards] = useState([]);
 
-    const getCityNameByCode = (cityCode) => {
-        const city = cities.find(city => city.code === cityCode);
-        return city ? city.name : 'Unknown city';
-    };
-    // console.log(getCityNameByCode(48))
-    const getDistrictNameByCode = (districtCode) => {
-        const district = districts.find(district => district.code === districtCode);
-        return district ? district.name : 'Unknown District';
-    };
 
-    const getWardNameByCode = (wardCode) => {
-        const ward = wards.find(ward => ward.code === wardCode);
-        return ward ? ward.name : 'Unknown Ward';
-    };
     //Mở modal thêm sử address
     const [addressModal2, setAddressModal2] = useState({ isModal: false, isMode: '', reacord: null });
 
@@ -39,9 +23,6 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
     const hideAddressModal2 = () => {
         setAddressModal2({ isModal: false });
     };
-
-
-
 
     const [address, setAddress] = useState([]);
 
@@ -108,7 +89,7 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
                                 <p>
                                     <b>{address?.recipientName}</b> | {address?.phoneNumber}
                                 </p>
-                                <p>{address?.addressDetail} - {address?.region} - {address?.district} - {getCityNameByCode(address?.city)}</p>
+                                <p>{address?.addressDetail} - {address?.ward} - {address?.district} - {address?.city}</p>
                                 {address.deleted && <Tag color='red'>Mặc định</Tag>}
                             </Col>
                             <Col span={3}>
@@ -141,12 +122,6 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
                     hideModal={hideAddressModal2}
                     isModal={addressModal2.isModal}
                     fetchAddress={fetchAddress}
-                    cities={cities}
-                    setCities={setCities}
-                    districts={districts}
-                    setDistricts={setDistricts}
-                    wards={wards}
-                    setWards={setWards}
 
                 />
             )}
@@ -155,10 +130,11 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
 };
 export default ShowAddressModal;
 
-const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, cities, setCities, districts, setDistricts, wards, setWards }) => {
-
+const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => {
     //Đoạn mã lấy api tỉnh thành, quận huyện, phường xã
-
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
     const [selectedCity, setSelectedCity] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [selectedWard, setSelectedWard] = useState('');
@@ -167,7 +143,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, citie
     useEffect(() => {
 
         // Gọi hàm từ service API để lấy dữ liệu tỉnh/thành phố
-        getProvinces(1)
+        getProvinces(3)
             .then(data => setCities(data))
             .catch(error => console.error('Lỗi khi lấy dữ liệu tỉnh/thành phố:', error));
     }, []);
@@ -194,7 +170,6 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, citie
         setSelectedCity(value);
         setSelectedDistrict('');
         setSelectedWard('');
-
     };
 
     const handleDistrictChange = (value) => {
@@ -203,7 +178,6 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, citie
     };
 
     //---------------------------------------------------------------------------------------------
-
     const [form] = Form.useForm();
     const handleCreate = () => {
         form.validateFields().then(async () => {
@@ -211,6 +185,10 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, citie
             const data = await form.getFieldsValue(true);
             data.usersId = reacord;
             data.deleted = data.deleted ? true : false
+            data.city = cities.find(city => city.code === Number(data.city))?.name ?? ''
+            data.district = districts.find(district => district.code === Number(data.district))?.name ?? ''
+            data.ward = wards.find(ward => ward.code === Number(data.ward))?.name ?? ''
+
             await AddressService.create(data)
                 .then(() => {
                     notification.success({
@@ -279,6 +257,8 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, citie
                     form={form}
                     initialValues={{
                         ...reacord,
+                        city: reacord.city
+
                     }}
                 >
                     <Form.Item label="Họ và tên:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
@@ -327,7 +307,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, citie
                     </Row>
                     <Row>
                         <Col span={11}>
-                            <Form.Item label="Phường/Xã:" name="region" rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]}>
+                            <Form.Item label="Phường/Xã:" name="ward" rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]}>
                                 <Select
                                     showSearch
                                     style={{

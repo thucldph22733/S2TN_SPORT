@@ -214,19 +214,19 @@ function Product() {
             width: '15%',
             filters: [
                 {
-                    text: 'Đang hoạt động',
+                    text: 'Đang bán',
                     value: true,
                 },
                 {
-                    text: 'Ngừng hoạt động',
+                    text: 'Ngừng bán',
                     value: false,
                 },
             ],
 
             onFilter: (value, record) => record.deleted === value,
             render: (text) => (
-                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
-                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
+                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang bán</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng bán</Tag>
             )
         },
         {

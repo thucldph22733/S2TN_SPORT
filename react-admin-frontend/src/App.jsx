@@ -21,6 +21,9 @@ import Supplier from './pages/Products/Supplier';
 import Dashboard from './pages/Dashboard/Dashboard';
 import User from './pages/User/User';
 import Role from './pages/Role/Role';
+import Error404 from './pages/Error/Error404';
+import Error403 from './pages/Error/Error403';
+import ChangePassword from './pages/Auth/ChangePassword';
 function App() {
 
     const router = createBrowserRouter([
@@ -36,7 +39,14 @@ function App() {
             path: '/500',
             element: <Error500 />,
         },
-
+        {
+            path: '/404',
+            element: <Error404 />,
+        },
+        {
+            path: '/403',
+            element: <Error403 />,
+        },
         {
             element: <MainLayout />,
             children: [
@@ -95,6 +105,10 @@ function App() {
                 {
                     path: path_name.voucher,
                     element: <Voucher />,
+                },
+                {
+                    path: path_name.change_password,
+                    element: <ChangePassword />,
                 },
             ],
 

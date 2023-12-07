@@ -4,6 +4,7 @@ const path_name = {
     logout: '/dang-xuat',
     sell: '/ban-hang',
     login: '/',
+    change_password: '/doi-mat-khau',
     product: '/san-pham',
     brand: '/thuong-hieu',
     color: '/mau-sac',

@@ -32,6 +32,10 @@ HttpClient.interceptors.response.use(
         const status = error.response?.status ?? 0;
         if (status >= 500 && status <= 599) {
             window.location.href = '/500';
+        } else if (status === 404) {
+            window.location.href = '/404';
+        } else if (status === 403) {
+            window.location.href = '/403';
         }
         // Xử lý lỗi response
         return Promise.reject(error);

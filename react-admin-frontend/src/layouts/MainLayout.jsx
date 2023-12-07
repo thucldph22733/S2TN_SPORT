@@ -14,6 +14,8 @@ import {
     ShoppingCartOutlined,
     SlackOutlined
 } from '@ant-design/icons';
+import { MdOutlinePassword } from "react-icons/md";
+
 import logo from '~/assets/images/logo.jpg'
 import { Layout, Menu, Button, Avatar, Tooltip } from 'antd';
 import path_name from '~/constants/routers';
@@ -61,13 +63,13 @@ const MainLayout = () => {
                         {
                             key: path_name.sell,
                             icon: <ShoppingCartOutlined style={{ fontSize: "16px" }} />,
-                            label: 'Bán hàng',
+                            label: 'Bán hàng tại quầy',
 
                         },
                         {
                             key: path_name.order,
                             icon: <FileDoneOutlined style={{ fontSize: "16px" }} />,
-                            label: 'Đơn hàng',
+                            label: 'Quản lý đơn hàng',
                         },
                         {
                             icon: <BarsOutlined style={{ fontSize: "16px" }} />,
@@ -135,6 +137,11 @@ const MainLayout = () => {
                                     label: 'Vai trò',
                                 },
                             ]
+                        },
+                        {
+                            key: path_name.change_password,
+                            icon: <MdOutlinePassword style={{ fontSize: "16px" }} />,
+                            label: 'Đổi mật khẩu',
                         },
                         {
                             key: path_name.login,

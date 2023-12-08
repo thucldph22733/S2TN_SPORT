@@ -1,32 +1,53 @@
 package com.poly.springboot.entity;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
-
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.poly.springboot.entity.Permission.*;
+
 
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "role")
-public class Role extends BaseEntity{
+@RequiredArgsConstructor
+public enum Role {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    USER(Collections.emptySet()),
+    ADMIN(
+            Set.of(
+                    ADMIN_READ,
+                    ADMIN_UPDATE,
+                    ADMIN_DELETE,
+                    ADMIN_CREATE,
+                    EMPLOYEE_READ,
+                    EMPLOYEE_UPDATE,
+                    EMPLOYEE_DELETE,
+                    EMPLOYEE_CREATE
+            )
+    ),
+    EMPLOYEE(
+            Set.of(
+                    EMPLOYEE_READ,
+                    EMPLOYEE_UPDATE,
+                    EMPLOYEE_DELETE,
+                    EMPLOYEE_CREATE
+            )
+    )
 
-    @Column(name = "role_name", unique = true, nullable = false)
-    private String roleName;
+    ;
 
-    @Column(name = "role_describe")
-    private String roleDescribe;
+    private final Set<Permission> permissions;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        var authorities = getPermissions()
+                .stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+                .collect(Collectors.toList());
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+        return authorities;
+    }
 }

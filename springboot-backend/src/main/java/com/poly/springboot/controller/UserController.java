@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,15 @@ import java.util.List;
 @Validated
 @Tag(name = "Users",description = "( Rest API Hiển thị, thêm, sửa, xóa, tìm kiếm, phân trang nhân viên )")
 @RequestMapping("/api/v1/users/")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
+
     @GetMapping("getAll")
+    @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<?> getStaffs(@RequestParam(defaultValue = "0") Integer pageNo,
                                        @RequestParam(defaultValue = "10") Integer pageSize,
                                        @RequestParam(required = false) String name,
@@ -67,7 +71,9 @@ public class UserController {
         }
     }
 
+
     @PostMapping("create")
+    @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ResponseDto> createStaff(@Valid @RequestBody UserRequestDto userRequestDto){
         Boolean isCreated = userService.createUser(userRequestDto);
         if (isCreated){
@@ -81,7 +87,9 @@ public class UserController {
         }
     }
 
+
     @PutMapping("update")
+    @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ResponseDto> updateStaff(@Valid @RequestBody UserRequestDto staffRequestDto, @RequestParam Long id){
         Boolean isUpdated = userService.updateUser(staffRequestDto,id);
         if (isUpdated){
@@ -96,6 +104,7 @@ public class UserController {
     }
 
     @DeleteMapping("delete")
+    @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ResponseDto> deleteStaff(@RequestParam Long id){
         Boolean isDeleted = userService .deleteUser(id);
         if (isDeleted){

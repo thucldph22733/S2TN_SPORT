@@ -1,6 +1,6 @@
 package com.poly.springboot.repository;
 
-import com.poly.springboot.entity.Role;
+//import com.poly.springboot.entity.Role;
 import com.poly.springboot.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

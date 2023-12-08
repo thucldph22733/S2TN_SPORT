@@ -1,13 +1,14 @@
 package com.poly.springboot.dto.responseDto;
 
 
-import java.util.List;
+import com.poly.springboot.entity.Role;
+
 
 public record RegisterResponseDto(
         String userName,
         String email,
         String phoneNumber,
         String password,
-        List<String> roles) {
+        Role role) {
 
 }

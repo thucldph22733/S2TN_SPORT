@@ -2,10 +2,10 @@ package com.poly.springboot.dto.requestDto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.poly.springboot.entity.Role;
 import lombok.*;
 
 import java.sql.Date;
-import java.util.List;
 
 @Setter
 @Getter
@@ -36,6 +36,6 @@ public class UserRequestDto {
 
     private Boolean deleted;
 
-    private List<String> roleList;
+    private Role role;
 
 }

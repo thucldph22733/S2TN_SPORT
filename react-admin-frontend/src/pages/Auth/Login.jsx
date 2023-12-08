@@ -2,26 +2,21 @@ import React from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input } from 'antd';
 import './Auth.css'
-import { useState } from 'react';
 import { useAuth } from '~/components/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import path_name from '~/constants/routers';
 
 const Login = () => {
     const navigate = useNavigate();
-    // const onFinish = (values) => {
-    //     console.log('Received values of form: ', values);
-    // };
-    const { login } = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
 
+    const [form] = Form.useForm();
+    const { login } = useAuth();
 
     const handleSubmit = () => {
-        const data = { email, password };
-        console.log(data);
+        const data = form.getFieldsValue();
+
         login(data);
-        navigate(path_name.dashboard)
+        // navigate(path_name.sell)
     };
 
     return (
@@ -32,6 +27,7 @@ const Login = () => {
                 remember: true,
             }}
             onFinish={handleSubmit}
+            form={form}
         >
             <h2 className='title_login'>ĐĂNG NHẬP</h2>
             <Form.Item
@@ -46,8 +42,7 @@ const Login = () => {
             >
                 <Input
                     prefix={<UserOutlined className="site-form-item-icon" />}
-                    placeholder="Nhập địa chỉ email..."
-                    onChange={(e) => setEmail(e.target.value)} />
+                    placeholder="Nhập địa chỉ email..." />
             </Form.Item>
             <Form.Item
                 name="password"
@@ -62,7 +57,6 @@ const Login = () => {
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     type="password"
                     placeholder="Nhập mật khẩu..."
-                    onChange={(e) => setPassword(e.target.value)}
                 />
             </Form.Item>
             <Form.Item>

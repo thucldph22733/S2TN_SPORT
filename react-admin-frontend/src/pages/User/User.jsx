@@ -67,6 +67,7 @@ function User() {
             .then(response => {
 
                 setUsers(response.data);
+                console.log(response.data)
                 setPagination({
                     ...pagination,
                     total: response.totalCount,
@@ -340,27 +341,27 @@ export default User;
 const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
     const [form] = Form.useForm();
-    const [roles, setRoles] = useState([]);
+    // const [roles, setRoles] = useState([]);
 
-    useEffect(() => {
-        fetchRoles()
-    }, []);
-    const fetchRoles = async () => {
+    // useEffect(() => {
+    //     fetchRoles()
+    // }, []);
+    // const fetchRoles = async () => {
 
-        await RoleService.findAllByDeletedTrue()
-            .then(response => {
+    //     await RoleService.findAllByDeletedTrue()
+    //         .then(response => {
 
-                setRoles(response.data)
+    //             setRoles(response.data)
 
-            }).catch(error => {
-                console.error(error);
-            })
-    }
+    //         }).catch(error => {
+    //             console.error(error);
+    //         })
+    // }
     const handleCreate = () => {
         form.validateFields().then(async () => {
 
             const data = await form.getFieldsValue();
-
+            console.log(data)
             await UserService.create(data)
                 .then(() => {
                     notification.success({
@@ -470,16 +471,30 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                 {isMode === "add" && <Form.Item label="Mật khẩu:" name="password" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}>
                     <Input type="password" placeholder="Nhập tên mật khẩu..." />
                 </Form.Item>}
-                <Form.Item label="Vai trò:" name="roleList" rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}>
+                <Form.Item label="Vai trò:" name="role" rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}>
                     <Select
-                        mode="tags"
+                        allowClear
                         style={{
                             width: '100%',
                         }}
                         placeholder="Chọn vai trò"
+                        options={[
 
-                        options={roles.map(option => ({ value: option.roleName, label: option.roleName }))}
+                            {
+                                value: 'ADMIN',
+                                label: 'ADMIN',
+                            },
+                            {
+                                text: 'USER',
+                                value: 'USER',
+                            },
+                            {
+                                text: 'EMPLOYEE',
+                                value: 'EMPLOYEE',
+                            },
+                        ]}
                     />
+
                 </Form.Item>
                 <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]} >
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>

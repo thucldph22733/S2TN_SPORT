@@ -4,11 +4,10 @@ package com.poly.springboot.service.impl;
 import com.poly.springboot.dto.requestDto.ChangePasswordRequestDto;
 import com.poly.springboot.dto.requestDto.UserRequestDto;
 import com.poly.springboot.dto.responseDto.UserResponseDto;
-import com.poly.springboot.entity.Role;
 import com.poly.springboot.entity.User;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
-import com.poly.springboot.repository.RoleRepository;
+//import com.poly.springboot.repository.RoleRepository;
 import com.poly.springboot.repository.UserRepository;
 import com.poly.springboot.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
+//    private final RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -58,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean createUser(UserRequestDto requestDto) {
 
-        List<Role> roleList = roleRepository.findAllByRoleNameIn(requestDto.getRoleList());
+//        List<Role> roleList = roleRepository.findAllByRoleNameIn(requestDto.getRoleList());
 
         User user = new User();
         user.setUsersName(requestDto.getUserName());
@@ -68,7 +67,7 @@ public class UserServiceImpl implements UserService {
         user.setBirthOfDay(requestDto.getBirthOfDay());
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         user.setDeleted(requestDto.getDeleted());
-        user.setRoles(roleList);
+        user.setRole(requestDto.getRole());
 
         userRepository.save(user);
         return true;
@@ -77,14 +76,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean updateUser(UserRequestDto requestDto, Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
-        List<Role> roleList = roleRepository.findAllByRoleNameIn(requestDto.getRoleList());
+//        List<Role> roleList = roleRepository.findAllByRoleNameIn(requestDto.getRoleList());
         user.setUsersName(requestDto.getUserName());
         user.setPhoneNumber(requestDto.getPhoneNumber());
         user.setEmail(requestDto.getEmail());
         user.setGender(requestDto.getGender());
         user.setBirthOfDay(requestDto.getBirthOfDay());
         user.setDeleted(requestDto.getDeleted());
-        user.setRoles(roleList);
+        user.setRole(requestDto.getRole());
 
         userRepository.save(user);
         return true;
@@ -131,8 +130,10 @@ public class UserServiceImpl implements UserService {
                 user.getGender(),
                 user.getBirthOfDay(),
                 user.getDeleted(),
-                user.getRoles().stream().map(Role::getRoleName).toList(),
+//                user.getRoles().stream().map(Role::getRoleName).toList(),
+                user.getRole(),
                 user.getCreatedAt());
+
     }
 
 }

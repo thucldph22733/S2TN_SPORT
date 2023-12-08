@@ -93,7 +93,7 @@ function Dashboard() {
                 </Col>
             </Row>
 
-            <Row >
+            <Row style={{ marginTop: '100px' }}>
                 <BarChart chartData={userData} />
             </Row>
             <Row >

@@ -1,70 +1,41 @@
-import React, { useState } from 'react';
+
 import { Form, Input, Button, notification, Row, Col } from 'antd';
-import axios from 'axios';
+import UserService from '~/service/UserService';
 
 const ChangePassword = () => {
-    const [passwords, setPasswords] = useState({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
-    });
+    const token = localStorage.getItem('token');
 
-    const handleChange = (e) => {
-        setPasswords({
-            ...passwords,
-            [e.target.name]: e.target.value,
-        });
-    };
+    const [form] = Form.useForm();
+    const handleSubmit = () => {
+        form.validateFields().then(async () => {
+            const data = form.getFieldsValue();
 
-    const handleSubmit = async () => {
-        try {
-            // Kiểm tra xác nhận mật khẩu
-            if (passwords.newPassword !== passwords.confirmPassword) {
-                notification.error({
-                    message: 'Lỗi',
-                    description: 'Xác nhận mật khẩu không khớp!',
-                });
-                return;
-            }
-
-            const response = await axios.patch(
-                'http://localhost:8080/api/v1/users/changePassword',
-                passwords,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-
-            // Xử lý phản hồi từ backend
-            if (response.status === 200) {
+            await UserService.changePassword(data, token).then(() => {
                 notification.success({
-                    message: 'Thành công',
-                    description: 'Mật khẩu đã được thay đổi!',
+                    message: 'Thông báo',
+                    description: 'Đổi mật khẩu thành công!',
                 });
-            } else {
+            }).catch((error) => {
+                console.error('Error:', error);
                 notification.error({
                     message: 'Lỗi',
                     description: 'Đã có lỗi xảy ra khi thay đổi mật khẩu!',
                 });
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            notification.error({
-                message: 'Lỗi',
-                description: 'Đã có lỗi xảy ra khi thay đổi mật khẩu!',
             });
-        }
-    };
 
+        }).catch(error => {
+            console.error(error);
+        });
+    };
     return (
         <Form
             style={{ marginTop: '15px' }}
             onFinish={handleSubmit}
             name="validateOnly" layout="vertical" autoComplete="off"
             colon={false}
-        >   <h1 style={{ textAlign: 'center', color: '#2123bf' }}>Đổi mật khẩu</h1>
+            form={form}
+        >
+            <h1 style={{ textAlign: 'center', color: '#2123bf' }}>Đổi mật khẩu</h1>
             <Row>
                 <Col span={10} offset={7}>
                     <Form.Item
@@ -77,7 +48,7 @@ const ChangePassword = () => {
                             },
                         ]}
                     >
-                        <Input.Password onChange={handleChange} />
+                        <Input.Password />
                     </Form.Item>
                     <Form.Item
                         label="Mật khẩu mới:"
@@ -89,11 +60,11 @@ const ChangePassword = () => {
                             },
                         ]}
                     >
-                        <Input.Password onChange={handleChange} />
+                        <Input.Password />
                     </Form.Item>
                     <Form.Item
                         label="Xác nhận mật khẩu:"
-                        name="confirmPassword"
+                        name="confirmationPassword"
                         rules={[
                             {
                                 required: true,
@@ -101,7 +72,7 @@ const ChangePassword = () => {
                             },
                         ]}
                     >
-                        <Input.Password onChange={handleChange} />
+                        <Input.Password />
                     </Form.Item>
                     <Form.Item style={{ float: 'right' }}>
                         <Button type="primary" htmlType="submit">

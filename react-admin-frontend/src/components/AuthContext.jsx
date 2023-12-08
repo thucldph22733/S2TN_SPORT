@@ -1,4 +1,5 @@
 
+import { notification } from 'antd';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
@@ -21,12 +22,16 @@ export function AuthProvider({ children }) {
 
                 localStorage.setItem('token', response.data.access_token);
                 localStorage.setItem('refresh_token', response.data.refresh_token);
-                setUser(response.data);
+                localStorage.setItem('user_name', response.data.userName);
 
+                setUser(response.data);
             })
             .catch(error => {
-                console.error(error);
-                throw error;
+                notification.error({
+                    message: 'Thông báo',
+                    description: `${error.response.data.errorMessage}`,
+                });
+
             });
     }
 

@@ -32,6 +32,7 @@ const MainLayout = () => {
     const [selectedKeys, setSelectedKeys] = useState("/");
     const { logout } = useAuth();
     const { user } = useAuth();
+    const userName = localStorage.getItem('user_name')
     const handleLogout = () => {
         logout();
         navigate("/");
@@ -56,20 +57,20 @@ const MainLayout = () => {
                     selectedKeys={[selectedKeys]}
                     items={[
                         {
-                            key: path_name.dashboard,
-                            icon: <BarChartOutlined style={{ fontSize: "16px" }} />,
-                            label: 'Thống kê',
-                        },
-                        {
                             key: path_name.sell,
                             icon: <ShoppingCartOutlined style={{ fontSize: "16px" }} />,
                             label: 'Bán hàng tại quầy',
-
                         },
+
                         {
                             key: path_name.order,
                             icon: <FileDoneOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý đơn hàng',
+                        },
+                        user?.role === "ADMIN" && {
+                            key: path_name.dashboard,
+                            icon: <BarChartOutlined style={{ fontSize: "16px" }} />,
+                            label: 'Thống kê',
                         },
                         {
                             icon: <BarsOutlined style={{ fontSize: "16px" }} />,
@@ -117,26 +118,27 @@ const MainLayout = () => {
                                 },
                             ]
                         },
-                        {
+                        user?.role === "ADMIN" && {
                             key: path_name.voucher,
                             icon: <TagsOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý giảm giá',
                         },
-                        {
+                        user?.role === "ADMIN" && {
+                            key: path_name.user,
                             icon: <UsergroupAddOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý người dùng',
-                            children: [
-                                {
-                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: path_name.user,
-                                    label: 'Tài khoản',
-                                },
-                                {
-                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: path_name.role,
-                                    label: 'Vai trò',
-                                },
-                            ]
+                            // children: [
+                            //     {
+                            //         icon: <SlackOutlined style={{ fontSize: "10px" }} />,
+                            //         key: path_name.user,
+                            //         label: 'Tài khoản',
+                            //     },
+                            //     {
+                            //         icon: <SlackOutlined style={{ fontSize: "10px" }} />,
+                            //         key: path_name.role,
+                            //         label: 'Vai trò',
+                            //     },
+                            // ]
                         },
                         {
                             key: path_name.change_password,
@@ -173,7 +175,7 @@ const MainLayout = () => {
                                 icon={<UserOutlined />}
                             />
                         </Tooltip>
-                        <p>Xin chào, {user?.userName}!</p>
+                        <p>Xin chào, {userName ? userName : ''}!</p>
                     </div>
                 </Header>
                 <Content

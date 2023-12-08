@@ -1,4 +1,5 @@
 
+import { notification } from 'antd';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import { useNavigate } from 'react-router-dom';
@@ -15,21 +16,25 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
 
-
     function login(data) {
         return HttpClient.post(`${API_URL}login`, data)
             .then((response) => {
 
                 localStorage.setItem('token', response.data.access_token);
                 localStorage.setItem('refresh_token', response.data.refresh_token);
-                setUser(response.data);
+                localStorage.setItem('user_name', response.data.userName);
 
+                setUser(response.data);
             })
             .catch(error => {
-                console.error(error);
-                throw error;
+                notification.error({
+                    message: 'Thông báo',
+                    description: `${error.response.data.errorMessage}`,
+                });
+
             });
     }
+
     function refreshToken() {
         const refresh_token = localStorage.getItem('refresh_token');
         if (refresh_token) {
@@ -47,13 +52,14 @@ export function AuthProvider({ children }) {
         }
 
     }
+
     function logout() {
         // Xóa JWT khỏi localStorage và đặt trạng thái người dùng thành null
         localStorage.removeItem('token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_name')
         setUser(null);
-        // Chuyển hướng đến trang đăng nhập
-        // navigate("/dang-nhap");
+
     }
 
     const value = {

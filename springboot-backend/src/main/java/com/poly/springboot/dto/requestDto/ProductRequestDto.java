@@ -14,19 +14,16 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProductRequestDto {
 
-    private Long categoryId;
-
-    private Long clubId;
-
-    private Long brandId;
-
-    private Long supplierId;
-
     @NotBlank(message = "Tên sản phẩm không được để trống!")
     private String productName;
 
-    @NotBlank(message = "Ảnh sản phẩm không được để trống!")
-    private String avatar;
+    private String categoryName;
+
+    private String materialName;
+
+    private String brandName;
+
+    private String supplierName;
 
     private Boolean productHot;
 
@@ -34,10 +31,8 @@ public class ProductRequestDto {
 
     private Boolean productNew;
 
-    private Integer viewCount;
-
     private String productDescribe;
 
-    private Boolean status;
+    private Boolean deleted;
 
 }

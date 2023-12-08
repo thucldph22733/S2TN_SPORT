@@ -17,4 +17,6 @@ public interface SupplierService {
     Boolean createSupplier(SupplierRequestDto supplierRequestDto);
 
     Boolean updateSupplier(SupplierRequestDto supplierRequestDto,Long id);
+
+    List<Supplier> findAllByDeletedTrue();
 }

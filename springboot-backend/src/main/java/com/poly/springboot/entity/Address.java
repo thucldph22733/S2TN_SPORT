@@ -27,8 +27,8 @@ public class Address extends BaseEntity{
     @Column(name = "address_detail")
     private String addressDetail;
 
-    @Column(name = "region")  // phuong/ xa
-    private String region;
+    @Column(name = "ward")  // phuong/ xa
+    private String ward;
 
     @Column(name = "district") //quan/ huyen
     private String district;
@@ -39,8 +39,8 @@ public class Address extends BaseEntity{
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_address",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
+            joinColumns = @JoinColumn(name = "address_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> users;
 }

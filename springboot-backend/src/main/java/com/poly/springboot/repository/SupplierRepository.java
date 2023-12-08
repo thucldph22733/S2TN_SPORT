@@ -1,5 +1,6 @@
 package com.poly.springboot.repository;
 
+import com.poly.springboot.entity.Club;
 import com.poly.springboot.entity.Supplier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,8 @@ import java.util.List;
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier,Long> {
 
+    Supplier findBySupplierName(String name);
+    List<Supplier> findAllByDeletedTrue();
     Boolean existsBySupplierName(String SupplierName);
     Page<Supplier> findBySupplierNameContaining(String supplierName,Pageable pageable);
     Page<Supplier> findByPhoneNumberContaining(String phoneNumber,Pageable pageable);

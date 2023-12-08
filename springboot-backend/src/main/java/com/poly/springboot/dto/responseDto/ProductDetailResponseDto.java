@@ -19,7 +19,7 @@ public class ProductDetailResponseDto {
 
     private String colorName;
 
-    private String materialName;
+//    private String materialName;
 
     private String sizeName;
 
@@ -27,7 +27,7 @@ public class ProductDetailResponseDto {
 
     private Double price;
 
-    private Double promotionPrice;
+//    private Double promotionPrice;
 
     private Boolean status;
 

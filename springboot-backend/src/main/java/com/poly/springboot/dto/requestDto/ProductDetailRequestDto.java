@@ -16,8 +16,6 @@ public class ProductDetailRequestDto {
 
     private Long colorId;
 
-    private Long materialId;
-
     private Long sizeId;
 
     @NotEmpty(message = "Số lượng không được để trống!")

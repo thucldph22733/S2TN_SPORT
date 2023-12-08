@@ -76,4 +76,9 @@ public class ColorServiceImpl implements ColorService {
         colorRepository.save(color);
         return true;
     }
+
+    @Override
+    public List<Color> findAllByDeletedTrue() {
+        return colorRepository.findAllByDeletedTrue();
+    }
 }

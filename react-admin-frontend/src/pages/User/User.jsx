@@ -1,20 +1,17 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, DatePicker, Row, Col, Select, Tag } from 'antd';
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiLockKeyOpenFill, PiLockKeyFill } from "react-icons/pi";
-
 import {
     PlusOutlined,
     RedoOutlined,
     FormOutlined,
-    DeleteOutlined,
     SearchOutlined,
 } from '@ant-design/icons';
 import UserService from '~/service/UserService';
 import FormatDate from '~/utils/format-date';
 import dayjs from 'dayjs';
 import RoleService from '~/service/RoleService';
-import ShowsetAddressModal from './Address';
 import ShowAddressModal from './Address';
 
 const { TextArea } = Input;
@@ -23,8 +20,7 @@ const { TextArea } = Input;
 function User() {
 
     const [loading, setLoading] = useState(false);
-
-
+    //Mở modal hiển thị address
     const [addressModal, setAddressModal] = useState({ isModal: false, reacord: null });
 
     const showAddressModal = (record) => {
@@ -71,6 +67,7 @@ function User() {
             .then(response => {
 
                 setUsers(response.data);
+                console.log(response.data)
                 setPagination({
                     ...pagination,
                     total: response.totalCount,
@@ -187,7 +184,7 @@ function User() {
             title: 'Tên',
             dataIndex: 'userName',
             key: 'userName',
-            width: '15%',
+            width: '20%',
             filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
             ...getColumnSearchProps('userName')
         },
@@ -233,21 +230,21 @@ function User() {
             title: 'Trạng thái',
             key: 'deleted',
             dataIndex: 'deleted',
-            width: '15%',
+            width: '10%',
             filters: [
                 {
-                    text: 'Đang hoạt động',
+                    text: 'Hoạt động',
                     value: true,
                 },
                 {
-                    text: 'Ngừng hoạt động',
+                    text: 'Tạm khóa',
                     value: false,
                 },
             ],
             onFilter: (value, record) => record.deleted === value,
             render: (text) => (
-                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Đang hoạt động</Tag>
-                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Ngừng hoạt động</Tag>
+                text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Hoạt động</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Tạm khóa</Tag>
             )
         },
         {
@@ -333,6 +330,8 @@ function User() {
                 hideModal={hideAddressModal}
                 isModal={addressModal.isModal}
             />}
+
+
         </>
     )
 };
@@ -342,27 +341,27 @@ export default User;
 const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
     const [form] = Form.useForm();
-    const [roles, setRoles] = useState([]);
+    // const [roles, setRoles] = useState([]);
 
-    useEffect(() => {
-        fetchRoles()
-    }, []);
-    const fetchRoles = async () => {
+    // useEffect(() => {
+    //     fetchRoles()
+    // }, []);
+    // const fetchRoles = async () => {
 
-        await RoleService.findAllByDeletedTrue()
-            .then(response => {
+    //     await RoleService.findAllByDeletedTrue()
+    //         .then(response => {
 
-                setRoles(response.data)
+    //             setRoles(response.data)
 
-            }).catch(error => {
-                console.error(error);
-            })
-    }
+    //         }).catch(error => {
+    //             console.error(error);
+    //         })
+    // }
     const handleCreate = () => {
         form.validateFields().then(async () => {
 
             const data = await form.getFieldsValue();
-
+            console.log(data)
             await UserService.create(data)
                 .then(() => {
                     notification.success({
@@ -415,9 +414,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
     }
 
-    const handleChange = (value) => {
-        console.log(`selected ${value}`);
-    };
+
     return (
 
         <Modal
@@ -474,21 +471,35 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                 {isMode === "add" && <Form.Item label="Mật khẩu:" name="password" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}>
                     <Input type="password" placeholder="Nhập tên mật khẩu..." />
                 </Form.Item>}
-                <Form.Item label="Vai trò:" name="roleList" rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}>
+                <Form.Item label="Vai trò:" name="role" rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}>
                     <Select
-                        mode="tags"
+                        allowClear
                         style={{
                             width: '100%',
                         }}
                         placeholder="Chọn vai trò"
-                        onChange={handleChange}
-                        options={roles.map(option => ({ value: option.roleName, label: option.roleName }))}
+                        options={[
+
+                            {
+                                value: 'ADMIN',
+                                label: 'ADMIN',
+                            },
+                            {
+                                text: 'USER',
+                                value: 'USER',
+                            },
+                            {
+                                text: 'EMPLOYEE',
+                                value: 'EMPLOYEE',
+                            },
+                        ]}
                     />
+
                 </Form.Item>
                 <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]} >
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
-                        <Radio value={true}>Đang hoạt động</Radio>
-                        <Radio value={false}>Ngừng hoạt động</Radio>
+                        <Radio value={true}>Hoạt động</Radio>
+                        <Radio value={false}>Tạm khóa</Radio>
                     </Radio.Group>
                 </Form.Item>
             </Form>

@@ -9,10 +9,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -29,9 +30,8 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST_URL = {
             "" +
                     "/api/v1/**",
+                    "/api/v1/roles/**",
             "/api/v1/auth/**",
-            "/api/v1/roles/**",
-            "/api/staffs**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -39,17 +39,26 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-ui.html"};
 
+        @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("*");
+//        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
-                .csrf(AbstractHttpConfigurer::disable)  //Vô hiệu hóa CSRF (Cross-Site Request Forgery) vì ứng dụng sử dụng token JWT để xác thực thay vì CSRF token.
+                .csrf(AbstractHttpConfigurer::disable)//Vô hiệu hóa CSRF (Cross-Site Request Forgery) vì ứng dụng sử dụng token JWT để xác thực thay vì CSRF token.
+                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL) // Không yêu cầu xác thực
                                 .permitAll()
-                                .requestMatchers("/api/v1/brands/**").hasAnyAuthority("ADMIN","USER")
-                                .requestMatchers("/api/v1/colors/**").hasAuthority("ADMIN")
-                                .requestMatchers("/api/v1/clubs/**").hasAuthority("USER")
-                                .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()
 
@@ -57,13 +66,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)  // xác thực người dùng
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-//                .logout(logout ->
-//                        logout.logoutUrl("/api/v1/auth/logout") //đường dẫn đăng xuất
-//                                .addLogoutHandler(logoutHandler)  //Khi người dùng đăng xuất, logoutHandler được gọi và sau đó SecurityContextHolder được xóa để đảm bảo là người dùng không được xác thực nữa.
-//                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-//                )
         ;
 
         return http.build();
     }
+
+
 }

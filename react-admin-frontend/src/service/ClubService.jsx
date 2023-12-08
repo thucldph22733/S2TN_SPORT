@@ -4,9 +4,9 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'clubs/';
 
 const ClubService = {
-    getAll: (pageNo, pageSize, name, status, type) => {
+    getAll: (pageNo, pageSize, name, status, typeClub) => {
         return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, status, type }
+            params: { pageNo, pageSize, name, status, typeClub }
         })
             .then(response => response.data)
             .catch(error => {
@@ -38,6 +38,14 @@ const ClubService = {
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in delete:', error);
+                throw error;
+            });
+    },
+    findAllByDeletedTrue: () => {
+        return HttpClient.get(`${API_URL}findAllByDeletedTrue`)
+            .then(response => response)
+            .catch(error => {
+                console.error('Error in findAllByDeletedTrue:', error);
                 throw error;
             });
     },

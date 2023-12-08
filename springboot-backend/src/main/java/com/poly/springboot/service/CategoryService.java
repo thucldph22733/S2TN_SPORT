@@ -16,4 +16,6 @@ public interface CategoryService {
     Boolean createCategory(CategoryRequestDto categoryRequestDto);
 
     Boolean updateCategory(CategoryRequestDto categoryRequestDto,Long id);
+
+    List<Category> findAllByDeletedTrue();
 }

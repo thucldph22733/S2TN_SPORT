@@ -22,6 +22,18 @@ const UserService = {
                 throw error;
             });
     },
+    changePassword: (data, token) => {
+        return HttpClient.patch(`${API_URL}changePassword`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in changePassword:', error);
+                throw error;
+            });
+    },
 
     update: (id, data) => {
         return HttpClient.put(`${API_URL}update?id=${id}`, data)

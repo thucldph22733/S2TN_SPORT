@@ -50,6 +50,10 @@ public class ClubServiceImpl implements ClubService {
         return  true;
     }
 
+    @Override
+    public List<Club> findAllByDeletedTrue() {
+        return clubRepository.findAllByDeletedTrue();
+    }
 
 
     @Override

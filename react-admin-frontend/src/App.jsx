@@ -24,6 +24,9 @@ import Role from './pages/Role/Role';
 import NewSell from './pages/Sell/NewSell';
 import OrderDetail from './pages/Sell/OrderDetail';
 import OrderView from './pages/Orders/orderView';
+import Error404 from './pages/Error/Error404';
+import Error403 from './pages/Error/Error403';
+import ChangePassword from './pages/Auth/ChangePassword';
 function App() {
 
     const router = createBrowserRouter([
@@ -39,7 +42,14 @@ function App() {
             path: '/500',
             element: <Error500 />,
         },
-
+        {
+            path: '/404',
+            element: <Error404 />,
+        },
+        {
+            path: '/403',
+            element: <Error403 />,
+        },
         {
             element: <MainLayout />,
             children: [
@@ -110,6 +120,10 @@ function App() {
                 {
                     path: path_name.orderView + '/:id',
                     element: <OrderView />,
+                },
+                {
+                    path: path_name.change_password,
+                    element: <ChangePassword />,
                 },
             ],
 

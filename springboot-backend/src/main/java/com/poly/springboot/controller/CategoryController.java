@@ -45,7 +45,15 @@ public class CategoryController {
                         categoryPage);
     }
 
+    @GetMapping("findAllByDeletedTrue")
+    public ResponseEntity<List<Category>> findAllByDeletedTrue() {
 
+        List<Category> categoryList = categoryService.findAllByDeletedTrue();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(categoryList);
+    }
 
     @PostMapping("create")
     public ResponseEntity<ResponseDto>createCategory(@Valid  @RequestBody CategoryRequestDto categoryRequestDto){

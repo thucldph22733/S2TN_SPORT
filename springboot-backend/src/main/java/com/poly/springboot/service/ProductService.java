@@ -2,20 +2,19 @@ package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.ProductRequestDto;
 import com.poly.springboot.dto.responseDto.ProductResponseDto;
-import com.poly.springboot.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ProductService {
-    List<ProductResponseDto> getProducts();
+    Page<ProductResponseDto> getProducts(String name, List<Boolean> status, Pageable pageable);
 
-    List<ProductResponseDto> getPagination(Integer pageNo);
-
-    Boolean deleteProduct(Long id);
+//    Boolean deleteProduct(Long id);
 
     Boolean createProduct(ProductRequestDto productRequestDto);
 
     Boolean updateProduct(ProductRequestDto productRequestDto,Long id);
 
-    Product findProductById(Long id);
+
 }

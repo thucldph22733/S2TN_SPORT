@@ -2,11 +2,11 @@ package com.poly.springboot.dto.responseDto;
 
 
 //import com.poly.springboot.entity.Role;
+import com.poly.springboot.entity.Role;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 
 @Setter
 @Getter
@@ -29,7 +29,7 @@ public class UserResponseDto {
 
     private Boolean deleted;
 
-    private List<String> roleList;
+    private Role role;
 
     private LocalDateTime createdAt;
 

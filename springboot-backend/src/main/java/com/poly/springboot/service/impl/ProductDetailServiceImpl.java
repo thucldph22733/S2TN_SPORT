@@ -44,11 +44,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                         productDetail.getProduct().getProductName(),
                         productDetail.getProduct().getAvatar(),
                         productDetail.getColor().getColorName(),
-                        productDetail.getMaterial().getMaterialName(),
+//                        productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),
                         productDetail.getQuantity(),
                         productDetail.getPrice(),
-                        productDetail.getPromotionPrice(),
+//                        productDetail.getPromotionPrice(),
                         productDetail.getDeleted())
 
         ).collect(Collectors.toList());
@@ -64,11 +64,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                         productDetail.getProduct().getProductName(),
                         productDetail.getProduct().getAvatar(),
                         productDetail.getColor().getColorName(),
-                        productDetail.getMaterial().getMaterialName(),
+//                        productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),
                         productDetail.getQuantity(),
                         productDetail.getPrice(),
-                        productDetail.getPromotionPrice(),
+//                        productDetail.getPromotionPrice(),
                         productDetail.getDeleted())
 
         ).collect(Collectors.toList());
@@ -99,11 +99,10 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
         productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
-        productDetail.setMaterial(materialRepository.findById(productDetailRequestDto.getMaterialId()).orElse(null));
         productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
-        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
+//        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
         productDetail.setDeleted(productDetailRequestDto.getStatus());
 
         productDetailRepository.save(productDetail);
@@ -118,11 +117,10 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
         productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
-        productDetail.setMaterial(materialRepository.findById(productDetailRequestDto.getMaterialId()).orElse(null));
         productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
-        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
+//        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
         productDetail.setDeleted(productDetailRequestDto.getStatus());
 
         productDetailRepository.save(productDetail);

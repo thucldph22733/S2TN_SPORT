@@ -14,8 +14,10 @@ import {
     ShoppingCartOutlined,
     SlackOutlined
 } from '@ant-design/icons';
+import { MdOutlinePassword } from "react-icons/md";
+
 import logo from '~/assets/images/logo.jpg'
-import { Layout, Menu, Button, theme, Avatar, Tooltip } from 'antd';
+import { Layout, Menu, Button, Avatar, Tooltip } from 'antd';
 import path_name from '~/constants/routers';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from 'react'
@@ -23,12 +25,14 @@ import { useAuth } from '~/components/AuthContext';
 const { Header, Sider, Content } = Layout;
 
 const MainLayout = () => {
+
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const [selectedKeys, setSelectedKeys] = useState("/");
     const { logout } = useAuth();
     const { user } = useAuth();
+    const userName = localStorage.getItem('user_name')
     const handleLogout = () => {
         logout();
         navigate("/");
@@ -60,13 +64,18 @@ const MainLayout = () => {
                         {
                             key: path_name.newSell,
                             icon: <ShoppingCartOutlined style={{ fontSize: "16px" }} />,
-                            label: 'Bán hàng',
-
+                            label: 'Bán hàng tại quầy',
                         },
+
                         {
                             key: path_name.order,
                             icon: <FileDoneOutlined style={{ fontSize: "16px" }} />,
-                            label: 'Đơn hàng',
+                            label: 'Quản lý đơn hàng',
+                        },
+                        user?.role === "ADMIN" && {
+                            key: path_name.dashboard,
+                            icon: <BarChartOutlined style={{ fontSize: "16px" }} />,
+                            label: 'Thống kê',
                         },
                         {
                             icon: <BarsOutlined style={{ fontSize: "16px" }} />,
@@ -80,7 +89,7 @@ const MainLayout = () => {
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: path_name.category,
-                                    label: 'Loại sản phẩm',
+                                    label: 'Danh mục',
                                 },
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
@@ -114,26 +123,32 @@ const MainLayout = () => {
                                 },
                             ]
                         },
-                        {
+                        user?.role === "ADMIN" && {
                             key: path_name.voucher,
                             icon: <TagsOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý giảm giá',
                         },
-                        {
+                        user?.role === "ADMIN" && {
+                            key: path_name.user,
                             icon: <UsergroupAddOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý người dùng',
-                            children: [
-                                {
-                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: path_name.user,
-                                    label: 'Tài khoản',
-                                },
-                                {
-                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: path_name.role,
-                                    label: 'Vai trò',
-                                },
-                            ]
+                            // children: [
+                            //     {
+                            //         icon: <SlackOutlined style={{ fontSize: "10px" }} />,
+                            //         key: path_name.user,
+                            //         label: 'Tài khoản',
+                            //     },
+                            //     {
+                            //         icon: <SlackOutlined style={{ fontSize: "10px" }} />,
+                            //         key: path_name.role,
+                            //         label: 'Vai trò',
+                            //     },
+                            // ]
+                        },
+                        {
+                            key: path_name.change_password,
+                            icon: <MdOutlinePassword style={{ fontSize: "16px" }} />,
+                            label: 'Đổi mật khẩu',
                         },
                         {
                             key: path_name.login,
@@ -165,7 +180,7 @@ const MainLayout = () => {
                                 icon={<UserOutlined />}
                             />
                         </Tooltip>
-                        <p>Xin chào, {user?.userName}!</p>
+                        <p>Xin chào, {userName ? userName : ''}!</p>
                     </div>
                 </Header>
                 <Content

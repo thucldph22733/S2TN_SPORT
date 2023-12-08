@@ -44,6 +44,15 @@ public class ClubController {
                         clubList,
                         clubPage);
     }
+    @GetMapping("findAllByDeletedTrue")
+    public ResponseEntity<?> findAllByDeletedTrue() {
+
+        List<Club> clubList = clubService.findAllByDeletedTrue();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(clubList);
+    }
 
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createClub(@RequestBody ClubRequestDto clubRequestDto) {

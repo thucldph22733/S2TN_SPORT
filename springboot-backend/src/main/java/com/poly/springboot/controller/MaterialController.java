@@ -4,6 +4,7 @@ import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.MaterialRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseHandler;
+import com.poly.springboot.entity.Color;
 import com.poly.springboot.entity.Material;
 import com.poly.springboot.service.MaterialService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,7 +45,15 @@ public class MaterialController {
                         MaterialPage);
     }
 
+    @GetMapping("findAllByDeletedTrue")
+    public ResponseEntity<?> findAllByDeletedTrue() {
 
+        List<Material> materialList = materialService.findAllByDeletedTrue();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(materialList);
+    }
 
     @PostMapping("create")
     public ResponseEntity<ResponseDto>createMaterial(@Valid @RequestBody MaterialRequestDto materialRequestDto){

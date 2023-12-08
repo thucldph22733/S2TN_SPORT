@@ -12,6 +12,9 @@ import java.util.List;
 
 @Repository
 public interface BrandRepository extends JpaRepository<Brand,Long> {
+    List<Brand> findAllByDeletedTrue();
+
+    Brand findByBrandName(String name);
     Boolean existsByBrandName(String brandName);
     Page<Brand> findByBrandNameContaining(String name, Pageable pageable);
     Page<Brand> findByDeletedIn(List<Boolean> status, Pageable pageable);

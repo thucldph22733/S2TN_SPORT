@@ -1,5 +1,6 @@
 package com.poly.springboot.repository;
 
+import com.poly.springboot.entity.Brand;
 import com.poly.springboot.entity.Category;
 import com.poly.springboot.entity.Category;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category,Long> {
 
+    Category findByCategoryName(String name);
+    List<Category> findAllByDeletedTrue();
     Boolean existsByCategoryName(String CategoryName);
     Page<Category> findByCategoryNameContaining(String name, Pageable pageable);
     Page<Category> findByDeletedIn(List<Boolean> status, Pageable pageable);

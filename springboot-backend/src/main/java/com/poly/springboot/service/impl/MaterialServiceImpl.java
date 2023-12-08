@@ -36,6 +36,11 @@ public class MaterialServiceImpl implements MaterialService {
         return MaterialList;
     }
 
+    @Override
+    public List<Material> findAllByDeletedTrue() {
+        return materialRepository.findAllByDeletedTrue();
+    }
+
 
     @Override
     public Boolean deleteMaterial(Long id) {

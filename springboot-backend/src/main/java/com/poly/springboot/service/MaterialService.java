@@ -8,8 +8,10 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface MaterialService {
+
     Page<Material> getMaterials(String name, List<Boolean> status, Pageable pageable);
 
+    List<Material> findAllByDeletedTrue();
     Boolean deleteMaterial(Long id);
 
     Boolean createMaterial(MaterialRequestDto materialRequestDto);

@@ -35,7 +35,7 @@ export default function NewSell() {
         try {
             // Gọi API để tạo đơn hàng mới
             const response = await axios.post('http://localhost:8080/api/v1/orders/create', {
-                StatusId: 4,
+                statusId: 4,
                 // Thêm dữ liệu cần thiết cho đơn hàng mới vào đây
             });
 

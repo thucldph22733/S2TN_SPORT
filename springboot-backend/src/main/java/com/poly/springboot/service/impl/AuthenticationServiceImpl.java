@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {

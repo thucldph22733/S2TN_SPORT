@@ -2,7 +2,6 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
-import com.poly.springboot.entity.Product;
 import com.poly.springboot.entity.ProductDetail;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.*;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +42,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 productDetail -> new ProductDetailResponseDto(
                         productDetail.getId(),
                         productDetail.getProduct().getProductName(),
+                        productDetail.getProduct().getAvatar(),
                         productDetail.getColor().getColorName(),
 //                        productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),
@@ -63,6 +62,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 productDetail -> new ProductDetailResponseDto(
                         productDetail.getId(),
                         productDetail.getProduct().getProductName(),
+                        productDetail.getProduct().getAvatar(),
                         productDetail.getColor().getColorName(),
 //                        productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),
@@ -78,18 +78,19 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public Boolean deleteProductDetail(Long id) {
         ProductDetail productDetail = productDetailRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!", String.valueOf(id)));
 
         productDetail.setDeleted(!productDetail.getDeleted());
         productDetailRepository.save(productDetail);
         return true;
     }
 
-//    @Override
-//    public ProductDetail findById(Long id) {
-//        Optional<ProductDetail> result = productDetailRepository.findById(id);
-//        return result.isPresent() ? result.get() : null;
-//    }
+    @Override
+    public ProductDetail findByIdProductDetailsId(Long id) {
+        ProductDetail productDetail = productDetailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("hóa đơn", String.valueOf(id)));
+        return productDetail;
+    }
 
 
     @Override
@@ -112,7 +113,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto, Long id) {
         ProductDetail productDetail = productDetailRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!", String.valueOf(id)));
 
         productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
         productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));

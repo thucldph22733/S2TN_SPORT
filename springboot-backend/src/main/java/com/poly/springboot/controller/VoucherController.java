@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,6 +101,14 @@ public class VoucherController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
+    }
+
+    @GetMapping("findVoucherById")
+    public ResponseEntity<Voucher> findVoucherById(@RequestParam Long id){
+        Voucher voucher = voucherService.findVoucherById(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(voucher);
     }
 
 }

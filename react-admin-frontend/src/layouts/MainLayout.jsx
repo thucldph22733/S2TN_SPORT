@@ -57,7 +57,12 @@ const MainLayout = () => {
                     selectedKeys={[selectedKeys]}
                     items={[
                         {
-                            key: path_name.sell,
+                            key: path_name.dashboard,
+                            icon: <BarChartOutlined style={{ fontSize: "16px" }} />,
+                            label: 'Thống kê',
+                        },
+                        {
+                            key: path_name.newSell,
                             icon: <ShoppingCartOutlined style={{ fontSize: "16px" }} />,
                             label: 'Bán hàng tại quầy',
                         },

@@ -4,6 +4,7 @@ import com.poly.springboot.dto.requestDto.ChangePasswordRequestDto;
 import com.poly.springboot.dto.requestDto.UserRequestDto;
 import com.poly.springboot.dto.responseDto.UserResponseDto;
 import com.poly.springboot.entity.Supplier;
+import com.poly.springboot.entity.User;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

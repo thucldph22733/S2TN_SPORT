@@ -14,6 +14,10 @@ public class OrderDetailResponseDto {
 
     private Long id;
 
+    private Long idOrder;
+
+    private Long idProductDetail;
+
     private String productAvatar;
 
     private String colorName;
@@ -26,7 +30,11 @@ public class OrderDetailResponseDto {
 
     private Double price;
 
-    private Boolean status;
+    private Double priceSecond;
+
+    private Double orderTotal;
+
+    private Integer status;
 
     private String note;
 }

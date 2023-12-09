@@ -77,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Boolean updateProduct(ProductRequestDto productRequestDto, Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!", String.valueOf(id)));
 
         mapToProductRequest(productRequestDto,product);
 

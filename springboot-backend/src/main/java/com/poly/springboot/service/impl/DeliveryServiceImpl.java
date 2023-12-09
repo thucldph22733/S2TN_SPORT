@@ -2,7 +2,6 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.DeliveryRequestDto;
 import com.poly.springboot.entity.Delivery;
-import com.poly.springboot.entity.Delivery;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.DeliveryRepository;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DeliveryServiceImpl implements DeliveryService {
@@ -59,7 +57,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Boolean updateDelivery(DeliveryRequestDto deliveryRequestDto, Long id) {
 
         Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id phương thức giao hàng này!"));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id phương thức giao hàng này!", String.valueOf(id)));
 
         delivery.setDeliveryName(deliveryRequestDto.getDeliveryName());
         delivery.setPrice(deliveryRequestDto.getPrice());
@@ -75,7 +73,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Boolean deleteDelivery(Long id) {
 
         Delivery delivery = deliveryRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id phương thức giao hàng này!"));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id phương thức giao hàng này!", String.valueOf(id)));
 
         delivery.setDeleted(!delivery.getDeleted());
 

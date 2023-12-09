@@ -2,6 +2,8 @@ package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 import com.poly.springboot.dto.responseDto.VoucherResponseDto;
+import com.poly.springboot.entity.Order;
+import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.entity.Voucher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ public interface VoucherService {
 
     Boolean deleteVoucher(Long id);
 
+    Voucher findVoucherById(Long id);
 
 
 }

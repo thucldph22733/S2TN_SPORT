@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean deleteUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!", String.valueOf(id)));
 
         user.setDeleted(!user.getDeleted());
 

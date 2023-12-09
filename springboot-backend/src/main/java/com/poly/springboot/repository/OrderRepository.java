@@ -15,8 +15,8 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     //    List<OrderResponseDto> findOrderByOrderStatus(Long id);
-    @Query("SELECT o FROM Order o ORDER BY o.orderDate DESC")
-    List<Order> findLatestOrders(Pageable pageable);
+//    @Query("SELECT o FROM Order o ORDER BY o.orderDate DESC")
+//    List<Order> findLatestOrders(Pageable pageable);
 
 
     @Query(value = "select c.id, c.order_date, c.status_id, sum(od.quantity), sum(od.price)" +

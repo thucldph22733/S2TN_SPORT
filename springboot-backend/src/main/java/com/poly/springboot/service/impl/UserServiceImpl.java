@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-//    private final RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -75,7 +74,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean updateUser(UserRequestDto requestDto, Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id nhân viên này!", String.valueOf(id)));
 //        List<Role> roleList = roleRepository.findAllByRoleNameIn(requestDto.getRoleList());
         user.setUsersName(requestDto.getUserName());
         user.setPhoneNumber(requestDto.getPhoneNumber());
@@ -134,6 +133,14 @@ public class UserServiceImpl implements UserService {
                 user.getRole(),
                 user.getCreatedAt());
 
+    }
+
+    @Override
+    public User getCustomerById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Khách hàng", String.valueOf(id)));
+
+        return user;
     }
 
 }

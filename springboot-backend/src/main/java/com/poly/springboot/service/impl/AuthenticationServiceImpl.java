@@ -21,8 +21,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
-
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
@@ -68,7 +66,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     loginRequestDto.getPassword()));
 
             var user = userRepository.findByEmailAndDeletedTrue(loginRequestDto.getEmail())
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy email này!"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy email này!", String.valueOf(id)));
 
             var accessToken = jwtService.generateToken(user);
             var refreshToken = jwtService.generateRefreshToken(user);
@@ -89,7 +87,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuthenticationResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
         String userEmail = jwtService.extractUsername(refreshTokenRequestDto.getToken());
         User user = userRepository.findByEmailAndDeletedTrue(userEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy email người  này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy email người  này!", String.valueOf(id)));
 
         if (jwtService.isTokenValid(refreshTokenRequestDto.getToken(), user)) {
             String accessToken = jwtService.generateToken(user);

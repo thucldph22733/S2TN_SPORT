@@ -712,7 +712,7 @@ export default function OrderDetail() {
                 voucherId: selectedVoucherId,
                 orderTotal: orderTotal,
                 customerId: selectedCustomer ? selectedCustomer.id : null,
-                discountMoney: disCountMoney,
+                // discountMoney: disCountMoney,
                 orderTotalInitial: orderTotalInitial,
                 deliveryId: '',
                 paymentId: selectedPaymentId,

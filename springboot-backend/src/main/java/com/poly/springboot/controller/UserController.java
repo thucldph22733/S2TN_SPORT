@@ -120,9 +120,10 @@ public class UserController {
     }
     @GetMapping("getUserById")
     public ResponseEntity<User> getUserById(@RequestParam Long id) {
-        User User = userService.getUserById(id);
+        User User = userService.getCustomerById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(User);
     }
+
 }

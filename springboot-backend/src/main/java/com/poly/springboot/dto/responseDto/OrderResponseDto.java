@@ -21,27 +21,23 @@ public class OrderResponseDto {
 
     private Long idUser;
 
-    private LocalDateTime orderDate;
-
     private String userName;
 
     private String phoneNumber;
 
-    private String shippingName;
-
     private String payment;
 
-    private String address;
+    private String addressDetail;   // so nha, ngo, duong
+
+    private String ward;// phuong/ xa
+
+    private String district;//quan/ huyen
+
+    private String city;  //tinh/thanh pho
 
     private String voucherName;
 
     private String statusName;
-
-    private Date deliveryDate;
-
-    private Date receivedDate;
-
-    private String categoryOrder;
 
     private String note;
 

@@ -24,4 +24,6 @@ public interface UserService {
 
     Boolean changePassword(ChangePasswordRequestDto request, Principal connectedUser);
 
+    User getCustomerById(Long id);
+
 }

@@ -1,23 +1,11 @@
 package com.poly.springboot.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Setter
 @Getter
@@ -25,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Table(name = "orders")
-public class Order {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,15 +35,7 @@ public class Order {
     @JoinColumn(name = "voucher_id")
     private Voucher voucher;
 
-    @Column(name = "order_type")
-    @Enumerated(EnumType.STRING)
-    private OrderType orderType;
-
-    @Column(name = "orderTotal")
-    private Double orderTotal;
-
-    @Column(name = "note")
-    private String note;
+    private String orderType;
 
     @Column(name = "recipient_name")
     private String recipientName;   // ten nguoi nhan
@@ -75,8 +55,20 @@ public class Order {
     @Column(name = "city")  //tinh/thanh pho
     private String city;
 
-    @Column(name = "order_status")
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(name = "order_status")
     private OrderStatus orderStatus;
+
+    @Column(name = "note")
+    private String note;
+
+    @Column(name = "orderTotal")
+    private Double orderTotal; // tổng tiền
+
+    @Column(name = "orderTotal_initial")
+    private Double orderTotalInitial; //tổng tiền ban đầu
+
+    @Column(name = "discount_money")
+    private Double discountMoney; // tiền giảm giá
 
 }

@@ -123,12 +123,14 @@ const MainLayout = () => {
                                 },
                             ]
                         },
-                        user?.role === "ADMIN" && {
+                        // user?.role === "ADMIN" &&
+                        {
                             key: path_name.voucher,
                             icon: <TagsOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý giảm giá',
                         },
-                        user?.role === "ADMIN" && {
+                        // user?.role === "ADMIN" &&
+                        {
                             key: path_name.user,
                             icon: <UsergroupAddOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý người dùng',

@@ -13,9 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,17 +57,15 @@ public class OrderServiceImpl implements OrderService {
                         order.getId(),
                         order.getVoucher() != null ? order.getVoucher().getId() : null,
                         order.getUser() != null ? order.getUser().getId() : null,
-                        order.getOrderDate(),
                         order.getUser() != null ? order.getUser().getUsersName() : "",  // Thay thế từ getCustomer() sang getUser()
                         order.getUser() != null ? order.getUser().getPhoneNumber() : "",  // Thay thế từ getCustomer() sang getUser()
-                        order.getDelivery() != null ? order.getDelivery().getDeliveryName() : "",
                         order.getPayment() != null ? order.getPayment().getPaymentName() : "",
-                        order.getAddress() != null ? order.getAddress().getAddressDetail() : "",
+                        order.getAddressDetail(),
+                        order.getWard(),
+                        order.getDistrict(),
+                        order.getCity(),
                         order.getVoucher() != null ? order.getVoucher().getVoucherName() : "",
                         order.getOrderStatus() != null ? order.getOrderStatus().getStatusName() : "",
-                        order.getDeliveryDate(),
-                        order.getReceivedDate(),
-                        order.getCategoryOrder(),
                         order.getNote(),
                         order.getOrderTotal(),
                         order.getOrderTotalInitial(),
@@ -86,17 +82,15 @@ public class OrderServiceImpl implements OrderService {
                         order.getId(),
                         order.getVoucher() != null ? order.getVoucher().getId() : null,
                         order.getUser() != null ? order.getUser().getId() : null,
-                        order.getOrderDate(),
                         order.getUser() != null ? order.getUser().getUsersName() : "",  // Thay thế từ getCustomer() sang getUser()
                         order.getUser() != null ? order.getUser().getPhoneNumber() : "",  // Thay thế từ getCustomer() sang getUser()
-                        order.getDelivery() != null ? order.getDelivery().getDeliveryName() : "",
                         order.getPayment() != null ? order.getPayment().getPaymentName() : "",
-                        order.getAddress() != null ? order.getAddress().getAddressDetail() : "",
+                        order.getAddressDetail(),
+                        order.getWard(),
+                        order.getDistrict(),
+                        order.getCity(),
                         order.getVoucher() != null ? order.getVoucher().getVoucherName() : "",
                         order.getOrderStatus() != null ? order.getOrderStatus().getStatusName() : "",
-                        order.getDeliveryDate(),
-                        order.getReceivedDate(),
-                        order.getCategoryOrder(),
                         order.getNote(),
                         order.getOrderTotal(),
                         order.getOrderTotalInitial(),
@@ -153,7 +147,7 @@ public class OrderServiceImpl implements OrderService {
         newAddress.setRecipientName(orderRequestDto.getRecipientName());
         newAddress.setPhoneNumber(orderRequestDto.getPhoneNumber());
         newAddress.setAddressDetail(orderRequestDto.getAddressDetail());
-        newAddress.setRegion(orderRequestDto.getRegion());
+        newAddress.setWard(orderRequestDto.getRegion());
         newAddress.setDistrict(orderRequestDto.getDistrict());
         newAddress.setCity(orderRequestDto.getCity());
 
@@ -165,8 +159,6 @@ public class OrderServiceImpl implements OrderService {
         order.setDelivery(delivery);
         order.setPayment(payment);  
         order.setOrderStatus(orderStatus);
-        order.setAddress(null);
-        order.setCategoryOrder(orderRequestDto.getCategoryOrder());
         order.setOrderTotal(orderRequestDto.getOrderTotal());
         order.setNote(orderRequestDto.getNote());
 
@@ -204,9 +196,7 @@ public class OrderServiceImpl implements OrderService {
             order.setDelivery(delivery);
             order.setPayment(payment);
             order.setOrderStatus(orderStatus);
-            order.setAddress(address);
             order.setVoucher(voucher);
-            order.setCategoryOrder(orderRequestDto.getCategoryOrder());
             order.setOrderTotal(orderRequestDto.getOrderTotal());
             order.setNote(orderRequestDto.getNote());
             order.setOrderTotalInitial(order.getOrderTotalInitial());
@@ -252,9 +242,7 @@ public class OrderServiceImpl implements OrderService {
             order.setDelivery(delivery);
             order.setPayment(payment);
             order.setOrderStatus(orderStatus);
-            order.setAddress(address);
             order.setVoucher(voucher);
-            order.setCategoryOrder(orderRequestDto.getCategoryOrder());
             order.setOrderTotal(orderRequestDto.getOrderTotal());
             order.setNote(orderRequestDto.getNote());
             order.setOrderTotalInitial(order.getOrderTotalInitial());
@@ -300,7 +288,6 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAllOrdersWithDetails().stream().map(
                 order -> new SecondOrderResponseDto(
                         order.getId(),
-                        order.getOrderDate(),
                         order.getOrderStatus() != null ? order.getOrderStatus().getStatusName() : "",
                         order.getOrderTotal()
                 )
@@ -322,17 +309,15 @@ public class OrderServiceImpl implements OrderService {
                         order.getId(),
                         order.getVoucher().getId(),
                         order.getUser().getId(),
-                        order.getOrderDate(),
                         order.getUser().getUsersName(),
                         order.getUser().getPhoneNumber(),
-                        order.getDelivery().getDeliveryName(),
                         order.getPayment().getPaymentName(),
-                        order.getAddress().getAddressDetail(),
+                        order.getAddressDetail(),
+                        order.getWard(),
+                        order.getDistrict(),
+                        order.getCity(),
                         order.getVoucher().getVoucherName(),
                         order.getOrderStatus().getStatusName(),
-                        order.getDeliveryDate(),
-                        order.getReceivedDate(),
-                        order.getCategoryOrder(),
                         order.getNote(),
                         order.getOrderTotal(),
                         order.getOrderTotalInitial(),

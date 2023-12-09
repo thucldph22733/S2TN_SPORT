@@ -37,7 +37,7 @@ import {
 import axios from 'axios';
 import Search from 'antd/es/input/Search';
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import TextArea from 'antd/es/input/TextArea';
 import { QrReader } from 'react-qr-reader';
 import _debounce from 'lodash/debounce';
@@ -87,16 +87,16 @@ export default function OrderDetail() {
     const { id } = useParams();
     const { Option } = Select;
     const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
+
     useEffect(() => {
         loadOrderDetails();
     }, [productDetailsKey]);
+
     useEffect(() => {
-        // Load danh sách khách hàng khi component được mount
-        // loadCustomerById();
         loadCustomerOptions();
         loadVoucherOptions();
     }, []);
-    // Chạy effect khi component mount
+
     useEffect(() => {
         loadProductDetails();
         loadOrder();
@@ -434,13 +434,6 @@ export default function OrderDetail() {
                     const voucher = voucherResponse.data;
                     const discountRate = voucher.discountRate;
 
-                    // Gọi API hoặc phương thức khác để lấy customerId
-                    // const customerIdResponse = await axios.get(
-                    //     `http://localhost:8080/api/v1/orders/findCustomerByOrderId?id=${id}`,
-                    // );
-
-                    let shouldContinue = true;
-
                     if (orderTotalInitial < voucher.orderMinimum) {
                         // Hiển thị thông báo lỗi
                         notification.error({
@@ -448,43 +441,22 @@ export default function OrderDetail() {
                             description: `Tiền ban đầu không đạt yêu cầu tối thiểu của voucher. Yêu cầu tối thiểu là ${voucher.orderMinimum}`,
                         });
 
-                        // Đặt biến cờ thành false để ngăn việc thực thi tiếp theo
-                        shouldContinue = false;
-
-                        // Đặt selectedVoucherId về null
+                        // Reset state and return
+                        setSelectedVoucher(null);
                         setSelectedVoucherId(null);
-                        setShowSuccessAlert(false);
 
                         return false;
                     }
 
-                    // if (customerIdResponse.status === 200) {
-                    //     const customerId = customerIdResponse.data.id;
+                    if (orderTotalInitial >= voucher.orderMinimum) {
+                        console.log('Entering showSuccessAlert block');
+                        const giamGia = (orderTotalInitial * discountRate) / 100;
+                        setDiscountMoney(giamGia);
+                        const newOrderTotal = orderTotalInitial - giamGia;
+                        setOrderTotal(newOrderTotal);
 
-                    const giamGia = (orderTotalInitial * discountRate) / 100;
-                    setDiscountMoney(giamGia);
-                    const newOrderTotal = orderTotalInitial - giamGia;
-                    setOrderTotal(newOrderTotal);
+                        const newQuantity = voucher.quantity;
 
-                    const newQuantity = voucher.quantity;
-
-                    if (shouldContinue) {
-                        // Cập nhật thông tin order trên server
-                        // const response = await axios.put(`http://localhost:8080/api/v1/orders/update?id=${id}`, {
-                        //     voucherId: voucherId,
-                        //     orderTotal: orderTotal,
-                        //     customerId: customerId,
-                        //     discountMoney: disCountMoney,
-                        //     orderTotalInitial: orderTotalInitial,
-                        //     deliveryId: '',
-                        //     paymentId: '',
-                        //     addressId: '',
-                        //     StatusId: '',
-                        //     // Các trường khác...
-                        // });
-
-                        // if (response.status === 200) {
-                        // console.log('Order đã được cập nhật với thông tin mới');
                         setVoucherOptions((options) =>
                             options.map((opt) => {
                                 if (opt.value === voucherId) {
@@ -504,15 +476,10 @@ export default function OrderDetail() {
                                 return opt;
                             }),
                         );
-                        // }
-                        // Lưu thông tin voucher đã chọn
                         setSelectedVoucherInfo(voucher);
-                        setShowSuccessAlert(true); // Hiển thị Alert khi cập nhật thành công
-                        // } else {
-                        //     console.error('Có lỗi xảy ra khi cập nhật order hoặc voucher');
-                        // }
-                    } else {
-                        console.error('Có lỗi xảy ra khi lấy thông tin customerId');
+                        console.log('Before setShowSuccessAlert(true)');
+                        setShowSuccessAlert(true);
+                        console.log('After setShowSuccessAlert(true)');
                     }
                 } else {
                     console.error('Order id is null or voucherId is null');
@@ -524,10 +491,6 @@ export default function OrderDetail() {
             // Bạn có thể thực hiện một hành động khác tùy thuộc vào yêu cầu của bạn
             console.warn('Voucher is not selected. No API call is made.');
         }
-    };
-
-    const handleVoucherSearch = (value) => {
-        // Xử lý tìm kiếm voucher (nếu cần)
     };
 
     const columnCart = [
@@ -718,7 +681,7 @@ export default function OrderDetail() {
                     type="error"
                     style={{
                         height: '35px',
-                        width: '415px',
+                        width: '100%',
                         display: 'flex',
                         marginLeft: '10px',
                     }}
@@ -732,7 +695,7 @@ export default function OrderDetail() {
                     type="success"
                     style={{
                         height: '35px',
-                        width: '415px',
+                        width: '100%',
                         display: 'flex',
                         marginLeft: '10px',
                     }}
@@ -740,6 +703,8 @@ export default function OrderDetail() {
             );
         }
     };
+    const navigate = useNavigate();
+
     const handleCreateOrder = async () => {
         try {
             setIsCreatingOrder(true);
@@ -761,6 +726,7 @@ export default function OrderDetail() {
             if (response.status === 200) {
                 console.log('Order đã được cập nhật với thông tin mới');
                 message.success('Đơn hàng đã được tạo thành công');
+                navigate('/don-hang');
             }
         } catch (error) {
             console.error('Lỗi khi cập nhật thông tin đơn hàng:', error);
@@ -1366,13 +1332,13 @@ export default function OrderDetail() {
                                     {' '}
                                     <AutoComplete
                                         style={{
-                                            width: 415,
+                                            width: '100%',
                                             // float: 'right',
                                             // marginLeft: '5px',
                                         }}
                                         value={autoCompleteValue} // Thay vì selectedVoucherId
                                         onSelect={handleVoucherSelect}
-                                        onChange={(value) => handleVoucherSearch(value)}
+                                        // onChange={(value) => handleVoucherSearch(value)}
                                         options={voucherOptions}
                                         allowClear={{
                                             clearIcon: <CloseSquareFilled />,
@@ -1403,7 +1369,7 @@ export default function OrderDetail() {
                                             <h7
                                                 style={{
                                                     height: '20px',
-                                                    width: '370px',
+                                                    width: '100%',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     // justifyContent: 'center',

@@ -30,7 +30,7 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST_URL = {
             "" +
                     "/api/v1/**",
-                    "/api/v1/roles/**",
+            "/api/v1/roles/**",
             "/api/v1/auth/**",
             "/v2/api-docs",
             "/v3/api-docs",
@@ -39,7 +39,7 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-ui.html"};
 
-        @Bean
+    @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("*");
@@ -50,6 +50,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 

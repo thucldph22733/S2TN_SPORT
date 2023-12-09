@@ -55,7 +55,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Boolean deleteBrand(Long id) {
         Brand brand = brandRepository.findById(id)
-                .orElseThrow(()->  new ResourceNotFoundException("Không tìm thấy id thương hiệu này!", String.valueOf(id)));
+                .orElseThrow(()->  new ResourceNotFoundException("Không tìm thấy id thương hiệu này!"));
 
         brand.setDeleted(!brand.getDeleted());
 
@@ -67,7 +67,7 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Boolean updateBrand(BrandRequestDto brandRequestDto, Long id) {
         Brand brand = brandRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Không tìm thấy id thương hiệu này!", String.valueOf(id)));
+                () -> new ResourceNotFoundException("Không tìm thấy id thương hiệu này!"));
         brand.setBrandName(brandRequestDto.getBrandName());
         brand.setBrandDescribe(brandRequestDto.getBrandDescribe());
         brand.setDeleted(brandRequestDto.getDeleted());

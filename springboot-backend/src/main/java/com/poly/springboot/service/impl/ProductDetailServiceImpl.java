@@ -78,7 +78,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public Boolean deleteProductDetail(Long id) {
         ProductDetail productDetail = productDetailRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
 
         productDetail.setDeleted(!productDetail.getDeleted());
         productDetailRepository.save(productDetail);
@@ -88,7 +88,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public ProductDetail findByIdProductDetailsId(Long id) {
         ProductDetail productDetail = productDetailRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("hóa đơn", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy hóa đơn chi tiết này!"));
         return productDetail;
     }
 
@@ -113,7 +113,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto, Long id) {
         ProductDetail productDetail = productDetailRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
 
         productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
         productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));

@@ -118,11 +118,13 @@ public class UserController {
                     .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
         }
     }
-//    @GetMapping("getUserById")
-//    public ResponseEntity<User> getUserById(@RequestParam Long id) {
-//        User User = userService.getUserById(id);
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(User);
-//    }
+
+    @GetMapping("getUserById")
+    public ResponseEntity<User> getUserById(@RequestParam Long id) {
+        User User = userService.getCustomerById(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(User);
+    }
+
 }

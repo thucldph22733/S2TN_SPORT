@@ -1,12 +1,10 @@
 package com.poly.springboot.dto.requestDto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
 
 @Getter
 @Setter
@@ -20,23 +18,13 @@ public class OrderRequestDto {
 
     private Long paymentId;
 
-    private Long addressId;
-
     private Long voucherId;
 
-    private Long StatusId;
+    private Long statusId;
 
-    private Date deliveryDate;
-
-    private Date receivedDate;
-
-    private String categoryOrder;
+    private String orderType;
 
     private Double orderTotal;
-
-    private Double orderTotalInitial; //tổng tiền ban đầu
-
-    private Double discountMoney; // tiền giảm giá
 
     private String note;
 
@@ -50,7 +38,7 @@ public class OrderRequestDto {
     private String addressDetail;
 
 //    @NotBlank(message = "Phường/xã không được để trống!")
-    private String region;
+    private String ward;
 
 //    @NotBlank(message = "Quận/huyện phố không được để trống!")
     private  String district;

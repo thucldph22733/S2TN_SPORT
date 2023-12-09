@@ -39,7 +39,7 @@ public class ColorServiceImpl implements ColorService {
     @Override
     public Boolean deleteColor(Long id) {
         Color color = colorRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id màu sắc bộ này!", String.valueOf(id)));
+                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id màu sắc bộ này!"));
 
         color.setDeleted(!color.getDeleted());
 
@@ -67,7 +67,7 @@ public class ColorServiceImpl implements ColorService {
     public Boolean updateColor(ColorRequestDto colorRequestDto, Long id) {
 
         Color color = colorRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id màu sắc bộ này!", String.valueOf(id)));
+                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id màu sắc bộ này!"));
 
         color.setColorDescribe(colorRequestDto.getColorDescribe());
         color.setColorName(colorRequestDto.getColorName());

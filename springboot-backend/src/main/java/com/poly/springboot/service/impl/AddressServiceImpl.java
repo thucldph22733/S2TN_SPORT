@@ -31,7 +31,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Boolean createAddress(AddressRequestDto addressRequestDto) {
         User user = userRepository.findById(addressRequestDto.getUsersId())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id người dùng này!", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id người dùng này!"));
 
         Address address = new Address();
         mapAddressRequestDtoToEntity(addressRequestDto, address, user);
@@ -42,7 +42,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Boolean updateAddress(Long id, AddressRequestDto addressRequestDto) {
         Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id địa chỉ này", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id địa chỉ này"));
 
         mapAddressRequestDtoToEntity(addressRequestDto, address, null);  // Null vì không cần cập nhật user trong trường hợp này
         addressRepository.save(address);
@@ -65,7 +65,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Boolean deleteAddress(Long id) {
         Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id địa chỉ này", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id địa chỉ này"));
 
         // Xóa liên kết nhiều-đến-nhiều trong bảng trung gian
         address.getUsers().clear();

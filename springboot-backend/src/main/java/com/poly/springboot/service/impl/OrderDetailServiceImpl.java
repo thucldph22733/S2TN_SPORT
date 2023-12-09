@@ -1,7 +1,6 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.OrderDetailRequestDto;
-import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
 import com.poly.springboot.entity.Order;
 import com.poly.springboot.entity.OrderDetail;
@@ -52,7 +51,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 orderDetail.getPrice(),
                                 orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getPrice(): 0,
                                 orderDetail.getOrder().getOrderTotal(),
-                                orderDetail.getStatus(),
                                 orderDetail.getNote())
                 ).collect(Collectors.toList());
     }
@@ -101,7 +99,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 double totalPrice = orderDetailRequestDto.getQuantity() * productDetail.getPrice();
                 orderDetail.setPrice(totalPrice);
 
-                orderDetail.setStatus(0);
                 orderDetail.setNote(orderDetailRequestDto.getNote());
 
                 // Lưu OrderDetail
@@ -135,13 +132,12 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         Order order = orderRepository.findById(orderDetailRequestDto.getOrderId()).orElse(null);
 
         OrderDetail orderDetail = orderDetailRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("hóa đơn chi tiết", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn chi tiết"));
         orderDetail.setOrder(order);
         orderDetail.setProductDetail(productDetail);
         orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
         double totalPrice = orderDetailRequestDto.getQuantity() * productDetail.getPrice();
         orderDetail.setPrice(totalPrice);
-        orderDetail.setStatus(orderDetailRequestDto.getStatus());
         orderDetail.setNote(orderDetailRequestDto.getNote());
         orderDetailRepository.save(orderDetail);
         double orderTotal = orderDetailRepository.calculateOrderTotal(order.getId());
@@ -166,7 +162,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         orderDetail.getPrice(),
                         orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getPrice(): 0,
                         orderDetail.getOrder().getOrderTotal(),
-                        orderDetail.getStatus(),
                         orderDetail.getNote())
         ).collect(Collectors.toList());
     }
@@ -180,7 +175,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     public Boolean deleteOrderDetail(Long id) {
         try {
             OrderDetail orderDetail = orderDetailRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Hóa đơn chi tiết", String.valueOf(id)));
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm tháy hóa đơn chi tiết"));
 
             Order order = orderDetail.getOrder();
 
@@ -192,7 +187,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             double discountMoney = calculateDiscountMoney(order); // Thêm hàm tính discountMoney
 
             order.setOrderTotalInitial(orderTotal);
-            order.setDiscountMoney(discountMoney);
+//            order.setDiscountMoney(discountMoney);
             order.setOrderTotal(orderTotal - discountMoney); // Cập nhật orderTotal sau khi giảm giá
 
             orderRepository.save(order);

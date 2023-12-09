@@ -33,11 +33,5 @@ public class OrderStatus {
     @Column(name = "status_describe")
     private String statusDescribe;
 
-    @CreationTimestamp
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
 
-    @UpdateTimestamp
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 }

@@ -16,7 +16,7 @@ const Login = () => {
         const data = form.getFieldsValue();
 
         login(data);
-        // navigate(path_name.sell)
+        navigate(path_name.newSell)
     };
 
     return (

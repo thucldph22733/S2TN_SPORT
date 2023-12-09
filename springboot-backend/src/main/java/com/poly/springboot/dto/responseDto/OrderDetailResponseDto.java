@@ -34,7 +34,5 @@ public class OrderDetailResponseDto {
 
     private Double orderTotal;
 
-    private Integer status;
-
     private String note;
 }

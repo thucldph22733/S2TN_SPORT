@@ -1,27 +1,60 @@
-import { DeleteOutlined, PlusCircleFilled, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Table, theme } from 'antd';
+import { DeleteOutlined, ExclamationCircleOutlined, FormOutlined, PlusCircleFilled, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Modal, Popconfirm, Space, Table, notification, theme } from 'antd';
 import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { FaEdit } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import path_name from '~/constants/routers';
+import OrderService from '~/service/OrderService';
+import FormatDate from '~/utils/format-date';
 
 export default function NewSell() {
-    const {
-        token: { colorBgContainer },
-    } = theme.useToken();
-    const [order, setOrder] = useState('');
+    const [loading, setLoading] = useState(false);
     let navigate = useNavigate();
 
-    useEffect(() => {
-        loadOrder();
-    }, []);
+    const [orders, setOrders] = useState([]);
 
-    const loadOrder = async () => {
-        const result = await axios.get('http://localhost:8080/api/v1/orders/getAllCompletedOrder');
-        setOrder(result.data);
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
+
+    const fetchOrderStatusNewCreate = async () => {
+        setLoading(true)
+        await OrderService.getAllOrderByStatusId(pagination.current - 1, pagination.pageSize)
+            .then(response => {
+
+                setOrders(response.data);
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
+                console.log(response.data);
+                setLoading(false)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+    const handleDelete = async (id) => {
+
+        await OrderService.delete(id).then(response => {
+            console.log(response.data);
+            notification.success({
+                message: 'Thông báo',
+                description: 'Xóa thành công!',
+            });
+            fetchOrderStatusNewCreate();
+        }).catch(error => {
+            console.error(error);
+            notification.error({
+                message: 'Thông báo',
+                description: 'Xóa thất bại!',
+            });
+        });
+
     };
+    useEffect(() => {
+        fetchOrderStatusNewCreate();
+    }, [pagination.current, pagination.pageSize]);
 
     const onEditClick = async (record) => {
         try {
@@ -31,95 +64,125 @@ export default function NewSell() {
             console.error(error);
         }
     };
-    const createOrder = async () => {
-        try {
-            // Gọi API để tạo đơn hàng mới
-            const response = await axios.post('http://localhost:8080/api/v1/orders/create', {
-                StatusId: 4,
-                // Thêm dữ liệu cần thiết cho đơn hàng mới vào đây
+
+
+    const handleCreate = async () => {
+        const data = { statusId: 1, typeOrder: "Tại quầy" };
+        console.log(data)
+        await OrderService.create(data)
+            .then(() => {
+                notification.success({
+                    message: 'Thông báo',
+                    description: 'Tạo mới đơn hàng thành công!',
+                });
+                fetchOrderStatusNewCreate();
+            })
+            .catch(error => {
+                notification.error({
+                    message: 'Thông báo',
+                    description: 'Tạo mới đơn hàng thất bại!',
+                });
+                console.error(error);
             });
-
-            // Kiểm tra phản hồi từ máy chủ và xử lý theo ý muốn
-            if (response.status === 201) {
-                const responseData = response.data;
-                const newOrderId = responseData?.data?.id; // Kiểm tra xem có ID hay không
-                console.log('ID của order mới:', newOrderId);
-                return newOrderId; // Trả về ID của order để sử dụng sau này
-            }
-        } catch (error) {
-            // Xử lý lỗi nếu có
-            console.error('Lỗi khi tạo đơn hàng:', error);
-            return null; // Trả về null nếu có lỗi
-        }
-    };
-
-    const add = async () => {
-        await createOrder();
-        loadOrder(); // Load lại danh sách đơn hàng
     };
 
     const columnCart = [
         {
             title: '#',
-            dataIndex: 'index',
-            width: 50,
-            render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
+            dataIndex: 'key',
+            width: '5%',
         },
         {
-            title: 'Tổng tiền',
-            dataIndex: 'orderTotal',
-            width: 60,
+            title: 'Mã hóa đơn',
+            dataIndex: 'id',
+            width: '15%',
+            render: (text) => <a>HD{text}</a>,
         },
         {
             title: 'Ngày tạo',
-            dataIndex: 'orderDate',
-            width: 60,
+            dataIndex: 'createdAt',
+            width: '25%',
+        },
+        {
+            title: 'Người tạo',
+            dataIndex: 'createdBy',
+            width: '20%',
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'statusName',
-            width: 60,
+            dataIndex: 'orderStatus',
+            width: '20%',
         },
         {
-            title: <div style={{ textAlign: 'center' }}>Hành động</div>,
+            title: 'Hành động',
             dataIndex: '',
-            width: 50,
-            render: (record) => (
-                <div style={{ textAlign: 'center' }}>
-                    <Link to={`${path_name.orderDetail}/${record.id}`} className="btn btn-outline-warning">
-                        <FaEdit />
-                    </Link>
-                </div>
-            ),
+            width: '15%',
+            render: (record) => {
+
+                return <Space size="middle">
+                    <Button type="link"
+                        icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
+                        onClick={`${path_name.orderDetail}/${record.id}`} />
+                    <Popconfirm
+                        title="Xóa kích thước"
+                        description="Bạn có chắc chắn xóa kích thước này không?"
+                        placement="leftTop"
+                        onConfirm={() => handleDelete(record.id)}
+                        okText="Đồng ý"
+                        cancelText="Hủy bỏ"
+                    >
+                        <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
+                    </Popconfirm>
+
+                </Space>
+            }
+
         },
     ];
+
+    const [modal, contextHolder] = Modal.useModal();
+    const confirm = () => {
+        modal.confirm({
+            title: 'Thông báo!',
+            icon: <ExclamationCircleOutlined />,
+            content: 'Bạn có chắc muốn tạo mới một đơn hàng không?',
+            onOk: () => {  // Sử dụng hàm không tên (anonymous function) ở đây
+                handleCreate();  // Gọi hàm handleCreate trong hàm callback này
+            },
+            okText: 'Đồng ý',
+            cancelText: 'Hủy bỏ',
+        });
+    }
     return (
-        <div
-            style={{
-                margin: '10px 10px',
-                padding: 14,
-                minHeight: 280,
-                background: colorBgContainer,
-            }}
-        >
-            <Button
-                type="primary"
-                onClick={add}
+        <>
+            {contextHolder}
+            <Button type="primary"
                 icon={<PlusOutlined />}
-                style={{ float: 'right', marginLeft: '5px', marginBottom: '15px' }}
-            >
+                onClick={confirm}
+                style={{ marginBottom: '16px', float: 'right', borderRadius: '2px' }} >
                 Tạo đơn hàng
             </Button>
             <Table
+                loading={loading}
                 columns={columnCart}
-                dataSource={order}
+                // dataSource={orders}
+                dataSource={orders.map((order, index) => ({
+                    ...order,
+                    key: index + 1,
+                    createdAt: FormatDate(order.createdAt),
+                    orderStatus: order.orderStatus.statusName
+                }))}
                 pagination={{
-                    pageSize: 50,
+                    current: pagination.current,
+                    pageSize: pagination.pageSize,
+                    defaultPageSize: 5,
+                    pageSizeOptions: ['5', '10', '15'],
+                    total: pagination.total,
+                    showSizeChanger: true,
                 }}
-                scroll={{
-                    y: 240,
-                }}
+
             />
-        </div>
+
+        </>
     );
 }

@@ -16,8 +16,6 @@ public class SecondOrderResponseDto {
 
     private Long id;
 
-    private LocalDateTime orderDate;
-
     private String statusName;
 
     private Double totalPrice;

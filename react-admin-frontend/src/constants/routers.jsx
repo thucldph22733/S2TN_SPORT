@@ -2,7 +2,7 @@ const path_name = {
     dashboard: '/dashboard',
     forgot_password: '/quen-mat-khau',
     logout: '/dang-xuat',
-    // sell: '/ban-hang',
+    sell: '/ban-hang',
     login: '/',
     change_password: '/doi-mat-khau',
     product: '/san-pham',

@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-//    private final RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -134,6 +133,14 @@ public class UserServiceImpl implements UserService {
                 user.getRole(),
                 user.getCreatedAt());
 
+    }
+
+    @Override
+    public User getCustomerById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id khách hàng này!"));
+
+        return user;
     }
 
 }

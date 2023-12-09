@@ -40,7 +40,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Boolean updateImage(ImageRequestDto imageRequestDto, Long id) {
         Image image = imageRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id ảnh này!", String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id ảnh này!"));
 
         image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
@@ -54,7 +54,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Boolean deleteImage(Long id) {
         Image image = imageRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id ảnh này!", String.valueOf(id)));
+                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id ảnh này!"));
         imageRepository.deleteById(image.getId());
         return true;
     }

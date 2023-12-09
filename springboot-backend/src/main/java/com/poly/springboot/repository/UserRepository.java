@@ -31,4 +31,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "LOWER(u.phoneNumber) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
             "u.deleted IN :status")
     Page<User> findByKeyword(@Param("name") String name,@Param("phoneNumber") String phoneNumber,@Param("email") String email,@Param("status") List<Boolean> status, Pageable pageable);
+
+
 }

@@ -45,7 +45,7 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public Boolean deleteMaterial(Long id) {
         Material material = materialRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id chất liệu này!", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id chất liệu này!"));
 
         material.setDeleted(!material.getDeleted());
 
@@ -76,7 +76,7 @@ public class MaterialServiceImpl implements MaterialService {
     public Boolean updateMaterial(MaterialRequestDto materialRequestDto, Long id) {
 
         Material material = materialRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id chất liệu này!", String.valueOf(id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id chất liệu này!"));
 
         material.setMaterialName(materialRequestDto.getMaterialName());
         material.setMaterialDescribe(materialRequestDto.getMaterialDescribe());

@@ -77,7 +77,9 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher findVoucherById(Long id) {
-        return null;
+        Voucher voucher = voucherRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("hóa đơn"));
+        return voucher;
     }
 
     private   Voucher mapToVoucherRequest(Voucher voucher, VoucherRequestDto voucherRequestDto){
@@ -95,5 +97,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         return voucher;
     }
+
+
 
 }

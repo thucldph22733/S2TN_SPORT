@@ -15,28 +15,31 @@ import java.util.Optional;
 public interface OrderService {
 
 //    List<OrderResponseDto> getAllOrdersCompleted();
-//    List<OrderResponseDto> getAllOrders();
-//
-//    List<OrderResponseDto> getPagination(Integer pageNo);
-//
-//    Order findOrderById(Long id);
 
-    //    List<OrderResponseDto> getOrderByStatus(Long id);
+    List<OrderResponseDto> getAllOrders();
+
+    List<OrderResponseDto> getPagination(Integer pageNo);
+
+    Order findOrderById(Long id);
+
+//    List<OrderResponseDto> getOrderByStatus(Long id);
+
     Page<Order> findAllOrderByStatusId(Pageable pageable);
 
     Boolean createOrder(OrderRequestDto orderRequestDto);
 
     Boolean deleteOrder(Long id);
 
-//    Boolean updateOrder(OrderRequestDto orderRequestDto,Long id);
-//
-//    Boolean updateOrders(OrderRequestDto orderRequestDto, Long id);
-//
-//    List<OrderResponseDto> searchOrder(Integer pageNo,String keyword);
-//
-//    List<SecondOrderResponseDto> getAllOrde();
-//
-//    User findUserByOrderId(Long orderId);
-//    Voucher findVoucherByOrderId(Long orderId);
+    Boolean updateOrder(OrderRequestDto orderRequestDto, Long id);
+
+    Boolean updateOrders(OrderRequestDto orderRequestDto, Long id);
+
+//    List<OrderResponseDto> searchOrder(Integer pageNo, String keyword);
+
+    List<SecondOrderResponseDto> getAllOrde();
+
+    User findUserByOrderId(Long orderId);
+
+    Voucher findVoucherByOrderId(Long orderId);
 
 }

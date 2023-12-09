@@ -45,5 +45,4 @@ public class OrderResponseDto {
 
     private Double orderTotalInitial; //tổng tiền ban đầu
 
-    private Double discountMoney; // tiền giảm giá
 }

@@ -15,7 +15,8 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    //    List<OrderResponseDto> findOrderByOrderStatus(Long id);
+//    List<OrderResponseDto> findOrderByOrderStatus(Long id);
+//
 //    @Query("SELECT o FROM Order o ORDER BY o.orderDate DESC")
 //    List<Order> findLatestOrders(Pageable pageable);
 
@@ -23,7 +24,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(value = "select c.id, c.order_date, c.status_id, sum(od.quantity), sum(od.price)" +
             " from orders as c " +
             "left join order_details as od on c.id = od.order_id " +
-            "group by c.id, c.order_date, c.status_id",nativeQuery = true)
+            "group by c.id, c.order_date, c.status_id", nativeQuery = true)
     List<Order> findAllOrdersWithDetails();
 
     @Query("SELECT c FROM User c JOIN Order o ON c.id = o.user.id WHERE o.id = :orderId")
@@ -32,7 +33,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT c FROM Voucher c JOIN Order o ON c.id = o.voucher.id WHERE o.id = :orderId")
     Optional<Voucher> findVoucherByOrderId(Long orderId);
 
-    @Query("SELECT o FROM Order o WHERE o.orderStatus.id = 1 AND o.deleted = true" )
+    @Query("SELECT o FROM Order o WHERE o.orderStatus.id = 1 AND o.deleted = true")
     Page<Order> findAllOrderByStatusId(Pageable pageable);
 
 }

@@ -26,6 +26,8 @@ public class OrderRequestDto {
 
     private Double orderTotal;
 
+    private Double orderTotalInitial;
+
     private String note;
 
 //    @NotBlank(message = "Tên người nhận không được để trống!")

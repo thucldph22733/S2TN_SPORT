@@ -35,23 +35,23 @@ export function AuthProvider({ children }) {
             });
     }
 
-    // function refreshToken() {
-    //     const refresh_token = localStorage.getItem('refresh_token');
-    //     if (refresh_token) {
-    //         HttpClient.post(`${API_URL}refresh-token`, refresh_token)
-    //             .then((response) => {
+    function refreshToken() {
+        const refresh_token = localStorage.getItem('refresh_token');
+        if (refresh_token) {
+            HttpClient.post(`${API_URL}refresh-token`, refresh_token)
+                .then((response) => {
 
-    //                 const new_access_token = response.data.access_token;
+                    const new_access_token = response.data.access_token;
 
-    //                 localStorage.setItem('token', new_access_token);
-    //             })
-    //             .catch(error => {
-    //                 console.error(error);
-    //                 throw error;
-    //             });
-    //     }
+                    localStorage.setItem('token', new_access_token);
+                })
+                .catch(error => {
+                    console.error(error);
+                    throw error;
+                });
+        }
 
-    // }
+    }
 
     function logout() {
         // Xóa JWT khỏi localStorage và đặt trạng thái người dùng thành null
@@ -67,7 +67,7 @@ export function AuthProvider({ children }) {
         login,
         logout,
         loading,
-        // refreshToken
+        refreshToken
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

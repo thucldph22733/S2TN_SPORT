@@ -23,5 +23,4 @@ public interface VoucherService {
 
     Voucher findVoucherById(Long id);
 
-
 }

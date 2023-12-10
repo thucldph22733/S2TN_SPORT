@@ -35,7 +35,9 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "voucher_id")
     private Voucher voucher;
 
-    private String orderType;
+    @ManyToOne
+    @JoinColumn(name = "orderType_id")
+    private OrderType orderType;
 
     @Column(name = "recipient_name")
     private String recipientName;   // ten nguoi nhan

@@ -22,7 +22,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
     private OrderStatusRepository orderStatusRepository;
-    private AddressRepository addressRepository;
+    private OrderTypeRepository orderTypeRepository;
     private DeliveryRepository shippingMethodRepository;
     private PaymentRepository paymentMethodRepository;
     private UserRepository userRepository;
@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderStatusRepository orderStatusRepository,
-                            AddressRepository addressRepository,
+                            OrderTypeRepository orderTypeRepository,
                             DeliveryRepository shippingMethodRepository,
                             PaymentRepository paymentMethodRepository,
                             UserRepository userRepository,
@@ -42,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
                             TimeLineRepository timeLineRepository) {
         this.orderRepository = orderRepository;
         this.orderStatusRepository = orderStatusRepository;
-        this.addressRepository = addressRepository;
+        this.orderTypeRepository = orderTypeRepository;
         this.shippingMethodRepository = shippingMethodRepository;
         this.userRepository = userRepository;
         this.paymentMethodRepository = paymentMethodRepository;
@@ -133,6 +133,7 @@ public class OrderServiceImpl implements OrderService {
         Long paymentId = orderRequestDto.getPaymentId();
         Long deliveryId = orderRequestDto.getDeliveryId();
         Long voucherId = orderRequestDto.getVoucherId();
+        Long orderTypeId = orderRequestDto.getOrderTypeId();
 // Kiểm tra và tìm đối tượng Customer
         User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
 
@@ -148,13 +149,16 @@ public class OrderServiceImpl implements OrderService {
 // Tìm đối tượng OrderStatus (set luôn là null nếu không tìm thấy)
         OrderStatus orderStatus = orderStatusRepository.findById(1L).orElse(null);
 
+        OrderType orderType = orderTypeId != null ? orderTypeRepository.findById(orderTypeId).orElse(null) : null;
+
 // Tạo đối tượng Order và set các giá trị đã tìm được
         Order order = new Order();
         order.setUser(user);
         order.setDelivery(delivery);
         order.setPayment(payment);
         order.setOrderStatus(orderStatus);
-        order.setOrderType(orderRequestDto.getOrderType());
+        order.setOrderType(orderType);
+        order.setVoucher(voucher);
         order.setOrderTotal(orderRequestDto.getOrderTotal());
         order.setNote(orderRequestDto.getNote());
         order.setDeleted(true);
@@ -172,6 +176,7 @@ public class OrderServiceImpl implements OrderService {
         TimeLine timeLine = new TimeLine();
         timeLine.setOrder(order);
         timeLine.setStatus(1);
+        timeLine.setDeleted(true);
         timeLineRepository.save(timeLine);
 
         return true;
@@ -239,6 +244,7 @@ public class OrderServiceImpl implements OrderService {
             Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
             Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
             OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
+            OrderType orderType = orderRequestDto.getOrderTypeId() != null ? orderTypeRepository.findById(orderRequestDto.getOrderTypeId()).orElse(null) : null;
             Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
 
             // Lấy thông tin đơn hàng từ ID
@@ -257,6 +263,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderTotal(orderRequestDto.getOrderTotal());
             order.setNote(orderRequestDto.getNote());
             order.setOrderTotalInitial(order.getOrderTotalInitial());
+            order.setOrderType(orderType);
 
             // Tính toán giảm giá và cập nhật
             if (voucher != null) {
@@ -266,13 +273,15 @@ public class OrderServiceImpl implements OrderService {
             }
 
             // Kiểm tra xem có TimeLine nào đã được tạo mới cho đơn hàng với trạng thái là 2 không
-            TimeLine existingTimeLine = timeLineRepository.findByOrderAndStatus(order, 2);
+            TimeLine existingTimeLine = timeLineRepository.findByOrderAndStatusAndDeletedTrue(order, 2);
 
             if (existingTimeLine == null) {
                 // Nếu không có, hãy tạo mới TimeLine
+
                 TimeLine timeLine = new TimeLine();
                 timeLine.setOrder(order);
                 timeLine.setStatus(2);
+                timeLine.setDeleted(true);
                 timeLine.setNote("Đã thanh toán");
                 timeLineRepository.save(timeLine);
             } else {

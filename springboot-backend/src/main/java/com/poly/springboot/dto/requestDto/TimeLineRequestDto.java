@@ -17,8 +17,8 @@ public class TimeLineRequestDto {
 
     private String note;
 
-    private LocalDateTime createDate;
-
     private Integer status;
+
+    private Boolean deleted;
 
 }

@@ -120,9 +120,14 @@ export default function NewSell() {
             render: (record) => {
 
                 return <Space size="middle">
-                    <Button type="link"
+                    {/* <Button type="link"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
-                        onClick={`${path_name.orderDetail}/${record.id}`} />
+                        onClick={`${path_name.orderDetail}/${record.id}`} /> */}
+                    <div style={{ textAlign: 'center' }}>
+                        <Link to={`${path_name.orderDetail}/${record.id}`} className="btn btn-outline-warning">
+                            <FaEdit />
+                        </Link>
+                    </div>
                     <Popconfirm
                         title="Xóa kích thước"
                         description="Bạn có chắc chắn xóa kích thước này không?"

@@ -30,6 +30,8 @@ public class OrderRequestDto {
 
     private String note;
 
+    private Long orderTypeId;
+
 //    @NotBlank(message = "Tên người nhận không được để trống!")
     private String recipientName;
 

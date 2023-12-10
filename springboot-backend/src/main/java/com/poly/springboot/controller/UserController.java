@@ -121,10 +121,18 @@ public class UserController {
 
     @GetMapping("getUserById")
     public ResponseEntity<User> getUserById(@RequestParam Long id) {
-        User User = userService.getCustomerById(id);
+        User User = userService.getUserById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(User);
+    }
+
+    @GetMapping("findAllUsersWithUserRole")
+    public ResponseEntity<?> findAllUsersWithUserRole(){
+    List<User> users = userService.findAllUsersWithUserRole();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(users);
     }
 
 }

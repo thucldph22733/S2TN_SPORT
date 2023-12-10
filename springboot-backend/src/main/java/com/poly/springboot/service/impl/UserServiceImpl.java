@@ -136,11 +136,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getCustomerById(Long id) {
+    public User getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id khách hàng này!"));
 
         return user;
+    }
+
+    @Override
+    public List<User> findAllUsersWithUserRole() {
+        return userRepository.findAllUsersWithUserRole();
     }
 
 }

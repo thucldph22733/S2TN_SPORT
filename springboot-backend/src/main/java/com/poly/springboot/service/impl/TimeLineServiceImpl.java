@@ -20,41 +20,18 @@ public class TimeLineServiceImpl implements TimeLineService {
     private TimeLineRepository timeLineRepository;
 
     @Override
-    public List<TimeLineResponseDto> findAllTimeLinesByOrderId(Long orderId) {
-        return timeLineRepository.findAllByStatusId(orderId).stream().map(
-                o -> new TimeLineResponseDto(
-                        o.getId(),
-                        o.getNote(),
-                        o.getCreateDate(),
-                        o.getStatus(),
-                        o.getOrder() != null ? o.getOrder().getId() : null,
-                        o.getOrder() != null ? o.getOrder().getOrderTotal() : null,
-                        o.getOrder() != null && o.getOrder().getUser() != null ? o.getOrder().getUser().getUsersName() : null,
-                        o.getOrder() != null && o.getOrder().getPayment() != null ? o.getOrder().getPayment().getPaymentName() : null
-
-                )
-        ).collect(Collectors.toList());
+    public List<TimeLine> findAllTimeLinesByOrderId(Long orderId) {
+        return timeLineRepository.findAllByStatusId(orderId);
     }
 
     @Override
     public TimeLine findByOrderAndStatus(Order order, Integer status) {
-        return timeLineRepository.findByOrderAndStatus(order,status);
+        return timeLineRepository.findByOrderAndStatusAndDeletedTrue(order,status);
     }
 
     @Override
-    public List<TimeLineResponseDto> findAllByOrderIdAndStatus(Long orderId) {
-        return timeLineRepository.findAllByOrderIdAndStatus(orderId).stream().map(
-                o -> new TimeLineResponseDto(
-                        o.getId(),
-                        o.getNote(),
-                        o.getCreateDate(),
-                        o.getStatus(),
-                        o.getOrder() != null ? o.getOrder().getId() : null,
-                        o.getOrder() != null ? o.getOrder().getOrderTotal() : null,
-                        o.getOrder() != null && o.getOrder().getUser() != null ? o.getOrder().getUser().getUsersName() : null,
-                        o.getOrder() != null && o.getOrder().getPayment() != null ? o.getOrder().getPayment().getPaymentName() : null
-                )
-        ).collect(Collectors.toList());
+    public List<TimeLine> findByOrderIdAndStatus(Long id) {
+        return timeLineRepository.findByOrderIdAndStatus(id);
     }
 
 

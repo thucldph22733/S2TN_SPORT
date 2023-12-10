@@ -7,9 +7,9 @@ import com.poly.springboot.entity.TimeLine;
 import java.util.List;
 
 public interface TimeLineService {
-    List<TimeLineResponseDto> findAllTimeLinesByOrderId(Long orderId);
+    List<TimeLine> findAllTimeLinesByOrderId(Long orderId);
 
     TimeLine findByOrderAndStatus(Order order, Integer status);
 
-    List<TimeLineResponseDto> findAllByOrderIdAndStatus(Long orderId);
+    List<TimeLine> findByOrderIdAndStatus(Long id);
 }

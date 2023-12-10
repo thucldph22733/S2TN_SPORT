@@ -15,17 +15,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "Timeline")
-public class TimeLine {
+public class TimeLine extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "note")
     private String note;
-
-    @CreationTimestamp
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
 
     @Column(name = "status")
     private Integer status;

@@ -13,13 +13,13 @@ import java.util.List;
 
 @Repository
 public interface TimeLineRepository extends JpaRepository<TimeLine, Long> {
-    @Query("SELECT o FROM TimeLine o WHERE o.order.id = :orderId")
+    @Query("SELECT o FROM TimeLine o WHERE o.order.id = :orderId AND o.deleted = true")
     List<TimeLine> findAllByStatusId(@Param("orderId") Long orderId);
 
-    TimeLine findByOrderAndStatus(Order order, Integer status);
+    TimeLine findByOrderAndStatusAndDeletedTrue(Order order, Integer status);
 
-    @Query("SELECT t FROM TimeLine t join Order o on t.order.id = o.id WHERE t.order.id = :orderId AND t.status = 2")
-    List<TimeLine> findAllByOrderIdAndStatus(@Param("orderId") Long orderId);
+    @Query("SELECT t FROM TimeLine t join Order o on t.order.id = o.id WHERE t.order.id = :orderId AND t.status = 2 AND t.deleted = true")
+    List<TimeLine> findByOrderIdAndStatus(@Param("orderId") Long orderId);
 
 
 }

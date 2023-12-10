@@ -71,7 +71,7 @@ export default function OrderView() {
             const result = await axios.get(`http://localhost:8080/api/v1/timeline/findAllTimelineByOrderId?id=${id}`);
             const convertedTimeline = result.data.map((event) => ({
                 title: getStatusTitle(event.status),
-                subtitle: formatDate(event.createDate),
+                subtitle: formatDate(event.createdAt),
                 color: getStatusColor(event.status),
                 icon: getIconByStatus(event.status),
             }));
@@ -144,23 +144,24 @@ export default function OrderView() {
         },
         {
             title: 'Số tiền',
-            dataIndex: 'orderTotal',
+            dataIndex: '',
             width: 60,
-            render: (text, record) => formatCurrency(record.orderTotal),
+            render: (text, record) => <span style={{ color: 'red' }}>{formatCurrency(order.orderTotal)}</span>,
         },
         {
             title: 'Thời gian',
-            dataIndex: 'createDate',
+            dataIndex: 'createdAt',
             width: 100,
         },
         {
             title: 'Phương thức thanh toán',
-            dataIndex: 'paymentName',
+            dataIndex: '',
             width: 60,
+            render: (text, record) => order.payment.paymentName
         },
         {
             title: 'Nhân viên xác nhận',
-            dataIndex: 'staffName',
+            dataIndex: 'createdBy',
             width: 60,
         },
         {
@@ -183,7 +184,7 @@ export default function OrderView() {
             render: (record) => (
                 <Row gutter={[5]}>
                     <Col span={12}>
-                        <Image width={150} height={130} src={record.productAvatar} alt="Avatar" />
+                        <Image width={150} height={100} src={record.productAvatar} alt="Avatar" />
                     </Col>
                 </Row>
             ),
@@ -226,7 +227,7 @@ export default function OrderView() {
     ];
     return (
         <>
-            <div
+            {/* <div
                 style={{
                     margin: '40px 10px ',
                     padding: 14,
@@ -235,119 +236,119 @@ export default function OrderView() {
                     boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)', // Thêm bóng với độ mờ
                     background: colorBgContainer,
                 }}
-            >
-                <div>
-                    <Scrollbars
-                        autoHide={false}
-                        style={{
-                            display: 'flex',
-                            height: '240px',
-                            flexWrap: 'nowrap',
-                            overflowX: 'scroll',
-                        }}
-                    >
-                        <Timeline minEvents={9} placeholder>
-                            {timeLine.map((event, index) => (
-                                <TimelineEvent
-                                    key={index}
-                                    style={{ display: 'inline-block', marginRight: '20px' }}
-                                    color={event.color}
-                                    icon={event.icon}
-                                    title={event.title}
-                                    subtitle={event.subtitle}
-                                />
-                            ))}
-                        </Timeline>
-                    </Scrollbars>
-                </div>
-
-                <div style={{ background: '#b6cdd1' }}>
-                    <h4>Thông tin đơn hàng</h4>
-                </div>
-                <Row gutter={16}>
-                    <Col span={8}>
-                        <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>Trạng thái</span>
-                            <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                                {order.orderStatus && order.orderStatus.statusName}
-                            </span>
-                        </Col>
-
-                        <br />
-                        <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>Loại đơn hàng</span>
-                            <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                                {order.categoryOrder}
-                            </span>
-                        </Col>
-                        <br />
-                        <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>Tổng tiền</span>
-                            <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                                {formatCurrency(order.orderTotal)}
-                            </span>
-                        </Col>
-                    </Col>
-                    <Col span={8}>
-                        <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>Mã đơn hàng</span>
-                            <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>#HD{order.id}</span>
-                        </Col>
-                        <br />
-                        <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>Khách hàng</span>
-                            <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                                {order.customer && order.customer.customerName}
-                                {!order.customer && <p>Khách lẻ</p>}
-                            </span>
-                        </Col>
-                    </Col>
-                    <Col span={8}>
-                        <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>Số điện thoại</span>
-                            <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                                {order.customer && order.customer.phoneNumber}
-                                {!order.customer && <p>Không có</p>}
-                            </span>
-                        </Col>
-                        <br />
-                        <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>địa chỉ</span>
-                            <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                                {order.customer && order.customer.address}
-                                {!order.customer && <p>Không có</p>}
-                            </span>
-                        </Col>
-                    </Col>
-                </Row>
-                <div style={{ borderBottom: '2px solid black' }}>
-                    <h4>Lịch sử thanh toán</h4>
-                </div>
-                <Table
-                    columns={columnCart}
-                    dataSource={timeLines}
-                    pagination={{
-                        pageSize: 50,
+            > */}
+            <div>
+                <Scrollbars
+                    autoHide={false}
+                    style={{
+                        display: 'flex',
+                        height: '240px',
+                        flexWrap: 'nowrap',
+                        overflowX: 'scroll',
                     }}
-                    scroll={{
-                        y: 240,
-                    }}
-                />
-                <div style={{ borderBottom: '2px solid black' }}>
-                    <h4>Sản phẩm</h4>
-                </div>
-                <Table
-                    key={productDetails.length} // Thay đổi key khi có sự thay đổi trong productDetails
-                    columns={columnProduct}
-                    dataSource={productDetails}
-                    pagination={{
-                        pageSize: 50,
-                    }}
-                    scroll={{
-                        y: 240,
-                    }}
-                />
+                >
+                    <Timeline minEvents={9} placeholder>
+                        {timeLine.map((event, index) => (
+                            <TimelineEvent
+                                key={index}
+                                style={{ display: 'inline-block', marginRight: '20px' }}
+                                color={event.color}
+                                icon={event.icon}
+                                title={event.title}
+                                subtitle={event.subtitle}
+                            />
+                        ))}
+                    </Timeline>
+                </Scrollbars>
             </div>
+
+            <div style={{ background: '#b6cdd1' }}>
+                <h4>Thông tin đơn hàng</h4>
+            </div>
+            <Row gutter={16}>
+                <Col span={8}>
+                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Trạng thái</span>
+                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                            {order.orderStatus && order.orderStatus.statusName}
+                        </span>
+                    </Col>
+
+                    <br />
+                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Loại đơn hàng</span>
+                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                            {order.orderType && order.orderType.orderTypeName}
+                        </span>
+                    </Col>
+                    <br />
+                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Tổng tiền</span>
+                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                            {formatCurrency(order.orderTotal)}
+                        </span>
+                    </Col>
+                </Col>
+                <Col span={8}>
+                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Mã đơn hàng</span>
+                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>#HD{order.id}</span>
+                    </Col>
+                    <br />
+                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Khách hàng</span>
+                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                            {order.customer && order.customer.customerName}
+                            {!order.customer && <p>Khách lẻ</p>}
+                        </span>
+                    </Col>
+                </Col>
+                <Col span={8}>
+                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>Số điện thoại</span>
+                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                            {order.customer && order.customer.phoneNumber}
+                            {!order.customer && <p>Không có</p>}
+                        </span>
+                    </Col>
+                    <br />
+                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span>địa chỉ</span>
+                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                            {order.customer && order.customer.address}
+                            {!order.customer && <p>Không có</p>}
+                        </span>
+                    </Col>
+                </Col>
+            </Row>
+            <div style={{ borderBottom: '2px solid black' }}>
+                <h4>Lịch sử thanh toán</h4>
+            </div>
+            <Table
+                columns={columnCart}
+                dataSource={timeLines}
+                pagination={{
+                    pageSize: 50,
+                }}
+                scroll={{
+                    y: 240,
+                }}
+            />
+            <div style={{ borderBottom: '2px solid black' }}>
+                <h4>Sản phẩm</h4>
+            </div>
+            <Table
+                key={productDetails.length} // Thay đổi key khi có sự thay đổi trong productDetails
+                columns={columnProduct}
+                dataSource={productDetails}
+                pagination={{
+                    pageSize: 50,
+                }}
+                scroll={{
+                    y: 240,
+                }}
+            />
+            {/* </div> */}
         </>
     );
 }

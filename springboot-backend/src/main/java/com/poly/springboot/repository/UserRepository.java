@@ -32,5 +32,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.deleted IN :status")
     Page<User> findByKeyword(@Param("name") String name,@Param("phoneNumber") String phoneNumber,@Param("email") String email,@Param("status") List<Boolean> status, Pageable pageable);
 
-
+    @Query("SELECT u FROM User u WHERE u.role = com.poly.springboot.entity.Role.USER")
+    List<User> findAllUsersWithUserRole();
 }

@@ -32,6 +32,7 @@ import {
     FormOutlined,
     PlusCircleFilled,
     PlusOutlined,
+    PlusSquareOutlined,
     QrcodeOutlined,
     RedoOutlined,
     ReloadOutlined,
@@ -90,7 +91,7 @@ export default function OrderDetail() {
     const [orderDetails, setOrderDetails] = useState('');
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [disCountMoney, setDiscountMoney] = useState(0);
+    const [disCountMoney, setDiscountMoney] = useState("0");
     const [orderTotal, setOrderTotal] = useState(0);
     const [orderTotalInitial, setOrderTotalInitial] = useState(0);
     const [customerPayment, setCustomerPayment] = useState(0);
@@ -148,19 +149,7 @@ export default function OrderDetail() {
 
                     if (CustomerResponse.status === 200) {
                         const customers = CustomerResponse.data;
-
-                        if (Array.isArray(customers) && customers.length > 0) {
-                            // Dữ liệu là một mảng và có giá trị
-                            setSelectedCustomer(customers[0]);
-                            setShowSuccessAlertCustonmer(true);
-                        } else if (typeof customers === 'object' && customers !== null) {
-                            // Dữ liệu là một đối tượng và có giá trị
-                            setSelectedCustomer(customers);
-                            setShowSuccessAlertCustonmer(true);
-                        } else {
-                            // Dữ liệu không hợp lệ hoặc rỗng
-                            console.error('Dữ liệu không hợp lệ hoặc rỗng:', customers);
-                        }
+                        setSelectedCustomer(customers);
                     } else {
                         console.error('Có lỗi xảy ra khi lấy thông tin customer');
                     }
@@ -195,9 +184,9 @@ export default function OrderDetail() {
         setIsModalQuantityOpen(true);
     };
     const layidUSer = (userId) => {
-        const selectedUser = users.find((user) => user.id === userId);
-        console.log("abcccccc" + selectedUser);
-        setSelectedCustomerId(selectedUser);
+        // const selectedUser = users.find((user) => user.id === userId);
+        console.log("abcccccc" + userId);
+        setSelectedCustomerId(userId);
         // loadCustomerOptions();
         setShowSuccessAlertCustonmer(true);
         setIsModalUserOpen(false);
@@ -738,12 +727,12 @@ export default function OrderDetail() {
         const data = {
             voucherId: selectedVoucherId,
             orderTotal: orderTotal,
-            customerId: selectedCustomer ? selectedCustomer.id : null,
+            customerId: selectedCustomer.id,
             orderTotalInitial: orderTotalInitial,
             deliveryId: '',
             paymentId: selectedPaymentId,
             addressId: '',
-            statusId: 2,
+            statusId: 5,
             note: note,
             orderTypeId: 1
         }
@@ -952,7 +941,7 @@ export default function OrderDetail() {
     const fetchUsers = async () => {
         setLoading(true);
 
-        await UserService.getAll(pagination.current - 1, pagination.pageSize, searchName, searchPhone, searchEmail, deleted)
+        await UserService.getAllUserByRole(pagination.current - 1, pagination.pageSize, searchName, searchPhone, searchEmail, deleted)
             .then(response => {
 
                 setUsers(response.data);
@@ -1093,28 +1082,28 @@ export default function OrderDetail() {
             filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
             ...getColumnSearchProps('email')
         },
-        {
-            title: 'Giới tính',
-            dataIndex: 'gender',
-            key: 'gender',
-            width: '10%',
-            render: (text) => {
-                return text !== null ? (text === true ? "Nam" : "Nữ") : '';
-            },
-        },
-        {
-            title: 'Ngày sinh',
-            dataIndex: 'birthOfDay',
-            key: 'birthOfDay',
-            width: '10%',
+        // {
+        //     title: 'Giới tính',
+        //     dataIndex: 'gender',
+        //     key: 'gender',
+        //     width: '10%',
+        //     render: (text) => {
+        //         return text !== null ? (text === true ? "Nam" : "Nữ") : '';
+        //     },
+        // },
+        // {
+        //     title: 'Ngày sinh',
+        //     dataIndex: 'birthOfDay',
+        //     key: 'birthOfDay',
+        //     width: '10%',
 
-        },
-        {
-            title: 'Ngày tạo',
-            dataIndex: 'createdAt',
-            key: 'createdAt',
-            width: '15%',
-        },
+        // },
+        // {
+        //     title: 'Ngày tạo',
+        //     dataIndex: 'createdAt',
+        //     key: 'createdAt',
+        //     width: '15%',
+        // },
         {
             title: 'Trạng thái',
             key: 'deleted',
@@ -1143,7 +1132,7 @@ export default function OrderDetail() {
             render: (record) => {
 
                 return <Space size="middle" >
-                    {/* <Button type="text"
+                    <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModall("edit", record)} />
                     <Popconfirm
@@ -1163,12 +1152,12 @@ export default function OrderDetail() {
                         icon={<FaMapMarkedAlt />}
                         style={{ color: '#5a76f3', fontSize: '16px' }}
                         onClick={() => showAddressModal(record)}
-                    /> */}
+                    />
                     <Button
-                        type="primary"
-                        onClick={() => layidUSer(record.id)}>
-                        Chọn
-                    </Button>
+                        type="text"
+                        icon={<PlusSquareOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
+                        onClick={() => layidUSer(record.id)} />
+
                 </Space>
             }
         },
@@ -1885,7 +1874,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
         form.validateFields().then(async () => {
 
             const data = await form.getFieldsValue();
-            console.log(data)
+            data.role = "USER";
             await UserService.create(data)
                 .then(() => {
                     notification.success({
@@ -1995,31 +1984,6 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                 {isMode === "add" && <Form.Item label="Mật khẩu:" name="password" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}>
                     <Input type="password" placeholder="Nhập tên mật khẩu..." />
                 </Form.Item>}
-                <Form.Item label="Vai trò:" name="role" rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}>
-                    <Select
-                        allowClear
-                        style={{
-                            width: '100%',
-                        }}
-                        placeholder="Chọn vai trò"
-                        options={[
-
-                            {
-                                value: 'ADMIN',
-                                label: 'ADMIN',
-                            },
-                            {
-                                text: 'USER',
-                                value: 'USER',
-                            },
-                            {
-                                text: 'EMPLOYEE',
-                                value: 'EMPLOYEE',
-                            },
-                        ]}
-                    />
-
-                </Form.Item>
                 <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]} >
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Hoạt động</Radio>

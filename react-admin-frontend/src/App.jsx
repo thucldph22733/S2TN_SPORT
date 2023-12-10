@@ -2,7 +2,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import path_name from '~/constants/routers';
 // pages
-import Sell from './pages/Sell/Sell';
 import Product from './pages/Products/Product';
 import Login from './pages/Auth/Login';
 import Order from './pages/Orders/Order';
@@ -53,10 +52,6 @@ function App() {
         {
             element: <MainLayout />,
             children: [
-                {
-                    path: path_name.sell,
-                    element: <Sell />,
-                },
                 {
                     path: path_name.dashboard,
                     element: <Dashboard />,

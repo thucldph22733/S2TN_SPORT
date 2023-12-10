@@ -144,12 +144,6 @@ public class UserController {
                 .body(User);
     }
 
-    @GetMapping("findAllUsersWithUserRole")
-    public ResponseEntity<?> findAllUsersWithUserRole(){
-    List<User> users = userService.findAllUsersWithUserRole();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(users);
-    }
+
 
 }

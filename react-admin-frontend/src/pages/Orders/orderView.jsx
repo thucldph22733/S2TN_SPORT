@@ -41,6 +41,7 @@ import TextArea from 'antd/es/input/TextArea';
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline';
 import { FaBug, FaRegCalendarCheck, FaRegFileAlt } from 'react-icons/fa';
 import { Scrollbars } from 'react-custom-scrollbars';
+import FormatDate from '~/utils/format-date';
 export default function OrderView() {
     const {
         token: { colorBgContainer },
@@ -71,7 +72,7 @@ export default function OrderView() {
             const result = await axios.get(`http://localhost:8080/api/v1/timeline/findAllTimelineByOrderId?id=${id}`);
             const convertedTimeline = result.data.map((event) => ({
                 title: getStatusTitle(event.status),
-                subtitle: formatDate(event.createdAt),
+                subtitle: FormatDate(event.createdAt),
                 color: getStatusColor(event.status),
                 icon: getIconByStatus(event.status),
             }));
@@ -92,11 +93,7 @@ export default function OrderView() {
         return 'Khác';
     };
 
-    const formatDate = (dateString) => {
-        // Logic chuyển đổi ngày tháng nếu cần thiết
-        // Ví dụ: return new Date(dateString).toLocaleString();
-        return dateString;
-    };
+
 
     const getStatusColor = (status) => {
         // Logic chuyển đổi màu sắc tùy thuộc vào status
@@ -237,7 +234,7 @@ export default function OrderView() {
                     background: colorBgContainer,
                 }}
             > */}
-            <div>
+            <div style={{ marginBottom: '40px' }}>
                 <Scrollbars
                     autoHide={false}
                     style={{
@@ -262,10 +259,10 @@ export default function OrderView() {
                 </Scrollbars>
             </div>
 
-            <div style={{ background: '#b6cdd1' }}>
-                <h4>Thông tin đơn hàng</h4>
+            <div style={{ borderBottom: '2px solid black', fontWeight: 'bolder' }}>
+                <h4><b>Thông tin đơn hàng</b></h4>
             </div>
-            <Row gutter={16}>
+            <Row gutter={16} style={{ marginBottom: '40px' }}>
                 <Col span={8}>
                     <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span>Trạng thái</span>
@@ -322,11 +319,16 @@ export default function OrderView() {
                 </Col>
             </Row>
             <div style={{ borderBottom: '2px solid black' }}>
-                <h4>Lịch sử thanh toán</h4>
+                <h4><b>Lịch sử thanh toán</b></h4>
             </div>
             <Table
                 columns={columnCart}
-                dataSource={timeLines}
+                dataSource={timeLines.map((tl, index) => ({
+                    ...tl,
+
+                    createdAt: FormatDate(tl.createdAt),
+
+                }))}
                 pagination={{
                     pageSize: 50,
                 }}
@@ -335,7 +337,7 @@ export default function OrderView() {
                 }}
             />
             <div style={{ borderBottom: '2px solid black' }}>
-                <h4>Sản phẩm</h4>
+                <h4><b>Sản phẩm</b></h4>
             </div>
             <Table
                 key={productDetails.length} // Thay đổi key khi có sự thay đổi trong productDetails

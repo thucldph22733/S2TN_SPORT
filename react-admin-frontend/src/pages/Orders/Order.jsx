@@ -60,6 +60,9 @@ const columns = [
         width: "15%",
         render: (text) => {
             switch (text) {
+                case 'Tạo mới':
+                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Tạo mới</Tag>
+                    break;
                 case 'Chờ xác nhận':
                     return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
                     break;
@@ -98,10 +101,9 @@ const columns = [
         render: (record) => {
 
             return <Space size="middle">
-                <Button type="link"
-                    icon={<FaEye style={{ color: 'rgb(214, 103, 12)' }} />}
-                    onClick={`${path_name.orderView}/${record.id}`}
-                />
+                <Link to={`${path_name.orderView}/${record.id}`}>
+                    <Button type="link" icon={<FaEye style={{ color: 'rgb(214, 103, 12)' }} />} />
+                </Link>
                 <Popconfirm
                     title="Xóa hóa đơn"
                     description="Bạn có chắc chắn xóa hóa đơn này không?"

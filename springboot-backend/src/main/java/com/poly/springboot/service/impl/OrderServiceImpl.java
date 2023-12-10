@@ -100,7 +100,9 @@ public class OrderServiceImpl implements OrderService {
 //        ).collect(Collectors.toList());
 //    }
 
-//    @Override
+
+
+    //    @Override
 //    public Order findOrderById(Long id) {
 //
 //        Order order = orderRepository.findById(id)
@@ -124,6 +126,17 @@ public class OrderServiceImpl implements OrderService {
 //    }
 //
 //
+    @Override
+    public Page<Order> getAllOrders(Long orderStatusId, Pageable pageable) {
+        Page<Order> orderPage;
+        if (orderStatusId == null){
+            orderPage = orderRepository.findAllByDeletedIsTrue(pageable);
+        }else {
+            orderPage = orderRepository.findAllByOrderStatusIdAndDeletedIsTrue(orderStatusId,pageable);
+        }
+        return orderPage;
+    }
+
     @Override
     public Page<Order> findAllOrderByStatusId(Pageable pageable) {
         return orderRepository.findAllOrderByStatusId(pageable);
@@ -179,7 +192,6 @@ public class OrderServiceImpl implements OrderService {
 
         return true;
     }
-
     @Override
     public Boolean deleteOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));

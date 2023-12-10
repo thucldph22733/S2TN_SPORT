@@ -30,7 +30,7 @@ import java.util.List;
 @Validated
 @Tag(name = "Users",description = "( Rest API Hiển thị, thêm, sửa, xóa, tìm kiếm, phân trang nhân viên )")
 @RequestMapping("/api/v1/users/")
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     @Autowired
@@ -38,8 +38,8 @@ public class UserController {
 
 
     @GetMapping("getAll")
-    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<?> getStaffs(@RequestParam(defaultValue = "0") Integer pageNo,
+//    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<?> getUsers(@RequestParam(defaultValue = "0") Integer pageNo,
                                        @RequestParam(defaultValue = "10") Integer pageSize,
                                        @RequestParam(required = false) String name,
                                        @RequestParam(required = false) String phoneNumber,
@@ -48,6 +48,23 @@ public class UserController {
         Pageable pageable = PageRequest.of(pageNo,pageSize);
 
         Page<UserResponseDto>  userResponseDtoPage = userService.getUsers(name,phoneNumber,email,deleted,pageable);
+
+        List<UserResponseDto> userResponseDtoList = userResponseDtoPage.getContent();
+
+        return ResponseHandler.generateResponse(HttpStatus.OK,userResponseDtoList,userResponseDtoPage);
+    }
+
+    @GetMapping("getUserByRole")
+//    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<?> getUserByRole(@RequestParam(defaultValue = "0") Integer pageNo,
+                                       @RequestParam(defaultValue = "10") Integer pageSize,
+                                       @RequestParam(required = false) String name,
+                                       @RequestParam(required = false) String phoneNumber,
+                                       @RequestParam(required = false) String email,
+                                       @RequestParam(required = false) List<Boolean> deleted){
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+
+        Page<UserResponseDto>  userResponseDtoPage = userService.getUsersByRole(name,phoneNumber,email,deleted,pageable);
 
         List<UserResponseDto> userResponseDtoList = userResponseDtoPage.getContent();
 
@@ -74,7 +91,7 @@ public class UserController {
 
 
     @PostMapping("create")
-    @PreAuthorize("hasAuthority('admin:create')")
+//    @PreAuthorize("hasAuthority('admin:create')")
     public ResponseEntity<ResponseDto> createStaff(@Valid @RequestBody UserRequestDto userRequestDto){
         Boolean isCreated = userService.createUser(userRequestDto);
         if (isCreated){
@@ -90,7 +107,7 @@ public class UserController {
 
 
     @PutMapping("update")
-    @PreAuthorize("hasAuthority('admin:update')")
+//    @PreAuthorize("hasAuthority('admin:update')")
     public ResponseEntity<ResponseDto> updateStaff(@Valid @RequestBody UserRequestDto staffRequestDto, @RequestParam Long id){
         Boolean isUpdated = userService.updateUser(staffRequestDto,id);
         if (isUpdated){
@@ -105,7 +122,7 @@ public class UserController {
     }
 
     @DeleteMapping("delete")
-    @PreAuthorize("hasAuthority('admin:delete')")
+//    @PreAuthorize("hasAuthority('admin:delete')")
     public ResponseEntity<ResponseDto> deleteStaff(@RequestParam Long id){
         Boolean isDeleted = userService .deleteUser(id);
         if (isDeleted){

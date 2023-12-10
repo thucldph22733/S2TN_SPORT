@@ -16,6 +16,8 @@ public interface UserService {
 
     Page<UserResponseDto> getUsers(String userName, String phoneNumber, String email, List<Boolean> status,Pageable pageable);
 
+    Page<UserResponseDto> getUsersByRole(String userName, String phoneNumber, String email, List<Boolean> status,Pageable pageable);
+
     Boolean createUser(UserRequestDto requestDto);
 
     Boolean updateUser(UserRequestDto requestDto, Long id);

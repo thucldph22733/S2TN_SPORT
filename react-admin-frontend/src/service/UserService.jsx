@@ -13,6 +13,16 @@ const UserService = {
                 throw error;
             });
     },
+    getAllUserByRole: (pageNo, pageSize, name, phoneNumber, email, deleted) => {
+        return HttpClient.get(`${API_URL}getUserByRole`, {
+            params: { pageNo, pageSize, name, phoneNumber, email, deleted }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
 
     create: (data) => {
         return HttpClient.post(`${API_URL}create`, data)

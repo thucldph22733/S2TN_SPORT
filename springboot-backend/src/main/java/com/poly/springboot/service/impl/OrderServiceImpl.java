@@ -121,6 +121,43 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+
+
+    //    @Override
+//    public Order findOrderById(Long id) {
+//
+//        Order order = orderRepository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này"));
+//
+//        return order;
+//    }
+//
+//    @Override
+//    public User findUserByOrderId(Long orderId) {
+//        User user = orderRepository.findUserByOrderId(orderId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này"));
+//        return user;
+//    }
+//
+//    @Override
+//    public Voucher findVoucherByOrderId(Long orderId) {
+//        Voucher voucher = orderRepository.findVoucherByOrderId(orderId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này"));
+//        return voucher;
+//    }
+//
+//
+    @Override
+    public Page<Order> getAllOrders(Long orderStatusId, Pageable pageable) {
+        Page<Order> orderPage;
+        if (orderStatusId == null){
+            orderPage = orderRepository.findAllByDeletedIsTrue(pageable);
+        }else {
+            orderPage = orderRepository.findAllByOrderStatusIdAndDeletedIsTrue(orderStatusId,pageable);
+        }
+        return orderPage;
+    }
+
     @Override
     public Page<Order> findAllOrderByStatusId(Pageable pageable) {
         return orderRepository.findAllOrderByStatusId(pageable);
@@ -181,7 +218,6 @@ public class OrderServiceImpl implements OrderService {
 
         return true;
     }
-
     @Override
     public Boolean deleteOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));

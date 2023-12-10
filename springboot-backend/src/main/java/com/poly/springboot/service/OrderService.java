@@ -15,6 +15,11 @@ import java.util.Optional;
 public interface OrderService {
 
 //    List<OrderResponseDto> getAllOrdersCompleted();
+    Page<Order> getAllOrders(Long orderStatusId, Pageable pageable);
+//
+//    List<OrderResponseDto> getPagination(Integer pageNo);
+//
+//    Order findOrderById(Long id);
 
     List<OrderResponseDto> getAllOrders();
 

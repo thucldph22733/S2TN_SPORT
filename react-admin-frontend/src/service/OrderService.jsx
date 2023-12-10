@@ -4,16 +4,16 @@ const API_URL = 'orders/';
 
 
 const OrderService = {
-    // getAll: (pageNo, pageSize, name, phoneNumber, email, deleted) => {
-    //     return HttpClient.get(`${API_URL}getAll`, {
-    //         params: { pageNo, pageSize, name, phoneNumber, email, deleted }
-    //     })
-    //         .then(response => response.data)
-    //         .catch(error => {
-    //             console.error('Error in getAll:', error);
-    //             throw error;
-    //         });
-    // },
+    getAll: (pageNo, pageSize, orderStatusId) => {
+        return HttpClient.get(`${API_URL}getAll`, {
+            params: { pageNo, pageSize, orderStatusId }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
 
 
     getAllOrderByStatusId: (pageNo, pageSize) => {

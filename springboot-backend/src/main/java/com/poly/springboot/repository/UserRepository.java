@@ -1,6 +1,7 @@
 package com.poly.springboot.repository;
 
 //import com.poly.springboot.entity.Role;
+import com.poly.springboot.entity.Order;
 import com.poly.springboot.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.deleted IN :status")
     Page<User> findByKeyword(@Param("name") String name,@Param("phoneNumber") String phoneNumber,@Param("email") String email,@Param("status") List<Boolean> status, Pageable pageable);
 
-    @Query("SELECT u FROM User u WHERE u.role = com.poly.springboot.entity.Role.USER")
-    List<User> findAllUsersWithUserRole();
+    @Query("SELECT u FROM User u WHERE u.role = 'USER'" )
+    Page<User> findAllUserByRoleUser(Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE " +
+            "(LOWER(u.usersName) LIKE LOWER(CONCAT('%', :name, '%')) AND " +
+            "LOWER(u.email) LIKE LOWER(CONCAT('%', :phoneNumber, '%')) AND " +
+            "LOWER(u.phoneNumber) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
+            "u.deleted IN :status AND u.role = 'USER'" )
+    Page<User> findAllUserByRoleUser(@Param("name") String name,@Param("phoneNumber") String phoneNumber,@Param("email") String email,@Param("status") List<Boolean> status, Pageable pageable);
 }

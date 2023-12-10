@@ -36,5 +36,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.orderStatus.id = 1 AND o.deleted = true")
     Page<Order> findAllOrderByStatusId(Pageable pageable);
 
+    Page<Order> findAllByDeletedIsTrue(Pageable pageable);
+    Page<Order> findAllByOrderStatusIdAndDeletedIsTrue(Long orderStatusId, Pageable pageable);
 }
 

@@ -54,6 +54,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<UserResponseDto> getUsersByRole(String userName, String phoneNumber, String email, List<Boolean> status, Pageable pageable) {
+        Page<User> userPage;
+        if (userName == null && phoneNumber == null && email == null && status == null) {
+            userPage = userRepository.findAllUserByRoleUser(pageable);
+        } else if (userName == null && phoneNumber == null && email == null) {
+            userPage = userRepository.findByDeletedIn(status, pageable);
+        } else if (phoneNumber == null && email == null && status == null) {
+            userPage = userRepository.findByUsersNameContaining(userName, pageable);
+        } else if (email == null && status == null && userName == null) {
+            userPage = userRepository.findByPhoneNumberContaining(phoneNumber, pageable);
+        } else if (status == null && userName == null && phoneNumber == null) {
+            userPage = userRepository.findByEmailContaining(email, pageable);
+        } else {
+            userPage = userRepository.findAllUserByRoleUser(userName, phoneNumber, email, status, pageable);
+        }
+        // Sử dụng map để chuyển đổi từ Page<User> sang Page<UserResponseDto>
+        return userPage.map(this::mapUserToDto);
+    }
+
+    @Override
     public Boolean createUser(UserRequestDto requestDto) {
 
 //        List<Role> roleList = roleRepository.findAllByRoleNameIn(requestDto.getRoleList());

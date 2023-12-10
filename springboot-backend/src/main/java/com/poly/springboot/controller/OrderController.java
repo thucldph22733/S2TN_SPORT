@@ -37,12 +37,18 @@ public class OrderController {
 
     // get all order rest api
     @GetMapping("getAll")
-    public ResponseEntity<List<OrderResponseDto>> getOrders(){
+    public ResponseEntity<?> getOrders(@RequestParam(defaultValue = "0") Integer pageNo,
+                                       @RequestParam(defaultValue = "10") Integer pageSize,
+                                       @RequestParam(required = false) Long orderStatusId){
 
-        List<OrderResponseDto> orderResponseDtoList = orderService.getAllOrders()  ;
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(orderResponseDtoList);
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+        Page<Order> orderPage = orderService.getAllOrders(orderStatusId,pageable);
+        List<Order> orderList = orderPage.getContent() ;
+        return ResponseHandler
+                .generateResponse(
+                        HttpStatus.OK,
+                        orderList,
+                        orderPage);
     }
 //    @GetMapping("getAllCompletedOrder")
 //    public ResponseEntity<List<OrderResponseDto>> getAllOrdersCompleted(){

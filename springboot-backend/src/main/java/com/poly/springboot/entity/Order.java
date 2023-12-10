@@ -35,8 +35,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "voucher_id")
     private Voucher voucher;
 
-    @ManyToOne
-    @JoinColumn(name = "orderType_id")
+    @Enumerated(EnumType.STRING)
     private OrderType orderType;
 
     @Column(name = "recipient_name")

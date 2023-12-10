@@ -22,7 +22,7 @@ import User from './pages/User/User';
 import Role from './pages/Role/Role';
 import NewSell from './pages/Sell/NewSell';
 import OrderDetail from './pages/Sell/OrderDetail';
-import OrderView from './pages/Orders/orderView';
+import OrderView from './pages/Orders/OrderView';
 import Error404 from './pages/Error/Error404';
 import Error403 from './pages/Error/Error403';
 import ChangePassword from './pages/Auth/ChangePassword';

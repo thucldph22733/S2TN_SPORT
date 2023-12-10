@@ -1,51 +1,18 @@
-import React, { useReducer, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoins, faMoneyCheck } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect } from 'react';
 import {
-    AutoComplete,
-    Button,
     Col,
-    Modal,
     Row,
-    Select,
     Table,
-    Tabs,
-    theme,
     Image,
-    InputNumber,
-    Space,
-    Alert,
-    notification,
-    message,
-    Popconfirm,
-    Input,
-    Radio,
 } from 'antd';
-import { useState } from 'react';
-import {
-    CloseSquareFilled,
-    DeleteOutlined,
-    EuroCircleOutlined,
-    PlusCircleFilled,
-    PlusOutlined,
-    QrcodeOutlined,
-    ReloadOutlined,
-    SearchOutlined,
-    ShopOutlined,
-} from '@ant-design/icons';
 import axios from 'axios';
-import Search from 'antd/es/input/Search';
-import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import TextArea from 'antd/es/input/TextArea';
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline';
-import { FaBug, FaRegCalendarCheck, FaRegFileAlt } from 'react-icons/fa';
+import { FaRegCalendarCheck, FaRegFileAlt } from 'react-icons/fa';
 import { Scrollbars } from 'react-custom-scrollbars';
 import FormatDate from '~/utils/format-date';
 export default function OrderView() {
-    const {
-        token: { colorBgContainer },
-    } = theme.useToken();
+
     const { id } = useParams();
     const [order, setOrder] = useState({}); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
     const [timeLine, setTimeLine] = useState([]); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
@@ -137,13 +104,13 @@ export default function OrderView() {
             title: '#',
             dataIndex: 'index',
             width: 50,
-            render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
+            render: (index) => index + 1, // Hiển thị STT bắt đầu từ 1
         },
         {
             title: 'Số tiền',
             dataIndex: '',
             width: 60,
-            render: (text, record) => <span style={{ color: 'red' }}>{formatCurrency(order.orderTotal)}</span>,
+            render: () => <span style={{ color: 'red' }}>{formatCurrency(order.orderTotal)}</span>,
         },
         {
             title: 'Thời gian',
@@ -154,7 +121,7 @@ export default function OrderView() {
             title: 'Phương thức thanh toán',
             dataIndex: '',
             width: 60,
-            render: (text, record) => order.payment.paymentName
+            render: () => order.payment.paymentName
         },
         {
             title: 'Nhân viên xác nhận',
@@ -170,14 +137,13 @@ export default function OrderView() {
     const columnProduct = [
         {
             title: '#',
-            dataIndex: 'index',
-            width: 40,
-            render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
+            dataIndex: 'key',
+            width: '5%',
         },
         {
             title: 'Ảnh',
-            dataIndex: '',
-            width: 80,
+            dataIndex: 'image',
+            width: '20%',
             render: (record) => (
                 <Row gutter={[5]}>
                     <Col span={12}>
@@ -189,7 +155,7 @@ export default function OrderView() {
         {
             title: 'Sản phẩm',
             dataIndex: '',
-            width: 110,
+            width: '35%',
             render: (record) => (
                 <Row>
                     <Col span={16}>
@@ -208,12 +174,12 @@ export default function OrderView() {
         {
             title: 'Số lượng',
             dataIndex: 'quantity',
-            width: 50,
+            width: '20%',
         },
         {
             title: 'Tổng tiền',
             dataIndex: 'price',
-            width: 50,
+            width: '20%',
             render: (text, record) => ({
                 children: formatCurrency(record.price),
                 props: {
@@ -224,16 +190,6 @@ export default function OrderView() {
     ];
     return (
         <>
-            {/* <div
-                style={{
-                    margin: '40px 10px ',
-                    padding: 14,
-                    minHeight: 280,
-                    border: '1px solid #ccc', // Thêm viền với màu xám nhạt
-                    boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)', // Thêm bóng với độ mờ
-                    background: colorBgContainer,
-                }}
-            > */}
             <div style={{ marginBottom: '40px' }}>
                 <Scrollbars
                     autoHide={false}
@@ -260,7 +216,7 @@ export default function OrderView() {
             </div>
 
             <div style={{ borderBottom: '2px solid black', fontWeight: 'bolder' }}>
-                <h4><b>Thông tin đơn hàng</b></h4>
+                <h3><b>Thông tin đơn hàng</b></h3>
             </div>
             <Row gutter={16} style={{ marginBottom: '40px' }}>
                 <Col span={8}>
@@ -319,13 +275,13 @@ export default function OrderView() {
                 </Col>
             </Row>
             <div style={{ borderBottom: '2px solid black' }}>
-                <h4><b>Lịch sử thanh toán</b></h4>
+                <h3><b>Lịch sử thanh toán</b></h3>
             </div>
             <Table
                 columns={columnCart}
                 dataSource={timeLines.map((tl, index) => ({
                     ...tl,
-
+                    key: index + 1,
                     createdAt: FormatDate(tl.createdAt),
 
                 }))}
@@ -337,7 +293,7 @@ export default function OrderView() {
                 }}
             />
             <div style={{ borderBottom: '2px solid black' }}>
-                <h4><b>Sản phẩm</b></h4>
+                <h3><b>Sản phẩm</b></h3>
             </div>
             <Table
                 key={productDetails.length} // Thay đổi key khi có sự thay đổi trong productDetails

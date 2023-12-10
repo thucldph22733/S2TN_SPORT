@@ -1,5 +1,6 @@
 package com.poly.springboot.dto.requestDto;
 
+import com.poly.springboot.entity.OrderType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,15 +23,13 @@ public class OrderRequestDto {
 
     private Long statusId;
 
-    private String orderType;
-
     private Double orderTotal;
 
     private Double orderTotalInitial;
 
     private String note;
 
-    private Long orderTypeId;
+    private OrderType orderType;
 
 //    @NotBlank(message = "Tên người nhận không được để trống!")
     private String recipientName;

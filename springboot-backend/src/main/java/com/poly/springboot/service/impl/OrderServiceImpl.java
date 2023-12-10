@@ -22,7 +22,6 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
     private OrderStatusRepository orderStatusRepository;
-    private OrderTypeRepository orderTypeRepository;
     private DeliveryRepository shippingMethodRepository;
     private PaymentRepository paymentMethodRepository;
     private UserRepository userRepository;
@@ -34,7 +33,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderStatusRepository orderStatusRepository,
-                            OrderTypeRepository orderTypeRepository,
                             DeliveryRepository shippingMethodRepository,
                             PaymentRepository paymentMethodRepository,
                             UserRepository userRepository,
@@ -42,7 +40,6 @@ public class OrderServiceImpl implements OrderService {
                             TimeLineRepository timeLineRepository) {
         this.orderRepository = orderRepository;
         this.orderStatusRepository = orderStatusRepository;
-        this.orderTypeRepository = orderTypeRepository;
         this.shippingMethodRepository = shippingMethodRepository;
         this.userRepository = userRepository;
         this.paymentMethodRepository = paymentMethodRepository;
@@ -170,7 +167,6 @@ public class OrderServiceImpl implements OrderService {
         Long paymentId = orderRequestDto.getPaymentId();
         Long deliveryId = orderRequestDto.getDeliveryId();
         Long voucherId = orderRequestDto.getVoucherId();
-        Long orderTypeId = orderRequestDto.getOrderTypeId();
 // Kiểm tra và tìm đối tượng Customer
         User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
 
@@ -186,7 +182,6 @@ public class OrderServiceImpl implements OrderService {
 // Tìm đối tượng OrderStatus (set luôn là null nếu không tìm thấy)
         OrderStatus orderStatus = orderStatusRepository.findById(1L).orElse(null);
 
-        OrderType orderType = orderTypeId != null ? orderTypeRepository.findById(orderTypeId).orElse(null) : null;
 
 // Tạo đối tượng Order và set các giá trị đã tìm được
         Order order = new Order();
@@ -194,11 +189,11 @@ public class OrderServiceImpl implements OrderService {
         order.setDelivery(delivery);
         order.setPayment(payment);
         order.setOrderStatus(orderStatus);
-        order.setOrderType(orderType);
         order.setVoucher(voucher);
         order.setOrderTotal(orderRequestDto.getOrderTotal());
         order.setNote(orderRequestDto.getNote());
         order.setDeleted(true);
+        order.setOrderType(orderRequestDto.getOrderType());
         //dịa chỉ giao
         order.setRecipientName(orderRequestDto.getRecipientName());
         order.setPhoneNumber(orderRequestDto.getPhoneNumber());
@@ -280,7 +275,6 @@ public class OrderServiceImpl implements OrderService {
             Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
             Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
             OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
-            OrderType orderType = orderRequestDto.getOrderTypeId() != null ? orderTypeRepository.findById(orderRequestDto.getOrderTypeId()).orElse(null) : null;
             Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
 
             // Lấy thông tin đơn hàng từ ID
@@ -299,7 +293,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderTotal(orderRequestDto.getOrderTotal());
             order.setNote(orderRequestDto.getNote());
             order.setOrderTotalInitial(order.getOrderTotalInitial());
-            order.setOrderType(orderType);
+            order.setOrderType(orderRequestDto.getOrderType());
 
             // Tính toán giảm giá và cập nhật
             if (voucher != null) {

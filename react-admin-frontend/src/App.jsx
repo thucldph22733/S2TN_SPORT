@@ -26,6 +26,7 @@ import OrderView from './pages/Orders/OrderView';
 import Error404 from './pages/Error/Error404';
 import Error403 from './pages/Error/Error403';
 import ChangePassword from './pages/Auth/ChangePassword';
+import BarChart from './pages/Dashboard/BarChart';
 function App() {
 
     const router = createBrowserRouter([
@@ -120,6 +121,7 @@ function App() {
                     path: path_name.change_password,
                     element: <ChangePassword />,
                 },
+
             ],
 
         },

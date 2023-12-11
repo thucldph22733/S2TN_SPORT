@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -163,6 +164,12 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public Integer countDeletedUsersInDateRange() {
 
+
+            return userRepository.countDeletedUsersInDateRange();
+
+    }
 
 }

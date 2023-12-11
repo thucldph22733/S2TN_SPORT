@@ -14,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,6 +92,34 @@ public class OrderServiceImpl implements OrderService {
                         order.getOrderTotalInitial()
                 )
         ).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map<String, Object>> getRevenueByMonthForCurrentYear() {
+        List<Map<String, Object>> revenueList = orderRepository.getRevenueByMonthForCurrentYear();
+
+        for (Map<String, Object> revenue : revenueList) {
+            Integer month = (Integer) revenue.get("month");
+            Double totalRevenue = (Double) revenue.get("totalRevenue");
+
+        }
+
+        return revenueList;
+    }
+
+    @Override
+    public List<Map<String, Object>> getTotalOrdersByStatus() {
+        List<Object[]> ordersByStatusList = orderRepository.getTotalOrdersByStatus();
+        List<Map<String, Object>> transformedList = new ArrayList<>();
+
+        for (Object[] orderStatus : ordersByStatusList) {
+            Map<String, Object> statusMap = new HashMap<>();
+            statusMap.put("statusName", orderStatus[0]);
+            statusMap.put("orderCount", orderStatus[1]);
+            transformedList.add(statusMap);
+        }
+
+        return transformedList;
     }
 
     @Override

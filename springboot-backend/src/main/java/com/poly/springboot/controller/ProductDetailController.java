@@ -2,6 +2,7 @@ package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
+import com.poly.springboot.dto.responseDto.BestSellingProductResponsesDto;
 import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.ProductDetail;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -31,6 +33,8 @@ public class ProductDetailController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productDetailResponseDtoList);
     }
+
+
 
     @GetMapping("pagination")
     public ResponseEntity<List<ProductDetailResponseDto>> getPagination(@RequestParam Optional<Integer> pageNo) {

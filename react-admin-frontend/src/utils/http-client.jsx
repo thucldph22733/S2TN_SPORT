@@ -1,7 +1,7 @@
 import axios from 'axios';
-
+const BASE_URL = "http://localhost:8080/api/v1/";
 const HttpClient = axios.create({
-    baseURL: "http://localhost:8080/api/v1/",
+    baseURL: BASE_URL,
     timeout: 10000, // Thời gian tối đa chờ đợi (milliseconds) cho mỗi request
     headers: {
         'Content-Type': 'application/json',

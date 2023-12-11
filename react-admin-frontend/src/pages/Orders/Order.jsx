@@ -58,8 +58,8 @@ const columns = [
         width: "15%",
         render: (text) => {
             switch (text) {
-                case 'Tạo mới':
-                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Tạo mới</Tag>
+                case 'Tạo đơn hàng':
+                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Tạo đơn hàng</Tag>
                     break;
                 case 'Chờ xác nhận':
                     return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>

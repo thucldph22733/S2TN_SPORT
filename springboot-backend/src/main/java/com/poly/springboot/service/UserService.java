@@ -8,8 +8,11 @@ import com.poly.springboot.entity.User;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserService {
@@ -28,5 +31,5 @@ public interface UserService {
 
     User getUserById(Long id);
 
-
+    Integer countDeletedUsersInDateRange();
 }

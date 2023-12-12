@@ -21,6 +21,11 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 
     @Query("SELECT COALESCE(SUM(od.price), 0) FROM OrderDetail od WHERE od.order.id = :orderId")
     double calculateOrderTotal(@Param("orderId") Long orderId);
+
+    @Query("SELECT SUM(od.quantity) FROM OrderDetail od " +
+            "JOIN od.productDetail pd " +
+            "JOIN pd.product p " +
+            "WHERE MONTH(od.order.createdAt) = MONTH(CURRENT_DATE()) " +
+            "AND YEAR(od.order.createdAt) = YEAR(CURRENT_DATE())")
+    Optional<Integer> getTotalQuantitySoldThisMonth();
 }
-
-

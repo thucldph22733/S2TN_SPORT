@@ -24,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -51,14 +52,8 @@ public class OrderController {
                         orderList,
                         orderPage);
     }
-//    @GetMapping("getAllCompletedOrder")
-//    public ResponseEntity<List<OrderResponseDto>> getAllOrdersCompleted(){
-//
-//        List<OrderResponseDto> orderResponseDtoList = orderService.getAllOrdersCompleted()  ;
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(orderResponseDtoList);
-//    }
+    //ham thong ke doanh thu theo thang
+
     @GetMapping("getAllList")
     public ResponseEntity<List<SecondOrderResponseDto>> getOrderList(){
 

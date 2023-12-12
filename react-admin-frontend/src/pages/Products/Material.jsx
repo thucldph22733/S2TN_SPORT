@@ -19,9 +19,6 @@ function Material() {
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
 
-    // const handleStatusFilterChange = ({value:''}) => {
-    //         setFilteredStatus(value);
-    //     };
 
     const showModal = (mode, record) => {
         setOpen({

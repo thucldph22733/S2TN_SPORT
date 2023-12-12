@@ -1598,25 +1598,23 @@ export default function OrderDetail() {
                     />
                     <h3>Tổng tiền: {formatCurrency(orderTotalInitial)} VND</h3>
 
-                    {/* table hóa đơn chi tiết */}
+
                 </div>
                 <div
                     style={{
                         margin: '40px 10px ',
                         padding: 14,
-                        minHeight: 280,
+                        minHeight: 180,
                         border: '1px solid #ccc',
                         boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)',
-                        background: colorBgContainer,
                     }}
                 >
-                    <div style={{ borderBottom: '1px solid #ccc', paddingBottom: '10px' }}>
-                        <Row gutter={[8, 8]}>
+                    <div style={{ borderBottom: '1px solid #ccc', paddingBottom: '10px', marginBottom: '15px', }}>
+                        <Row >
                             <Col span={8}>
                                 <label className="tieu-de">Thông tin khách hàng</label>
                             </Col>
-                            <Col span={8}>
-                                {/* {console.log('Customer Name:', selectedCustomer.customerName)} */}
+                            <Col span={8} >
                                 {selectedCustomer && showSuccessAlertCustonmer && (
                                     <Alert
                                         message={
@@ -1632,14 +1630,13 @@ export default function OrderDetail() {
                                         type="success"
                                         closable
                                         onClose={handleAlertClose} // Gọi hàm xử lý khi đóng alert
-                                        style={{ marginLeft: '10px' }}
                                     />
                                 )}
                             </Col>
-                            <Col span={8}>
+                            <Col span={8} >
                                 <Button
                                     type="primary"
-                                    icon={<PlusCircleFilled />}
+                                    icon={<PlusOutlined />}
                                     onClick={userModel}
                                     style={{ float: 'right', marginLeft: '5px' }}
                                 >
@@ -1648,17 +1645,17 @@ export default function OrderDetail() {
                             </Col>
                         </Row>
                     </div>
-                    {/* {console.log('Selected Customer ID:', selectedCustomerId)}
-                    {console.log('Selected Customer:', selectedCustomer)} */}
+
                     {selectedCustomer && (
                         <>
-                            <p>{`Tên: ${selectedCustomer.usersName}`}</p>
+                            <p>{`Tên khách hàng: ${selectedCustomer.usersName}`}</p>
                             <p>{`Email: ${selectedCustomer.email}`}</p>
                             <p>{`Số điện thoại: ${selectedCustomer.phoneNumber}`}</p>
                             {/* Thêm các trường khác nếu cần */}
                         </>
                     )}
-                    {!selectedCustomer && <p>Khách hàng lẻ</p>}
+                    {!selectedCustomer && 'Khách hàng lẻ'}
+
                 </div>
 
                 <div
@@ -1928,22 +1925,7 @@ export default function OrderDetail() {
 const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
     const [form] = Form.useForm();
-    // const [roles, setRoles] = useState([]);
 
-    // useEffect(() => {
-    //     fetchRoles()
-    // }, []);
-    // const fetchRoles = async () => {
-
-    //     await RoleService.findAllByDeletedTrue()
-    //         .then(response => {
-
-    //             setRoles(response.data)
-
-    //         }).catch(error => {
-    //             console.error(error);
-    //         })
-    // }
     const handleCreate = () => {
         form.validateFields().then(async () => {
 

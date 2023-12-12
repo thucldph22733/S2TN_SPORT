@@ -12,15 +12,26 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface OrderService {
 
 //    List<OrderResponseDto> getAllOrdersCompleted();
     Page<Order> getAllOrders(Long orderStatusId, Pageable pageable);
-//
-//    List<OrderResponseDto> getPagination(Integer pageNo);
-//
-//    Order findOrderById(Long id);
+    List<Map<String, Object>>getRevenueByMonthForCurrentYear();
+    List<Map<String, Object>> getTotalOrdersByStatus();
+
+    Page<Order> findAllOrderByStatusId(Pageable pageable);
+
+    Boolean createOrder(OrderRequestDto orderRequestDto);
+
+    Boolean deleteOrder(Long id);
+
+    Double monthlyRevenue();
+
+    Double revenueToday();
+
 
     List<OrderResponseDto> getAllOrders();
 
@@ -28,13 +39,6 @@ public interface OrderService {
 
     Order findOrderById(Long id);
 
-//    List<OrderResponseDto> getOrderByStatus(Long id);
-
-    Page<Order> findAllOrderByStatusId(Pageable pageable);
-
-    Boolean createOrder(OrderRequestDto orderRequestDto);
-
-    Boolean deleteOrder(Long id);
 
     Boolean updateOrder(OrderRequestDto orderRequestDto, Long id);
 

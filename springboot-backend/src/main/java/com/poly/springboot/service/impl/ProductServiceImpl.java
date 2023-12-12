@@ -85,13 +85,17 @@ public class ProductServiceImpl implements ProductService {
         return true;
     }
 
+    @Override
+    public List<Product> findAllByDeletedTrue() {
+        return productRepository.findAllByDeletedTrue();
+    }
+
 
     private ProductResponseDto mapProductToDto(Product product) {
         return new ProductResponseDto(
                 product.getId(),
                 product.getProductName(),
                 product.getCategory() != null ? product.getCategory().getCategoryName() : "",
-                product.getMaterial() != null ? product.getMaterial().getMaterialName() : " ",
                 product.getBrand() != null ? product.getBrand().getBrandName() : " ",
                 product.getSupplier() != null ? product.getSupplier().getSupplierName() : " ",
                 product.getDeleted(),
@@ -107,7 +111,6 @@ public class ProductServiceImpl implements ProductService {
 
         product.setProductName(productRequestDto.getProductName());
         product.setCategory(categoryRepository.findByCategoryName(productRequestDto.getCategoryName()));
-        product.setMaterial(materialRepository.findByMaterialName(productRequestDto.getMaterialName()));
         product.setBrand(brandRepository.findByBrandName(productRequestDto.getBrandName()));
         product.setSupplier(supplierRepository.findBySupplierName(productRequestDto.getSupplierName()));
         product.setProductHot(productRequestDto.getProductHot());

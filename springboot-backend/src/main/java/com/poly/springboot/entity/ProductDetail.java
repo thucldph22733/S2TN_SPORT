@@ -34,9 +34,9 @@ public class ProductDetail extends BaseEntity{
     @JoinColumn(name = "color_id")
     private Color color;
 
-//    @ManyToOne
-//    @JoinColumn(name = "material_id")
-//    private Material material;
+    @ManyToOne
+    @JoinColumn(name = "material_id")
+    private Material material;
 
     @ManyToOne
     @JoinColumn(name = "size_id")

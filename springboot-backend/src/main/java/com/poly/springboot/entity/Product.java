@@ -31,10 +31,6 @@ public class Product extends BaseEntity{
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "material_id")
-    private Material material;
-
-    @ManyToOne
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
@@ -44,9 +40,6 @@ public class Product extends BaseEntity{
 
     @Column(name = "product_name")
     private String productName;
-
-    @Column(name = "product_avatar")
-    private String avatar;
 
     @Column(name = "product_hot")
     private Boolean productHot;

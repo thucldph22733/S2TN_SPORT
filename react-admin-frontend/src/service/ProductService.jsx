@@ -13,6 +13,14 @@ const ProductService = {
                 throw error;
             });
     },
+    findAllByDeletedTrue: () => {
+        return HttpClient.get(`${API_URL}findAllByDeletedTrue`)
+            .then(response => response)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
 
     create: (data) => {
         return HttpClient.post(`${API_URL}create`, data)

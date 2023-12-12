@@ -1,7 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { faPlus, faShop, faTruckFast } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Popconfirm, Space, Table, Tabs, Tag, theme } from 'antd';
+import { Button, Popconfirm, Space, Table, Tabs, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -35,8 +33,8 @@ const columns = [
         dataIndex: 'orderTypeName',
         key: 'orderTypeName',
         width: "10%",
-        render: (text, record) => (
-            text === "Tại quầy" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
+        render: (text) => (
+            text === "InStore" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
                 : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>
         )
     },
@@ -90,7 +88,7 @@ const columns = [
         width: "10%",
         render: (text) => (
             <span style={{ color: 'red' }}>
-                {parseFloat(text).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                {isNaN(parseFloat(text)) ? '' : parseFloat(text).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
             </span>
         ),
     },
@@ -221,8 +219,6 @@ function Order() {
     };
     return (
         <>
-            {/* <label>Danh sách hóa đơn</label> */}
-
             <Tabs defaultActiveKey=""
                 items={items}
                 onChange={handleTabChange}></Tabs>

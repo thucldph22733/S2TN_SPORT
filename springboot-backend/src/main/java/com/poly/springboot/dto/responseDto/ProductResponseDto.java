@@ -19,8 +19,6 @@ public class ProductResponseDto {
 
     private String categoryName;
 
-    private String materialName;
-
     private String brandName;
 
     private String supplierName;

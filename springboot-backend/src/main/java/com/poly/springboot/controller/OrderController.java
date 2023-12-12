@@ -2,12 +2,13 @@ package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
+import com.poly.springboot.dto.requestDto.OrderUpdateRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseHandler;
 import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
-import com.poly.springboot.entity.Material;
 import com.poly.springboot.entity.Order;
+import com.poly.springboot.entity.OrderStatus;
 import com.poly.springboot.entity.User;
 import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.service.OrderService;
@@ -134,9 +135,47 @@ public class OrderController {
         }
     }
 
+    @PutMapping ("updateOrderStatus")
+    public ResponseEntity<ResponseDto> updateOrderStatus(@Valid @RequestBody OrderUpdateRequestDto orderUpdateRequestDto, @RequestParam Long id){
+        Boolean isUpdated = orderService.updateOrderStatus(id,orderUpdateRequestDto);
+
+        if (isUpdated){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
+    }
+
+    @PutMapping ("updateOrderStatusCancle")
+    public ResponseEntity<ResponseDto> updateOrderStatusCancle(@Valid @RequestBody OrderUpdateRequestDto orderUpdateRequestDto, @RequestParam Long id){
+        Boolean isUpdated = orderService.updateOrderStatusCancle(id,orderUpdateRequestDto);
+
+        if (isUpdated){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
+    }
+
     @PutMapping ("updateTimeLine")
     public ResponseEntity<ResponseDto> updateOrderTimeLine(@Valid @RequestBody OrderRequestDto orderRequestDto,@RequestParam Long id){
         Boolean isUpdated = orderService.updateOrders(orderRequestDto,id);
+        if (isUpdated){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
+    }
+
+    @PutMapping ("updateTimeLine2")
+    public ResponseEntity<ResponseDto> updateOrderTimeLine2(@Valid @RequestBody OrderRequestDto orderRequestDto,@RequestParam Long id){
+        Boolean isUpdated = orderService.updateOrdersOnline(orderRequestDto,id);
         if (isUpdated){
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));

@@ -1,6 +1,7 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
+import com.poly.springboot.dto.requestDto.OrderUpdateRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
 import com.poly.springboot.entity.*;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -27,8 +29,11 @@ public class OrderServiceImpl implements OrderService {
     private PaymentRepository paymentMethodRepository;
     private UserRepository userRepository;
     private VoucherRepository voucherRepository;
-
+    private OrderDetailRepository orderDetailRepository;
     private TimeLineRepository timeLineRepository;
+
+    private ProductDetailRepository productDetailRepository;
+
 
 
     @Autowired
@@ -37,14 +42,18 @@ public class OrderServiceImpl implements OrderService {
                             OrderTypeRepository orderTypeRepository,
                             DeliveryRepository shippingMethodRepository,
                             PaymentRepository paymentMethodRepository,
+                            ProductDetailRepository productDetailRepository,
                             UserRepository userRepository,
+                            OrderDetailRepository orderDetailRepository,
                             VoucherRepository voucherRepository,
                             TimeLineRepository timeLineRepository) {
         this.orderRepository = orderRepository;
+        this.orderDetailRepository = orderDetailRepository;
         this.orderStatusRepository = orderStatusRepository;
         this.orderTypeRepository = orderTypeRepository;
         this.shippingMethodRepository = shippingMethodRepository;
         this.userRepository = userRepository;
+        this.productDetailRepository = productDetailRepository;
         this.paymentMethodRepository = paymentMethodRepository;
         this.voucherRepository = voucherRepository;
         this.timeLineRepository = timeLineRepository;
@@ -82,9 +91,10 @@ public class OrderServiceImpl implements OrderService {
                         order.getVoucher() != null ? order.getVoucher().getId() : null,
                         order.getUser() != null ? order.getUser().getId() : null,
                         order.getUser() != null ? order.getUser().getUsersName() : "",  // Thay thế từ getCustomer() sang getUser()
-                        order.getUser() != null ? order.getUser().getPhoneNumber() : "",  // Thay thế từ getCustomer() sang getUser()
+                        order.getPhoneNumber(), // Thay thế từ getCustomer() sang getUser()
                         order.getPayment() != null ? order.getPayment().getPaymentName() : "",
                         order.getAddressDetail(),
+                        order.getRecipientName(),
                         order.getWard(),
                         order.getDistrict(),
                         order.getCity(),
@@ -316,7 +326,7 @@ public class OrderServiceImpl implements OrderService {
 
                 TimeLine timeLine = new TimeLine();
                 timeLine.setOrder(order);
-                timeLine.setStatus(2);
+                timeLine.setStatus(5);
                 timeLine.setDeleted(true);
                 timeLine.setNote("Đã thanh toán");
                 timeLineRepository.save(timeLine);
@@ -324,6 +334,95 @@ public class OrderServiceImpl implements OrderService {
                 // TimeLine đã tồn tại
             }
 
+            // Lưu đơn hàng và trả về true
+            orderRepository.save(order);
+
+            List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
+            for (OrderDetail orderDetail : orderDetails) {
+                ProductDetail productDetail = orderDetail.getProductDetail();
+                if (productDetail != null) {
+                    // Lấy số lượng từ productDetail và orderDetail
+                    int productDetailQuantity = productDetail.getQuantity();
+                    int orderDetailQuantity = orderDetail.getQuantity();
+
+                    // Kiểm tra tránh trường hợp số lượng âm
+                    int newProductDetailQuantity = Math.max(productDetailQuantity - orderDetailQuantity, 0);
+
+                    // Cập nhật số lượng mới cho productDetail
+                    productDetail.setQuantity(newProductDetailQuantity);
+
+                    // Lưu productDetail
+                    productDetailRepository.save(productDetail);
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            // Xử lý ngoại lệ và log lỗi nếu cần
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean updateOrdersOnline(OrderRequestDto orderRequestDto, Long id) {
+        try {
+            // Lấy thông tin các đối tượng liên quan từ ID
+            User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
+            Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
+            Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
+            OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
+            OrderType orderType = orderRequestDto.getOrderTypeId() != null ? orderTypeRepository.findById(orderRequestDto.getOrderTypeId()).orElse(null) : null;
+            Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
+
+            // Lấy thông tin đơn hàng từ ID
+            Order order = orderRepository.findById(id)
+                    .orElseThrow(() -> {
+                        System.out.println("Order not found with id: " + id);
+                        return new ResourceNotFoundException("Không tìm thấy id hóa đơn này");
+                    });
+
+            // Cập nhật thông tin đơn hàng
+            order.setUser(user);
+            order.setDelivery(delivery);
+            order.setPayment(payment);
+            order.setOrderStatus(orderStatus);
+            order.setVoucher(voucher);
+            order.setOrderTotal(orderRequestDto.getOrderTotal());
+            order.setNote(orderRequestDto.getNote());
+            order.setOrderTotalInitial(order.getOrderTotalInitial());
+            order.setOrderType(orderType);
+            order.setRecipientName(orderRequestDto.getRecipientName());
+            order.setPhoneNumber(orderRequestDto.getPhoneNumber());
+            order.setCity(orderRequestDto.getCity());
+            order.setDistrict(orderRequestDto.getDistrict());
+            order.setWard(orderRequestDto.getWard());
+            order.setAddressDetail(orderRequestDto.getAddressDetail());
+
+            // Tính toán giảm giá và cập nhật
+            if (voucher != null) {
+                double discountRate = voucher.getDiscountRate();
+                double giamGia = (orderRequestDto.getOrderTotalInitial() * discountRate) / 100;
+                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
+            }
+
+            // Kiểm tra xem có TimeLine nào đã được tạo mới cho đơn hàng với trạng thái là 2 không
+            TimeLine existingTimeLine = timeLineRepository.findByOrderAndStatusAndDeletedTrue(order, 2);
+            if (existingTimeLine == null) {
+                // Nếu không có, hãy tạo mới TimeLine
+                TimeLine timeLine = new TimeLine();
+                timeLine.setOrder(order);
+                timeLine.setStatus(2);
+                timeLine.setDeleted(true);
+                timeLineRepository.save(timeLine);
+
+                TimeLine timeLine1 = new TimeLine();
+                timeLine1.setOrder(order);
+                timeLine1.setStatus(3);
+                timeLine1.setDeleted(true);
+                timeLineRepository.save(timeLine1);
+            } else {
+                // TimeLine đã tồn tại
+            }
             // Lưu đơn hàng và trả về true
             orderRepository.save(order);
             return true;
@@ -346,13 +445,6 @@ public class OrderServiceImpl implements OrderService {
         ).collect(Collectors.toList());
     }
 
-
-//    @Override
-//    public List<OrderResponseDto> searchOrder(Integer pageNo, String keyword) {
-//        return null;
-//    }
-
-
     @Override
     public List<OrderResponseDto> getPagination(Integer pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 10);
@@ -365,6 +457,7 @@ public class OrderServiceImpl implements OrderService {
                         order.getUser().getPhoneNumber(),
                         order.getPayment().getPaymentName(),
                         order.getAddressDetail(),
+                        order.getRecipientName(),
                         order.getWard(),
                         order.getDistrict(),
                         order.getCity(),
@@ -376,4 +469,75 @@ public class OrderServiceImpl implements OrderService {
                 )
         ).collect(Collectors.toList());
     }
+    @Override
+    public Boolean updateOrderStatus(Long orderId, OrderUpdateRequestDto orderUpdateRequestDto) {
+        try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng với ID: " + orderId));
+
+            // Cập nhật trạng thái của đơn hàng
+            OrderStatus orderStatus = orderUpdateRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderUpdateRequestDto.getStatusId()).orElse(null) : null;
+            order.setOrderStatus(orderStatus);
+
+            // Lưu đơn hàng để cập nhật trạng thái
+            orderRepository.save(order);
+
+            if (orderStatus != null && orderStatus.getId() == 5) {
+                List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
+                for (OrderDetail orderDetail : orderDetails) {
+                    ProductDetail productDetail = orderDetail.getProductDetail();
+                    if (productDetail != null) {
+                        // Lấy số lượng từ productDetail và orderDetail
+                        int productDetailQuantity = productDetail.getQuantity();
+                        int orderDetailQuantity = orderDetail.getQuantity();
+
+                        // Kiểm tra tránh trường hợp số lượng âm
+                        int newProductDetailQuantity = Math.max(productDetailQuantity - orderDetailQuantity, 0);
+
+                        // Cập nhật số lượng mới cho productDetail
+                        productDetail.setQuantity(newProductDetailQuantity);
+
+                        // Lưu productDetail
+                        productDetailRepository.save(productDetail);
+                    }
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            // Xử lý ngoại lệ nếu cần
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean updateOrderStatusCancle(Long orderId, OrderUpdateRequestDto orderUpdateRequestDto) {
+        try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng với ID: " + orderId));
+
+            // Cập nhật trạng thái của đơn hàng
+            OrderStatus orderStatus = orderUpdateRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderUpdateRequestDto.getStatusId()).orElse(null) : null;
+            order.setOrderStatus(orderStatus);
+            order.setVoucher(null);
+            order.setOrderTotal((double) 0);
+            order.setOrderTotalInitial((double) 0);
+            order.setNote("Đơn hàng đã hủy");
+            // Lưu đơn hàng để cập nhật trạng thái
+            orderRepository.save(order);
+            return true;
+        } catch (Exception e) {
+            // Xử lý ngoại lệ nếu cần
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
+
+
+
+
+
 }

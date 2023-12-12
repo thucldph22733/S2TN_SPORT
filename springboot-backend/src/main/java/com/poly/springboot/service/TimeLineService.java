@@ -1,5 +1,7 @@
 package com.poly.springboot.service;
 
+import com.poly.springboot.dto.requestDto.ColorRequestDto;
+import com.poly.springboot.dto.requestDto.TimeLineRequestDto;
 import com.poly.springboot.dto.responseDto.TimeLineResponseDto;
 import com.poly.springboot.entity.Order;
 import com.poly.springboot.entity.TimeLine;
@@ -12,4 +14,8 @@ public interface TimeLineService {
     TimeLine findByOrderAndStatus(Order order, Integer status);
 
     List<TimeLine> findByOrderIdAndStatus(Long id);
+
+    Boolean createTimeLine(TimeLineRequestDto timeLineRequestDto);
+
+
 }

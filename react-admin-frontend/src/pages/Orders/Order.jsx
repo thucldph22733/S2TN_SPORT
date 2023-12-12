@@ -32,10 +32,10 @@ const columns = [
     },
     {
         title: 'Loại đơn hàng',
-        dataIndex: 'orderType',
-        key: 'orderType',
+        dataIndex: 'orderTypeName',
+        key: 'orderTypeName',
         width: "10%",
-        render: (text) => (
+        render: (text, record) => (
             text === "Tại quầy" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
                 : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>
         )
@@ -60,8 +60,8 @@ const columns = [
         width: "15%",
         render: (text) => {
             switch (text) {
-                case 'Tạo mới':
-                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Tạo mới</Tag>
+                case 'Tạo đơn hàng':
+                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Tạo đơn hàng</Tag>
                     break;
                 case 'Chờ xác nhận':
                     return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
@@ -167,7 +167,8 @@ function Order() {
                 createdAt: FormatDate(order.createdAt),
                 voucher: order.voucher ? order.voucher.discountRate : 0,
                 customerName: order.user ? order.user.usersName : "Khách lẻ",
-                orderStatusName: order.orderStatus ? order.orderStatus.statusName : ""
+                orderStatusName: order.orderStatus ? order.orderStatus.statusName : "",
+                orderTypeName: order.orderType ? order.orderType.orderTypeName : ""
 
             }))}
             onChange={handleTableChange}

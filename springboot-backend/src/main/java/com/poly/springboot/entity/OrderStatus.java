@@ -34,4 +34,9 @@ public class OrderStatus {
     private String statusDescribe;
 
 
+    public OrderStatus(Long id) {
+        this.id = id;
+        // Các dòng code khác để khởi tạo trạng thái dựa trên id
+    }
+
 }

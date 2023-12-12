@@ -15,5 +15,5 @@ import java.util.List;
 public interface AddressRepository extends JpaRepository<Address, Long> {
     @Query("SELECT a FROM Address a JOIN a.users u WHERE u.id = :userId")
     List<Address> findAddressesByUserId(@Param("userId") Long userId);
-
+    List<Address> findByUsersId(Long userId);
 }

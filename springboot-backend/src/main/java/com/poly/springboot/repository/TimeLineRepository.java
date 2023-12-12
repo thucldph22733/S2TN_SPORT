@@ -18,7 +18,7 @@ public interface TimeLineRepository extends JpaRepository<TimeLine, Long> {
 
     TimeLine findByOrderAndStatusAndDeletedTrue(Order order, Integer status);
 
-    @Query("SELECT t FROM TimeLine t join Order o on t.order.id = o.id WHERE t.order.id = :orderId AND t.status = 2 AND t.deleted = true")
+    @Query("SELECT t FROM TimeLine t join Order o on t.order.id = o.id WHERE t.order.id = :orderId AND t.status = 5 AND t.deleted = true")
     List<TimeLine> findByOrderIdAndStatus(@Param("orderId") Long orderId);
 
 

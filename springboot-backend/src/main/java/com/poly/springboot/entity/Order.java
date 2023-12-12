@@ -70,4 +70,6 @@ public class Order extends BaseEntity {
     @Column(name = "orderTotal_initial")
     private Double orderTotalInitial; //tổng tiền ban đầu
 
+
+
 }

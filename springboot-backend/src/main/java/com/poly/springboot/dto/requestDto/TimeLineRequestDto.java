@@ -21,4 +21,6 @@ public class TimeLineRequestDto {
 
     private Boolean deleted;
 
+    private Long orderId;
+
 }

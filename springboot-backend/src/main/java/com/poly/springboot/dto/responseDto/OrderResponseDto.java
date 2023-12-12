@@ -29,6 +29,8 @@ public class OrderResponseDto {
 
     private String addressDetail;   // so nha, ngo, duong
 
+    private String recipientName;
+
     private String ward;// phuong/ xa
 
     private String district;//quan/ huyen

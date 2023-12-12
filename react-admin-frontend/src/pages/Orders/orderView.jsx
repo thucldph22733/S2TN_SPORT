@@ -1,57 +1,32 @@
-import React, { useReducer, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoins, faMoneyCheck } from '@fortawesome/free-solid-svg-icons';
 import {
-    AutoComplete,
     Button,
     Col,
     Modal,
     Row,
-    Select,
     Table,
-    Tabs,
-    theme,
     Image,
-    InputNumber,
-    Space,
-    Alert,
     notification,
-    message,
-    Popconfirm,
     Input,
-    Radio,
+    Tag,
 } from 'antd';
-import { useState } from 'react';
-import {
-    CloseSquareFilled,
-    DeleteOutlined,
-    EuroCircleOutlined,
-    PlusCircleFilled,
-    PlusOutlined,
-    QrcodeOutlined,
-    ReloadOutlined,
-    SearchOutlined,
-    ShopOutlined,
-} from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Search from 'antd/es/input/Search';
-import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import TextArea from 'antd/es/input/TextArea';
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline';
-import { FaBug, FaRegCalendarCheck, FaRegFileAlt } from 'react-icons/fa';
+import { FaBox, FaCheck, FaMinus, FaRegCalendarCheck, FaRegFileAlt, FaTruck, FaTruckLoading } from 'react-icons/fa';
 import { Scrollbars } from 'react-custom-scrollbars';
 import FormatDate from '~/utils/format-date';
+import TimeLineService from '~/service/TimeLineService';
+import OrderService from '~/service/OrderService';
+import { genStatusStyle } from 'antd/es/input/style';
 export default function OrderView() {
-    const {
-        token: { colorBgContainer },
-    } = theme.useToken();
     const { id } = useParams();
     const [order, setOrder] = useState({}); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
     const [timeLine, setTimeLine] = useState([]); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
     const [timeLines, setTimeLines] = useState([]); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
     const [productDetails, setProductDetails] = useState([]);
-
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [inputValue, setInputValue] = useState('');
     useEffect(() => {
         loadOrder();
         findAllTimeLineByOrderId();
@@ -77,18 +52,28 @@ export default function OrderView() {
                 icon: getIconByStatus(event.status),
             }));
             setTimeLine(convertedTimeline);
+            console.log('Timeline:', convertedTimeline); // Add this line
         } catch (error) {
             console.error('Error fetching timeline:', error);
         }
     };
 
+
     const getStatusTitle = (status) => {
         // Logic chuyển đổi status sang title tương ứng
         // Ví dụ:
         if (status === 1) {
-            return 'Tạo hóa đơn';
+            return 'Tạo đơn hàng';
         } else if (status === 2) {
-            return 'Đã thanh toán';
+            return 'Chờ xác nhận';
+        } else if (status === 3) {
+            return 'Chờ lấy hàng';
+        } else if (status === 4) {
+            return 'Chờ giao hàng';
+        } else if (status === 5) {
+            return 'Hoàn thành';
+        } else if (status === 6) {
+            return 'Đã hủy';
         }
         return 'Khác';
     };
@@ -98,13 +83,40 @@ export default function OrderView() {
     const getStatusColor = (status) => {
         // Logic chuyển đổi màu sắc tùy thuộc vào status
         // Ví dụ:
-        return status === 1 ? 'green' : '#87a2c7';
+        if (status === 1) {
+            return 'green';
+        } else if (status === 2) {
+            return 'green';
+        } else if (status === 3) {
+            return 'green';
+        } else if (status === 4) {
+            return 'green';
+        } else if (status === 5) {
+            return 'green';
+        } else if (status === 6) {
+            return 'red';
+        }
+        return 'Khác';
+
     };
 
     const getIconByStatus = (status) => {
         // Logic chuyển đổi biểu tượng tùy thuộc vào status
         // Ví dụ:
-        return status === 1 ? FaRegFileAlt : FaRegCalendarCheck;
+        if (status === 1) {
+            return FaRegFileAlt;
+        } else if (status === 2) {
+            return FaTruckLoading;
+        } else if (status === 3) {
+            return FaBox;
+        } else if (status === 4) {
+            return FaTruck;
+        } else if (status === 5) {
+            return FaRegCalendarCheck;
+        } else if (status === 6) {
+            return FaMinus;
+        }
+        return 'Khác';
     };
 
     const formatCurrency = (amount) => {
@@ -222,6 +234,167 @@ export default function OrderView() {
             }),
         },
     ];
+    const renderStatusButtons = () => {
+        if (timeLine.length > 0) {
+            const lastEvent = timeLine[timeLine.length - 1];
+
+            if (lastEvent.title === 'Chờ lấy hàng') {
+                return (
+                    <div>
+                        <Button type="primary" onClick={showModal}>
+                            Xác nhận
+                        </Button>
+                        <Button type="primary" onClick={handleCancel}>
+                            Hủy
+                        </Button>
+                    </div>
+                );
+            }
+            if (lastEvent.title === 'Chờ giao hàng') {
+                return (
+                    <div>
+                        <Button type="primary" onClick={showModal}>
+                            Xác nhận
+                        </Button>
+                    </div>
+                );
+            }
+        }
+
+        return null;
+    };
+
+    const showModal = () => {
+        setModalVisible(true);
+    };
+
+    const handleOk = async () => {
+        try {
+            let statusToUpdate = 2;
+            if (timeLine.length > 0) {
+                const lastEvent = timeLine[timeLine.length - 1];
+
+                // Kiểm tra lastEvent.title và cập nhật status tùy thuộc vào giá trị đó
+                if (lastEvent.title === 'Chờ lấy hàng') {
+                    statusToUpdate = 4;
+                } else if (lastEvent.title === 'Chờ giao hàng') {
+                    statusToUpdate = 5;
+                }
+
+                let timelineData = { status: statusToUpdate, orderId: id };
+
+                // Gọi hàm từ service để tạo mới timeline với dữ liệu từ input
+                await TimeLineService.create(timelineData)
+                    .then(async () => {
+                        notification.success({
+                            message: 'Thông báo',
+                            description: 'Xác nhận thành công',
+                        });
+
+                        // Cập nhật trạng thái trong order
+                        let orderData = { statusId: statusToUpdate };
+                        await OrderService.updateOrderStatus(id, orderData);
+
+                        // Lấy lại danh sách timeline và cập nhật giao diện
+                        findAllTimeLineByOrderId();
+                        loadTimeLine();
+                        loadOrder();
+                        setModalVisible(false);
+                    })
+                    .catch(error => {
+                        notification.error({
+                            message: 'Thông báo',
+                            description: 'Thất bại!',
+                        });
+                        console.error(error);
+                    });
+
+                // Đóng modal
+            }
+        } catch (error) {
+            console.error('Error creating timeline:', error);
+            // Xử lý lỗi nếu cần thiết
+        }
+    };
+
+
+    const getStatusColors = (statusName) => {
+        switch (statusName) {
+            case 'Tạo đơn hàng':
+                return 'green';
+            case 'Chờ xác nhận':
+                return 'processing';
+            case 'Chờ lấy hàng':
+                return 'volcano';
+            case 'Chờ giao hàng':
+                return 'purple';
+            case 'Hoàn thành':
+                return 'success';
+            case 'Đã hủy':
+                return 'red';
+            default:
+                return 'black'; // Màu mặc định hoặc bạn có thể chọn một màu khác
+        }
+    };
+
+    const handleClose = () => {
+        setModalVisible(false);
+    }
+
+
+
+    const handleCancel = async () => {
+        // Đóng modal nếu ấn nút Hủy
+        try {
+            let statusToUpdate = 6;
+            if (timeLine.length > 0) {
+                const lastEvent = timeLine[timeLine.length - 1];
+
+                // Kiểm tra lastEvent.title và cập nhật status tùy thuộc vào giá trị đó
+                if (lastEvent.title === 'Chờ lấy hàng') {
+                    statusToUpdate = 6;
+                }
+
+                let timelineData = { status: statusToUpdate, orderId: id };
+
+                // Gọi hàm từ service để tạo mới timeline với dữ liệu từ input
+                await TimeLineService.create(timelineData)
+                    .then(async () => {
+                        notification.success({
+                            message: 'Thông báo',
+                            description: 'Đã hủy',
+                        });
+
+                        // Cập nhật trạng thái trong order
+                        let orderData = { statusId: statusToUpdate };
+                        await OrderService.updateOrderStatusCancle(id, orderData);
+
+                        // Lấy lại danh sách timeline và cập nhật giao diện
+                        findAllTimeLineByOrderId();
+                        loadTimeLine();
+                        loadOrder();
+                        setModalVisible(false);
+                    })
+                    .catch(error => {
+                        notification.error({
+                            message: 'Thông báo',
+                            description: 'Thất bại!',
+                        });
+                        console.error(error);
+                    });
+
+                // Đóng modal
+            }
+        } catch (error) {
+            console.error('Error creating timeline:', error);
+            // Xử lý lỗi nếu cần thiết
+        }
+    };
+
+    const handleConfirm = () => {
+        // Logic to handle confirmation
+        console.log('Confirmed');
+    };
     return (
         <>
             {/* <div
@@ -257,67 +430,95 @@ export default function OrderView() {
                         ))}
                     </Timeline>
                 </Scrollbars>
+                {renderStatusButtons()}
             </div>
+            <Modal
+                title="Xác nhận đơn hàng"
+                visible={isModalVisible}
+                onOk={handleOk}
+                onCancel={handleClose}
+            >
+                {/* Input trong modal */}
+                <Input
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder="Nhập thông tin xác nhận"
+                />
+            </Modal>
 
-            <div style={{ borderBottom: '2px solid black', fontWeight: 'bolder' }}>
+            <div style={{ borderBottom: '2px solid black', fontWeight: 'bolder', marginBottom: '10px' }}>
                 <h4><b>Thông tin đơn hàng</b></h4>
             </div>
-            <Row gutter={16} style={{ marginBottom: '40px' }}>
-                <Col span={8}>
-                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Trạng thái</span>
-                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {order.orderStatus && order.orderStatus.statusName}
-                        </span>
-                    </Col>
+            <Row gutter={[16, 16]}>
+                <Col span={8} >
+                    <span>Trạng thái</span>
+                    <span style={{ float: 'right', textAlign: 'center' }}>
+                        {order.orderStatus && (
+                            <Tag
+                                style={{
+                                    borderRadius: '4px',
+                                    fontWeight: '450',
+                                    padding: '0 4px ',
+                                }}
+                                color={getStatusColors(order.orderStatus.statusName)}
+                            >
+                                {order.orderStatus.statusName}
+                            </Tag>
+                        )}
+                    </span>
+                </Col>
+                <Col span={8} >
+                    <span>Mã đơn hàng</span>
+                    <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>#HD{order.id}</span>
+                </Col>
+                <Col span={8} >
+                    <span>Số điện thoại</span>
+                    <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                        {order.phoneNumber}
+                        {!order.phoneNumber && <p>Không có</p>}
+                    </span>
+                </Col>
 
-                    <br />
-                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Loại đơn hàng</span>
-                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {order.orderType && order.orderType.orderTypeName}
-                        </span>
-                    </Col>
-                    <br />
-                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Tổng tiền</span>
-                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {formatCurrency(order.orderTotal)}
-                        </span>
-                    </Col>
+                <Col span={8} >
+                    <span>Loại đơn hàng</span>
+                    <span style={{ float: 'right', textAlign: 'center' }}>
+                        {order.orderType && order.orderType.orderTypeName === "Tại quầy" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
+                            : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>}
+                    </span>
                 </Col>
-                <Col span={8}>
-                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Mã đơn hàng</span>
-                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>#HD{order.id}</span>
-                    </Col>
-                    <br />
-                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Khách hàng</span>
-                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {order.customer && order.customer.customerName}
-                            {!order.customer && <p>Khách lẻ</p>}
-                        </span>
-                    </Col>
+                <Col span={8} >
+                    <span>Khách hàng</span>
+                    <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                        {order.recipientName}
+                        {!order.recipientName && <p>Khách lẻ</p>}
+                    </span>
                 </Col>
-                <Col span={8}>
-                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Số điện thoại</span>
-                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {order.customer && order.customer.phoneNumber}
-                            {!order.customer && <p>Không có</p>}
-                        </span>
-                    </Col>
-                    <br />
-                    <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>địa chỉ</span>
-                        <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
-                            {order.customer && order.customer.address}
-                            {!order.customer && <p>Không có</p>}
-                        </span>
-                    </Col>
+                <Col span={8} >
+                    <span>địa chỉ</span>
+                    <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                        {order.addressDetail && order.ward && order.district && order.city ? (
+                            `${order.addressDetail}/${order.ward}/${order.district}/${order.city}`
+                        ) : (
+                            "Không có"
+                        )}
+                    </span>
                 </Col>
             </Row>
+            <Row gutter={[16, 16]}>
+                <Col span={8} >
+                    <span>Tổng tiền</span>
+                    <span style={{ float: 'right', textAlign: 'center', color: 'red' }}>
+                        {formatCurrency(order.orderTotal)}
+                    </span>
+                </Col>
+                <Col span={8} >
+
+                </Col>
+                <Col span={8} >
+
+                </Col>
+            </Row>
+
             <div style={{ borderBottom: '2px solid black' }}>
                 <h4><b>Lịch sử thanh toán</b></h4>
             </div>

@@ -49,4 +49,8 @@ public class OrderRequestDto {
 //
 //    @NotBlank(message = "Tỉnh/thành phố không được để trống!")
     private String city;
+
+    public void updateStatusId(Long newStatusId) {
+        this.statusId = newStatusId;
+    }
 }

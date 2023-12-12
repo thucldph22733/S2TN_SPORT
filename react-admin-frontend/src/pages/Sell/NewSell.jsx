@@ -67,7 +67,7 @@ export default function NewSell() {
 
 
     const handleCreate = async () => {
-        const data = { statusId: 1, typeOrder: "Tại quầy" };
+        const data = { statusId: 1, orderTypeId: 1 };
         console.log(data)
         await OrderService.create(data)
             .then(() => {

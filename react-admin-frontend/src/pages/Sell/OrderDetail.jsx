@@ -51,6 +51,7 @@ import { PiLockKeyFill, PiLockKeyOpenFill } from 'react-icons/pi';
 import { FaMapMarkedAlt } from 'react-icons/fa';
 import UserService from '~/service/UserService';
 import ShowAddressModal from '../User/Address';
+import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
 
 
 export default function OrderDetail() {
@@ -90,6 +91,7 @@ export default function OrderDetail() {
     const [productDetails, setProductDetails] = useState([]);
     const [orderDetails, setOrderDetails] = useState('');
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [disCountMoney, setDiscountMoney] = useState("0");
     const [orderTotal, setOrderTotal] = useState(0);
@@ -724,34 +726,61 @@ export default function OrderDetail() {
 
     const handleCreateOrder = async () => {
         setIsCreatingOrder(true);
-        const data = {
+
+
+
+        let data = {
             voucherId: selectedVoucherId,
             orderTotal: orderTotal,
-            customerId: selectedCustomer.id,
+            userId: selectedCustomer ? selectedCustomer.id : null,
             orderTotalInitial: orderTotalInitial,
             deliveryId: '',
             paymentId: selectedPaymentId,
             addressId: '',
-            statusId: 5,
+            statusId: isDeliveryEnabled ? 2 : 5,
             note: note,
-            orderTypeId: 1
+            orderTypeId: isDeliveryEnabled ? 2 : 1,
+        };
+
+        if (isDeliveryEnabled) {
+            // Lấy giá trị từ form
+            const addressFormValues = form.getFieldsValue();
+
+            // Thêm các trường địa chỉ từ form vào data
+            data = {
+                ...data,
+                recipientName: addressFormValues.recipientName,
+                phoneNumber: addressFormValues.phoneNumber,
+                city: cities.find(city => city.code === Number(addressFormValues.city))?.name ?? '',
+                district: districts.find(district => district.code === Number(addressFormValues.district))?.name ?? '',
+                ward: wards.find(ward => ward.code === Number(addressFormValues.ward))?.name ?? '',
+                addressDetail: addressFormValues.addressDetail,
+            };
         }
-        await OrderService.updateTimeLine(id, data)
-            .then(() => {
-                notification.success({
-                    message: 'Thông báo',
-                    description: 'Tạo mới đơn hàng thành công!',
-                });
-                navigate('/don-hang');
-            })
-            .catch(error => {
-                notification.error({
-                    message: 'Thông báo',
-                    description: 'Tạo mới đơn hàng thất bại!',
-                });
-                console.error(error);
+
+        try {
+            if (isDeliveryEnabled) {
+                await OrderService.updateTimeLine2(id, data);
+            } else {
+                await OrderService.updateTimeLine(id, data);
+            }
+
+            notification.success({
+                message: 'Thông báo',
+                description: 'Tạo mới đơn hàng thành công!',
             });
+            navigate('/don-hang');
+        } catch (error) {
+            notification.error({
+                message: 'Thông báo',
+                description: 'Tạo mới đơn hàng thất bại!',
+            });
+            console.error(error);
+        } finally {
+            setIsCreatingOrder(false);
+        }
     };
+
 
     const [selectedPaymentId, setSelectedPaymentId] = useState(1); // Khởi tạo giá trị mặc định là 'cash'
 
@@ -852,6 +881,8 @@ export default function OrderDetail() {
         }
     };
 
+
+
     // Hàm cập nhật đơn hàng và state
     const updateOrderDetailsAndState = async () => {
         // Cập nhật đơn hàng và state
@@ -892,6 +923,21 @@ export default function OrderDetail() {
 
     const handleSwitchChange = (checked) => {
         setDeliveryEnabled(checked);
+        if (checked) {
+            // Nếu switch được bật, gọi hàm lấy địa chỉ từ id của user
+            // và cập nhật state
+            getAddressesByUserId();
+        } else {
+            // Nếu switch tắt, đặt giá trị mặc định cho các trường trong form
+            form.setFieldsValue({
+                recipientName: '',
+                phoneNumber: '',
+                city: '',
+                district: '',
+                ward: '',
+                addressDetail: '',
+            });
+        }
     };
 
 
@@ -1135,19 +1181,6 @@ export default function OrderDetail() {
                     <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModall("edit", record)} />
-                    <Popconfirm
-                        title={record.deleted ? "Khóa tài khoản" : "Mở khóa tài khoản"}
-                        description={record.deleted ? "Bạn có chắc muốn khóa tài khoản này không?" : "Bạn có chắc muốn mở lại tài khoản này không?"}
-                        placement="leftTop"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Đồng ý"
-                        cancelText="Hủy bỏ"
-                    >
-                        <Button
-                            type="text"
-                            icon={record.deleted ? <PiLockKeyOpenFill style={{ color: '#7859f2', fontSize: '17px' }} /> : <PiLockKeyFill style={{ color: '#7859f2', fontSize: '17px' }} />}
-                        />
-                    </Popconfirm>
                     <Button type="text"
                         icon={<FaMapMarkedAlt />}
                         style={{ color: '#5a76f3', fontSize: '16px' }}
@@ -1163,29 +1196,118 @@ export default function OrderDetail() {
         },
     ];
 
-    <ConfigProvider
-        theme={{
-            token: {
-                // Seed Token
-                colorPrimary: 'red',
-                borderRadius: 2,
-            },
-        }}
-    ></ConfigProvider>
-
     ////phần user//////////
+
+    const [form] = Form.useForm();
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [selectedCity, setSelectedCity] = useState('');
+    const [selectedDistrict, setSelectedDistrict] = useState('');
+    const [selectedWard, setSelectedWard] = useState('');
+    useEffect(() => {
+
+        // Gọi hàm từ service API để lấy dữ liệu tỉnh/thành phố
+        getProvinces(3)
+            .then(data => setCities(data))
+            .catch(error => console.error('Lỗi khi lấy dữ liệu tỉnh/thành phố:', error));
+    }, []);
+
+    useEffect(() => {
+        // Gọi hàm từ service API để lấy dữ liệu quận/huyện dựa trên tỉnh/thành phố được chọn
+        if (selectedCity) {
+            getDistrictsByCity(selectedCity, 2)
+                .then(data => setDistricts(data))
+                .catch(error => console.error('Lỗi khi lấy dữ liệu quận/huyện:', error));
+        }
+    }, [selectedCity]);
+
+    useEffect(() => {
+        // Gọi hàm từ service API để lấy dữ liệu phường/xã dựa trên quận/huyện được chọn
+        if (selectedDistrict) {
+            getWardsByDistrict(selectedDistrict, 2)
+                .then(data => setWards(data))
+                .catch(error => console.error('Lỗi khi lấy dữ liệu phường/xã:', error));
+        }
+    }, [selectedDistrict]);
+
+    const handleCityChange = (value) => {
+        setSelectedCity(value);
+        setSelectedDistrict('');
+        setSelectedWard('');
+    };
+
+    const handleDistrictChange = (value) => {
+        setSelectedDistrict(value);
+        setSelectedWard('');
+    };
+
+    const [addressData, setAddressData] = useState({});
+
+    useEffect(() => {
+        if (isDeliveryEnabled) {
+            getAddressesByUserId();
+        }
+    }, [isDeliveryEnabled]);
+
+    const getAddressesByUserId = async () => {
+        try {
+            const userId = selectedCustomer.id;
+            const response = await axios.get(`http://localhost:8080/api/v1/address/getAddressesByUserId?userId=${userId}`);
+
+            // Kiểm tra nếu có ít nhất một địa chỉ trong mảng
+            if (response.data && response.data.length > 0) {
+                // Lấy địa chỉ từ phần tử đầu tiên của mảng
+                const addressData = response.data[0];
+
+                // In ra để kiểm tra dữ liệu
+                console.log('Address Data:', addressData);
+
+                // Đặt giá trị từ state vào các trường trong form
+                form.setFieldsValue({
+                    recipientName: addressData.recipientName,
+                    phoneNumber: addressData.phoneNumber,
+                    city: addressData.city,
+                    district: addressData.district,
+                    ward: addressData.ward,
+                    addressDetail: addressData.addressDetail,
+                });
+            } else {
+                console.error('No address data found for the user.');
+            }
+        } catch (error) {
+            console.error('Error fetching address data:', error);
+        }
+    };
+
+    const isQuantityValid = quantity >= 1 || quantity <= selectedProduct.quantity;
 
     return (
         <>
-            <Modal open={isModalQuantityOpen} onOk={handleOkQuantity} onCancel={handleCancelQuantity}>
+            <Modal
+                open={isModalQuantityOpen}
+                onOk={handleOkQuantity}
+                onCancel={handleCancelQuantity}
+                okButtonProps={{ disabled: !isQuantityValid }}
+            >
                 {selectedProduct && (
                     <div>
-                        <h6>Số lượng sản phẩm ({selectedProduct.quantity})</h6>
-                        {/* Thêm các thông tin khác của sản phẩm nếu cần */}
-                        <InputNumber defaultValue={1} onChange={(value) => setQuantity(value)} />
+                        <h2>Số lượng sản phẩm ({selectedProduct.quantity})</h2>
+                        <Form>
+                            <Form.Item>
+                                <InputNumber
+                                    defaultValue={1}
+                                    onChange={(value) => setQuantity(value)}
+                                    min={1}
+                                    max={selectedProduct.quantity}
+                                    disabled={selectedProduct.quantity <= 1} // Disable nếu selectedProduct.quantity <= 1
+                                />
+                            </Form.Item>
+                        </Form>
                     </div>
                 )}
             </Modal>
+
 
             <Modal title="Danh sách Khách hàng"
                 open={isModalUserOpen}
@@ -1523,23 +1645,6 @@ export default function OrderDetail() {
                                 >
                                     Chọn khách hàng
                                 </Button>
-
-                                {/* Hiển thị thông tin khách hàng đã chọn */}
-                                <AutoComplete
-                                    key={autoCompleteOptionsKey}
-                                    ref={autoCompleteRef}
-                                    style={{
-                                        width: 200,
-                                        float: 'right',
-                                        marginLeft: '5px',
-                                    }}
-                                    options={customerOptions || []}
-                                    placeholder="Chọn khách hàng"
-                                    filterOption={(inputValue, option) =>
-                                        option.label.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                                    }
-                                    onSelect={handleCustomerSelect}
-                                />
                             </Col>
                         </Row>
                     </div>
@@ -1573,108 +1678,77 @@ export default function OrderDetail() {
                         <Col span={16}>
                             {isDeliveryEnabled && (
                                 <Row gutter={[8, 16]}>
-                                    <Col span={12}>
-                                        <div className="col-md-12">
-                                            <label for="validationCustom01" className="form-label">
-                                                Họ và tên
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="validationCustom01"
-                                                required
-                                            />
-                                        </div>
-                                    </Col>
-                                    <Col span={12}>
-                                        <div className="col-md-12">
-                                            <label for="validationCustom01" className="form-label">
-                                                Số điện thoại
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="validationCustom01"
-                                                required
-                                            />
-                                        </div>
-                                    </Col>
-                                    <Col span={8}>
-                                        <div className="col-md-12">
-                                            <label for="validationCustom01" className="form-label">
-                                                Tỉnh/Thành phố
-                                            </label>
-                                            <br />
-                                            <Select
-                                                defaultValue="lucy"
-                                                style={{
-                                                    width: '100%',
-                                                }}
-                                                allowClear
-                                                options={[
-                                                    {
-                                                        value: 'lucy',
-                                                        label: 'Lucy',
-                                                    },
-                                                ]}
-                                            />
-                                        </div>
-                                    </Col>
-                                    <Col span={8}>
-                                        <div className="col-md-12">
-                                            <label for="validationCustom01" className="form-label">
-                                                Quận/huyện
-                                            </label>
-                                            <br />
-                                            <Select
-                                                defaultValue="lucy"
-                                                style={{
-                                                    width: '100%',
-                                                }}
-                                                allowClear
-                                                options={[
-                                                    {
-                                                        value: 'lucy',
-                                                        label: 'Lucy',
-                                                    },
-                                                ]}
-                                            />
-                                        </div>
-                                    </Col>
-                                    <Col span={8}>
-                                        <div className="col-md-12">
-                                            <label for="validationCustom01" className="form-label">
-                                                Xã/phường/thị trấn
-                                            </label>
-                                            <br />
-                                            <Select
-                                                defaultValue="lucy"
-                                                style={{
-                                                    width: '100%',
-                                                }}
-                                                allowClear
-                                                options={[
-                                                    {
-                                                        value: 'lucy',
-                                                        label: 'Lucy',
-                                                    },
-                                                ]}
-                                            />
-                                        </div>
-                                    </Col>
-                                    <Col span={14}>
-                                        <div className="col-md-12">
-                                            <label for="validationCustom01" className="form-label">
-                                                Địa chỉ cụ thể
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="validationCustom01"
-                                                required
-                                            />
-                                        </div>
-                                    </Col>
+                                    <Form
+                                        name="validateOnly"
+                                        layout="vertical"
+                                        autoComplete="off"
+                                        style={{ maxWidth: 600, marginTop: '25px' }}
+                                        form={form}
+                                    >
+                                        <Form.Item label="Họ và tên:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
+                                            <Input placeholder="Họ và tên..." />
+                                        </Form.Item>
+                                        <Form.Item label="Số điện thoại:" name="phoneNumber" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                                            <Input placeholder="Số điện thoại..." />
+                                        </Form.Item>
+
+                                        {isDeliveryEnabled && (
+                                            <>
+                                                <Row>
+                                                    <Col span={11}>
+                                                        <Form.Item label="Tỉnh/Thành phố:" name="city" rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố!' }]}>
+                                                            <Select
+                                                                showSearch
+                                                                style={{ width: '100%' }}
+                                                                placeholder="Chọn Tỉnh/Thành phố"
+                                                                onChange={handleCityChange}
+                                                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                                                filterSort={(optionA, optionB) => (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                                                                options={cities.map(city => ({ value: city.code, label: city.name }))}
+                                                            />
+                                                        </Form.Item>
+                                                    </Col>
+                                                    <Col span={2} />
+                                                    <Col span={11}>
+                                                        <Form.Item label="Quận/Huyện:" name="district" rules={[{ required: true, message: 'Vui lòng chọn quận/huyện!' }]}>
+                                                            <Select
+                                                                showSearch
+                                                                style={{ width: '100%' }}
+                                                                placeholder="Chọn Quận/Huyện"
+                                                                onChange={handleDistrictChange}
+                                                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                                                filterSort={(optionA, optionB) => (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                                                                // disabled={!selectedCity}
+                                                                options={districts.map(district => ({ value: district.code, label: district.name }))}
+                                                            />
+                                                        </Form.Item>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col span={11}>
+                                                        <Form.Item label="Phường/Xã:" name="ward" rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]}>
+                                                            <Select
+                                                                showSearch
+                                                                style={{ width: '100%' }}
+                                                                placeholder="Chọn Phường/Xã"
+                                                                onChange={value => setSelectedWard(value)}
+                                                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                                                filterSort={(optionA, optionB) => (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())}
+                                                                // disabled={!selectedDistrict}
+                                                                options={wards.map(ward => ({ value: ward.code, label: ward.name }))}
+                                                            />
+                                                        </Form.Item>
+                                                    </Col>
+                                                    <Col span={2} />
+                                                    <Col span={11}>
+                                                        <Form.Item label="Địa chỉ cụ thể:" name="addressDetail" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
+                                                            <Input placeholder="Địa chỉ cụ thể..." />
+                                                        </Form.Item>
+                                                    </Col>
+                                                </Row>
+                                            </>
+                                        )}
+                                    </Form>
                                 </Row>
                             )}
                         </Col>
@@ -1875,6 +1949,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
             const data = await form.getFieldsValue();
             data.role = "USER";
+            data.deleted = true;
             await UserService.create(data)
                 .then(() => {
                     notification.success({
@@ -1984,12 +2059,6 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                 {isMode === "add" && <Form.Item label="Mật khẩu:" name="password" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}>
                     <Input type="password" placeholder="Nhập tên mật khẩu..." />
                 </Form.Item>}
-                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]} >
-                    <Radio.Group name="radiogroup" style={{ float: 'left' }}>
-                        <Radio value={true}>Hoạt động</Radio>
-                        <Radio value={false}>Tạm khóa</Radio>
-                    </Radio.Group>
-                </Form.Item>
             </Form>
         </Modal>
     );

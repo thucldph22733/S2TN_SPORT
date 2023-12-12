@@ -2,6 +2,7 @@ package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.ProductRequestDto;
 import com.poly.springboot.dto.responseDto.ProductResponseDto;
+import com.poly.springboot.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,5 +17,6 @@ public interface ProductService {
 
     Boolean updateProduct(ProductRequestDto productRequestDto,Long id);
 
+    List<Product> findAllByDeletedTrue();
 
 }

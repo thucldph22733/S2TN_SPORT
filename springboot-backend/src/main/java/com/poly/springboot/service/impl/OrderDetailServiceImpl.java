@@ -43,7 +43,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 orderDetail.getId(),
                                 orderDetail.getOrder().getId(),
                                 orderDetail.getProductDetail().getId(),
-                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
+//                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
                                 orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
                                 orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
                                 orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
@@ -53,6 +53,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                                 orderDetail.getOrder().getOrderTotal(),
                                 orderDetail.getNote())
                 ).collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer getTotalQuantitySoldThisMonth() {
+        return orderDetailRepository.getTotalQuantitySoldThisMonth().orElse(0);
     }
 
     @Override
@@ -154,7 +159,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                         orderDetail.getId(),
                         orderDetail.getOrder().getId(),
                         orderDetail.getProductDetail().getId(),
-                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
+//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
                         orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
                         orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
                         orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",

@@ -1,4 +1,4 @@
-import { ArrowDownOutlined, UserSwitchOutlined } from '@ant-design/icons'
+import { ArrowDownOutlined, SwapOutlined, UserSwitchOutlined } from '@ant-design/icons'
 import { Col, Row, Card, Statistic, Table, Tag } from 'antd'
 import React, { useEffect, useState } from 'react'
 import './Dashboard.css'
@@ -6,9 +6,7 @@ import { GiMoneyStack, GiTakeMyMoney } from "react-icons/gi";
 import BarChart from './BarChart';
 
 import PieChart from './PieChart';
-import { DatePicker } from 'antd';
 import DashboardService from '~/service/DashboardService';
-const { RangePicker } = DatePicker;
 function Dashboard() {
     const columns = [
         {
@@ -55,10 +53,7 @@ function Dashboard() {
             })
     }
 
-    useEffect(() => {
-        getTop10BestSellingProducts();
-        getCountDeletedUsers();
-    }, [])
+
 
     const [countDeletedUsers, setCountDeletedUsers] = useState(0);
     const getCountDeletedUsers = async () => {
@@ -72,7 +67,46 @@ function Dashboard() {
             })
     }
 
+    const [monthlyRevenue, setMonthlyRevenue] = useState(0);
+    const getMonthlyRevenue = async () => {
+        await DashboardService.getMonthlyRevenue()
+            .then(response => {
+                const result = isNaN(parseFloat(response)) ? '' : parseFloat(response).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+                setMonthlyRevenue(result);
 
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+    const [revenueToday, setRevenueToday] = useState(0);
+    const getRevenueToday = async () => {
+        await DashboardService.getRevenueToday()
+            .then(response => {
+                const result = isNaN(parseFloat(response)) ? '' : parseFloat(response).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+                setRevenueToday(result);
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+    const [totalQuantitySoldThisMonth, setTotalQuantitySoldThisMonth] = useState(0);
+    const getTotalQuantitySoldThisMonth = async () => {
+        await DashboardService.getTotalQuantitySoldThisMonth()
+            .then(response => {
+                setTotalQuantitySoldThisMonth(response);
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+    useEffect(() => {
+        getTop10BestSellingProducts();
+        getCountDeletedUsers();
+        getRevenueToday();
+        getMonthlyRevenue();
+        getTotalQuantitySoldThisMonth();
+    }, [])
     return (
         <>
             <Row>
@@ -80,30 +114,27 @@ function Dashboard() {
                     <Card style={{ backgroundColor: '#5a76f3', margin: '0 5px', borderRadius: '5px' }}>
                         <Statistic
                             title="Doanh thu tháng này"
-                            value={90000000}
+                            value={monthlyRevenue}
                             valueStyle={{
                                 color: '#f7f5f6',
                                 fontSize: '18px',
                             }}
-                            prefix={<GiMoneyStack style={{ fontSize: '25px', color: '#ffff' }} />}
-                            suffix="VND"
+                            prefix={<GiMoneyStack style={{ fontSize: '23px', color: '#ffff' }} />}
                         />
                     </Card>
                 </Col>
                 <Col span={6}>
                     <Card style={{ backgroundColor: '#37c7a1', margin: '0 5px', borderRadius: '5px' }}>
                         <Statistic
-                            title="Số lượng sản phẩm bán được"
-
-                            value={9.3}
-                            precision={2}
+                            title="Doanh thu hôm nay"
+                            value={revenueToday}
                             valueStyle={{
                                 color: '#f7f5f6',
                                 fontSize: '18px',
 
                             }}
-                            prefix={<GiTakeMyMoney style={{ fontSize: '25px', color: '#ffff', marginRight: '5px' }} />}
-                            suffix="VND"
+                            prefix={<GiTakeMyMoney style={{ fontSize: '23px', color: '#ffff', marginRight: '5px' }} />}
+
 
                         />
                     </Card>
@@ -111,15 +142,14 @@ function Dashboard() {
                 <Col span={6}>
                     <Card style={{ backgroundColor: '#f28c5b', margin: '0 5px', borderRadius: '5px' }}>
                         <Statistic
-                            title="Số lượng đơn hàng"
-                            value={9.3}
-                            precision={2}
+                            title="Hàng bán được tháng này"
+                            value={totalQuantitySoldThisMonth}
                             valueStyle={{
                                 color: '#f7f5f6',
                                 fontSize: '18px',
                             }}
-                            prefix={<ArrowDownOutlined style={{ fontSize: '25px', color: '#ffff' }} />}
-                            suffix="%"
+                            prefix={<SwapOutlined style={{ fontSize: '25px', color: '#ffff' }} />}
+                            suffix='sản phẩm'
                         />
                     </Card>
                 </Col>

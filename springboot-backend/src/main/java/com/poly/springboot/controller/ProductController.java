@@ -48,14 +48,14 @@ public class ProductController {
                 , productPage);
     }
 
-//    @GetMapping("getProductById")
-//    public ResponseEntity<Product> getProductById(@RequestParam Long id) {
-//        Product product = productService.findProductById(id);
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(product);
-//    }
-//
+    @GetMapping("findAllByDeletedTrue")
+    public ResponseEntity<List<Product>> findAllByDeletedTrue() {
+        List<Product> productList = productService.findAllByDeletedTrue();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(productList);
+    }
+
     @PostMapping("create")
     public ResponseEntity<ResponseDto> create(@Valid @RequestBody ProductRequestDto productRequestDto) {
         Boolean isCreated = productService.createProduct(productRequestDto);

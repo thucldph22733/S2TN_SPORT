@@ -46,7 +46,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 productDetail -> new ProductDetailResponseDto(
                         productDetail.getId(),
                         productDetail.getProduct().getProductName(),
-                        productDetail.getProduct().getAvatar(),
+//                        productDetail.getProduct().getAvatar(),
                         productDetail.getColor().getColorName(),
 //                        productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),
@@ -66,7 +66,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 productDetail -> new ProductDetailResponseDto(
                         productDetail.getId(),
                         productDetail.getProduct().getProductName(),
-                        productDetail.getProduct().getAvatar(),
+//                        productDetail.getProduct().getAvatar(),
                         productDetail.getColor().getColorName(),
 //                        productDetail.getMaterial().getMaterialName(),
                         productDetail.getSize().getSizeName(),

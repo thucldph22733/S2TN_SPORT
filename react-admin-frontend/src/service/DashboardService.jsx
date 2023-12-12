@@ -39,5 +39,31 @@ const DashboardService = {
                 throw error;
             });
     }
+    ,
+    getRevenueToday: () => {
+        return HttpClient.get(`${API_URL}getRevenueToday`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
+    getMonthlyRevenue: () => {
+        return HttpClient.get(`${API_URL}getMonthlyRevenue`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
+
+    getTotalQuantitySoldThisMonth: () => {
+        return HttpClient.get(`${API_URL}getTotalQuantitySoldThisMonth`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    }
 };
 export default DashboardService;

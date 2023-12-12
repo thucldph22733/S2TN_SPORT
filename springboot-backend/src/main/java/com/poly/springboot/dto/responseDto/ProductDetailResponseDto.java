@@ -15,7 +15,7 @@ public class ProductDetailResponseDto {
 
     private String productName;
 
-    private String productAvatar;
+//    private String productAvatar;
 
     private String colorName;
 

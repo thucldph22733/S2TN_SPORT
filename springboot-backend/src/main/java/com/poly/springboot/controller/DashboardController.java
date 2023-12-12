@@ -2,6 +2,7 @@ package com.poly.springboot.controller;
 
 
 import com.poly.springboot.repository.UserRepository;
+import com.poly.springboot.service.OrderDetailService;
 import com.poly.springboot.service.OrderService;
 import com.poly.springboot.service.ProductDetailService;
 import com.poly.springboot.service.UserService;
@@ -25,6 +26,9 @@ public class DashboardController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrderDetailService orderDetailService;
     @Autowired
     private ProductDetailService productDetailService;
     @Autowired
@@ -59,5 +63,33 @@ public class DashboardController {
         Integer countDeletedUsersInDateRange = userService.countDeletedUsersInDateRange();
         return ResponseEntity.status(HttpStatus.OK)
                 .body(countDeletedUsersInDateRange);
+
     }
+
+    @GetMapping("getMonthlyRevenue")
+    public ResponseEntity<Double> monthlyRevenue(){
+
+        Double monthlyRevenue = orderService.monthlyRevenue()  ;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(monthlyRevenue);
+    }
+
+    @GetMapping("getRevenueToday")
+    public ResponseEntity<Double> revenueToday(){
+
+        Double  revenueToday= orderService.revenueToday()  ;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(revenueToday);
+    }
+    @GetMapping("getTotalQuantitySoldThisMonth")
+    public ResponseEntity<Integer> getTotalQuantitySoldThisMonth(){
+
+        Integer  totalQuantitySoldThisMonth= orderDetailService.getTotalQuantitySoldThisMonth()  ;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(totalQuantitySoldThisMonth);
+    }
+
 }

@@ -17,23 +17,26 @@ public interface OrderService {
 
 //    List<OrderResponseDto> getAllOrdersCompleted();
     Page<Order> getAllOrders(Long orderStatusId, Pageable pageable);
-
-
-    List<OrderResponseDto> getAllOrders();
     List<Map<String, Object>>getRevenueByMonthForCurrentYear();
-
     List<Map<String, Object>> getTotalOrdersByStatus();
-
-    List<OrderResponseDto> getPagination(Integer pageNo);
-
-    Order findOrderById(Long id);
-
 
     Page<Order> findAllOrderByStatusId(Pageable pageable);
 
     Boolean createOrder(OrderRequestDto orderRequestDto);
 
     Boolean deleteOrder(Long id);
+
+    Double monthlyRevenue();
+
+    Double revenueToday();
+
+
+    List<OrderResponseDto> getAllOrders();
+
+    List<OrderResponseDto> getPagination(Integer pageNo);
+
+    Order findOrderById(Long id);
+
 
     Boolean updateOrder(OrderRequestDto orderRequestDto, Long id);
 

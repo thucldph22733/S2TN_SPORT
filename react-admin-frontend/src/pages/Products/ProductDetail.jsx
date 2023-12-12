@@ -1,419 +1,800 @@
 
-import AddressService from "~/service/AddressService";
-import { FaMapMarkedAlt } from "react-icons/fa";
 import React, { useState, useEffect } from 'react';
-import { findProvincesByCode, getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
-import { PlusOutlined, FormOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { Row, Col, Radio, Button, Modal, Tag, Form, Input, Select, Checkbox, Popconfirm, notification, Space, Table } from 'antd';
+import { Table, Space, Card, Button, Input, Form, Modal, notification, Popconfirm, Tag, Select, Row, Col, Checkbox, InputNumber } from 'antd';
+import {
+    DeleteOutlined,
+    PlusOutlined,
+} from '@ant-design/icons';
+import './Product.css'
+import ProductService from '~/service/ProductService';
+import CategoryService from '~/service/CategoryService';
+import BrandService from '~/service/BrandService';
+import SuppplierService from '~/service/SupplierService';
+import MaterialService from '~/service/MaterialService';
+import ColorService from '~/service/ColorService';
+import SizeService from '~/service/SizeService';
 
-const ShowProductDetailModal = ({ reacord, hideModal, isModal }) => {
-    //Mở modal thêm sử address
-    const [addressModal2, setAddressModal2] = useState({ isModal: false, isMode: '', reacord: null });
+const { TextArea } = Input;
 
-    const showAddressModal2 = (mode, record) => {
-        setAddressModal2({
-            isModal: true,
-            isMode: mode,
-            reacord: record,
-        });
+function ProductDetail() {
+
+    //--------------------------------Sản phẩm-------------------------------------
+    // mở modeal thêm sửa sản phẩm:
+    const [openProduct, setOpenProduct] = useState(false);
+
+    const showModalProduct = () => {
+        setOpenProduct(true);
     };
 
-    const hideAddressModal2 = () => {
-        setAddressModal2({ isModal: false });
+    const handleCancelProduct = () => {
+        setOpenProduct(false);
     };
 
+    const [products, setProducts] = useState([]);
 
-    const columns = [
-        {
-            title: '#',
-            dataIndex: 'key',
-            key: 'key',
-            width: '5%',
-        },
-        {
-            title: 'Ảnh',
-            dataIndex: 'productName',
-            key: 'productName',
-            width: '10%',
-            // filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
-            // ...getColumnSearchProps('productName')
+    useEffect(() => {
+        fetchProduct()
+    }, []);
+    const fetchProduct = async () => {
 
-        },
-        {
-            title: 'Tên sản phẩm',
-            dataIndex: 'productName',
-            key: 'productName',
-            width: '10%',
-            // filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
-            // ...getColumnSearchProps('productName')
+        await ProductService.findAllByDeletedTrue()
+            .then(response => {
 
-        },
-        {
-            title: 'Kích thước',
-            dataIndex: 'createdBy',
-            key: 'createdBy',
-            width: '10%',
-        },
-        {
-            title: 'Màu sắc',
-            dataIndex: 'createdBy',
-            key: 'createdBy',
-            width: '10%',
-        },
-        {
-            title: 'Số lượng',
-            dataIndex: 'categoryName',
-            key: 'categoryName',
-            width: '10%',
-        },
+                setProducts(response.data)
+                console.log(response.data)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
 
-        {
-            title: 'Giá bán',
-            dataIndex: 'createdAt',
-            key: 'createdAt',
-            width: '10%',
-        },
+    //-------------------------------Chất liệu---------------------------------------
+    const [openMaterial, setOpenMaterial] = useState(false);
 
-        {
-            title: 'Hành động',
-            key: 'action',
-            width: '10%',
-            render: (record) => {
+    const showModalMaterial = () => {
+        setOpenMaterial(true);
+    };
 
-                return <Space size="middle">
-                    <Button type="text"
-                        icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
-                    // onClick={() => showModal("edit", record)} 
-                    />
-                    {record.deleted && <Popconfirm
-                        title="Xóa sản phẩm"
-                        description="Bạn có chắc chắn xóa sản phẩm này không?"
-                        placement="leftTop"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Đồng ý"
-                        cancelText="Hủy bỏ"
-                    >
-                        <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
+    const handleCancelMaterial = () => {
+        setOpenMaterial(false);
+    };
+    const [materials, setMaterials] = useState([]);
 
-                    </Popconfirm>}
-                    {/* <Button type="text" icon={<EyeOutlined />} style={{ color: '#5a76f3', fontSize: '16px' }} onClick={() => showProductDetalModal(record)} /> */}
-                </Space>
+    useEffect(() => {
+        fetchMaterial()
+    }, []);
+    const fetchMaterial = async () => {
+
+        await MaterialService.findAllByDeletedTrue()
+            .then(response => {
+
+                setMaterials(response.data)
+
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    //--------------------------------Màu sắc---------------------------------------
+    const [openColor, setOpenColor] = useState(false);
+
+    const showModalColor = () => {
+        setOpenColor(true);
+    };
+
+    const handleCancelColor = () => {
+        setOpenColor(false);
+    };
+
+    const [colors, setColors] = useState([]);
+
+    useEffect(() => {
+        fetchColor()
+    }, []);
+    const fetchColor = async () => {
+
+        await ColorService.findAllByDeletedTrue()
+            .then(response => {
+
+                setColors(response.data)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    //----------------------------Kích thước------------------------------------------
+    const [openSize, setOpenSize] = useState(false);
+
+    const showModalSize = () => {
+        setOpenSize(true);
+    };
+
+    const handleCancelSize = () => {
+        setOpenSize(false);
+    };
+
+    const [sizes, setSizes] = useState([]);
+
+    useEffect(() => {
+        fetchSize()
+    }, []);
+
+    const fetchSize = async () => {
+
+        await SizeService.findAllByDeletedTrue()
+            .then(response => {
+                setSizes(response.data)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    //---------------------------------------------------------------------------------------
+
+    // Trạng thái để theo dõi màu sắc đã chọn
+    const [selectedColors, setSelectedColors] = useState([]);
+    // Trạng thái để lưu thông tin cho mỗi bảng màu sắc
+    const [colorTables, setColorTables] = useState({});
+
+    // Trạng thái để theo dõi màu sắc đã chọn
+    //  const [selectedSizes, setSelectedSizes] = useState([]);
+
+    // Xử lý sự kiện khi chọn màu sắc
+    const handleColorChange = (selectedColor) => {
+        setSelectedColors(selectedColor);
+    };
+
+    // const handleSizeChange = (selectedSize) => {
+    //     setSelectedSizes(selectedSize);
+    // };
+
+    // Xử lý hiển thị bảng cho mỗi màu sắc
+    useEffect(() => {
+        const tables = {};
+        selectedColors.forEach((color) => {
+            // Nếu bảng cho màu sắc này chưa tồn tại, tạo mới
+            if (!colorTables[color]) {
+                tables[color] = createColorTable(color);
             }
-
-        },
-    ];
-
-    // const [address, setAddress] = useState([]);
-
-    // const fetchAddress = async () => {
-    //     await AddressService.getAddressesByUserId(reacord.id)
-    //         .then(response => {
-    //             setAddress(response);
-
-    //         }).catch(error => {
-    //             console.error(error);
-    //         })
-    // }
-    // useEffect(() => {
-    //     fetchAddress();
-    // }, [])
-
-    // useEffect(() => {
-    //     findProvincesByCode(1).then(data => {
-    //         console.log(data)
-    //     }).catch(error => {
-    //         console.error(error)
-    //     })
-    // }, [])
-
-    const handleDelete = async (id) => {
-
-        await AddressService.delete(id).then(response => {
-            console.log(response.data);
-            notification.success({
-                message: 'Thông báo',
-                description: 'Xóa thành công!',
-            });
-            // fetchAddress();
-        }).catch(error => {
-            console.error(error);
-            notification.error({
-                message: 'Thông báo',
-                description: 'Xóa thất bại!',
-            });
         });
+        // Cập nhật trạng thái của các bảng màu sắc
+        setColorTables((prevColorTables) => ({ ...prevColorTables, ...tables }));
+    }, [selectedColors]);
 
+    // Tạo bảng cho mỗi màu sắc
+    const createColorTable = (color, size) => {
+        return {
+            columns: [
+                {
+                    title: '#',
+                    dataIndex: 'key',
+                    key: 'key',
+                    width: '5%',
+                },
+                {
+                    title: 'Tên sản phẩm',
+                    dataIndex: 'productName',
+                    key: 'productName',
+                    width: '20%',
+
+                },
+                {
+                    title: 'Chất liệu',
+                    dataIndex: 'materialName',
+                    key: 'materialName',
+                    width: '15%',
+                },
+                {
+                    title: 'Số lượng',
+                    dataIndex: 'quantity',
+                    key: 'quantity',
+                    width: '15%',
+                    render: (text) => (
+                        <InputNumber min={1} max={10000000} defaultValue={text} />
+                    )
+                },
+                {
+                    title: 'Giá bán',
+                    dataIndex: 'price',
+                    key: 'price',
+                    width: '15%',
+                    render: (text) => (
+                        <InputNumber min={1} max={1000000} defaultValue={text} />
+                    )
+                },
+                {
+                    title: 'Hành động',
+                    dataIndex: 'createdBy',
+                    key: 'createdBy',
+                    width: '10%',
+                    render: () => {
+                        return <Space size="middle">
+                            <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
+                        </Space>
+                    }
+                },
+                {
+                    title: 'Ảnh',
+                    dataIndex: 'createdBy',
+                    key: 'createdBy',
+                    width: '10%',
+                }
+            ],
+            dataSource: [{
+                key: '1',
+                productName: 'John Brown',
+                materialName: 'New York No. 1 Lake Park',
+                quantity: 254,
+                price: 2334,
+
+            }],
+        };
     };
+
     return (
         <>
-            <Modal
-                width={1000}
-                title="Danh sách chi tiết sản phẩm"
-                onCancel={hideModal}
-                footer={null}
-                open={isModal}
+            <div></div>
+
+            <Form
+                name="validateOnly" layout="vertical" autoComplete="off"
+                style={{ marginTop: '25px' }}
+            // form={form}
+            // initialValues={{
+            //     ...reacord,
+
+            // }}
             >
-                <Row >
-                    <Col span={21} />
-                    <Col span={3} >
-                        <Button type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={() => showAddressModal2("add", reacord.id)}
-                            style={{ marginBottom: '16px', borderRadius: '2px' }} >
-                            Thêm mới
-                        </Button>
+                <h3 style={{ fontWeight: 'bold' }}>Thêm mới sản phẩm </h3>
+                <Card >
+                    <Row>
+                        <Col span={10}>
+                            <Form.Item label="Tên sản phẩm:" name="productName" rules={[{ required: true, message: 'Vui lòng chọn tên sản phẩm !' }]} >
+                                <Select
+                                    showSearch
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    placeholder="Chọn sản phẩm"
+                                    filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    options={products.map(option => ({ value: option.productName, label: option.productName }))}
+                                />
+
+                            </Form.Item>
+                        </Col>
+                        <Col span={2}>
+                            <Button type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={showModalProduct}
+                                style={{ marginTop: '30px', marginLeft: '10px', borderRadius: '2px' }}
+                            >
+                            </Button>
+                        </Col>
+                    </Row>
+                </Card>
+
+                <Card title="Thuộc tính" bordered={false} style={{ marginTop: '20px' }} >
+                    <Row>
+                        <Col span={10}>
+                            <Form.Item label="Chất liệu:" name="materialName" rules={[{ required: true, message: 'Vui lòng chọn chất liệu !' }]} >
+                                <Select
+                                    showSearch
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    placeholder="Chọn chất liệu"
+                                    filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                    }
+                                    options={materials.map(option => ({ value: option.materialName, label: option.materialName }))}
+                                />
+
+                            </Form.Item>
+                        </Col>
+                        <Col span={2}>
+                            <Button type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={showModalMaterial}
+                                style={{ marginTop: '30px', marginLeft: '10px', borderRadius: '2px' }}
+                            >
+                            </Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={12}>
+                            <Row>
+                                <Col span={20}>
+                                    <Form.Item label="Máu sắc" name="colorName" rules={[{ required: true, message: 'Vui lòng chọn màu sắc !' }]}>
+                                        <Select
+                                            mode="multiple"
+                                            allowClear
+                                            style={{
+                                                width: '100%',
+                                            }}
+                                            placeholder="Chọn màu sắc"
+                                            onChange={handleColorChange}
+                                            options={colors.map(option => ({ value: option.colorName, label: option.colorName }))}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={2}>
+                                    <Button type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={showModalColor}
+                                        style={{ marginTop: '31px', marginLeft: '10px', borderRadius: '2px' }}
+                                    >
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Col>
+                        <Col span={12}>
+                            <Row>
+                                <Col span={20}>
+                                    <Form.Item label="Kích thước" name="sizeName" rules={[{ required: true, message: 'Vui lòng chọn kích thước !' }]}>
+                                        <Select
+                                            mode="multiple"
+                                            allowClear
+                                            style={{
+                                                width: '100%',
+                                            }}
+                                            placeholder="Chọn kích thước"
+                                            // onChange={handleSizeChange}
+                                            options={sizes.map(option => ({ value: option.sizeName, label: option.sizeName }))} />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={2}>
+                                    <Button type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={showModalSize}
+                                        style={{ marginTop: '31px', marginLeft: '10px', borderRadius: '2px' }}
+                                    >
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Card>
+            </Form >
+            {
+                openProduct && <ProductModal
+                    isModal={openProduct}
+                    hideModal={handleCancelProduct}
+                    fetchProducts={fetchProduct}
+                />
+            }
+            {
+                openMaterial && <MaterialModal
+                    isModal={openMaterial}
+                    hideModal={handleCancelMaterial}
+                    fetchMaterials={fetchMaterial}
+                />
+            }
+            {
+                openColor && <ColorModal
+                    isModal={openColor}
+                    hideModal={handleCancelColor}
+                    fetchColors={fetchColor}
+                />
+            }
+            {
+                openSize && <SizeModal
+                    isModal={openSize}
+                    hideModal={handleCancelSize}
+                    fetchSizes={fetchSize}
+                />
+            }
+            {selectedColors.map((color) => {
+                const colorTable = colorTables[color];
+                if (colorTable) {
+                    return (
+                        <div key={color}>
+                            <Card title={`Các sản phẩm màu ${color.toLowerCase()}`} style={{ marginTop: '20px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19)' }}>
+                                <Table columns={colorTable.columns} dataSource={colorTable.dataSource} />
+                            </Card>
+                        </div>
+                    );
+                }
+                return null; // Tránh lỗi khi colorTable không tồn tại
+            })}
+        </>
+
+    )
+}
+
+export default ProductDetail;
+
+const ProductModal = ({ hideModal, isModal, fetchProducts }) => {
+
+    ////Loại sp
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        fetchCategory()
+    }, []);
+
+    const fetchCategory = async () => {
+
+        await CategoryService.findAllByDeletedTrue()
+            .then(response => {
+
+                setCategories(response.data)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    // /thương hiệu
+    const [brands, setBrands] = useState([]);
+
+    useEffect(() => {
+        fetchBrand()
+    }, []);
+    const fetchBrand = async () => {
+
+        await BrandService.findAllByDeletedTrue()
+            .then(response => {
+
+                setBrands(response.data)
+
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+
+    // /nhà phẩn phối
+    const [suppliers, setSuppliers] = useState([]);
+
+    useEffect(() => {
+        fetchSupplier()
+    }, []);
+    const fetchSupplier = async () => {
+
+        await SuppplierService.findAllByDeletedTrue()
+            .then(response => {
+
+                setSuppliers(response.data)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+    const [form] = Form.useForm();
+
+    const handleCreate = () => {
+        form.validateFields().then(async () => {
+
+            const data = form.getFieldsValue();
+            data.deleted = true
+            data.productNew = data.productNew ? true : false
+            data.productSale = data.productSale ? true : false
+            data.productHot = data.productHot ? true : false
+
+            await ProductService.create(data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thành công!',
+                    });
+                    fetchProducts();
+                    // Đóng modal
+                    hideModal();
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thất bại!',
+                    });
+                    console.error(error);
+                });
+
+        }).catch(error => {
+            console.error(error);
+        })
+
+    }
+
+
+    return (
+
+        <Modal
+            width={700}
+            title={"Thêm mới một sản phẩm"}
+            open={isModal}
+            onOk={handleCreate}
+            onCancel={hideModal}
+            okText={"Thêm mới"}
+            cancelText="Hủy bỏ"
+        >
+            <Form
+                name="validateOnly" layout="vertical" autoComplete="off"
+                style={{ maxWidth: 700, marginTop: '25px' }}
+                form={form}
+
+            >
+                <Row>
+                    <Col span={11}>
+                        <Form.Item label="Tên sản phẩm:" name="productName" rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }]}>
+                            <Input placeholder="Nhập tên sản phẩm..." />
+                        </Form.Item>
+                    </Col>
+                    <Col span={2}></Col>
+                    <Col span={11}>
+                        <Form.Item label="Danh mục:" name="categoryName" rules={[{ required: true, message: 'Vui lòng chọn danh mục !' }]}>
+                            <Select
+                                showSearch
+                                style={{
+                                    width: '100%',
+                                }}
+                                placeholder="Chọn loại sản phẩm"
+                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                filterSort={(optionA, optionB) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={categories.map(option => ({ value: option.categoryName, label: option.categoryName }))}
+                            />
+                        </Form.Item>
                     </Col>
                 </Row>
-                <Table
-                    // dataSource={products?.map((product) => ({
-                    //     ...product,
-                    //     key: product.id,
-                    //     createdAt: FormatDate(product.createdAt)
-                    // }))}
 
-                    // loading={loading}
-                    columns={columns}
-                // onChange={handleTableChange}
-                // pagination={{
-                //     current: pagination.current,
-                //     pageSize: pagination.pageSize,
-                //     defaultPageSize: 5,
-                //     pageSizeOptions: ['5', '10', '15'],
-                //     total: pagination.total,
-                //     showSizeChanger: true,
-                // }}
-                ></Table >
-            </Modal>
-            {/* {addressModal2.isModal && (
-                <AddressModal
-                    isMode={addressModal2.isMode}
-                    reacord={addressModal2.reacord}
-                    hideModal={hideAddressModal2}
-                    isModal={addressModal2.isModal}
-                    fetchAddress={fetchAddress}
 
-                />
-            )} */}
-        </>
+                <Row>
+                    <Col span={11}>
+                        <Form.Item label="Nhà cung cấp:" name="supplierName" rules={[{ required: true, message: 'Vui lòng chọn nhà cung cấp !' }]}>
+                            <Select
+                                showSearch
+                                style={{
+                                    width: '100%',
+                                }}
+                                placeholder="Chọn nhà cung cấp"
+                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                filterSort={(optionA, optionB) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={suppliers.map(option => ({ value: option.supplierName, label: option.supplierName }))}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={2}></Col>
+                    <Col span={11}>
+                        <Form.Item label="Thương hiệu:" name="brandName" rules={[{ required: true, message: 'Vui lòng chọn thương hiệu !' }]}>
+                            <Select
+                                showSearch
+                                style={{
+                                    width: '100%',
+                                }}
+                                placeholder="Chọn thương hiệu"
+                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                filterSort={(optionA, optionB) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={brands.map(option => ({ value: option.brandName, label: option.brandName }))}
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
+
+                <Row style={{ border: '1px solid #cdcdcd', padding: '20px 10px 0 10px', marginBottom: '7px' }}>
+                    <Col span={8}>
+                        <Form.Item name="productNew" valuePropName="checked">
+                            <Checkbox>Sản phẩm mới</Checkbox>
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={8}>
+                        <Form.Item name="productHot" valuePropName="checked">
+                            <Checkbox>Sản phẩm hot</Checkbox>
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={8}>
+                        <Form.Item name="productSale" valuePropName="checked">
+                            <Checkbox>Sản phẩm bán chạy</Checkbox>
+                        </Form.Item>
+                    </Col>
+
+                </Row>
+                <Form.Item label="Mô tả:" name="productDescribe" rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}>
+                    <TextArea rows={4} placeholder="Nhập mô tả..." />
+                </Form.Item>
+
+            </Form>
+        </Modal>
     );
 };
-export default ShowProductDetailModal;
 
-// const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => {
+const MaterialModal = ({ hideModal, isModal, fetchMaterials }) => {
 
-//     //Đoạn mã lấy api tỉnh thành, quận huyện, phường xã
-//     const [cities, setCities] = useState([]);
-//     const [districts, setDistricts] = useState([]);
-//     const [wards, setWards] = useState([]);
-//     const [selectedCity, setSelectedCity] = useState('');
-//     const [selectedDistrict, setSelectedDistrict] = useState('');
-//     const [selectedWard, setSelectedWard] = useState('');
-//     const getCityNameByCode = (cityCode) => {
-//         const city = cities.find(city => city.code === cityCode);
-//         return city.name;
-//     };
-//     console.log(getCityNameByCode(1))
-//     // const getDistrictNameByCode = (districtCode) => {
-//     //     const district = districts.find(district => district.code === districtCode);
-//     //     return district ? district.name : 'Unknown District';
-//     // };
-//     // const getWardNameByCode = (wardCode) => {
-//     //     const ward = wards.find(ward => ward.code === wardCode);
-//     //     return ward ? ward.name : 'Unknown Ward';
-//     // };
-//     useEffect(() => {
+    const [form] = Form.useForm();
 
-//         // Gọi hàm từ service API để lấy dữ liệu tỉnh/thành phố
-//         getProvinces(1)
-//             .then(data => setCities(data))
-//             .catch(error => console.error('Lỗi khi lấy dữ liệu tỉnh/thành phố:', error));
-//     }, []);
+    const handleCreate = () => {
+        form.validateFields().then(async () => {
 
-//     useEffect(() => {
-//         // Gọi hàm từ service API để lấy dữ liệu quận/huyện dựa trên tỉnh/thành phố được chọn
-//         if (selectedCity) {
-//             getDistrictsByCity(selectedCity, 2)
-//                 .then(data => setDistricts(data))
-//                 .catch(error => console.error('Lỗi khi lấy dữ liệu quận/huyện:', error));
-//         }
-//     }, [selectedCity]);
+            const data = form.getFieldsValue();
+            data.deleted = true
+            await MaterialService.create(data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thành công!',
+                    });
+                    fetchMaterials();
+                    // Đóng modal
+                    hideModal();
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thất bại!',
+                    });
+                    console.error(error);
+                });
 
-//     useEffect(() => {
-//         // Gọi hàm từ service API để lấy dữ liệu phường/xã dựa trên quận/huyện được chọn
-//         if (selectedDistrict) {
-//             getWardsByDistrict(selectedDistrict, 2)
-//                 .then(data => setWards(data))
-//                 .catch(error => console.error('Lỗi khi lấy dữ liệu phường/xã:', error));
-//         }
-//     }, [selectedDistrict]);
+        }).catch(error => {
+            console.error(error);
+        })
 
-//     const handleCityChange = (value) => {
-//         setSelectedCity(value);
-//         setSelectedDistrict('');
-//         setSelectedWard('');
-//     };
+    }
 
-//     const handleDistrictChange = (value) => {
-//         setSelectedDistrict(value);
-//         setSelectedWard('');
-//     };
+    return (
 
-//     //---------------------------------------------------------------------------------------------
+        <Modal
+            title={"Thêm mới một chất liệu"}
+            open={isModal}
+            onOk={handleCreate}
+            onCancel={hideModal}
+            okText={"Thêm mới"}
+            cancelText="Hủy bỏ"
+        >
+            <Form
+                name="wrap"
+                labelCol={{ flex: '100px' }}
+                labelAlign="left"
+                labelWrap
+                wrapperCol={{ flex: 1 }}
+                colon={false}
+                style={{ maxWidth: 600, marginTop: '25px' }}
+                form={form}
+            >
+                <Form.Item label="Tên:" name="materialName" rules={[{ required: true, message: 'Vui lòng nhập tên chất liệu!' }]}>
+                    <Input placeholder="Nhập tên chất liệu..." />
+                </Form.Item>
 
-//     const [form] = Form.useForm();
-//     const handleCreate = () => {
-//         form.validateFields().then(async () => {
+                <Form.Item label="Ghi chú" name="materialDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
+};
 
-//             const data = await form.getFieldsValue();
-//             data.usersId = reacord;
+const ColorModal = ({ hideModal, isModal, fetchColors }) => {
 
-//             console.log(data);
-//             await AddressService.create(data)
-//                 .then(() => {
-//                     notification.success({
-//                         message: 'Thông báo',
-//                         description: 'Thêm mới thành công!',
-//                     });
-//                     fetchAddress();
-//                     // Đóng modal
-//                     hideModal();
-//                 })
-//                 .catch(error => {
-//                     notification.error({
-//                         message: 'Thông báo',
-//                         description: 'Thêm mới thất bại!',
-//                     });
-//                     console.error(error);
-//                 });
+    const [form] = Form.useForm();
 
-//         }).catch(error => {
-//             console.error(error);
-//         })
+    const handleCreate = () => {
+        form.validateFields().then(async () => {
 
-//     }
-//     const handleUpdate = () => {
-//         form.validateFields().then(async () => {
+            const data = form.getFieldsValue();
+            data.deleted = true
+            await ColorService.create(data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thành công!',
+                    });
+                    fetchColors();
+                    // Đóng modal
+                    hideModal();
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thất bại!',
+                    });
+                    console.error(error);
+                });
 
-//             const data = await form.getFieldsValue();
+        }).catch(error => {
+            console.error(error);
+        })
 
-//             await AddressService.update(reacord.id, data)
-//                 .then(() => {
-//                     notification.success({
-//                         message: 'Thông báo',
-//                         description: 'Cập nhật thành công!',
-//                     });
-//                     fetchAddress()
-//                     // Đóng modal
-//                     hideModal();
-//                 })
-//                 .catch(error => {
-//                     notification.error({
-//                         message: 'Thông báo',
-//                         description: 'Cập nhật thất bại!',
-//                     });
-//                     console.error(error);
-//                 });
+    }
 
-//         }).catch(error => {
-//             console.error(error);
-//         })
 
-//     }
-//     return (
-//         <>
-//             <Modal
-//                 width={600}
-//                 title={isMode === "edit" ? "Cập nhật địa chỉ" : "Thêm mới một địa chỉ"}
-//                 open={isModal}
-//                 onCancel={hideModal}
-//                 onOk={isMode === "edit" ? handleUpdate : handleCreate}
-//                 okText={isMode === "edit" ? "Cập nhật" : "Thêm mới"}
-//                 cancelText="Hủy bỏ"
-//             >
-//                 <Form
-//                     name="validateOnly" layout="vertical" autoComplete="off"
-//                     style={{ maxWidth: 600, marginTop: '25px' }}
-//                     form={form}
-//                     initialValues={{
-//                         ...reacord,
-//                     }}
-//                 >
-//                     <Form.Item label="Họ và tên:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
-//                         <Input placeholder="Họ và tên..." />
-//                     </Form.Item>
-//                     <Form.Item label="Số điện thoại:" name="phoneNumber" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
-//                         <Input placeholder="Số điện thoại..." />
-//                     </Form.Item>
-//                     <Row>
-//                         <Col span={11}>
-//                             <Form.Item label="Tỉnh/Thành phố:" name="city" rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố!' }]}>
-//                                 <Select
-//                                     showSearch
-//                                     style={{
-//                                         width: '100%',
-//                                     }}
-//                                     onChange={handleCityChange}
-//                                     placeholder="Chọn Tỉnh/Thành phố"
-//                                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
-//                                     filterSort={(optionA, optionB) =>
-//                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-//                                     }
-//                                     options={cities.map(city => ({ value: city.code, label: city.name }))}
-//                                 />
-//                             </Form.Item>
-//                         </Col>
-//                         <Col span={2} />
-//                         <Col span={11}>
-//                             <Form.Item label="Quận/Huyện:" name="district" rules={[{ required: true, message: 'Vui lòng chọn quận/huyện!' }]}>
-//                                 <Select
-//                                     showSearch
-//                                     style={{
-//                                         width: '100%',
-//                                     }}
-//                                     onChange={handleDistrictChange}
-//                                     placeholder="Chọn Quận/Huyện"
-//                                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
-//                                     filterSort={(optionA, optionB) =>
-//                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-//                                     }
-//                                     disabled={!selectedCity}
-//                                     options={districts.map(district => ({ value: district.code, label: district.name }))}
-//                                 />
-//                             </Form.Item>
-//                         </Col>
-//                     </Row>
-//                     <Row>
-//                         <Col span={11}>
-//                             <Form.Item label="Phường/Xã:" name="region" rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]}>
-//                                 <Select
-//                                     showSearch
-//                                     style={{
-//                                         width: '100%',
-//                                     }}
-//                                     placeholder="Chọn Phường/Xã"
-//                                     onChange={value => setSelectedWard(value)}
-//                                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
-//                                     filterSort={(optionA, optionB) =>
-//                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-//                                     }
-//                                     disabled={!selectedDistrict}
-//                                     options={wards.map(ward => ({ value: ward.code, label: ward.name }))}
-//                                 />
-//                             </Form.Item>
-//                         </Col>
-//                         <Col span={2} />
-//                         <Col span={11}>
-//                             <Form.Item label="Địa chỉ cụ thể:" name="addressDetail" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
-//                                 <Input placeholder="Địa chỉ cụ thể..." />
-//                             </Form.Item>
-//                         </Col>
-//                     </Row>
-//                     <Form.Item name="deleted" valuePropName="checked">
-//                         <Checkbox >Đặt làm địa chỉ mặc định</Checkbox>
-//                     </Form.Item>
-//                 </Form>
-//             </Modal>
+    return (
 
-//         </>
-//     );
-// };
+        <Modal
+            title={"Thêm mới một màu sắc"}
+            open={isModal}
+            onOk={handleCreate}
+            onCancel={hideModal}
+            okText={"Thêm mới"}
+            cancelText="Hủy bỏ"
+        >
+            <Form
+                name="wrap"
+                labelCol={{ flex: '100px' }}
+                labelAlign="left"
+                labelWrap
+                wrapperCol={{ flex: 1 }}
+                colon={false}
+                style={{ maxWidth: 600, marginTop: '25px' }}
+                form={form}
+            >
+                <Form.Item label="Tên:" name="colorName" rules={[{ required: true, message: 'Vui lòng nhập tên màu sắc!' }]}>
+                    <Input placeholder="Nhập tên màu sắc..." />
+                </Form.Item>
+
+                <Form.Item label="Ghi chú:" name="colorDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
+                </Form.Item>
+
+            </Form>
+        </Modal>
+    );
+};
+const SizeModal = ({ hideModal, isModal, fetchSizes }) => {
+
+    const [form] = Form.useForm();
+
+    const handleCreate = () => {
+        form.validateFields().then(async () => {
+
+            const data = form.getFieldsValue();
+            data.deleded = true
+            await SizeService.create(data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thành công!',
+                    });
+                    fetchSizes();
+                    // Đóng modal
+                    hideModal();
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thất bại!',
+                    });
+                    console.error(error);
+                });
+
+        }).catch(error => {
+            console.error(error);
+        })
+
+    }
+
+
+    return (
+
+        <Modal
+            title={"Thêm mới một kích thước"}
+            open={isModal}
+            onOk={handleCreate}
+            onCancel={hideModal}
+            okText={"Thêm mới"}
+            cancelText="Hủy bỏ"
+        >
+            <Form
+                name="wrap"
+                labelCol={{ flex: '100px' }}
+                labelAlign="left"
+                labelWrap
+                wrapperCol={{ flex: 1 }}
+                colon={false}
+                style={{ maxWidth: 600, marginTop: '25px' }}
+                form={form}
+            >
+                <Form.Item label="Tên:" name="sizeName" rules={[{ required: true, message: 'Vui lòng nhập tên kích thước!' }]}>
+                    <Input placeholder="Nhập tên kích thước..." />
+                </Form.Item>
+
+                <Form.Item label="Ghi chú:" name="sizeDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
+                </Form.Item>
+
+            </Form>
+        </Modal>
+    );
+};

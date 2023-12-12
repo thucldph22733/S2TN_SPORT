@@ -252,6 +252,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Double monthlyRevenue() {
+        return orderRepository.monthlyRevenue();
+    }
+
+    @Override
+    public Double revenueToday() {
+        return orderRepository.revenueToday();
+    }
+
+    @Override
     public Boolean updateOrder(OrderRequestDto orderRequestDto, Long id) {
         try {
             // Lấy thông tin các đối tượng liên quan từ ID

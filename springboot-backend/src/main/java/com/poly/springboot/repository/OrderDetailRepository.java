@@ -19,7 +19,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 
     Optional<OrderDetail> findByOrderIdAndProductDetailId(Long orderId, Long productDetailId);
 
-    @Query("SELECT COALESCE(SUM(od.price), 0) FROM OrderDetail od WHERE od.order.id = :orderId")
+    @Query("SELECT COALESCE(SUM(od.price * od.quantity), 0) FROM OrderDetail od WHERE od.order.id = :orderId")
     double calculateOrderTotal(@Param("orderId") Long orderId);
 
     @Query("SELECT SUM(od.quantity) FROM OrderDetail od " +

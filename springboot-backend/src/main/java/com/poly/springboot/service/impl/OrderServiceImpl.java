@@ -403,7 +403,6 @@ public class OrderServiceImpl implements OrderService {
             Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
             Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
             OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
-            OrderType orderType = orderRequestDto.getOrderTypeId() != null ? orderTypeRepository.findById(orderRequestDto.getOrderTypeId()).orElse(null) : null;
             Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
 
             // Lấy thông tin đơn hàng từ ID
@@ -421,8 +420,8 @@ public class OrderServiceImpl implements OrderService {
             order.setVoucher(voucher);
             order.setOrderTotal(orderRequestDto.getOrderTotal());
             order.setNote(orderRequestDto.getNote());
-            order.setOrderTotalInitial(order.getOrderTotalInitial());
-            order.setOrderType(orderType);
+            order.setOrderTotalInitial(orderRequestDto.getOrderTotalInitial());
+            order.setOrderType(orderRequestDto.getOrderType());
             order.setRecipientName(orderRequestDto.getRecipientName());
             order.setPhoneNumber(orderRequestDto.getPhoneNumber());
             order.setCity(orderRequestDto.getCity());

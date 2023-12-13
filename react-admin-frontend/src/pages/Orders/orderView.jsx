@@ -7,8 +7,9 @@ import {
     notification,
     Input,
     Tag,
+    Modal,
+    Button
 } from 'antd';
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline';
@@ -184,18 +185,18 @@ export default function OrderView() {
             dataIndex: 'key',
             width: '5%',
         },
-        {
-            title: 'Ảnh',
-            dataIndex: 'image',
-            width: '20%',
-            render: (record) => (
-                <Row gutter={[5]}>
-                    <Col span={12}>
-                        <Image width={150} height={100} src={record.productAvatar} alt="Avatar" />
-                    </Col>
-                </Row>
-            ),
-        },
+        // {
+        //     title: 'Ảnh',
+        //     dataIndex: 'image',
+        //     width: '20%',
+        //     render: (record) => (
+        //         <Row gutter={[5]}>
+        //             <Col span={12}>
+        //                 <Image width={150} height={100} src={record.productAvatar} alt="Avatar" />
+        //             </Col>
+        //         </Row>
+        //     ),
+        // },
         {
             title: 'Sản phẩm',
             dataIndex: '',
@@ -221,7 +222,7 @@ export default function OrderView() {
             width: '20%',
         },
         {
-            title: 'Tổng tiền',
+            title: 'Đơn giá',
             dataIndex: 'price',
             width: '20%',
             render: (text, record) => ({

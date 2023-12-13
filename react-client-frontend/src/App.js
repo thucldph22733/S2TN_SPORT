@@ -14,6 +14,7 @@ import Home from './pages/Home/Home';
 import HomeLayout from './layouts/HomeLayout/HomeLayout';
 import ShoppingCart from './pages/ShoppingCart/ShoppingCart';
 import Checkout from './pages/Checkout/Checkout';
+import ProductDetail from './pages/Product/ProductDetail';
 
 function App() {
     const router = createBrowserRouter([
@@ -46,6 +47,10 @@ function App() {
                 {
                     path: path_name.product,
                     element: <Product />,
+                },
+                {
+                    path: 'p',
+                    element: <ProductDetail />,
                 },
                 {
                     path: path_name.about,

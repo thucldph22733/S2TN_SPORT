@@ -135,7 +135,6 @@ function Dashboard() {
                             }}
                             prefix={<GiTakeMyMoney style={{ fontSize: '23px', color: '#ffff', marginRight: '5px' }} />}
 
-
                         />
                     </Card>
                 </Col>

@@ -519,12 +519,12 @@ export default function OrderDetail() {
             width: 50,
             render: (text, record, index) => index + 1, // Hiển thị STT bắt đầu từ 1
         },
-        {
-            title: 'Ảnh',
-            dataIndex: 'productAvatar',
-            width: 60,
-            render: (record) => <Image width={130} src={record} alt="Avatar" />,
-        },
+        // {
+        //     title: 'Ảnh',
+        //     dataIndex: 'productAvatar',
+        //     width: 60,
+        //     render: (record) => <Image width={130} src={record} alt="Avatar" />,
+        // },
         {
             title: 'Sản phẩm',
             dataIndex: '',
@@ -602,9 +602,9 @@ export default function OrderDetail() {
             width: 110,
             render: (record) => (
                 <Row gutter={[5]}>
-                    <Col span={12}>
+                    {/* <Col span={12}>
                         <Image width={130} src={record.productAvatar} alt="Avatar" />
-                    </Col>
+                    </Col> */}
                     <Col span={12}>
                         {record.productName} x [{record.colorName} - {record.sizeName}] <br />
                         Màu:{record.colorName} - kích cỡ:{record.sizeName}

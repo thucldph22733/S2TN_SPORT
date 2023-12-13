@@ -37,19 +37,7 @@ function Product() {
         setProductDetalModal({ isModal: false });
     };
 
-    const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
-
-    const showModal = (mode, record) => {
-        setOpen({
-            isModal: true,
-            isMode: mode,
-            reacord: record,
-        });
-    };
-
-    const hideModal = () => {
-        setOpen({ isModal: false });
-    };
+    
 
     const [products, setProduct] = useState([]);
 
@@ -462,11 +450,6 @@ const ProductModal = ({ isMode, reacord, hideModal, isModal, fetchProducts }) =>
         >
             <Form
                 name="validateOnly" layout="vertical" autoComplete="off"
-                // labelCol={{ flex: '150px' }}
-                // labelAlign="left"
-                // labelWrap
-                // wrapperCol={{ flex: 1 }}
-                // colon={false}
                 style={{ maxWidth: 700, marginTop: '25px' }}
                 form={form}
                 initialValues={{

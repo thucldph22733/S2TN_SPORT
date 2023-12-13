@@ -745,7 +745,6 @@ export default function OrderDetail() {
         if (isDeliveryEnabled) {
             // Lấy giá trị từ form
             const addressFormValues = form.getFieldsValue();
-
             // Thêm các trường địa chỉ từ form vào data
             data = {
                 ...data,

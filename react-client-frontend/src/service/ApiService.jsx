@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 const host = "https://provinces.open-api.vn/api/";
@@ -28,6 +29,7 @@ const getWardsByDistrict = (districtCode, depth) => {
             throw error;
         });
 };
+
 
 export {
     getProvinces, getDistrictsByCity, getWardsByDistrict,

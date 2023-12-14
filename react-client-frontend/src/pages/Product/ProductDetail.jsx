@@ -3,6 +3,8 @@ import './Product.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Col, Image, InputNumber, Modal, Rate, Row, Table } from 'antd';
 import { SendOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import imgage1 from '~/assets/images/product/product-21.jpg';
+import imgage2 from '~/assets/images/product/product-20.jpg';
 
 
 function ProductDetail() {
@@ -111,26 +113,26 @@ function ProductDetail() {
             <Row style={{ margin: '30px 0px' }}>
                 <Col span={12}>
                     <Row >
-                        <Col span={6}>
+                        <Col span={6} xs={24} md={6}>
                             <Row style={{ marginBottom: '10px' }}>
-                                <Image width={120} src="https://www.bootdey.com/image/115x100/87CEFA/000000" alt="" />
+                                <Image width={120} src={imgage1} alt="cc" />
                             </Row>
                             <Row style={{ marginBottom: '10px' }}>
-                                <Image width={120} src="https://www.bootdey.com/image/115x100/FF7F50/000000" alt="" />
+                                <Image width={120} src={imgage1} alt="cc" />
                             </Row>
                             <Row style={{ marginBottom: '10px' }}>
-                                <Image width={120} src="https://www.bootdey.com/image/115x100/20B2AA/000000" alt="" />
+                                <Image width={120} src={imgage1} alt="cc" />
                             </Row>
                             <Row style={{ marginBottom: '10px' }}>
-                                <Image width={120} src="https://www.bootdey.com/image/120x100/20B2AA/000000" alt="" />
+                                <Image width={120} src={imgage1} alt="cc" />
                             </Row>
                         </Col>
-                        <Col span={18} >
-                            <Image width={400} height={443} src="https://www.bootdey.com/image/550x380/FFB6C1/000000" alt="" />
+                        <Col span={18} xs={24} md={18}>
+                            <Image width={400} height={448} src={imgage1} alt="cc" />
                         </Col>
                     </Row>
                 </Col>
-                <Col span={12} style={{ padding: '0 40px ' }}>
+                <Col span={12} xs={24} md={12} style={{ padding: '0 40px ' }}>
 
                     <Row>
                         <h1 style={{ color: '#656565', fontSize: '23px' }}>Leopard Shirt Dress</h1>

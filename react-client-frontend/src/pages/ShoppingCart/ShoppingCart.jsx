@@ -1,148 +1,162 @@
 import React from 'react';
 import './ShoppingCart.css';
 import { Link } from 'react-router-dom';
-import cart1 from '~/assets/images/shopping-cart/cart-1.jpg';
-import cart2 from '~/assets/images/shopping-cart/cart-2.jpg';
-import cart3 from '~/assets/images/shopping-cart/cart-3.jpg';
-
-import { AiOutlineClose } from 'react-icons/ai';
+import { CloseOutlined, ArrowRightOutlined, LoadingOutlined, DeleteFilled, DoubleLeftOutlined, ExportOutlined, SendOutlined, CheckCircleOutlined, TransactionOutlined } from '@ant-design/icons';
+import { InputNumber, Button, Table, Image, Row, Col, Form, Input } from 'antd';
 import path_name from '~/core/constants/routers';
-function ShoppingCart() {
+import imgage1 from '~/assets/images/product/product-21.jpg';
+import imgage2 from '~/assets/images/product/product-20.jpg';
+const { Column } = Table;
+
+const ShoppingCart = () => {
+    const dataSource = [
+        {
+            key: '1',
+            name: 'T-shirt Contrast Pocket',
+            price: 98.49,
+            quantity: 1,
+            total: 30.0,
+        },
+        {
+            key: '2',
+            name: 'Diagonal Textured Cap',
+            price: 98.49,
+            quantity: 1,
+            total: 32.5,
+        },
+        {
+            key: '1',
+            name: 'T-shirt Contrast Pocket',
+            price: 98.49,
+            quantity: 1,
+            total: 30.0,
+        },
+        {
+            key: '2',
+            name: 'Diagonal Textured Cap',
+            price: 98.49,
+            quantity: 1,
+            total: 32.5,
+        },
+    ];
+
+    const columns = [
+        {
+            title: '#',
+            dataIndex: 'key',
+            key: 'key',
+            with: '5%'
+        },
+        {
+            title: 'Sản phẩm',
+            dataIndex: 'name',
+            key: 'name',
+            with: '50%',
+            render: (text, record) => (
+                <Row className="product__cart__item">
+                    <Col span={10} className="product__cart__item__pic">
+                        <Image width={70} src={cartImages[record.key - 1]} alt="" />
+                    </Col>
+                    <Col span={14} className="product__cart__item__text">
+                        <h6>{text}</h6>
+                        <h5>${record.price.toFixed(2)}</h5>
+                    </Col>
+                </Row>
+            ),
+        },
+        {
+            title: 'Số lượng',
+            dataIndex: 'quantity',
+            key: 'quantity',
+            with: '20%',
+            render: (text, record) => (
+                <div className="quantity__item">
+                    <InputNumber min={1} max={10} defaultValue={text} />
+                </div>
+            ),
+        },
+        {
+            title: 'Thành tiền',
+            dataIndex: 'total',
+            key: 'total',
+            with: '20%',
+            render: (text) => <span className="cart__price">${text.toFixed(2)}</span>,
+        },
+        {
+            title: 'Xóa',
+            key: 'action',
+            with: '5%',
+            render: () => (
+                <Button type='text' icon={<DeleteFilled />} />
+            ),
+        },
+    ];
+
+    const cartImages = [imgage1, imgage2,];
+
     return (
         <section className="shopping-cart spad">
             <div className="container">
-                <div className="row">
-                    <div className="col-lg-8">
-                        <div className="shopping__cart__table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Sản phẩm</th>
-                                        <th>Số lượng</th>
-                                        <th>Thành tiền</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td className="product__cart__item">
-                                            <div className="product__cart__item__pic">
-                                                <img src={cart1} alt="" />
-                                            </div>
-                                            <div className="product__cart__item__text">
-                                                <h6>T-shirt Contrast Pocket</h6>
-                                                <h5>$98.49</h5>
-                                            </div>
-                                        </td>
-                                        <td className="quantity__item">
-                                            <div className="quantity">
-                                                <div className="pro-qty-2">
-                                                    <input type="text" value="1" />
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="cart__price">$ 30.00</td>
-                                        <td className="cart__close">
-                                            <Link>
-                                                <AiOutlineClose />
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="product__cart__item">
-                                            <div className="product__cart__item__pic">
-                                                <img src={cart2} alt="" />
-                                            </div>
-                                            <div className="product__cart__item__text">
-                                                <h6>Diagonal Textured Cap</h6>
-                                                <h5>$98.49</h5>
-                                            </div>
-                                        </td>
-                                        <td className="quantity__item">
-                                            <div className="quantity">
-                                                <div className="pro-qty-2">
-                                                    <input type="text" value="1" />
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="cart__price">$ 32.50</td>
-                                        <td className="cart__close">
-                                            <Link>
-                                                <AiOutlineClose />
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="product__cart__item">
-                                            <div className="product__cart__item__pic">
-                                                <img src={cart3} alt="" />
-                                            </div>
-                                            <div className="product__cart__item__text">
-                                                <h6>Basic Flowing Scarf</h6>
-                                                <h5>$98.49</h5>
-                                            </div>
-                                        </td>
-                                        <td className="quantity__item">
-                                            <div className="quantity">
-                                                <div className="pro-qty-2">
-                                                    <input type="text" value="1" />
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="cart__price">$ 47.00</td>
-                                        <td className="cart__close">
-                                            <Link>
-                                                <AiOutlineClose />
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="row">
-                            <div className="col-lg-6 col-md-6 col-sm-6">
-                                <div className="continue__btn">
-                                    <a href="#">Tiếp tục mua sắm</a>
-                                </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6 col-sm-6">
-                                <div className="continue__btn update__btn">
-                                    <a href="#">
-                                        <i className="fa fa-spinner"></i> Cập nhật
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-lg-4">
-                        <div className="cart__discount">
-                            <h6>Mã giảm giá</h6>
-                            <form action="#">
-                                <input type="text" placeholder="Mã giảm giá" />
-                                <button className="primary-btn" type="submit">
+                <Row >
+                    <Col span={16} lg={16}>
+                        <Table dataSource={dataSource} pagination={false}>
+                            {columns.map((column) => (
+                                <Column {...column} key={column.key} />
+                            ))}
+                        </Table>
+                        <Row style={{ marginTop: '20px' }}>
+                            <Col lg={12} md={12} sm={12}>
+                                <Link to={path_name.product}>
+                                    <Button type="link" icon={<DoubleLeftOutlined />}>
+                                        Tiếp tục mưa sắm
+                                    </Button>
+                                </Link>
+                            </Col>
+                            <Col lg={12} md={12} sm={12} >
+                                <Button type="primary" icon={<ExportOutlined />} style={{ float: 'right' }}>
+                                    Cập nhật
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <Col span={8} lg={8} style={{ padding: '0 0 0 20px' }}>
+
+                        <Row >
+                            {/* <Form action="#"> */}
+                            <Col span={16} >
+                                <Input style={{ height: '40px' }} type="text" placeholder="Mã giảm giá" />
+                            </Col>
+                            <Col span={8} style={{ paddingLeft: '10px' }}>
+                                <Button type="primary" icon={<TransactionOutlined />} style={{ height: '40px' }}>
                                     Áp dụng
-                                </button>
-                            </form>
-                        </div>
+                                </Button>
+                            </Col>
+                            {/* </Form> */}
+                        </Row>
                         <div className="cart__total">
                             <h6>Cộng giỏ hàng</h6>
                             <ul>
                                 <li>
-                                    Tạm tính <span>$ 169.50</span>
+                                    Tạm tính: <span>$ 169.50</span>
                                 </li>
                                 <li>
-                                    Tổng tiền<span>$ 169.50</span>
+                                    Giảm giá: <span>$ 169.50</span>
+                                </li>
+                                <li>
+                                    Tổng tiền: <span>$ 169.50</span>
                                 </li>
                             </ul>
-                            <Link to={path_name.checkout} className="primary-btn">
-                                Tiến hành đặt hàng
+                            <Link to={path_name.checkout} >
+                                <Button type='primary' icon={<SendOutlined />} style={{ width: '100%', height: '40px' }}>
+                                    Tiến hành đặt hàng
+                                </Button>
                             </Link>
                         </div>
-                    </div>
-                </div>
+                    </Col>
+                </Row>
             </div>
         </section>
     );
-}
+};
 
 export default ShoppingCart;

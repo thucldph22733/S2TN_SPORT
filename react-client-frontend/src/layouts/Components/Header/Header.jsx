@@ -4,14 +4,72 @@ import { Link } from 'react-router-dom';
 // import Icon
 import logo from '~/assets/images/logo.png';
 import path_name from '~/core/constants/routers';
-import { useState } from 'react';
-import { AutoComplete, Avatar, Badge, Button, Col, Input, Row, Tooltip } from 'antd';
+import { useState, useEffect } from 'react';
+import { AutoComplete, Avatar, Badge, Button, Col, Dropdown, Input, Row, Tooltip } from 'antd';
 import { ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 
 function Header() {
     const [menu, setMenu] = useState('home');
+    const [isHeaderFixed, setIsHeaderFixed] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollPosition = window.scrollY;
+            setIsHeaderFixed(scrollPosition > 0);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+
+    const items = [
+        {
+            key: '1',
+            label: (
+                <Link to={path_name.login}>
+                    Đăng nhập
+                </Link>
+            ),
+        },
+        {
+            key: '',
+            label: (
+                <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
+                    Đăng ký
+                </a>
+            ),
+        },
+        {
+            key: '2',
+            label: (
+                <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
+                    Đăng xuất
+                </a>
+            ),
+        },
+        {
+            key: '3',
+            label: (
+                <a target="_blank" rel="noopener noreferrer" href="https://www.luohanacademy.com">
+                    Đơn mua
+                </a>
+            ),
+        },
+        {
+            key: '4',
+            label: (
+                <a target="_blank" rel="noopener noreferrer" href="https://www.luohanacademy.com">
+                    Hồ sơ của tôi
+                </a>
+            ),
+        },
+    ];
     return (
-        <header className="header">
+        <header className={`header ${isHeaderFixed ? 'fixed' : ''}`}>
             <Row >
                 <Col span={4} >
                     <Link to={path_name.home} style={{ float: 'right', margin: '8px 0' }}>
@@ -87,17 +145,18 @@ function Header() {
                             </Badge>
                         </Link>
                         <Link to={path_name.login} style={{ margin: '10px 5px 10px 0' }}>
-                            <Tooltip title="Đăng nhập" placement="top">
-                                <Avatar
-                                    // style={{
-                                    //     backgroundColor: '#87d068',
-                                    // }}
-                                    icon={<UserOutlined />}
-                                />
-                                Lê đang Thành
-                            </Tooltip>
-                        </Link>
+                            <Dropdown
+                                menu={{
+                                    items,
+                                }}
+                                placement="bottomLeft"
+                                arrow
+                            >
+                                <Avatar icon={<UserOutlined />} />
+                            </Dropdown>
 
+
+                        </Link>
                     </Row>
                 </Col>
 

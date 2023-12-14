@@ -1,94 +1,80 @@
 import './Footer.css';
-import logo from '~/assets/images/footer-logo.png';
-import payment from '~/assets/images/payment.png';
-
-// Icon
 import { PiMapPinLine } from 'react-icons/pi';
 import { AiOutlinePhone, AiOutlineMail } from 'react-icons/ai';
+import { Avatar, Badge, Col, Row } from 'antd';
+import payment from '~/assets/images/payment.png';
+import { FacebookOutlined, InstagramOutlined, TwitterOutlined, YoutubeOutlined } from '@ant-design/icons';
 
 function Footer() {
     return (
         <footer className="footer">
             <div className="container">
-                <div className="row">
-                    <div className="col-md-3">
-                        <div className="footer__about">
-                            <div className="footer__logo">
-                                <a href="#">
-                                    <img src={logo} alt="" />
-                                </a>
-                            </div>
-                            <p>
-                                S2TN SPORT - Chuyên cung cấp, cập nhật nhanh nhất các mẫu quần áo đá bóng nổi tiếng ở
-                                trong nước và quốc tế.
-                            </p>
-                            <a href="#">
-                                <img src={payment} alt="" />
-                            </a>
+                <Row gutter={[16, 16]}>
+                    <Col span={24} md={6}>
+                        <div className="footer__widget">
+                            <h6>Về chúng tôi</h6>
+                            <p>S2TN SPORT - Chuyên cung cấp, cập nhật nhanh nhất các mẫu quần áo đá bóng nổi tiếng. Chúng tôi được biết đến là một xưởng sản xuất quần áo thể thao chuyên nghiệp với quy mô lớn</p>
+                            <img src={payment} alt="Payment Methods" />
                         </div>
-                    </div>
-                    <div className="col-md-3">
+                    </Col>
+                    <Col span={24} md={6}>
                         <div className="footer__widget">
                             <h6>Chính sách</h6>
                             <ul>
-                                <li>
-                                    <a href="#">Chính sách bảo mật</a>
-                                </li>
-                                <li>
-                                    <a href="#">Bảo hành đổi trả</a>
-                                </li>
-                                <li>
-                                    <a href="#">Chính sách chung</a>
-                                </li>
-                                <li>
-                                    <a href="#">Chính sách ưu đãi</a>
-                                </li>
+                                <li><a href="#">Chính sách bảo mật</a></li>
+                                <li><a href="#">Bảo hành đổi trả</a></li>
+                                <li><a href="#">Chính sách chung</a></li>
+                                <li><a href="#">Chính sách ưu đãi</a></li>
                             </ul>
                         </div>
-                    </div>
-                    <div className="col-md-3">
+                    </Col>
+                    <Col span={24} md={6}>
                         <div className="footer__widget">
                             <h6>Hỗ trợ khách hàng</h6>
                             <ul>
-                                <li>
-                                    <a href="#">Hướng dẫn mua hàng</a>
-                                </li>
-                                <li>
-                                    <a href="#">Hướng dẫn thanh toán</a>
-                                </li>
-                                <li>
-                                    <a href="#">Thắc mắc khiếu nại</a>
-                                </li>
-                                <li>
-                                    <a href="#">Câu hỏi thường gặp</a>
-                                </li>
+                                <li><a href="#">Hướng dẫn mua hàng</a></li>
+                                <li><a href="#">Hướng dẫn thanh toán</a></li>
+                                <li><a href="#">Thắc mắc khiếu nại</a></li>
+                                <li><a href="#">Câu hỏi thường gặp</a></li>
                             </ul>
                         </div>
-                    </div>
-                    <div className="col-md-3">
+                    </Col>
+                    <Col span={24} md={6}>
                         <div className="footer__widget">
                             <h6>Thông tin liên hệ</h6>
-                            <ul>
-                                <li>
-                                    <p>
-                                        <PiMapPinLine className="footer_icon" />: Tòa nhà FPT Polytechnic, 13 phố Trịnh
-                                        Văn Bô, phường Phương Canh, quận Nam Từ Liêm, TP Hà Nội
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <AiOutlinePhone className="footer_icon" />: 024 7300 1955
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <AiOutlineMail className="footer_icon" />: caodang@fpt.edu.vn
-                                    </p>
-                                </li>
-                            </ul>
+                            <p><PiMapPinLine className="footer_icon" />: Tòa nhà FPT Polytechnic, 13 phố Trịnh Văn Bô,...</p>
+                            <p><AiOutlinePhone className="footer_icon" />: 024 7300 1955</p>
+                            <p><AiOutlineMail className="footer_icon" />: caodang@fpt.edu.vn</p>
+                            <Row>
+                                <a href="#" style={{ marginRight: '10px' }}>
+
+                                    <Avatar style={{ backgroundColor: '#4e73df' }}>
+                                        <FacebookOutlined style={{ color: 'white' }} />
+                                    </Avatar>
+                                </a>
+
+                                <a href="#" style={{ marginRight: '10px' }}>
+
+                                    <Avatar style={{ backgroundColor: '#414f7a' }}>
+                                        <InstagramOutlined style={{ color: 'white' }} />
+                                    </Avatar>
+                                </a>
+                                <a href="#" style={{ marginRight: '10px' }}>
+
+                                    <Avatar style={{ backgroundColor: '#41607a' }}>
+                                        <TwitterOutlined style={{ color: 'white' }} />
+                                    </Avatar>
+                                </a>
+                                <a href="#">
+
+                                    <Avatar style={{ backgroundColor: 'red' }}>
+                                        <YoutubeOutlined style={{ color: 'white' }} />
+                                    </Avatar>
+                                </a>
+                            </Row>
                         </div>
-                    </div>
-                </div>
+                    </Col>
+                </Row>
             </div>
         </footer>
     );

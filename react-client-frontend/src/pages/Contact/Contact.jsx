@@ -1,29 +1,37 @@
-import { Fragment } from 'react';
-import './Contact.css';
+import React from 'react';
+import { Col, Row, Input, Form, Button, Space } from 'antd';
+// import { PiMapPinLine, AiOutlinePhone, AiOutlineMail, AiOutlineFieldTime } from 'react-icons/';  // Import tất cả các biểu tượng từ thư viện react-icons
 
-// Icon
+import { SiMinutemailer } from "react-icons/si";
+import './Contact.css';
 import { PiMapPinLine } from 'react-icons/pi';
-import { SiMinutemailer } from 'react-icons/si';
-import { AiOutlinePhone, AiOutlineMail, AiOutlineFieldTime } from 'react-icons/ai';
-function Contact() {
+import { AiOutlineFieldTime, AiOutlineMail, AiOutlinePhone } from 'react-icons/ai';
+
+const Contact = () => {
+    const onFinish = (values) => {
+        // Xử lý logic khi form được submit
+        console.log('Received values:', values);
+    };
+
     return (
-        <Fragment>
-            <div className="map">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5579.432544361822!2d105.73108875762416!3d21.03970654515736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31345550b525aa03%3A0x3fdefc40f69a023a!2zQ2FvIMSR4bqzbmcgRlBUIFBo4buRIFRy4buLbmggVsSDbiBCw7QgLCBQaMaw4budbmcgUGjGsMahbmcgQ2FuaCAsIHF14bqtbiBU4burIExpw6pt!5e0!3m2!1svi!2s!4v1697621128802!5m2!1svi!2s"
-                    allowFullscreen=""
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
-            </div>
+        <>
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5579.432544361822!2d105.73108875762416!3d21.03970654515736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31345550b525aa03%3A0x3fdefc40f69a023a!2zQ2FvIMSR4bqzbmcgRlBUIFBo4buRIFRy4buLbmggVsSDbiBCw7QgLCBQaMaw4budbmcgUGjGsMahbmcgQ2FuaCAsIHF14bqtbiBU4burIExpw6pt!5e0!3m2!1svi!2s!4v1697621128802!5m2!1svi!2s"
+                allowFullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                style={{
+                    width: '100%',
+                    height: '450px'
+                }}
+            ></iframe>
             <section className="contact spad">
                 <div className="container">
-                    <div className="row">
-                        <div className="col-lg-6 col-md-6">
+                    <Row gutter={[16, 16]}>
+                        <Col xs={24} lg={12}>
                             <div className="contact__text">
                                 <div className="section-title">
-                                    <span>Thông tin</span>
-                                    <h6>Cửa hàng S2TN SPORT</h6>
+                                    <h6 style={{ color: '#2123bf' }}>Cửa hàng S2TN SPORT</h6>
                                     <p>Hân hạnh được phục vụ quý khách!</p>
                                 </div>
                                 <p>
@@ -41,32 +49,71 @@ function Contact() {
                                     7, Chủ Nhật shop nghỉ.
                                 </p>
                             </div>
-                        </div>
-                        <div className="col-lg-6 col-md-6">
-                            <div className="contact__form">
-                                <form action="#">
-                                    <div className="row">
-                                        <div className="col-lg-6">
-                                            <input className="form-control" type="text" placeholder="Họ và tên" />
-                                        </div>
-                                        <div className="col-lg-6">
-                                            <input className="form-control" type="text" placeholder="Email" />
-                                        </div>
-                                        <div className="col-lg-12">
-                                            <textarea className="form-control" placeholder="Nội dung"></textarea>
-                                            <button type="submit" className="site-btn">
-                                                <SiMinutemailer className="contact_icon_btn" /> Gửi thông báo
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                        </Col>
+                        <Col xs={24} lg={12}>
+                            <Form
+                                name="contactForm"
+                                onFinish={onFinish}
+                                initialValues={{
+                                    remember: true,
+                                }}
+                            >
+                                <Row gutter={[16, 16]}>
+                                    <Col xs={24} lg={12}>
+                                        <Form.Item
+                                            name="fullName"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: 'Vui lòng nhập họ và tên!',
+                                                },
+                                            ]}
+                                        >
+                                            <Input placeholder="Họ và tên" />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col xs={24} lg={12}>
+                                        <Form.Item
+                                            name="email"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    type: 'email',
+                                                    message: 'Vui lòng nhập email hợp lệ!',
+                                                },
+                                            ]}
+                                        >
+                                            <Input placeholder="Email" />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col xs={24}>
+                                        <Form.Item
+                                            name="message"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: 'Vui lòng nhập nội dung!',
+                                                },
+                                            ]}
+                                        >
+                                            <Input.TextArea placeholder="Nội dung" autoSize={{ minRows: 3, maxRows: 15 }} />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col xs={24}>
+                                        <Form.Item>
+                                            <Button type="primary" htmlType="submit" icon={<SiMinutemailer />}>
+                                                Gửi thông báo
+                                            </Button>
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            </Form>
+                        </Col>
+                    </Row>
                 </div>
             </section>
-        </Fragment>
+        </>
     );
-}
+};
 
 export default Contact;

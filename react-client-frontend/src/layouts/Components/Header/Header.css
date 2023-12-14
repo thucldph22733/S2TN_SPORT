@@ -1,39 +1,59 @@
-/*---------------------
-  Header
------------------------*/
+/* Header */
+.header {
+    border-bottom: 1px solid #cdcdcd;
+    position: relative;
+    width: 100%;
+    background-color: #fff;
+    z-index: 1000;
+    transition: background-color 0.3s ease-in-out; /* Thêm transition để làm mịn hiệu ứng màu nền */
+}
+
+/* Header fixed */
+.header.fixed {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    animation: slideInDown 0.3s ease-in-out;
+    background-color: #fff; /* Thay đổi màu nền khi header fixed */
+}
+
+/* Hiệu ứng trượt xuống */
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Logo */
 .logo {
-    width: 120px; 
+    width: 120px;
     height: 40px;
 }
-.header {
-    height: 55px;
-     border-bottom: 1px solid #cdcdcd;
-    position: fixed;
-    width: 100%;
-    z-index: 1000; /* Chọn một giá trị z-index lớn hơn các phần tử khác trên trang để header hiển thị ở trên cùng */
-    background-color: #fff; /* Chọn màu nền cho header khi nó fixed */
-}
-.header__menu{
+
+/* Menu */
+.header__menu {
     margin: 10px 0 10px 30px;
 }
+
 .header__menu ul li {
     list-style: none;
     display: inline-block;
     margin-right: 40px;
     position: relative;
 }
+
 .header__menu ul li.active a:after {
-    -webkit-transform: scale(1);
-    -ms-transform: scale(1);
     transform: scale(1);
 }
 
 .header__menu ul li:hover a:after {
-    -webkit-transform: scale(1);
-    -ms-transform: scale(1);
     transform: scale(1);
 }
 
+/* Dropdown */
 .header__menu ul li:hover .dropdown {
     top: 32px;
     opacity: 1;
@@ -55,12 +75,10 @@
     z-index: 9;
     opacity: 0;
     visibility: hidden;
-    -webkit-transition: all, 0.3s;
-    -o-transition: all, 0.3s;
-    transition: all, 0.3s;
+    transition: top 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
-
+/* Menu Link */
 .header__menu ul li a {
     font-size: 16px;
     color: #111111;
@@ -76,13 +94,11 @@
     bottom: 0;
     width: 100%;
     height: 2px;
-    background: #e53637;
+    background: #2123bf;
     content: '';
-    -webkit-transition: all, 0.5s;
-    -o-transition: all, 0.5s;
-    transition: all, 0.5s;
-    -webkit-transform: scale(0);
-    -ms-transform: scale(0);
+    transition: transform 0.5s ease-in-out;
     transform: scale(0);
 }
 
+/* Search and Icons */
+/* Add your styles for the search and icons here */

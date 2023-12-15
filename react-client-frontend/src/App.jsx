@@ -3,7 +3,6 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import path_name from './core/constants/routers';
 import LogIn from './pages/Auth/LogIn';
 import Register from './pages/Auth/Register';
-import ForgotPassword from './pages/Auth/ForgotPassword';
 import Product from './pages/Product/Product';
 import About from './pages/About/About';
 import Blog from './pages/Blog/Blog';
@@ -15,6 +14,9 @@ import HomeLayout from './layouts/HomeLayout/HomeLayout';
 import ShoppingCart from './pages/ShoppingCart/ShoppingCart';
 import Checkout from './pages/Checkout/Checkout';
 import ProductDetail from './pages/Product/ProductDetail';
+import ForgotPassword from './pages/Auth/ForgotPassword';
+import Order from './pages/Order/Order';
+import Profile from './pages/Profile/Profile';
 
 function App() {
     const router = createBrowserRouter([
@@ -49,7 +51,11 @@ function App() {
                     element: <Product />,
                 },
                 {
-                    path: 'p',
+                    path: path_name.order,
+                    element: <Order />,
+                },
+                {
+                    path: path_name.product_detail,
                     element: <ProductDetail />,
                 },
                 {
@@ -71,6 +77,10 @@ function App() {
                 {
                     path: path_name.checkout,
                     element: <Checkout />,
+                },
+                {
+                    path: path_name.user,
+                    element: <Profile />,
                 },
             ],
         },

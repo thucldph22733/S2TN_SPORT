@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import './Product.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Col, Image, InputNumber, Modal, Rate, Row, Table } from 'antd';
-import { SendOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Col, Image, InputNumber, Modal, Rate, Row, Table } from 'antd';
+import { HomeOutlined, SendOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import imgage1 from '~/assets/images/product/product-21.jpg';
 import imgage2 from '~/assets/images/product/product-20.jpg';
+import { Link } from 'react-router-dom';
 
 
 function ProductDetail() {
@@ -109,98 +110,117 @@ function ProductDetail() {
         localStorage.setItem('cart', JSON.stringify(existingProducts));
     };
     return (
-        <div className='container'>
-            <Row style={{ margin: '30px 0px' }}>
-                <Col span={12}>
-                    <Row >
-                        <Col span={6} xs={24} md={6}>
-                            <Row style={{ marginBottom: '10px' }}>
-                                <Image width={120} src={imgage1} alt="cc" />
-                            </Row>
-                            <Row style={{ marginBottom: '10px' }}>
-                                <Image width={120} src={imgage1} alt="cc" />
-                            </Row>
-                            <Row style={{ marginBottom: '10px' }}>
-                                <Image width={120} src={imgage1} alt="cc" />
-                            </Row>
-                            <Row style={{ marginBottom: '10px' }}>
-                                <Image width={120} src={imgage1} alt="cc" />
-                            </Row>
-                        </Col>
-                        <Col span={18} xs={24} md={18}>
-                            <Image width={400} height={448} src={imgage1} alt="cc" />
-                        </Col>
-                    </Row>
-                </Col>
-                <Col span={12} xs={24} md={12} style={{ padding: '0 40px ' }}>
+        <div className='product-detail'>
+            <div className='container' style={{ height: '80px', padding: '30px 10px', }} >
+                <Breadcrumb
+                    style={{ fontSize: '15px' }}
 
-                    <Row>
-                        <h1 style={{ color: '#656565', fontSize: '23px' }}>Leopard Shirt Dress</h1>
-                    </Row>
-                    <Row style={{ marginTop: '5px' }}>
-                        <Rate style={{ fontSize: '16px', marginTop: '3px', marginRight: '5px' }} /><span>(Đánh giá)</span>
-                    </Row>
-                    <Row style={{ marginTop: '10px' }}>
-                        <label style={{ fontWeight: 'bolder', color: 'red' }} >8.000.000 VND</label>
-                    </Row>
-                    <Row style={{ marginTop: '10px' }}>
-                        Praesent ac condimentum felis.
-                        Nulla at nisl orci, at dignissim dolor,
-                        Nulla at nisl orci, at dignissim dolor,
-                    </Row>
-                    <Row style={{ marginTop: '10px' }}>
-                        <div className="productdisplay-right-size">
-                            <h1 style={{ color: '#656565', fontSize: '15px' }}>Màu sắc:</h1>
-                            <Row className='productdisplay-right-sizes'>
-                                <label>Do</label>
-                                <label >Xanh</label>
-                                <label >Vang</label>
-                            </Row>
-                        </div>
-                    </Row>
-                    <Row style={{ marginTop: '10px' }}>
-                        <div className="productdisplay-right-size">
-                            <h1 style={{ color: '#656565', fontSize: '15px' }}>Kích thước:</h1>
-                            <Row className='productdisplay-right-sizes'>
-                                <label >S</label>
-                                <label>M</label>
-                                <label>L</label>
-                                <label>XL</label>
-                                <label>XXL</label>
-                            </Row>
-                        </div>
-                    </Row>
-                    <Row style={{ marginTop: '10px' }}>
-                        <Col span={5}>
-                            <InputNumber min={1} max={10} defaultValue={1} />
-                        </Col>
-                        <Col span={10}>
-                            <Button type='primary' style={{ marginLeft: '20px' }} icon={<ShoppingCartOutlined />} onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
-                        </Col>
-                    </Row>
-                    <Row style={{ marginTop: '10px' }}>
-                        <span>Danh mục: Áo câu lạc bộ</span>
-                    </Row>
-                    <Row style={{ marginTop: '10px' }}>
-                        <span>Chất liệu: Cotton</span>
-                    </Row>
-                    <Row style={{ marginTop: '10px' }}>
-                        <Button type='primary' onClick={showModal} icon={<SendOutlined />} >Bảng hướng dẫn chọn size</Button>
-                    </Row>
-                </Col>
+                    items={[
+                        {
+                            title: <Link to=""><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
+                        },
+                        {
+                            title: <Link to="">Sản phẩm</Link>,
+                        },
+                        {
+                            title: <Link to="">Chi tiết sản phẩm</Link>,
+                        },
+                    ]}
+                />
+            </div>
+            <div className='container'>
+                <Row >
+                    <Col span={12}>
+                        <Row >
+                            <Col span={6} xs={24} md={6}>
+                                <Row style={{ marginBottom: '10px' }}>
+                                    <Image width={120} src={imgage1} alt="cc" />
+                                </Row>
+                                <Row style={{ marginBottom: '10px' }}>
+                                    <Image width={120} src={imgage1} alt="cc" />
+                                </Row>
+                                <Row style={{ marginBottom: '10px' }}>
+                                    <Image width={120} src={imgage1} alt="cc" />
+                                </Row>
+                                <Row style={{ marginBottom: '10px' }}>
+                                    <Image width={120} src={imgage1} alt="cc" />
+                                </Row>
+                            </Col>
+                            <Col span={18} xs={24} md={18}>
+                                <Image width={400} height={448} src={imgage1} alt="cc" />
+                            </Col>
+                        </Row>
+                    </Col>
+                    <Col span={12} xs={24} md={12} style={{ padding: '0 40px ' }}>
 
-            </Row >
-            <Modal
-                title="Hướng dẫn chọn size"
-                open={open}
-                footer={null}
-                onCancel={handleCancel}
-                width={750}
-            >
-                <p>Việc chọn size áo rất quan trọng, các bạn nên đọc kỹ các thông số S2TN SPORT đưa ra dưới đây trước để chọn cho mình 1 size áo bóng đá phù hợp:</p>
-                <Table dataSource={dataSource} columns={columns} pagination={false} />
-            </Modal>
-        </div >
+                        <Row>
+                            <h1 style={{ color: '#656565', fontSize: '23px' }}>Leopard Shirt Dress</h1>
+                        </Row>
+                        <Row style={{ marginTop: '5px' }}>
+                            <Rate style={{ fontSize: '16px', marginTop: '3px', marginRight: '5px' }} /><span>(Đánh giá)</span>
+                        </Row>
+                        <Row style={{ marginTop: '10px' }}>
+                            <label style={{ fontWeight: 'bolder', color: 'red' }} >8.000.000 VND</label>
+                        </Row>
+                        <Row style={{ marginTop: '10px' }}>
+                            Praesent ac condimentum felis.
+                            Nulla at nisl orci, at dignissim dolor,
+                            Nulla at nisl orci, at dignissim dolor,
+                        </Row>
+                        <Row style={{ marginTop: '10px' }}>
+                            <div className="productdisplay-right-size">
+                                <h1 style={{ color: '#656565', fontSize: '15px' }}>Màu sắc:</h1>
+                                <Row className='productdisplay-right-sizes'>
+                                    <label>Do</label>
+                                    <label >Xanh</label>
+                                    <label >Vang</label>
+                                </Row>
+                            </div>
+                        </Row>
+                        <Row style={{ marginTop: '10px' }}>
+                            <div className="productdisplay-right-size">
+                                <h1 style={{ color: '#656565', fontSize: '15px' }}>Kích thước:</h1>
+                                <Row className='productdisplay-right-sizes'>
+                                    <label >S</label>
+                                    <label>M</label>
+                                    <label>L</label>
+                                    <label>XL</label>
+                                    <label>XXL</label>
+                                </Row>
+                            </div>
+                        </Row>
+                        <Row style={{ marginTop: '10px' }}>
+                            <Col span={5}>
+                                <InputNumber min={1} max={10} defaultValue={1} />
+                            </Col>
+                            <Col span={10}>
+                                <Button type='primary' style={{ marginLeft: '20px' }} icon={<ShoppingCartOutlined />} onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
+                            </Col>
+                        </Row>
+                        <Row style={{ marginTop: '10px' }}>
+                            <span>Danh mục: Áo câu lạc bộ</span>
+                        </Row>
+                        <Row style={{ marginTop: '10px' }}>
+                            <span>Chất liệu: Cotton</span>
+                        </Row>
+                        <Row style={{ marginTop: '10px' }}>
+                            <Button type='primary' onClick={showModal} icon={<SendOutlined />} >Bảng hướng dẫn chọn size</Button>
+                        </Row>
+                    </Col>
+
+                </Row >
+                <Modal
+                    title="Hướng dẫn chọn size"
+                    open={open}
+                    footer={null}
+                    onCancel={handleCancel}
+                    width={750}
+                >
+                    <p>Việc chọn size áo rất quan trọng, các bạn nên đọc kỹ các thông số S2TN SPORT đưa ra dưới đây trước để chọn cho mình 1 size áo bóng đá phù hợp:</p>
+                    <Table dataSource={dataSource} columns={columns} pagination={false} />
+                </Modal>
+            </div >
+        </div>
     );
 }
 export default ProductDetail;

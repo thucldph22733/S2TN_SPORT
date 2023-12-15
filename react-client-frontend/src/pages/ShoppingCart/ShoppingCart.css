@@ -1,5 +1,7 @@
 
-
+.shopping-cart{
+    margin-bottom: 50px;
+}
 .cart__total {
     background: #ecf2f5;
     padding: 35px 40px 40px;

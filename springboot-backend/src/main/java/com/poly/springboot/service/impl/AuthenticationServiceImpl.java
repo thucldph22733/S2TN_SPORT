@@ -74,6 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return JwtAuthenticationResponseDto.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
+                    .id(user.getId())
                     .userName(user.getUsersName())
                     .role(user.getRole())
                     .build();

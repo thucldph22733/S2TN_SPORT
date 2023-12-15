@@ -1,332 +1,213 @@
-import './Product.css';
+import React from 'react'
+import { Link } from 'react-router-dom';
+import imgage1 from '~/assets/images/product/product-21.jpg';
+import imgage2 from '~/assets/images/product/product-20.jpg';
+import banner1 from '~/assets/images/banner/banner_1.jpg'
+import banner2 from '~/assets/images/banner/banner_2.jpg'
+import banner3 from '~/assets/images/banner/banner_3.jpg'
+import banner4 from '~/assets/images/banner/banner_4.jpg'
+import { GiBurningRoundShot } from "react-icons/gi";
+import { FaSalesforce } from "react-icons/fa";
+import { MdFiberNew } from "react-icons/md";
+import { Breadcrumb, Card, Checkbox, Col, Collapse, Image, Pagination, Row } from 'antd';
+import { FilterOutlined, HomeOutlined } from '@ant-design/icons';
+import path_name from '~/core/constants/routers';
+// import './Home.css';
+const { Meta } = Card;
 function Product() {
     return (
-        <section className="shop spad">
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-3">
-                        <div className="shop__sidebar">
-                            <div className="shop__sidebar__search">
-                                <form action="#">
-                                    <input type="text" placeholder="Search..." />
-                                    <button type="submit">
-                                        <span className="icon_search"></span>
-                                    </button>
-                                </form>
-                            </div>
-                            <div className="shop__sidebar__accordion">
-                                <div className="accordion" id="accordionExample">
-                                    <div className="card">
-                                        <div className="card-heading">
-                                            <a data-toggle="collapse" data-target="#collapseOne">
-                                                Categories
-                                            </a>
-                                        </div>
-                                        <div id="collapseOne" className="collapse show" data-parent="#accordionExample">
-                                            <div className="card-body">
-                                                <div className="shop__sidebar__categories">
-                                                    <ul className="nice-scroll">
-                                                        <li>
-                                                            <a href="#">Men (20)</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Women (20)</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Bags (20)</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Clothing (20)</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Shoes (20)</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Accessories (20)</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Kids (20)</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Kids (20)</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Kids (20)</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="card">
-                                        <div className="card-heading">
-                                            <a data-toggle="collapse" data-target="#collapseTwo">
-                                                Branding
-                                            </a>
-                                        </div>
-                                        <div id="collapseTwo" className="collapse show" data-parent="#accordionExample">
-                                            <div className="card-body">
-                                                <div className="shop__sidebar__brand">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="#">Louis Vuitton</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Chanel</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Hermes</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">Gucci</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="card">
-                                        <div className="card-heading">
-                                            <a data-toggle="collapse" data-target="#collapseThree">
-                                                Filter Price
-                                            </a>
-                                        </div>
-                                        <div
-                                            id="collapseThree"
-                                            className="collapse show"
-                                            data-parent="#accordionExample"
-                                        >
-                                            <div className="card-body">
-                                                <div className="shop__sidebar__price">
-                                                    <ul>
-                                                        <li>
-                                                            <a href="#">$0.00 - $50.00</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">$50.00 - $100.00</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">$100.00 - $150.00</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">$150.00 - $200.00</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">$200.00 - $250.00</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">250.00+</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="card">
-                                        <div className="card-heading">
-                                            <a data-toggle="collapse" data-target="#collapseFour">
-                                                Size
-                                            </a>
-                                        </div>
-                                        <div
-                                            id="collapseFour"
-                                            className="collapse show"
-                                            data-parent="#accordionExample"
-                                        >
-                                            <div className="card-body">
-                                                <div className="shop__sidebar__size">
-                                                    <label for="xs">
-                                                        xs
-                                                        <input type="radio" id="xs" />
-                                                    </label>
-                                                    <label for="sm">
-                                                        s
-                                                        <input type="radio" id="sm" />
-                                                    </label>
-                                                    <label for="md">
-                                                        m
-                                                        <input type="radio" id="md" />
-                                                    </label>
-                                                    <label for="xl">
-                                                        xl
-                                                        <input type="radio" id="xl" />
-                                                    </label>
-                                                    <label for="2xl">
-                                                        2xl
-                                                        <input type="radio" id="2xl" />
-                                                    </label>
-                                                    <label for="xxl">
-                                                        xxl
-                                                        <input type="radio" id="xxl" />
-                                                    </label>
-                                                    <label for="3xl">
-                                                        3xl
-                                                        <input type="radio" id="3xl" />
-                                                    </label>
-                                                    <label for="4xl">
-                                                        4xl
-                                                        <input type="radio" id="4xl" />
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="card">
-                                        <div className="card-heading">
-                                            <a data-toggle="collapse" data-target="#collapseFive">
-                                                Colors
-                                            </a>
-                                        </div>
-                                        <div
-                                            id="collapseFive"
-                                            className="collapse show"
-                                            data-parent="#accordionExample"
-                                        >
-                                            <div className="card-body">
-                                                <div className="shop__sidebar__color">
-                                                    <label className="c-1" for="sp-1">
-                                                        <input type="radio" id="sp-1" />
-                                                    </label>
-                                                    <label className="c-2" for="sp-2">
-                                                        <input type="radio" id="sp-2" />
-                                                    </label>
-                                                    <label className="c-3" for="sp-3">
-                                                        <input type="radio" id="sp-3" />
-                                                    </label>
-                                                    <label className="c-4" for="sp-4">
-                                                        <input type="radio" id="sp-4" />
-                                                    </label>
-                                                    <label className="c-5" for="sp-5">
-                                                        <input type="radio" id="sp-5" />
-                                                    </label>
-                                                    <label className="c-6" for="sp-6">
-                                                        <input type="radio" id="sp-6" />
-                                                    </label>
-                                                    <label className="c-7" for="sp-7">
-                                                        <input type="radio" id="sp-7" />
-                                                    </label>
-                                                    <label className="c-8" for="sp-8">
-                                                        <input type="radio" id="sp-8" />
-                                                    </label>
-                                                    <label className="c-9" for="sp-9">
-                                                        <input type="radio" id="sp-9" />
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="card">
-                                        <div className="card-heading">
-                                            <a data-toggle="collapse" data-target="#collapseSix">
-                                                Tags
-                                            </a>
-                                        </div>
-                                        <div id="collapseSix" className="collapse show" data-parent="#accordionExample">
-                                            <div className="card-body">
-                                                <div className="shop__sidebar__tags">
-                                                    <a href="#">Product</a>
-                                                    <a href="#">Bags</a>
-                                                    <a href="#">Shoes</a>
-                                                    <a href="#">Fashio</a>
-                                                    <a href="#">Clothing</a>
-                                                    <a href="#">Hats</a>
-                                                    <a href="#">Accessories</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-lg-9">
-                        <div className="shop__product__option">
-                            <div className="row">
-                                <div className="col-lg-6 col-md-6 col-sm-6">
-                                    <div className="shop__product__option__left">
-                                        <p>Showing 1–12 of 126 results</p>
-                                    </div>
-                                </div>
-                                <div className="col-lg-6 col-md-6 col-sm-6">
-                                    <div className="shop__product__option__right">
-                                        <p>Sort by Price:</p>
-                                        <select>
-                                            <option value="">Low To High</option>
-                                            <option value="">$0 - $55</option>
-                                            <option value="">$55 - $100</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* <div className="row">
-                            <div className="col-lg-4 col-md-6 col-sm-6">
-                                <div className="product__item">
-                                    <div className="product__item__pic set-bg" data-setbg="img/product/product-2.jpg">
-                                        <ul className="product__hover">
-                                            <li>
-                                                <a href="#">
-                                                    <img src="img/icon/heart.png" alt="" />
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <img src="img/icon/compare.png" alt="" /> <span>Compare</span>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <img src="img/icon/search.png" alt="" />
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div className="product__item__text">
-                                        <h6>Piqué Biker Jacket</h6>
-                                        <a href="#" className="add-cart">
-                                            + Add To Cart
-                                        </a>
-                                        <div className="rating">
-                                            <i className="fa fa-star-o"></i>
-                                            <i className="fa fa-star-o"></i>
-                                            <i className="fa fa-star-o"></i>
-                                            <i className="fa fa-star-o"></i>
-                                            <i className="fa fa-star-o"></i>
-                                        </div>
-                                        <h5>$67.24</h5>
-                                        <div className="product__color__select">
-                                            <label for="pc-4">
-                                                <input type="radio" id="pc-4" />
-                                            </label>
-                                            <label className="active black" for="pc-5">
-                                                <input type="radio" id="pc-5" />
-                                            </label>
-                                            <label className="grey" for="pc-6">
-                                                <input type="radio" id="pc-6" />
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> */}
-                        <div className="row">
-                            <div className="col-lg-12">
-                                <div className="product__pagination">
-                                    <a className="active" href="#">
-                                        1
-                                    </a>
-                                    <a href="#">2</a>
-                                    <a href="#">3</a>
-                                    <span>...</span>
-                                    <a href="#">21</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <>
+            <div className='container' style={{ height: '80px', padding: '30px 10px' }} >
+                <Breadcrumb
+                    style={{ fontSize: '15px' }}
+
+                    items={[
+                        {
+                            title: <Link to=""><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
+                        },
+                        {
+                            title: <Link to="">Sản phẩm</Link>,
+                        },
+                    ]}
+                />
             </div>
-        </section>
-    );
+            <div className='container'>
+                <h6><FilterOutlined style={{ marginRight: '7px' }} />Bộ lọc </h6>
+                <Row>
+                    <Col span={5} style={{ paddingRight: '10px' }}>
+                        <Collapse
+                            size="small"
+                            style={{ border: 'none' }}
+                            items={[
+                                {
+                                    key: '1',
+                                    label: 'Danh mục',
+                                    children: <>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                    </>,
+
+                                },
+                            ]}
+                        />
+                        <Collapse
+                            size="small"
+                            style={{ border: 'none' }}
+                            items={[
+                                {
+                                    key: '1',
+                                    label: 'Thương hiệu',
+                                    children: <>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                    </>,
+
+                                },
+                            ]}
+                        />
+                        <Collapse
+                            size="small"
+                            style={{ border: 'none' }}
+                            items={[
+                                {
+                                    key: '1',
+                                    label: 'Chất liệu',
+                                    children: <>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                    </>,
+
+                                },
+                            ]}
+                        />
+                        <Collapse
+                            size="small"
+                            style={{ border: 'none' }}
+                            items={[
+                                {
+                                    key: '1',
+                                    label: 'Màu sắc',
+                                    children: <>
+                                        <Row><Checkbox >Đỏ</Checkbox></Row>
+                                        <Row><Checkbox >Xanh</Checkbox></Row>
+                                        <Row><Checkbox >Cam</Checkbox></Row>
+                                        <Row><Checkbox >Vàng</Checkbox></Row>
+                                        <Row><Checkbox >Đỏ</Checkbox></Row>
+                                    </>,
+
+                                },
+                            ]}
+                        />
+                        <Collapse
+
+                            size="small"
+                            style={{ border: 'none' }}
+                            items={[
+                                {
+                                    key: '1',
+                                    label: 'Kích thước',
+                                    children: <>
+                                        <Row><Checkbox >S</Checkbox></Row>
+                                        <Row><Checkbox >M</Checkbox></Row>
+                                        <Row><Checkbox >L</Checkbox></Row>
+                                        <Row><Checkbox >XL</Checkbox></Row>
+                                        <Row><Checkbox >XXL</Checkbox></Row>
+                                    </>,
+
+                                },
+                            ]}
+                        />
+                        <Collapse
+
+                            size="small"
+                            style={{ border: 'none' }}
+                            items={[
+                                {
+                                    key: '1',
+                                    label: 'Khoảng giá',
+                                    children: <>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
+                                    </>,
+
+                                },
+                            ]}
+                        />
+                    </Col>
+                    <Col span={19}>
+                        <Row justify="center" gutter={[16, 16]}>
+                            {[1, 2, 3, 4].map((item) => (
+                                <Col xs={24} sm={12} md={8} lg={6} key={item}>
+                                    <Link to={path_name.product_detail}>
+                                        <Card
+                                            hoverable
+                                            style={{
+                                                width: '100%',
+                                                textAlign: 'center',
+                                            }}
+                                            cover={<Image alt="example" src={imgage2} />}
+                                        >
+                                            <Meta title="Europe Street beat" description="9.000.000 " />
+                                        </Card>
+                                    </Link>
+                                </Col>
+                            ))}
+                            {/* <Pagination defaultCurrent={1} total={50} style={{ float: 'right' }} /> */}
+                        </Row>
+                        <Row style={{ marginTop: '20px' }} justify="center" gutter={[16, 16]} >
+                            {[1, 2, 3, 4].map((item) => (
+                                <Col xs={24} sm={12} md={8} lg={6} key={item}>
+                                    <Link to={path_name.product_detail}>
+                                        <Card
+                                            hoverable
+                                            style={{
+                                                width: '100%',
+                                                textAlign: 'center',
+                                            }}
+                                            cover={<Image alt="example" src={imgage1} />}
+                                        >
+                                            <Meta title="Europe Street beat" description="9.000.000 " />
+                                        </Card>
+                                    </Link>
+                                </Col>
+                            ))}
+                        </Row>
+                        <Row style={{ marginTop: '20px' }} justify="center" gutter={[16, 16]} >
+                            {[1, 2, 3, 4].map((item) => (
+                                <Col xs={24} sm={12} md={8} lg={6} key={item}>
+                                    <Link to={path_name.product_detail}>
+                                        <Card
+                                            hoverable
+                                            style={{
+                                                width: '100%',
+                                                textAlign: 'center',
+                                            }}
+                                            cover={<Image alt="example" src={banner2} />}
+                                        >
+                                            <Meta title="Europe Street beat" description="9.000.000 " />
+                                        </Card>
+                                    </Link>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Col>
+                </Row>
+
+            </div>
+        </>
+    )
 }
 
-export default Product;
+export default Product

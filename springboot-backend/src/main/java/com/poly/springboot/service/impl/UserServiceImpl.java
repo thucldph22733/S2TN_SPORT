@@ -160,7 +160,6 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id khách hàng này!"));
-
         return user;
     }
 

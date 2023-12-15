@@ -36,7 +36,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
     @GetMapping("getAll")
 //    @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<?> getUsers(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -143,7 +142,5 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .body(User);
     }
-
-
 
 }

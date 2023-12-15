@@ -1,56 +1,67 @@
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Col, Form, Input, Row } from 'antd';
+import './Auth.css'
+// import { useAuth } from '~/components/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 import path_name from '~/core/constants/routers';
-function ForgotPassword() {
-    return (
-        <div className="container">
-            <div className="row justify-content-center">
-                <div className="col-xl-6 col-lg-6 col-md-6">
-                    <div className="card o-hidden border-0 shadow-lg my-5">
-                        <div className="card-body p-0">
-                            <div className="row">
-                                <div className="col-lg-12">
-                                    <div className="p-5">
-                                        <div className="text-center">
-                                            <h1 className="h4 text-gray-900 mb-2">Quên mật khẩu?</h1>
-                                            <p className="mb-4">
-                                                Nếu tài khoản tồn tại, chúng tôi sẽ gửi cho bạn hướng dẫn đặt lại mật
-                                                khẩu qua email.
-                                            </p>
-                                        </div>
-                                        <form className="user">
-                                            <div className="form-group">
-                                                <input
-                                                    type="email"
-                                                    className="form-control form-control-user"
-                                                    id="exampleInputEmail"
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Nhập địa chỉ email..."
-                                                />
-                                            </div>
-                                            <a href="login.html" className="btn btn-primary btn-user btn-block">
-                                                Đặt lại mật khẩu
-                                            </a>
-                                        </form>
-                                        <hr />
-                                        <div className="text-center">
-                                            <Link className="small" to={path_name.register}>
-                                                Đăng ký tài khoản!
-                                            </Link>
-                                        </div>
-                                        <div className="text-center">
-                                            <Link className="small" to={path_name.login}>
-                                                Đăng nhập!
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
+// import path_name from '~/constants/routers';
 
+const ForgotPassword = () => {
+    const navigate = useNavigate();
+
+    const [form] = Form.useForm();
+    // const { login } = useAuth();
+
+    const handleSubmit = () => {
+        const data = form.getFieldsValue();
+
+        // login(data);
+        // navigate(path_name.newSell)
+    };
+
+    return (
+        <Col span={8} offset={8} className='auth-form'>
+            <Form
+
+                className="login-form"
+                initialValues={{
+                    remember: true,
+                }}
+                onFinish={handleSubmit}
+                form={form}
+            >
+                <h4 className='title_login'>Quên mật khẩu?</h4>
+                <div className='auth_input'>
+                    <Form.Item
+                        name="email"
+
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập địa chỉ email!',
+                            },
+                        ]}
+                    >
+                        <Input
+                            prefix={<UserOutlined className="site-form-item-icon" />}
+                            placeholder="Nhập địa chỉ email..." />
+                    </Form.Item>
+                </div>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit" className="login-form-button">
+                        Đặt lại mật khẩu
+                    </Button>
+                </Form.Item>
+                {/* 
+                <Link style={{ float: 'left' }} to={path_name.register} >
+                    Tạo một tài khoản mới!
+                </Link>
+                <Link style={{ float: 'right' }} to={path_name.login} >
+                    Đăng nhập!
+                </Link> */}
+            </Form>
+        </Col >
+    );
+};
 export default ForgotPassword;

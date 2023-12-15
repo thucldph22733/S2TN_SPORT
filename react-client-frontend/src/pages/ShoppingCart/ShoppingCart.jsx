@@ -1,8 +1,8 @@
 import React from 'react';
 import './ShoppingCart.css';
 import { Link } from 'react-router-dom';
-import { CloseOutlined, ArrowRightOutlined, LoadingOutlined, DeleteFilled, DoubleLeftOutlined, ExportOutlined, SendOutlined, CheckCircleOutlined, TransactionOutlined } from '@ant-design/icons';
-import { InputNumber, Button, Table, Image, Row, Col, Form, Input } from 'antd';
+import { CloseOutlined, ArrowRightOutlined, LoadingOutlined, DeleteFilled, DoubleLeftOutlined, ExportOutlined, SendOutlined, CheckCircleOutlined, TransactionOutlined, HomeOutlined } from '@ant-design/icons';
+import { InputNumber, Button, Table, Image, Row, Col, Form, Input, Breadcrumb } from 'antd';
 import path_name from '~/core/constants/routers';
 import imgage1 from '~/assets/images/product/product-21.jpg';
 import imgage2 from '~/assets/images/product/product-20.jpg';
@@ -54,10 +54,10 @@ const ShoppingCart = () => {
             with: '50%',
             render: (text, record) => (
                 <Row className="product__cart__item">
-                    <Col span={10} className="product__cart__item__pic">
+                    <Col span={7} className="product__cart__item__pic">
                         <Image width={70} src={cartImages[record.key - 1]} alt="" />
                     </Col>
-                    <Col span={14} className="product__cart__item__text">
+                    <Col span={17} className="product__cart__item__text">
                         <h6>{text}</h6>
                         <h5>${record.price.toFixed(2)}</h5>
                     </Col>
@@ -95,7 +95,22 @@ const ShoppingCart = () => {
     const cartImages = [imgage1, imgage2,];
 
     return (
-        <section className="shopping-cart spad">
+        <section className="shopping-cart">
+            <div className='container' style={{ height: '80px', padding: '30px 10px', }} >
+                <Breadcrumb
+                    style={{ fontSize: '15px' }}
+
+                    items={[
+                        {
+                            title: <Link to=""><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
+                        },
+                        {
+                            title: <Link to="">Giỏ hàng</Link>,
+                        },
+
+                    ]}
+                />
+            </div>
             <div className="container">
                 <Row >
                     <Col span={16} lg={16}>
@@ -108,7 +123,7 @@ const ShoppingCart = () => {
                             <Col lg={12} md={12} sm={12}>
                                 <Link to={path_name.product}>
                                     <Button type="link" icon={<DoubleLeftOutlined />}>
-                                        Tiếp tục mưa sắm
+                                        Tiếp tục mua sắm
                                     </Button>
                                 </Link>
                             </Col>
@@ -123,11 +138,11 @@ const ShoppingCart = () => {
 
                         <Row >
                             {/* <Form action="#"> */}
-                            <Col span={16} >
+                            <Col span={17} >
                                 <Input style={{ height: '40px' }} type="text" placeholder="Mã giảm giá" />
                             </Col>
-                            <Col span={8} style={{ paddingLeft: '10px' }}>
-                                <Button type="primary" icon={<TransactionOutlined />} style={{ height: '40px' }}>
+                            <Col span={7}>
+                                <Button type="primary" icon={<TransactionOutlined />} style={{ height: '40px', float: 'right' }}>
                                     Áp dụng
                                 </Button>
                             </Col>

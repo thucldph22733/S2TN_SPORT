@@ -1,87 +1,103 @@
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { LockOutlined, MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Col, Form, Input } from 'antd';
+import './Auth.css'
+// import { useAuth } from '~/components/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 import path_name from '~/core/constants/routers';
-import './Auth.css';
-function Register() {
-    return (
-        <div className="container">
-            <div className="card o-hidden col-md-6 offset-3 border-0 shadow-lg my-5">
-                <div className="row">
-                    <div className="p-5">
-                        <div className="text-center">
-                            <h1 className="h4 text-gray-900 mb-4">Đăng ký</h1>
-                        </div>
-                        <form className="user">
-                            <div className="form-group row">
-                                <div className="col-sm-6 mb-3 mb-sm-0">
-                                    <input
-                                        type="text"
-                                        className="form-control form-control-user"
-                                        id="exampleFirstName"
-                                        placeholder="Nhập họ và tên..."
-                                    />
-                                </div>
-                                <div className="col-sm-6">
-                                    <input
-                                        type="text"
-                                        className="form-control form-control-user"
-                                        id="exampleLastName"
-                                        placeholder="Nhập số điện thoại..."
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <input
-                                    type="email"
-                                    className="form-control form-control-user"
-                                    id="exampleInputEmail"
-                                    placeholder="Nhập địa chỉ email..."
-                                />
-                            </div>
-                            <div className="form-group row">
-                                <div className="col-sm-6 mb-3 mb-sm-0">
-                                    <input
-                                        type="password"
-                                        className="form-control form-control-user"
-                                        id="exampleInputPassword"
-                                        placeholder="Nhập mật khẩu..."
-                                    />
-                                </div>
-                                <div className="col-sm-6">
-                                    <input
-                                        type="password"
-                                        className="form-control form-control-user"
-                                        id="exampleRepeatPassword"
-                                        placeholder="Nhập lại mật khẩu..."
-                                    />
-                                </div>
-                            </div>
-                            <a href="login.html" className="btn btn-primary btn-user btn-block">
-                                Đăng ký
-                            </a>
-                            <hr />
-                            <a href="index.html" className="btn btn-google btn-user btn-block">
-                                <i className="fab fa-google fa-fw"></i> Đăng ký với Google
-                            </a>
-                            <a href="index.html" className="btn btn-facebook btn-user btn-block">
-                                <i className="fab fa-facebook-f fa-fw"></i> Đăng ký với Facebook
-                            </a>
-                        </form>
-                        <hr />
-                        <div className="text-center">
-                            <Link className="small" to={path_name.forgot_password}>
-                                Quên mật khẩu?
-                            </Link>
-                        </div>
-                        <div className="text-center">
-                            <Link className="small" to={path_name.login}>
-                                Đăng nhập!
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
+// import path_name from '~/constants/routers';
 
+const Register = () => {
+    const navigate = useNavigate();
+
+    const [form] = Form.useForm();
+    // const { login } = useAuth();
+
+    const handleSubmit = () => {
+        const data = form.getFieldsValue();
+
+        // login(data);
+        // navigate(path_name.newSell)
+    };
+
+    return (
+        <Col span={8} offset={8} className='auth-form'>
+            <Form
+
+                onFinish={handleSubmit}
+                form={form}
+            >
+                <h4 className='title_login'>ĐĂNG KÝ</h4>
+                <div className='auth_input'>
+                    <Form.Item
+                        name="email"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập địa chỉ email!',
+                            },
+                        ]}
+                    >
+                        <Input
+                            prefix={<UserOutlined className="site-form-item-icon" />}
+                            placeholder="Nhập họ và tên..." />
+                    </Form.Item>
+                </div>
+                <div className='auth_input'>
+                    <Form.Item
+                        name="email"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập địa chỉ email!',
+                            },
+                        ]}
+                    >
+                        <Input
+                            prefix={<PhoneOutlined className="site-form-item-icon" />}
+                            placeholder="Nhập số điện thoại..." />
+                    </Form.Item>
+                </div>
+                <div className='auth_input'>
+                    <Form.Item
+                        name="email"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập địa chỉ email!',
+                            },
+                        ]}
+                    >
+                        <Input
+                            prefix={<MailOutlined className="site-form-item-icon" />}
+                            placeholder="Nhập địa chỉ email..." />
+                    </Form.Item>
+                </div>
+                <div className='auth_input'>
+                    <Form.Item
+                        name="email"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập địa chỉ email!',
+                            },
+                        ]}
+                    >
+                        <Input.Password
+                            prefix={<LockOutlined className="site-form-item-icon" />}
+                            placeholder="Nhập mật khẩu..." />
+                    </Form.Item>
+                </div>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit" className="login-form-button">
+                        Đăng ký
+                    </Button>
+                </Form.Item>
+                <Link to={path_name.login} >
+                    Đăng nhập!
+                </Link>
+            </Form>
+        </Col>
+    );
+};
 export default Register;

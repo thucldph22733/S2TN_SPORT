@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './Checkout.css';
-import { Button, Col, Collapse, Form, Input, Radio, Row, Select } from 'antd';
+import { Breadcrumb, Button, Col, Collapse, Form, Input, Radio, Row, Select } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
-import { SendOutlined } from '@ant-design/icons';
+import { HomeOutlined, SendOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
 function Checkout() {
 
@@ -52,8 +53,26 @@ function Checkout() {
         setSelectedWard('');
     };
     return (
-        <section className="checkout spad">
+        <section className="checkout">
+            <div className='container' style={{ height: '80px', padding: '30px 10px', }} >
+                <Breadcrumb
+                    style={{ fontSize: '15px' }}
+
+                    items={[
+                        {
+                            title: <Link to=""><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
+                        },
+                        {
+                            title: <Link to="">Giỏ hàng</Link>,
+                        },
+                        {
+                            title: <Link to="">Thủ tục thanh toán</Link>,
+                        },
+                    ]}
+                />
+            </div>
             <div className="container">
+
                 <Form name="validateOnly" layout="vertical" autoComplete="off">
                     <Row>
                         <Col span={16} lg={16} md={12}>
@@ -188,7 +207,7 @@ function Checkout() {
                                         <b>SẢN PHẨM</b>
                                     </Col>
                                     <Col span={6} style={{ float: 'right' }}>
-                                        <b>TẠM TÍNH</b>
+                                        <b style={{ float: 'right' }}>TẠM TÍNH</b>
                                     </Col>
                                 </Row>
                                 <Row style={{ marginTop: '10px' }}>
@@ -234,7 +253,7 @@ function Checkout() {
                                     </Row>
                                     <Row >
                                         <Col span={10}>
-                                            <p> Tổng tiền</p>
+                                            <p> Tổng tiền:</p>
                                         </Col>
                                         <Col span={14} >
                                             <span style={{ float: 'right' }}>$750.99</span>

@@ -36,11 +36,11 @@ function Header() {
             ),
         },
         {
-            key: '',
+            key: '5',
             label: (
-                <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
+                <Link to={path_name.register}>
                     Đăng ký
-                </a>
+                </Link>
             ),
         },
         {
@@ -54,17 +54,17 @@ function Header() {
         {
             key: '3',
             label: (
-                <a target="_blank" rel="noopener noreferrer" href="https://www.luohanacademy.com">
+                <Link to={path_name.order}>
                     Đơn mua
-                </a>
+                </Link>
             ),
         },
         {
             key: '4',
             label: (
-                <a target="_blank" rel="noopener noreferrer" href="https://www.luohanacademy.com">
-                    Hồ sơ của tôi
-                </a>
+                <Link to={path_name.user}>
+                    Tài khoản của tôi
+                </Link>
             ),
         },
     ];
@@ -154,8 +154,6 @@ function Header() {
                             >
                                 <Avatar icon={<UserOutlined />} />
                             </Dropdown>
-
-
                         </Link>
                     </Row>
                 </Col>

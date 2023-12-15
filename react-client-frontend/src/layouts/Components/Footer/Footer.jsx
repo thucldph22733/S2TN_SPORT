@@ -42,7 +42,7 @@ function Footer() {
                     <Col span={24} md={6}>
                         <div className="footer__widget">
                             <h6>Thông tin liên hệ</h6>
-                            <p><PiMapPinLine className="footer_icon" />: Tòa nhà FPT Polytechnic, 13 phố Trịnh Văn Bô,...</p>
+                            <p><PiMapPinLine className="footer_icon" />: Tòa nhà FPT Polytechnic, 13 phố Trịnh Văn Bô, Nam Từ Liêm, Hà Nội</p>
                             <p><AiOutlinePhone className="footer_icon" />: 024 7300 1955</p>
                             <p><AiOutlineMail className="footer_icon" />: caodang@fpt.edu.vn</p>
                             <Row>

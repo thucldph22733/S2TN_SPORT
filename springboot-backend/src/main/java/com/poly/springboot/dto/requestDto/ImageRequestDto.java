@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ImageRequestDto {
 
-    private Long productId;
+    private Long productDetailId;
 
     @NotBlank(message = "Tên ảnh không được để trống!")
     private String imageName;

@@ -18,6 +18,8 @@ public class ProductDetailRequestDto {
 
     private Long sizeId;
 
+    private Long materialId;
+
     @NotEmpty(message = "Số lượng không được để trống!")
     private Integer quantity;
 

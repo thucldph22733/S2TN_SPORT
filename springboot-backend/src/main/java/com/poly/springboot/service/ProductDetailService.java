@@ -17,7 +17,7 @@ public interface ProductDetailService {
 
     ProductDetail findByIdProductDetailsId(Long id);
 
-    Boolean createProductDetail(ProductDetailRequestDto productDetailRequestDto);
+    Boolean createProductDetails(List<ProductDetailRequestDto> productDetailRequestDtos);
 
     Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto,Long id);
 

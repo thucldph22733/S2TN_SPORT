@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Card, Button, Input, Form, Modal, notification, Popconfirm, Tag, Select, Row, Col, Checkbox, InputNumber } from 'antd';
+import { Table, Space, Card, Button, Input, Form, Modal, notification, Select, Row, Col, Checkbox, InputNumber, Upload } from 'antd';
 import {
     DeleteOutlined,
     PlusOutlined,
+    UploadOutlined,
 } from '@ant-design/icons';
 import './Product.css'
 import ProductService from '~/service/ProductService';
@@ -13,11 +14,12 @@ import SuppplierService from '~/service/SupplierService';
 import MaterialService from '~/service/MaterialService';
 import ColorService from '~/service/ColorService';
 import SizeService from '~/service/SizeService';
-
+import axios from 'axios';
+const { useForm } = Form;
 const { TextArea } = Input;
 
 function ProductDetail() {
-
+    const [dataSource, setDataSource] = useState([]);
     //--------------------------------Sản phẩm-------------------------------------
     // mở modeal thêm sửa sản phẩm:
     const [openProduct, setOpenProduct] = useState(false);
@@ -126,119 +128,344 @@ function ProductDetail() {
             })
     }
     //---------------------------------------------------------------------------------------
-
     // Trạng thái để theo dõi màu sắc đã chọn
     const [selectedColors, setSelectedColors] = useState([]);
     // Trạng thái để lưu thông tin cho mỗi bảng màu sắc
     const [colorTables, setColorTables] = useState({});
 
     // Trạng thái để theo dõi màu sắc đã chọn
-    //  const [selectedSizes, setSelectedSizes] = useState([]);
+    const [selectedSizes, setSelectedSizes] = useState([]);
 
     // Xử lý sự kiện khi chọn màu sắc
     const handleColorChange = (selectedColor) => {
         setSelectedColors(selectedColor);
     };
 
-    // const handleSizeChange = (selectedSize) => {
-    //     setSelectedSizes(selectedSize);
-    // };
+    const handleSizeChange = (selectedSize) => {
+        setSelectedSizes(selectedSize);
+    };
 
-    // Xử lý hiển thị bảng cho mỗi màu sắc
+    const [selectedProductName, setSelectedProductName] = useState(null);
+
+    const [selectedMaterial, setSelectedMaterial] = useState(null)
+
+    const [selectedProducts, setSelectedProducts] = useState([]);
+
+    const handleProductNameChange = (productName) => {
+        setSelectedProductName(productName);
+    };
+
+    const handleMaterialChange = (material) => {
+        setSelectedMaterial(material);
+    };
+
     useEffect(() => {
-        const tables = {};
-        selectedColors.forEach((color) => {
-            // Nếu bảng cho màu sắc này chưa tồn tại, tạo mới
-            if (!colorTables[color]) {
-                tables[color] = createColorTable(color);
-            }
-        });
-        // Cập nhật trạng thái của các bảng màu sắc
-        setColorTables((prevColorTables) => ({ ...prevColorTables, ...tables }));
-    }, [selectedColors]);
+        const generatedColorTables = createColorTable(selectedColors, selectedSizes, selectedProductName, selectedMaterial);
+        setColorTables(generatedColorTables);
+    }, [selectedColors, selectedSizes, selectedProductName, selectedMaterial]);
 
-    // Tạo bảng cho mỗi màu sắc
-    const createColorTable = (color, size) => {
-        return {
-            columns: [
-                {
-                    title: '#',
-                    dataIndex: 'key',
-                    key: 'key',
-                    width: '5%',
-                },
-                {
-                    title: 'Tên sản phẩm',
-                    dataIndex: 'productName',
-                    key: 'productName',
-                    width: '20%',
+    const productDetailDataList = [];
 
-                },
-                {
-                    title: 'Chất liệu',
-                    dataIndex: 'materialName',
-                    key: 'materialName',
-                    width: '15%',
-                },
-                {
-                    title: 'Số lượng',
-                    dataIndex: 'quantity',
-                    key: 'quantity',
-                    width: '15%',
-                    render: (text) => (
-                        <InputNumber min={1} max={10000000} defaultValue={text} />
-                    )
-                },
-                {
-                    title: 'Giá bán',
-                    dataIndex: 'price',
-                    key: 'price',
-                    width: '15%',
-                    render: (text) => (
-                        <InputNumber min={1} max={1000000} defaultValue={text} />
-                    )
-                },
-                {
-                    title: 'Hành động',
-                    dataIndex: 'createdBy',
-                    key: 'createdBy',
-                    width: '10%',
-                    render: () => {
-                        return <Space size="middle">
-                            <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                        </Space>
-                    }
-                },
-                {
-                    title: 'Ảnh',
-                    dataIndex: 'createdBy',
-                    key: 'createdBy',
-                    width: '10%',
+    function findColorIdByName(colorName) {
+        const color = colors.find(c => c.colorName === colorName);
+        return color ? color.id : null;
+    }
+
+    function findSizeIdByName(sizeName) {
+        const size = sizes.find(s => s.sizeName === sizeName);
+        return size ? size.id : null;
+    }
+
+    const handleQuantityChange = (value, key, form) => {
+        setDataSource(prevDataSource => {
+            const updatedDataSource = prevDataSource.map(item => {
+                if (item.key === key) {
+                    return { ...item, quantity: value };
                 }
-            ],
-            dataSource: [{
-                key: '1',
-                productName: 'John Brown',
-                materialName: 'New York No. 1 Lake Park',
-                quantity: 254,
-                price: 2334,
+                return item;
+            });
+            return updatedDataSource;
+        });
+    };
 
-            }],
+    const handlePriceChange = (value, key, form) => {
+        setDataSource(prevDataSource => {
+            const updatedDataSource = prevDataSource.map(item => {
+                if (item.key === key) {
+                    return { ...item, price: value };
+                }
+                return item;
+            });
+            return updatedDataSource;
+        });
+    };
+
+
+    const createColorTable = (selectedColors, selectedSizes, selectedProductName, selectedMaterial) => {
+        const dataSource = [];
+
+        for (const color of selectedColors) {
+            const colorGroup = [];
+
+            for (const size of selectedSizes) {
+                const key = `${selectedProductName}_${color}_${size}`;
+
+                // Chuyển đổi name thành id cho color và size
+                const colorId = findColorIdByName(color);
+                const sizeId = findSizeIdByName(size);
+
+                const productDetailData = {
+                    productId: selectedProductName,
+                    colorId: colorId,
+                    sizeId: sizeId,
+                    // quantity: 1,
+                    // price: 0,
+                };
+                productDetailDataList.push(productDetailData);
+                colorGroup.push({
+                    key,
+                    index: colorGroup.length + 1,
+                    productName: selectedProductName,
+                    color,
+                    size,
+                    material: selectedMaterial,
+                    // Các thông tin khác của sản phẩm có thể thêm vào đây
+                    quantity: productDetailData.quantity,  // Thêm quantity từ productDetailData
+                    price: productDetailData.price,        // Thêm price từ productDetailData
+                });
+            }
+
+            dataSource.push(...colorGroup);
+            // setDataSource(dataSource);
+        }
+        setDataSource(dataSource);
+
+        const uploadButton = (
+            <div>
+                <PlusOutlined style={{ fontSize: '16px' }} />
+                {/* <div style={{ marginTop: 8 }}>Upload</div> */}
+            </div>
+        );
+
+        const columns = [
+            { title: 'Số thứ tự', dataIndex: 'index', key: 'index', width: '3%' },
+            { title: 'Sản phẩm', dataIndex: 'key', key: 'key', width: '5%', render: (text, record) => (<span>{`[${record.color} - ${record.size}]`}</span>) },
+
+            {
+                title: 'Số lượng',
+                dataIndex: 'quantity',
+                key: 'quantity',
+                width: '2%',
+                render: (text, record) => (
+                    <InputNumber
+                        min={1}
+                        max={10000000}
+                        defaultValue={100}
+                        value={text}
+                        onChange={(value) => handleQuantityChange(value, record.key, form)}
+                    />
+                ),
+            },
+            {
+                title: 'Giá bán',
+                dataIndex: 'price',
+                key: 'price',
+                width: '2%',
+                render: (text, record) => (
+                    <InputNumber
+                        min={1}
+                        max={1000000}
+                        defaultValue={1000}
+                        value={text}
+                        onChange={(value) => handlePriceChange(value, record.key, form)}
+                    />
+                ),
+            },
+            {
+                title: 'Hành động',
+                dataIndex: 'action',
+                key: 'action',
+                width: '5%',
+                render: () => (
+                    <Space size="middle">
+                        <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
+                    </Space>
+                ),
+            },
+            {
+                title: <div style={{ display: 'flex', justifyContent: 'center' }}>Thêm ảnh</div>,
+                dataIndex: 'action',
+                key: 'action',
+                width: '10%',
+                render: (_, record) => (
+                    record.index === 1 ? (
+                        <Space size="middle" style={{ display: 'flex', justifyContent: 'center' }}>
+                            <Upload
+                                action="/upload"  // Đặt URL bạn muốn gửi ảnh lên
+                                listType="picture-card"
+                                multiple={true}  // Cho phép chọn nhiều ảnh
+                                showUploadList={true}  // Hiển thị danh sách đã tải lên
+                                beforeUpload={() => false} // Ngăn chặn tự động tải lên
+                                onPreview={handlePreview}
+                            >
+                                {uploadButton}
+                            </Upload>
+                        </Space>
+                    ) : null
+                ),
+                onCell: (record) => ({
+                    rowSpan: record.index === 1 ? selectedSizes.length : 0,
+                }),
+            },
+
+
+        ];
+
+        return {
+            columns,
+            dataSource,
+            // footer,
         };
     };
+    ///phần xem ảnh
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState('');
+    const [previewTitle, setPreviewTitle] = useState('');
+    const handleCancel = () => setPreviewOpen(false);
+    const getBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
+    const handlePreview = async (file) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setPreviewImage(file.url || file.preview);
+        setPreviewOpen(true);
+        setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
+    };
+
+    ///phần xem ảnh
+
+    const [form] = useForm();
+
+    const createProductDetail = async (productDetailData) => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/productDetails/create', productDetailData);
+
+            console.log('Response:', response.data);
+
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error.message);
+            throw error;
+        }
+    };
+
+    const getColorIdByName = (colorName) => {
+        const color = colors.find(color => color.colorName === colorName);
+        return color ? color.id : null;
+    };
+
+    const getSizeIdByName = (sizeName) => {
+        const size = sizes.find(size => size.sizeName === sizeName);
+        return size ? size.id : null;
+    };
+    // Example usage
+    const handleCreateProductDetail = async () => {
+        form.submit();
+
+        // await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Lấy dữ liệu từ các trường form
+        const formValues = await form.validateFields();
+
+        console.log('Form Values:', formValues);
+
+        // Lấy ID của sản phẩm
+        const productId = products.find(product => product.productName === formValues.productName)?.id;
+        console.log('Product Id:', productId);
+
+        const materialId = materials.find(material => material.materialName === formValues.materialName)?.id;
+        console.log('Material Id:', materialId);
+
+        // Lấy dữ liệu quantity và price từ trạng thái
+        const productDetailDataList = dataSource.map(item => ({
+            productId: productId,
+            materialId: materialId,
+            colorId: getColorIdByName(item.color), // Sử dụng hàm để lấy ID từ tên màu sắc
+            sizeId: getSizeIdByName(item.size),
+            quantity: item.quantity,
+            price: item.price,
+        }));
+
+        // Thực hiện xử lý dữ liệu nếu cần
+        // Ví dụ: gửi dữ liệu lên server
+        createProductDetail(productDetailDataList)
+            .then(responseData => {
+                // Xử lý phản hồi từ hàm createProductDetails nếu cần
+                console.log('Product details created successfully:', responseData);
+            })
+            .catch(error => {
+                // Xử lý lỗi nếu có
+                console.error('Failed to create product details:', error);
+            });
+    };
+
+
+
+
+    //phần modal confirm thêm sản phẩm
+    const [isModalVisible, setModalVisible] = useState(false);
+
+    const showModal = () => {
+        setModalVisible(true);
+    };
+
+    const handleOk = async () => {
+        try {
+            // Your existing code to get form values and create product detail
+            await handleCreateProductDetail();
+
+            // Close the modal after successful execution
+            setModalVisible(false);
+        } catch (error) {
+            console.error('Error:', error);
+            // Handle errors if needed
+        }
+    };
+
+    const handleCancell = () => {
+        setModalVisible(false);
+    };
+    /////////
 
     return (
         <>
-            <div></div>
-
+            <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+                <img
+                    alt="example"
+                    style={{
+                        width: '100%',
+                    }}
+                    src={previewImage}
+                />
+            </Modal>
+            <Modal
+                title="Xác nhận thêm sản phẩm"
+                open={isModalVisible}
+                onOk={handleOk}
+                onCancel={handleCancell}
+            >
+                <p>Bạn có chắc muốn thêm sản phẩm?</p>
+            </Modal>
             <Form
                 name="validateOnly" layout="vertical" autoComplete="off"
                 style={{ marginTop: '25px' }}
-            // form={form}
-            // initialValues={{
-            //     ...reacord,
-
-            // }}
+                form={form}
             >
                 <h3 style={{ fontWeight: 'bold' }}>Thêm mới sản phẩm </h3>
                 <Card >
@@ -251,6 +478,7 @@ function ProductDetail() {
                                         width: '100%',
                                     }}
                                     placeholder="Chọn sản phẩm"
+                                    onChange={handleProductNameChange}
                                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
                                     filterSort={(optionA, optionB) =>
                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
@@ -281,6 +509,7 @@ function ProductDetail() {
                                         width: '100%',
                                     }}
                                     placeholder="Chọn chất liệu"
+                                    onChange={handleMaterialChange}
                                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
                                     filterSort={(optionA, optionB) =>
                                         (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
@@ -337,7 +566,7 @@ function ProductDetail() {
                                                 width: '100%',
                                             }}
                                             placeholder="Chọn kích thước"
-                                            // onChange={handleSizeChange}
+                                            onChange={handleSizeChange}
                                             options={sizes.map(option => ({ value: option.sizeName, label: option.sizeName }))} />
                                     </Form.Item>
                                 </Col>
@@ -352,6 +581,11 @@ function ProductDetail() {
                             </Row>
                         </Col>
                     </Row>
+                </Card>
+                <Card bordered={false}>
+                    <Button type='primary' style={{ float: 'right' }} onClick={showModal}>
+                        Thêm sản phẩm
+                    </Button>
                 </Card>
             </Form >
             {
@@ -382,19 +616,19 @@ function ProductDetail() {
                     fetchSizes={fetchSize}
                 />
             }
-            {selectedColors.map((color) => {
-                const colorTable = colorTables[color];
-                if (colorTable) {
-                    return (
-                        <div key={color}>
-                            <Card title={`Các sản phẩm màu ${color.toLowerCase()}`} style={{ marginTop: '20px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19)' }}>
-                                <Table columns={colorTable.columns} dataSource={colorTable.dataSource} />
-                            </Card>
-                        </div>
-                    );
-                }
-                return null; // Tránh lỗi khi colorTable không tồn tại
-            })}
+
+            {colorTables && (
+                <div>
+                    <Card title={`Các sản phẩm`} style={{ marginTop: '20px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19)' }}>
+                        <Table
+                            columns={colorTables.columns}
+                            dataSource={colorTables.dataSource}
+                            footer={colorTables.footer}
+                        />
+                    </Card>
+                </div>
+            )}
+
         </>
 
     )
@@ -492,7 +726,6 @@ const ProductModal = ({ hideModal, isModal, fetchProducts }) => {
 
     }
 
-
     return (
 
         <Modal
@@ -508,6 +741,7 @@ const ProductModal = ({ hideModal, isModal, fetchProducts }) => {
                 name="validateOnly" layout="vertical" autoComplete="off"
                 style={{ maxWidth: 700, marginTop: '25px' }}
                 form={form}
+            // onFinish={onFinish}
 
             >
                 <Row>
@@ -699,7 +933,6 @@ const ColorModal = ({ hideModal, isModal, fetchColors }) => {
 
     }
 
-
     return (
 
         <Modal
@@ -732,6 +965,7 @@ const ColorModal = ({ hideModal, isModal, fetchColors }) => {
         </Modal>
     );
 };
+
 const SizeModal = ({ hideModal, isModal, fetchSizes }) => {
 
     const [form] = Form.useForm();
@@ -764,7 +998,6 @@ const SizeModal = ({ hideModal, isModal, fetchSizes }) => {
         })
 
     }
-
 
     return (
 

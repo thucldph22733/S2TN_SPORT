@@ -2,8 +2,10 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ImageRequestDto;
 import com.poly.springboot.entity.Image;
+import com.poly.springboot.entity.ProductDetail;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.ImageRepository;
+import com.poly.springboot.repository.ProductDetailRepository;
 import com.poly.springboot.repository.ProductRepository;
 import com.poly.springboot.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ public class ImageServiceImpl implements ImageService {
     private ImageRepository imageRepository;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductDetailRepository productDetailRepository;
     @Override
     public List<Image> getImages() {
         return imageRepository.findAll();
@@ -28,7 +30,7 @@ public class ImageServiceImpl implements ImageService {
 
         Image image = new Image();
 
-        image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
+        image.setProductDetail(productDetailRepository.findById(imageRequestDto.getProductDetailId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
         image.setImageLink(imageRequestDto.getImageLink());
         image.setImageType(imageRequestDto.getImageType());
@@ -42,7 +44,7 @@ public class ImageServiceImpl implements ImageService {
         Image image = imageRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id ảnh này!"));
 
-        image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
+        image.setProductDetail(productDetailRepository.findById(imageRequestDto.getProductDetailId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
         image.setImageLink(imageRequestDto.getImageLink());
         image.setImageType(imageRequestDto.getImageType());

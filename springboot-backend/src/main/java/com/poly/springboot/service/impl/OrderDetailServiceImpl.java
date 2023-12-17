@@ -83,8 +83,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     orderDetail.setQuantity(orderDetail.getQuantity() + requestedQuantity);
 
                     // Tính tổng giá trị (số lượng * giá) và cập nhật vào OrderDetail
-                    double totalPrice = orderDetail.getQuantity() * productDetail.getPrice();
-                    orderDetail.setPrice(totalPrice);
+                    orderDetail.setPrice(productDetail.getPrice());
                     orderDetail.setNote(orderDetailRequestDto.getNote());
 
                     // Lưu cập nhật OrderDetail
@@ -101,8 +100,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
 
                 // Tính tổng giá trị (số lượng * giá) và set vào OrderDetail
-                double totalPrice = orderDetailRequestDto.getQuantity() * productDetail.getPrice();
-                orderDetail.setPrice(totalPrice);
+                orderDetail.setPrice(productDetail.getPrice());
 
                 orderDetail.setNote(orderDetailRequestDto.getNote());
 
@@ -138,16 +136,19 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
         OrderDetail orderDetail = orderDetailRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn chi tiết"));
+
         orderDetail.setOrder(order);
         orderDetail.setProductDetail(productDetail);
         orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
-        double totalPrice = orderDetailRequestDto.getQuantity() * productDetail.getPrice();
-        orderDetail.setPrice(totalPrice);
+        orderDetail.setPrice(productDetail.getPrice());
         orderDetail.setNote(orderDetailRequestDto.getNote());
+
         orderDetailRepository.save(orderDetail);
+
         double orderTotal = orderDetailRepository.calculateOrderTotal(order.getId());
         order.setOrderTotalInitial(orderTotal);
         orderRepository.save(order);
+
         return true;
     }
 

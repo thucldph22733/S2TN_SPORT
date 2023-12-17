@@ -269,7 +269,7 @@ export default function OrderDetail() {
                     return orderDetail;
                 });
                 setOrderDetails(updatedOrderDetails);
-                const totalPrice = updatedOrderDetails.reduce((acc, orderDetail) => acc + orderDetail.price, 0);
+                const totalPrice = updatedOrderDetails.reduce((acc, orderDetail) => acc + orderDetail.price * orderDetail.quantity, 0);
                 setOrderTotalInitial(totalPrice);
                 // loadCustomerById();
             } else {
@@ -352,7 +352,6 @@ export default function OrderDetail() {
                     productDetailId: record.idProductDetail,
                     quantity: value,
                 });
-
                 if (response.status === 200) {
                     console.log('Số lượng sản phẩm đã được cập nhật');
                     // Gọi API để lấy thông tin order sau khi cập nhật số lượng
@@ -554,7 +553,7 @@ export default function OrderDetail() {
         },
 
         {
-            title: 'Tổng tiền',
+            title: 'Đơn giá',
             dataIndex: 'price',
             width: 60,
         },
@@ -727,8 +726,6 @@ export default function OrderDetail() {
     const handleCreateOrder = async () => {
         setIsCreatingOrder(true);
 
-
-
         let data = {
             voucherId: selectedVoucherId,
             orderTotal: orderTotal,
@@ -745,22 +742,30 @@ export default function OrderDetail() {
         if (isDeliveryEnabled) {
             // Lấy giá trị từ form
             const addressFormValues = form.getFieldsValue();
+
+            // Lấy thông tin địa chỉ từ giá trị select
+            const selectedCity = cities.find(city => city.code === Number(addressFormValues.city))?.name ?? addressFormValues.city;
+            const selectedDistrict = districts.find(district => district.code === Number(addressFormValues.district))?.name ?? addressFormValues.district;
+            const selectedWard = wards.find(ward => ward.code === Number(addressFormValues.ward))?.name ?? addressFormValues.ward;
+
             // Thêm các trường địa chỉ từ form vào data
             data = {
                 ...data,
                 recipientName: addressFormValues.recipientName,
                 phoneNumber: addressFormValues.phoneNumber,
-                city: cities.find(city => city.code === Number(addressFormValues.city))?.name ?? '',
-                district: districts.find(district => district.code === Number(addressFormValues.district))?.name ?? '',
-                ward: wards.find(ward => ward.code === Number(addressFormValues.ward))?.name ?? '',
+                city: selectedCity,
+                district: selectedDistrict,
+                ward: selectedWard,
                 addressDetail: addressFormValues.addressDetail,
             };
         }
 
         try {
             if (isDeliveryEnabled) {
+                // Gọi API với data mới
                 await OrderService.updateTimeLine2(id, data);
             } else {
+                // Gọi API với data mới
                 await OrderService.updateTimeLine(id, data);
             }
 
@@ -779,6 +784,7 @@ export default function OrderDetail() {
             setIsCreatingOrder(false);
         }
     };
+
 
 
     const [selectedPaymentId, setSelectedPaymentId] = useState(1); // Khởi tạo giá trị mặc định là 'cash'

@@ -6,6 +6,7 @@ import { HomeOutlined, SendOutlined, ShoppingCartOutlined } from '@ant-design/ic
 import imgage1 from '~/assets/images/product/product-21.jpg';
 import imgage2 from '~/assets/images/product/product-20.jpg';
 import { Link } from 'react-router-dom';
+import { MdLabelImportantOutline } from 'react-icons/md';
 
 
 function ProductDetail() {
@@ -33,7 +34,6 @@ function ProductDetail() {
             size: 'L',
             height: '1m69-1m75',
             weight: '58-66kg',
-
         },
         {
             size: 'XL',
@@ -64,50 +64,36 @@ function ProductDetail() {
             key: 'weight',
         },
     ];
-
+    const [selectedColor, setSelectedColor] = useState(null); // New state for selected color
 
     const [productDetail, setProductDetail] = useState({
-        name: '',
-        price: 0,
-        size: '',
+        name: 'Leopard Shirt Dress',
+        price: '8.000.000 VND',
         color: '',
-        quantity: 1, // Mặc định số lượng là 1
+        size: '',
+        quantity: 1,
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProductDetail({ ...productDetail, [name]: value });
+    const handleColorClick = (color) => {
+        setSelectedColor(color === selectedColor ? null : color);
+        setProductDetail({ ...productDetail, color });
     };
 
-    const handleAddCart = () => {
-        // Lưu thông tin sản phẩm vào localStorage
-        saveToLocalStorage(productDetail);
-
-        // Thông báo hoặc chuyển hướng đến trang giỏ hàng (nếu cần)
+    const handleAddCard = () => {
+        // Lưu giá trị từ các label vào localStorage
+        localStorage.setItem('product-detail', JSON.stringify({
+            name: getLabelValue('productName'),
+            price: getLabelValue('productPrice'),
+            color: productDetail.color,
+            size: productDetail.size,
+            quantity: productDetail.quantity,
+        }));
     };
 
-    const saveToLocalStorage = (product) => {
-        // Lấy danh sách sản phẩm từ localStorage (nếu có)
-        const existingProducts = JSON.parse(localStorage.getItem('cart')) || [];
-
-        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
-        const existingProductIndex = existingProducts.findIndex(
-            (item) =>
-                item.name === product.name &&
-                item.size === product.size &&
-                item.color === product.color
-        );
-
-        if (existingProductIndex !== -1) {
-            // Nếu sản phẩm đã tồn tại, cập nhật số lượng
-            existingProducts[existingProductIndex].quantity += product.quantity;
-        } else {
-            // Nếu sản phẩm chưa tồn tại, thêm mới vào danh sách
-            existingProducts.push(product);
-        }
-
-        // Lưu danh sách sản phẩm mới vào localStorage
-        localStorage.setItem('cart', JSON.stringify(existingProducts));
+    // Hàm để lấy giá trị từ các label
+    const getLabelValue = (key) => {
+        const labelElement = document.getElementById(key);
+        return labelElement ? labelElement.innerText : '';
     };
     return (
         <div className='product-detail'>
@@ -154,13 +140,25 @@ function ProductDetail() {
                     <Col span={12} xs={24} md={12} style={{ padding: '0 40px ' }}>
 
                         <Row>
-                            <h1 style={{ color: '#656565', fontSize: '23px' }}>Leopard Shirt Dress</h1>
+                            <h1
+                                style={{ color: '#656565', fontSize: '23px' }}
+                                id="productName"
+                                onChange={(e) => setProductDetail({ ...productDetail, name: e.target.innerText })}
+                            >
+                                {productDetail.name}
+                            </h1>
                         </Row>
                         <Row style={{ marginTop: '5px' }}>
                             <Rate style={{ fontSize: '16px', marginTop: '3px', marginRight: '5px' }} /><span>(Đánh giá)</span>
                         </Row>
                         <Row style={{ marginTop: '10px' }}>
-                            <label style={{ fontWeight: 'bolder', color: 'red' }} >8.000.000 VND</label>
+                            <label
+                                id="productPrice"
+                                style={{ fontWeight: 'bolder', color: 'red' }}
+                                onChange={(e) => setProductDetail({ ...productDetail, price: e.target.innerText })}
+                            >
+                                {productDetail.price}
+                            </label>
                         </Row>
                         <Row style={{ marginTop: '10px' }}>
                             Praesent ac condimentum felis.
@@ -171,9 +169,24 @@ function ProductDetail() {
                             <div className="productdisplay-right-size">
                                 <h1 style={{ color: '#656565', fontSize: '15px' }}>Màu sắc:</h1>
                                 <Row className='productdisplay-right-sizes'>
-                                    <label>Do</label>
-                                    <label >Xanh</label>
-                                    <label >Vang</label>
+                                    <label
+                                        style={{ backgroundColor: selectedColor === 'Do' ? 'red' : 'fbfbfb' }}
+                                        onClick={() => handleColorClick('Do')}
+                                    >
+                                        Do
+                                    </label>
+                                    <label
+                                        style={{ backgroundColor: selectedColor === 'Xanh' ? 'red' : 'fbfbfb' }}
+                                        onClick={() => handleColorClick('Xanh')}
+                                    >
+                                        Xanh
+                                    </label>
+                                    <label
+                                        style={{ backgroundColor: selectedColor === 'Vang' ? 'red' : 'fbfbfb' }}
+                                        onClick={() => handleColorClick('Vang')}
+                                    >
+                                        Vang
+                                    </label>
                                 </Row>
                             </div>
                         </Row>
@@ -181,7 +194,12 @@ function ProductDetail() {
                             <div className="productdisplay-right-size">
                                 <h1 style={{ color: '#656565', fontSize: '15px' }}>Kích thước:</h1>
                                 <Row className='productdisplay-right-sizes'>
-                                    <label >S</label>
+                                    <label
+                                        id="productSize"
+                                        onChange={(e) => setProductDetail({ ...productDetail, size: e.target.innerText })}
+                                    >
+                                        S
+                                    </label>
                                     <label>M</label>
                                     <label>L</label>
                                     <label>XL</label>
@@ -191,10 +209,14 @@ function ProductDetail() {
                         </Row>
                         <Row style={{ marginTop: '10px' }}>
                             <Col span={5}>
-                                <InputNumber min={1} max={10} defaultValue={1} />
+                                <InputNumber
+                                    value={productDetail.quantity}
+                                    onChange={(value) => setProductDetail({ ...productDetail, quantity: value })}
+                                    min={1} max={10} defaultValue={1}
+                                />
                             </Col>
                             <Col span={10}>
-                                <Button type='primary' style={{ marginLeft: '20px' }} icon={<ShoppingCartOutlined />} onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
+                                <Button type='primary' onClick={handleAddCard} style={{ marginLeft: '20px' }} icon={<ShoppingCartOutlined />} >Thêm vào giỏ hàng</Button>
                             </Col>
                         </Row>
                         <Row style={{ marginTop: '10px' }}>

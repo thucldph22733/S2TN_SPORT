@@ -17,6 +17,9 @@ import ProductDetail from './pages/Product/ProductDetail';
 import ForgotPassword from './pages/Auth/ForgotPassword';
 import Order from './pages/Order/Order';
 import Profile from './pages/Profile/Profile';
+import Address from './pages/Profile/Address';
+import ChangePassword from './pages/Auth/ChangePassword';
+import User from './pages/Profile/User';
 
 function App() {
     const router = createBrowserRouter([
@@ -50,10 +53,7 @@ function App() {
                     path: path_name.product,
                     element: <Product />,
                 },
-                {
-                    path: path_name.order,
-                    element: <Order />,
-                },
+
                 {
                     path: path_name.product_detail,
                     element: <ProductDetail />,
@@ -79,11 +79,30 @@ function App() {
                     element: <Checkout />,
                 },
                 {
-                    path: path_name.user,
+                    path: '/',
                     element: <Profile />,
+                    children: [
+                        {
+                            path: path_name.address,
+                            element: <Address />,
+                        },
+                        {
+                            path: path_name.change_password,
+                            element: <ChangePassword />,
+                        },
+                        {
+                            path: path_name.order,
+                            element: <Order />,
+                        },
+                        {
+                            path: path_name.user,
+                            element: <User />,
+                        },
+                    ],
                 },
             ],
         },
+
     ]);
     return <RouterProvider router={router} />;
 }

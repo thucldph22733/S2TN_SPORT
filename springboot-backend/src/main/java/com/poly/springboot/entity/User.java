@@ -41,18 +41,12 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "_password")
     private String password;
 
-    //    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(
-//            name = "user_roles",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "role_id"))
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "users")
-    private List<Address> address;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Address> addresses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

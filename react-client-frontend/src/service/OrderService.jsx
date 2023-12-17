@@ -4,9 +4,9 @@ const API_URL = 'orders/';
 
 
 const OrderService = {
-    getAll: (pageNo, pageSize, orderStatusId) => {
-        return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, orderStatusId }
+    getAllOrdersByUserId: (pageNo, pageSize, userId, orderStatusId) => {
+        return HttpClient.get(`${API_URL}getAllOrdersByUserId`, {
+            params: { pageNo, pageSize, userId, orderStatusId }
         })
             .then(response => response.data)
             .catch(error => {

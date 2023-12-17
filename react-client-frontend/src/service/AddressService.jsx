@@ -31,6 +31,15 @@ const AddressService = {
                 throw error;
             });
     },
+    updateDefaultAddress: (id) => {
+        return HttpClient.put(`${API_URL}updateDefaultAddress?id=${id}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in update:', error);
+                throw error;
+            });
+    },
+
 
     delete: (id) => {
         return HttpClient.delete(`${API_URL}delete?id=${id}`)

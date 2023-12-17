@@ -1,6 +1,6 @@
 import './Header.css';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // import Icon
 import logo from '~/assets/images/logo.png';
 import path_name from '~/core/constants/routers';
@@ -9,9 +9,20 @@ import { AutoComplete, Avatar, Badge, Button, Col, Dropdown, Input, Row, Tooltip
 import { ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 
 function Header() {
+
+    const navigate = useNavigate();
+    //Đăng xuất
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/')
+    }
+    //Lấy user từ local
+    const userString = localStorage.getItem('user2');
+    const user = userString ? JSON.parse(userString) : null;
+
+    // set heder đứng im khi kéo chuột xuống
     const [menu, setMenu] = useState('home');
     const [isHeaderFixed, setIsHeaderFixed] = useState(false);
-
     useEffect(() => {
         const handleScroll = () => {
             const scrollPosition = window.scrollY;
@@ -25,48 +36,41 @@ function Header() {
         };
     }, []);
 
-
     const items = [
-        {
-            key: '1',
+        !user && {
             label: (
                 <Link to={path_name.login}>
                     Đăng nhập
                 </Link>
             ),
         },
-        {
-            key: '5',
+        !user && {
             label: (
                 <Link to={path_name.register}>
                     Đăng ký
                 </Link>
             ),
         },
-        {
-            key: '2',
-            label: (
-                <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-                    Đăng xuất
-                </a>
-            ),
-        },
-        {
-            key: '3',
-            label: (
-                <Link to={path_name.order}>
-                    Đơn mua
-                </Link>
-            ),
-        },
-        {
-            key: '4',
+        user && {
             label: (
                 <Link to={path_name.user}>
                     Tài khoản của tôi
                 </Link>
             ),
         },
+        user && {
+            label: (
+                <Link to={path_name.order}>
+                    Đơn mua
+                </Link>
+            ),
+        },
+        user && {
+            label: "Đăng xuất",
+            onClick: handleLogout,
+        },
+
+
     ];
     return (
         <header className={`header ${isHeaderFixed ? 'fixed' : ''}`}>
@@ -144,7 +148,8 @@ function Header() {
                                 <ShoppingCartOutlined style={{ fontSize: '22px', color: 'black' }} />
                             </Badge>
                         </Link>
-                        <Link to={path_name.login} style={{ margin: '10px 5px 10px 0' }}>
+
+                        <Link style={{ margin: '10px 5px 10px 0' }}>
                             <Dropdown
                                 menu={{
                                     items,
@@ -152,9 +157,12 @@ function Header() {
                                 placement="bottomLeft"
                                 arrow
                             >
-                                <Avatar icon={<UserOutlined />} />
+                                <Avatar icon={<UserOutlined />}> </Avatar>
+
                             </Dropdown>
+
                         </Link>
+                        {user && <span style={{ margin: '17px 3px' }}>{user.userName}</span>}
                     </Row>
                 </Col>
 

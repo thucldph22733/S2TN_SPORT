@@ -30,7 +30,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/v1/orders/")
-@Tag(name = "Orders",description = "( Rest API Hiển thị, thêm, sửa, phân trang, tìm kiếm, lọc hóa đơn )")
+@Tag(name = "Orders", description = "( Rest API Hiển thị, thêm, sửa, phân trang, tìm kiếm, lọc hóa đơn )")
 @Validated
 public class OrderController {
 
@@ -41,11 +41,11 @@ public class OrderController {
     @GetMapping("getAll")
     public ResponseEntity<?> getOrders(@RequestParam(defaultValue = "0") Integer pageNo,
                                        @RequestParam(defaultValue = "10") Integer pageSize,
-                                       @RequestParam(required = false) Long orderStatusId){
+                                       @RequestParam(required = false) Long orderStatusId) {
 
-        Pageable pageable = PageRequest.of(pageNo,pageSize);
-        Page<Order> orderPage = orderService.getAllOrders(orderStatusId,pageable);
-        List<Order> orderList = orderPage.getContent() ;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Order> orderPage = orderService.getAllOrders(orderStatusId, pageable);
+        List<Order> orderList = orderPage.getContent();
         return ResponseHandler
                 .generateResponse(
                         HttpStatus.OK,
@@ -55,7 +55,7 @@ public class OrderController {
     //ham thong ke doanh thu theo thang
 
     @GetMapping("getAllList")
-    public ResponseEntity<List<SecondOrderResponseDto>> getOrderList(){
+    public ResponseEntity<List<SecondOrderResponseDto>> getOrderList() {
 
         List<SecondOrderResponseDto> orderResponseDtoList = orderService.getAllOrde();
         return ResponseEntity
@@ -64,16 +64,17 @@ public class OrderController {
     }
 
     @GetMapping("findOrderById")
-    public ResponseEntity<Order> findOrderById(@RequestParam Long id){
+    public ResponseEntity<Order> findOrderById(@RequestParam Long id) {
 
         Order order = orderService.findOrderById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(order);
     }
-//    phan trang
+
+    //    phan trang
     @GetMapping("pagination")
-    public ResponseEntity<List<OrderResponseDto>> getPaginationOrder(@RequestParam Optional<Integer> pageNo, @RequestParam Integer pageSize){
+    public ResponseEntity<List<OrderResponseDto>> getPaginationOrder(@RequestParam Optional<Integer> pageNo, @RequestParam Integer pageSize) {
         List<OrderResponseDto> orderResponseDtoList = orderService.getPagination(pageNo.orElse(0));
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -82,22 +83,37 @@ public class OrderController {
 
     // create order rest api
     @PostMapping("create")
-    public ResponseEntity<ResponseDto> createOrder(@Valid @RequestBody OrderRequestDto orderRequestDto){
+    public ResponseEntity<ResponseDto> createOrder(@Valid @RequestBody OrderRequestDto orderRequestDto) {
         Boolean isCreated = orderService.createOrder(orderRequestDto);
-        if (isCreated){
+        if (isCreated) {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
     @GetMapping("getAllOrderByStatusId")
     public ResponseEntity<?> getAllOrderByStatusId(@RequestParam(defaultValue = "0") Integer pageNo,
-                                          @RequestParam(defaultValue = "10") Integer pageSize) {
+                                                   @RequestParam(defaultValue = "10") Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<Order> orderPage = orderService.findAllOrderByStatusId(pageable);
+        List<Order> orderList = orderPage.getContent();
+        return ResponseHandler
+                .generateResponse(
+                        HttpStatus.OK,
+                        orderList,
+                        orderPage);
+    }
+
+    @GetMapping("getAllOrdersByUserId")
+    public ResponseEntity<?> getAllOrdersByUserId(@RequestParam(defaultValue = "0") Integer pageNo,
+                                                  @RequestParam(defaultValue = "10") Integer pageSize
+                                                 ,@RequestParam(required = false) Long userId,
+                                                  @RequestParam(required = false) Long orderStatusId) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Order> orderPage = orderService.findAllOrdersByUserId(userId,orderStatusId, pageable);
         List<Order> orderList = orderPage.getContent();
         return ResponseHandler
                 .generateResponse(
@@ -117,66 +133,67 @@ public class OrderController {
                     .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
-//     update order rest api
-    @PutMapping ("update")
-    public ResponseEntity<ResponseDto> updateOrder(@Valid @RequestBody OrderRequestDto orderRequestDto,@RequestParam Long id){
-        Boolean isUpdated = orderService.updateOrder(orderRequestDto,id);
-        if (isUpdated){
+
+    //     update order rest api
+    @PutMapping("update")
+    public ResponseEntity<ResponseDto> updateOrder(@Valid @RequestBody OrderRequestDto orderRequestDto, @RequestParam Long id) {
+        Boolean isUpdated = orderService.updateOrder(orderRequestDto, id);
+        if (isUpdated) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
-    @PutMapping ("updateOrderStatus")
-    public ResponseEntity<ResponseDto> updateOrderStatus(@Valid @RequestBody OrderUpdateRequestDto orderUpdateRequestDto, @RequestParam Long id){
-        Boolean isUpdated = orderService.updateOrderStatus(id,orderUpdateRequestDto);
+    @PutMapping("updateOrderStatus")
+    public ResponseEntity<ResponseDto> updateOrderStatus(@Valid @RequestBody OrderUpdateRequestDto orderUpdateRequestDto, @RequestParam Long id) {
+        Boolean isUpdated = orderService.updateOrderStatus(id, orderUpdateRequestDto);
 
-        if (isUpdated){
+        if (isUpdated) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
-    @PutMapping ("updateOrderStatusCancle")
-    public ResponseEntity<ResponseDto> updateOrderStatusCancle(@Valid @RequestBody OrderUpdateRequestDto orderUpdateRequestDto, @RequestParam Long id){
-        Boolean isUpdated = orderService.updateOrderStatusCancle(id,orderUpdateRequestDto);
+    @PutMapping("updateOrderStatusCancle")
+    public ResponseEntity<ResponseDto> updateOrderStatusCancle(@Valid @RequestBody OrderUpdateRequestDto orderUpdateRequestDto, @RequestParam Long id) {
+        Boolean isUpdated = orderService.updateOrderStatusCancle(id, orderUpdateRequestDto);
 
-        if (isUpdated){
+        if (isUpdated) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
-    @PutMapping ("updateTimeLine")
-    public ResponseEntity<ResponseDto> updateOrderTimeLine(@Valid @RequestBody OrderRequestDto orderRequestDto,@RequestParam Long id){
-        Boolean isUpdated = orderService.updateOrders(orderRequestDto,id);
-        if (isUpdated){
+    @PutMapping("updateTimeLine")
+    public ResponseEntity<ResponseDto> updateOrderTimeLine(@Valid @RequestBody OrderRequestDto orderRequestDto, @RequestParam Long id) {
+        Boolean isUpdated = orderService.updateOrders(orderRequestDto, id);
+        if (isUpdated) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
-    @PutMapping ("updateTimeLine2")
-    public ResponseEntity<ResponseDto> updateOrderTimeLine2(@Valid @RequestBody OrderRequestDto orderRequestDto,@RequestParam Long id){
-        Boolean isUpdated = orderService.updateOrdersOnline(orderRequestDto,id);
-        if (isUpdated){
+    @PutMapping("updateTimeLine2")
+    public ResponseEntity<ResponseDto> updateOrderTimeLine2(@Valid @RequestBody OrderRequestDto orderRequestDto, @RequestParam Long id) {
+        Boolean isUpdated = orderService.updateOrdersOnline(orderRequestDto, id);
+        if (isUpdated) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 

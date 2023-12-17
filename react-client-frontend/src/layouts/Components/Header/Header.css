@@ -49,35 +49,6 @@
     transform: scale(1);
 }
 
-.header__menu ul li:hover a:after {
-    transform: scale(1);
-}
-
-/* Dropdown */
-.header__menu ul li:hover .dropdown {
-    top: 32px;
-    opacity: 1;
-    visibility: visible;
-}
-
-.header__menu ul li:last-child {
-    margin-right: 0;
-}
-
-.header__menu ul li .dropdown {
-    position: absolute;
-    left: 0;
-    top: 56px;
-    width: 150px;
-    background: #111111;
-    text-align: left;
-    padding: 5px 0;
-    z-index: 9;
-    opacity: 0;
-    visibility: hidden;
-    transition: top 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-}
-
 /* Menu Link */
 .header__menu ul li a {
     font-size: 16px;
@@ -99,6 +70,3 @@
     transition: transform 0.5s ease-in-out;
     transform: scale(0);
 }
-
-/* Search and Icons */
-/* Add your styles for the search and icons here */

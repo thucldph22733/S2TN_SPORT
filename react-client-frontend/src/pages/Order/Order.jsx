@@ -32,7 +32,7 @@ const columns = [
         title: 'Loại đơn hàng',
         dataIndex: 'orderTypeName',
         key: 'orderTypeName',
-        width: "10%",
+        width: "15%",
         render: (text) => (
             text === "InStore" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
                 : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>
@@ -105,13 +105,14 @@ const columns = [
                 >
                     <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
                 </Popconfirm>
-
             </Space>
         },
     },
 ];
 
 function Order() {
+    const userString = localStorage.getItem('user2');
+    const user = userString ? JSON.parse(userString) : null;
 
     const [loading, setLoading] = useState(false);
 
@@ -121,26 +122,27 @@ function Order() {
 
     const [orderStatusId, setOrderStatusId] = useState(null);
 
-    // const fetchOrders = async () => {
-    //     setLoading(true)
-    //     await OrderService.getAll(pagination.current - 1, pagination.pageSize, orderStatusId)
-    //         .then(response => {
+    const fetchOrders = async () => {
+        setLoading(true)
+        await OrderService.getAllOrdersByUserId(pagination.current - 1, pagination.pageSize, user.id, orderStatusId)
+            .then(response => {
 
-    //             setOrders(response.data);
-    //             setPagination({
-    //                 ...pagination,
-    //                 total: response.totalCount,
-    //             });
-    //             console.log(response.data)
-    //             setLoading(false)
-    //         }).catch(error => {
-    //             console.error(error);
-    //         })
-    // }
+                setOrders(response.data);
+                console.log(response.data)
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
+                console.log(response.data)
+                setLoading(false)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
 
-    // useEffect(() => {
-    //     fetchOrders();
-    // }, [pagination.current, pagination.pageSize, orderStatusId]);
+    useEffect(() => {
+        fetchOrders();
+    }, [pagination.current, pagination.pageSize, orderStatusId]);
 
     const handleTableChange = (pagination) => {
         setPagination({
@@ -212,22 +214,8 @@ function Order() {
     };
     return (
         <>
-            {/* <div className='container' style={{ height: '80px', padding: '30px 10px' }} >
-                <Breadcrumb
-                    style={{ fontSize: '15px' }}
-
-                    items={[
-                        {
-                            title: <Link to=""><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
-                        },
-                        {
-                            title: <Link to="">Đơn hàng</Link>,
-                        },
-                    ]}
-                />
-            </div> */}
             <div className='container'>
-                <h5 style={{ textAlign: 'center' }}>Đơn hàng của tôi</h5>
+                <h6>Đơn hàng của tôi</h6>
                 <Tabs defaultActiveKey=""
                     items={items}
                     onChange={handleTabChange}></Tabs>

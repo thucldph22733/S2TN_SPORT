@@ -1,16 +1,13 @@
 import { FileTextOutlined, HomeOutlined, MehOutlined, UserOutlined } from '@ant-design/icons'
 import { Breadcrumb, Col, Row } from 'antd'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { Children } from 'react'
+import { Link, Outlet } from 'react-router-dom'
 import { FaMapLocationDot } from "react-icons/fa6";
 import { TbPasswordUser } from "react-icons/tb";
-import ChangePassword from '../Auth/ChangePassword';
-import User from './User';
-import Order from '../Order/Order';
-import Address from './Address';
+import path_name from '~/core/constants/routers';
 function Profile() {
     return (
-        <div className='container'>
+        <div className='container' style={{ marginBottom: '100px' }}>
             <div className='container' style={{ height: '80px', padding: '30px 10px' }} >
                 <Breadcrumb
                     style={{ fontSize: '15px' }}
@@ -26,23 +23,23 @@ function Profile() {
                 />
             </div>
             <Row>
-                <Col span={5} style={{ borderRight: '1px solid #cdcdcd' }}>
+                <Col span={5} style={{ borderRight: '1px solid #cdcdcd', paddingLeft: '10px' }}>
                     <h6><MehOutlined style={{ marginRight: '5px' }} />Tài khoản của tôi</h6>
                     <Row>
-                        <Link style={{ margin: '10px 20px' }} to={""}><UserOutlined style={{ marginRight: '5px', marginBottom: '5px' }} />Hồ sơ</Link>
+                        <Link style={{ margin: '10px 20px' }} to={path_name.user}><UserOutlined style={{ marginRight: '5px', marginBottom: '5px' }} />Hồ sơ</Link>
                     </Row>
                     <Row>
-                        <Link style={{ margin: '10px 20px' }} to={""}><FaMapLocationDot style={{ marginRight: '5px', marginBottom: '5px' }} />Địa chỉ</Link>
+                        <Link style={{ margin: '10px 20px' }} to={path_name.address}><FaMapLocationDot style={{ marginRight: '5px', marginBottom: '5px' }} />Địa chỉ</Link>
                     </Row>
                     <Row>
-                        <Link style={{ margin: '10px 20px' }} to={""}><TbPasswordUser style={{ marginRight: '5px', marginBottom: '5px' }} />Đổi mật khẩu</Link>
+                        <Link style={{ margin: '10px 20px' }} to={path_name.change_password}><TbPasswordUser style={{ marginRight: '5px', marginBottom: '5px' }} />Đổi mật khẩu</Link>
                     </Row>
                     <Row>
-                        <Link style={{ margin: '10px 20px' }} to={""}><FileTextOutlined style={{ marginRight: '5px', marginBottom: '5px' }} />Đơn mua</Link>
+                        <Link style={{ margin: '10px 20px' }} to={path_name.order}><FileTextOutlined style={{ marginRight: '5px', marginBottom: '5px' }} />Đơn mua</Link>
                     </Row>
                 </Col>
                 <Col span={19}>
-                    <Address />
+                    <Outlet />
                 </Col>
             </Row>
         </div>

@@ -1,40 +1,48 @@
 import React from 'react';
 import { LockOutlined, MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Form, Input } from 'antd';
+import { Button, Checkbox, Col, Form, Input, notification } from 'antd';
 import './Auth.css'
-// import { useAuth } from '~/components/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import path_name from '~/core/constants/routers';
-// import path_name from '~/constants/routers';
+import AuthService from '~/service/AuthService';
 
 const Register = () => {
     const navigate = useNavigate();
 
     const [form] = Form.useForm();
-    // const { login } = useAuth();
 
     const handleSubmit = () => {
+
         const data = form.getFieldsValue();
 
-        // login(data);
-        // navigate(path_name.newSell)
+        AuthService.register(data).then(() => {
+            notification.success({
+                message: 'Thông báo',
+                description: 'Đăng ký thành công!',
+            });
+            navigate("/login")
+        }).catch(() => {
+            notification.error({
+                message: 'Thông báo',
+                description: 'Đăng ký thất bại!',
+            });
+        })
     };
 
     return (
         <Col span={8} offset={8} className='auth-form'>
             <Form
-
                 onFinish={handleSubmit}
                 form={form}
             >
                 <h4 className='title_login'>ĐĂNG KÝ</h4>
                 <div className='auth_input'>
                     <Form.Item
-                        name="email"
+                        name="userName"
                         rules={[
                             {
                                 required: true,
-                                message: 'Vui lòng nhập địa chỉ email!',
+                                message: 'Vui lòng nhập họ và tênl!',
                             },
                         ]}
                     >
@@ -45,11 +53,11 @@ const Register = () => {
                 </div>
                 <div className='auth_input'>
                     <Form.Item
-                        name="email"
+                        name="phoneNumber"
                         rules={[
                             {
                                 required: true,
-                                message: 'Vui lòng nhập địa chỉ email!',
+                                message: 'Vui lòng nhập số điện thoại!',
                             },
                         ]}
                     >
@@ -75,11 +83,11 @@ const Register = () => {
                 </div>
                 <div className='auth_input'>
                     <Form.Item
-                        name="email"
+                        name="password"
                         rules={[
                             {
                                 required: true,
-                                message: 'Vui lòng nhập địa chỉ email!',
+                                message: 'Vui lòng nhập mật khẩu!',
                             },
                         ]}
                     >

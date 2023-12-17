@@ -31,7 +31,7 @@ const Contact = () => {
                         <Col xs={24} lg={12}>
                             <div className="contact__text">
                                 <div className="section-title">
-                                    <h6 style={{ color: '#2123bf' }}>Cửa hàng S2TN SPORT</h6>
+                                    <h5 style={{ color: '#2123bf' }}>Cửa hàng S2TN SPORT</h5>
                                     <p>Hân hạnh được phục vụ quý khách!</p>
                                 </div>
                                 <p>
@@ -69,7 +69,7 @@ const Contact = () => {
                                                 },
                                             ]}
                                         >
-                                            <Input placeholder="Họ và tên" />
+                                            <Input placeholder="Họ và tên" style={{ height: '45px' }} />
                                         </Form.Item>
                                     </Col>
                                     <Col xs={24} lg={12}>
@@ -83,7 +83,7 @@ const Contact = () => {
                                                 },
                                             ]}
                                         >
-                                            <Input placeholder="Email" />
+                                            <Input placeholder="Email" style={{ height: '45px' }} />
                                         </Form.Item>
                                     </Col>
                                     <Col xs={24}>
@@ -96,12 +96,12 @@ const Contact = () => {
                                                 },
                                             ]}
                                         >
-                                            <Input.TextArea placeholder="Nội dung" autoSize={{ minRows: 3, maxRows: 15 }} />
+                                            <Input.TextArea placeholder="Nội dung" rows={5} />
                                         </Form.Item>
                                     </Col>
                                     <Col xs={24}>
                                         <Form.Item>
-                                            <Button type="primary" htmlType="submit" icon={<SiMinutemailer />}>
+                                            <Button style={{ height: '45px', fontSize: '16px' }} type="primary" htmlType="submit" icon={<SiMinutemailer />}>
                                                 Gửi thông báo
                                             </Button>
                                         </Form.Item>

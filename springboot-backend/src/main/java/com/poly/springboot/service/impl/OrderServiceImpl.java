@@ -57,28 +57,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-//    @Override
-//    public List<OrderResponseDto> getAllOrdersCompleted() {
-//        return orderRepository.findAllByStatusId().stream().map(
-//                order -> new OrderResponseDto(
-//                        order.getId(),
-//                        order.getVoucher() != null ? order.getVoucher().getId() : null,
-//                        order.getUser() != null ? order.getUser().getId() : null,
-//                        order.getUser() != null ? order.getUser().getUsersName() : "",  // Thay thế từ getCustomer() sang getUser()
-//                        order.getUser() != null ? order.getUser().getPhoneNumber() : "",  // Thay thế từ getCustomer() sang getUser()
-//                        order.getPayment() != null ? order.getPayment().getPaymentName() : "",
-//                        order.getAddressDetail(),
-//                        order.getWard(),
-//                        order.getDistrict(),
-//                        order.getCity(),
-//                        order.getVoucher() != null ? order.getVoucher().getVoucherName() : "",
-//                        order.getOrderStatus() != null ? order.getOrderStatus().getStatusName() : "",
-//                        order.getNote(),
-//                        order.getOrderTotal(),
-//                        order.getOrderTotalInitial()
-//                )
-//        ).collect(Collectors.toList());
-//    }
 
     @Override
     public List<OrderResponseDto> getAllOrders() {
@@ -254,10 +232,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Boolean deleteOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));
-
-        order.setDeleted(false);
-
-        orderRepository.save(order);
+         orderRepository.delete(order);
+//        order.setDeleted(false);
+//
+//        orderRepository.save(order);
         return true;
     }
 
@@ -270,6 +248,16 @@ public class OrderServiceImpl implements OrderService {
     public Double revenueToday() {
         return orderRepository.revenueToday();
     }
+
+    @Override
+    public Page<Order> findAllOrdersByUserId(Long userId,Long orderStatusId, Pageable pageable) {
+        Page<Order> orderPage;
+        if (orderStatusId == null){
+            orderPage = orderRepository.findAllOrdersByUserId(userId,pageable);
+        }else {
+            orderPage = orderRepository.findAllOrdersByUserId(userId,orderStatusId,pageable);
+        }
+        return orderPage;    }
 
     @Override
     public Boolean updateOrder(OrderRequestDto orderRequestDto, Long id) {

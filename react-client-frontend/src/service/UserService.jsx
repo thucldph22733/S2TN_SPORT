@@ -3,32 +3,11 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'users/';
 
 const UserService = {
-    getAll: (pageNo, pageSize, name, phoneNumber, email, deleted) => {
-        return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, phoneNumber, email, deleted }
-        })
-            .then(response => response.data)
+    getUserById: (id) => {
+        return HttpClient.get(`${API_URL}getUserById?id=${id}`)
+            .then(response => response)
             .catch(error => {
                 console.error('Error in getAll:', error);
-                throw error;
-            });
-    },
-    getAllUserByRole: (pageNo, pageSize, name, phoneNumber, email, deleted) => {
-        return HttpClient.get(`${API_URL}getUserByRole`, {
-            params: { pageNo, pageSize, name, phoneNumber, email, deleted }
-        })
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in getAll:', error);
-                throw error;
-            });
-    },
-
-    create: (data) => {
-        return HttpClient.post(`${API_URL}create`, data)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in create:', error);
                 throw error;
             });
     },
@@ -54,14 +33,6 @@ const UserService = {
             });
     },
 
-    delete: (id) => {
-        return HttpClient.delete(`${API_URL}delete?id=${id}`)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in delete:', error);
-                throw error;
-            });
-    },
 };
 
 export default UserService;

@@ -1,23 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Form, Input, Row } from 'antd';
+import { Button, Checkbox, Col, Form, Input, Row, notification } from 'antd';
 import './Auth.css'
 // import { useAuth } from '~/components/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import path_name from '~/core/constants/routers';
+import AuthService from '~/service/AuthService';
 // import path_name from '~/constants/routers';
 
 const Login = () => {
     const navigate = useNavigate();
 
     const [form] = Form.useForm();
-    // const { login } = useAuth();
-
     const handleSubmit = () => {
         const data = form.getFieldsValue();
+        console.log(data);
+        AuthService.login(data).then((response) => {
+            console.log(response)
+            localStorage.setItem('access_token2', response.access_token)
+            localStorage.setItem('refresh_token2', response.refresh_token)
+            const user = JSON.stringify(response.user);
+            localStorage.setItem('user2', user)
 
-        // login(data);
-        // navigate(path_name.newSell)
+            notification.success({
+                message: 'Thông báo',
+                description: 'Đăng nhập thành công!',
+            });
+            navigate("/")
+
+        }).catch(err => {
+            notification.error({
+                message: 'Thông báo',
+                description: 'Đăng nhập thành công!',
+            });
+        });
     };
 
     return (

@@ -10,6 +10,7 @@ import com.poly.springboot.entity.User;
 import com.poly.springboot.entity.Voucher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public interface OrderService {
 
     Double revenueToday();
 
+    Page<Order> findAllOrdersByUserId(Long userId,Long orderStatusId, Pageable pageable);
 
     List<OrderResponseDto> getAllOrders();
 

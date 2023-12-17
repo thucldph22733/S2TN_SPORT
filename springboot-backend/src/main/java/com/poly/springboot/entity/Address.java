@@ -36,11 +36,8 @@ public class Address extends BaseEntity{
     @Column(name = "city")  //tinh/thanh pho
     private String city;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_address",
-            joinColumns = @JoinColumn(name = "address_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> users;
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private User user;
+
 }

@@ -3,7 +3,7 @@ import { Form, Input, Button, notification, Row, Col } from 'antd';
 import UserService from '~/service/UserService';
 
 const ChangePassword = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token2');
 
     const [form] = Form.useForm();
     const handleSubmit = () => {

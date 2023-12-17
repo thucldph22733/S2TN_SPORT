@@ -157,18 +157,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(Long id) {
+    public UserResponseDto getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id khách hàng này!"));
-        return user;
+        return mapUserToDto(user);
     }
 
     @Override
     public Integer countDeletedUsersInDateRange() {
-
-
             return userRepository.countDeletedUsersInDateRange();
-
     }
 
 }

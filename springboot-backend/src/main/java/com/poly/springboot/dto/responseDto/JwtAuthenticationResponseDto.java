@@ -18,9 +18,5 @@ public class JwtAuthenticationResponseDto {
     @JsonProperty("refresh_token")
     private String refreshToken;
 
-    private Long id;
-
-    private String userName;
-
-    private Role role;
+    private UserResponseDto user;
 }

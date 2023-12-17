@@ -1,12 +1,12 @@
 package com.poly.springboot.dto.responseDto;
 
 
-//import com.poly.springboot.entity.Role;
 import com.poly.springboot.entity.Role;
 import lombok.*;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.Date;
+
 
 @Setter
 @Getter

@@ -7,6 +7,7 @@ import com.poly.springboot.dto.requestDto.RegisterRequestDto;
 import com.poly.springboot.dto.responseDto.JwtAuthenticationResponseDto;
 import com.poly.springboot.dto.responseDto.RegisterResponseDto;
 //import com.poly.springboot.entity.Role;
+import com.poly.springboot.dto.responseDto.UserResponseDto;
 import com.poly.springboot.entity.Role;
 import com.poly.springboot.entity.User;
 import com.poly.springboot.exception.AlreadyExistsException;
@@ -44,14 +45,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //        Role userRole = roleRepository.findByRoleName("USER")
 //                .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy vai trò này!"));
 
-        User user = User.builder()
-                .usersName(registerRequestDto.getUserName())
-                .phoneNumber(registerRequestDto.getPhoneNumber())
-                .email(registerRequestDto.getEmail())
-                .password(passwordEncoder.encode(registerRequestDto.getPassword()))
-//                .roles(List.of(userRole))
-                .role(Role.USER)
-                .build();
+        User user = new User();
+        user.setUsersName(registerRequestDto.getUserName());
+        user.setPhoneNumber(registerRequestDto.getPhoneNumber());
+        user.setEmail(registerRequestDto.getEmail());
+        user.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
+        user.setRole(Role.USER);
+        user.setDeleted(true);
+
 
         userRepository.save(user);
         return this.userMapper(user);
@@ -74,9 +75,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return JwtAuthenticationResponseDto.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
-                    .id(user.getId())
-                    .userName(user.getUsersName())
-                    .role(user.getRole())
+                    .user(mapUserToDto(user))
                     .build();
         } catch (BadCredentialsException e) {
             // Xử lý khi mật khẩu không chính xác
@@ -97,12 +96,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return JwtAuthenticationResponseDto.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshTokenRequestDto.getToken())
-                    .userName(user.getUsersName())
-//                        .roleList(user.getRoles().stream().map(Role::getRoleName).toList())
-                    .role(user.getRole())
+                    .user(mapUserToDto(user))
                     .build();
         }
         return null;
+    }
+
+    private UserResponseDto mapUserToDto(User user) {
+        return new UserResponseDto(
+                user.getId(),
+                user.getUsersName(),
+                user.getPhoneNumber(),
+                user.getEmail(),
+                user.getGender(),
+                user.getBirthOfDay(),
+                user.getDeleted(),
+                user.getRole(),
+                user.getCreatedAt());
+
     }
 
     public RegisterResponseDto userMapper(User user) {

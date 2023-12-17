@@ -10,12 +10,13 @@
 }
 .contact__text .section-title {
     text-align: left;
-    margin-bottom: 40px;
+    margin-bottom: 35px;
 }
-
+.contact__text p {
+    font-size: 16px;
+}
 .contact_icon {
     font-size: 19px;
     margin-right: 5px;
     color: #020203;
 }
-

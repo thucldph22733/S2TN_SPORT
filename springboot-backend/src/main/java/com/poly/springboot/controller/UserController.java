@@ -136,11 +136,11 @@ public class UserController {
     }
 
     @GetMapping("getUserById")
-    public ResponseEntity<User> getUserById(@RequestParam Long id) {
-        User User = userService.getUserById(id);
+    public ResponseEntity<UserResponseDto> getUserById(@RequestParam Long id) {
+        UserResponseDto userResponseDto = userService.getUserById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(User);
+                .body(userResponseDto);
     }
 
 }

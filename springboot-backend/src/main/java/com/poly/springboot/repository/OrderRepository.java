@@ -66,5 +66,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "FROM Order o " +
             "GROUP BY o.orderStatus.statusName")
     List< Object[]> getTotalOrdersByStatus();
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.deleted = true AND o.orderStatus.id = :orderStatusId")
+    Page<Order> findAllOrdersByUserId(@Param("userId") Long userId,@Param("orderStatusId") Long orderStatusId,Pageable pageable);
+
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.deleted = true")
+    Page<Order> findAllOrdersByUserId(@Param("userId") Long userId,Pageable pageable);
 }
 

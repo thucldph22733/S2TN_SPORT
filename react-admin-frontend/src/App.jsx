@@ -2,7 +2,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import path_name from '~/constants/routers';
 // pages
-import Product from './pages/Products/Product';
 import Login from './pages/Auth/Login';
 import Order from './pages/Orders/Order';
 import ForgotPassword from './pages/Auth/ForgotPassword';
@@ -60,7 +59,7 @@ function App() {
                 },
                 {
                     path: path_name.product,
-                    element: <Product />,
+                    element: <ProductDetail />,
                 },
                 {
                     path: path_name.brand,

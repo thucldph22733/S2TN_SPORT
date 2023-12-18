@@ -7,8 +7,8 @@ import {
     notification,
     Input,
     Tag,
-    Button,
-    Modal
+    Modal,
+    Button
 } from 'antd';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
@@ -222,7 +222,7 @@ export default function OrderView() {
             width: '20%',
         },
         {
-            title: 'Tổng tiền',
+            title: 'Đơn giá',
             dataIndex: 'price',
             width: '20%',
             render: (text, record) => ({

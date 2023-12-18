@@ -98,21 +98,28 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
 
     @Override
-    public Boolean createProductDetail(ProductDetailRequestDto productDetailRequestDto) {
-        ProductDetail productDetail = new ProductDetail();
+    public Boolean createProductDetails(List<ProductDetailRequestDto> productDetailRequestDtos) {
+        List<ProductDetail> productDetails = new ArrayList<>();
 
-        productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
-        productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
-        productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
-        productDetail.setQuantity(productDetailRequestDto.getQuantity());
-        productDetail.setPrice(productDetailRequestDto.getPrice());
-//        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
-        productDetail.setDeleted(productDetailRequestDto.getStatus());
+        for (ProductDetailRequestDto productDetailRequestDto : productDetailRequestDtos) {
+            ProductDetail productDetail = new ProductDetail();
 
-        productDetailRepository.save(productDetail);
+            productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
+            productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
+            productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
+            productDetail.setMaterial(materialRepository.findById(productDetailRequestDto.getMaterialId()).orElse(null));
+            productDetail.setQuantity(productDetailRequestDto.getQuantity());
+            productDetail.setPrice(productDetailRequestDto.getPrice());
+            // productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
+            productDetail.setDeleted(productDetailRequestDto.getStatus());
+
+            productDetails.add(productDetail);
+        }
+
+        productDetailRepository.saveAll(productDetails);
         return true;
-
     }
+
 
     @Override
     public Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto, Long id) {

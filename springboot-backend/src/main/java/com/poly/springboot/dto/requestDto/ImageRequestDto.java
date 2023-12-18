@@ -16,10 +16,12 @@ public class ImageRequestDto {
 
     private Long productId;
 
-    @NotBlank(message = "Tên ảnh không được để trống!")
+    private Long colorId;
+
+//    @NotBlank(message = "Tên ảnh không được để trống!")
     private String imageName;
 
-    @NotBlank(message = "Đường dẫn ảnh không được để trống!")
+//    @NotBlank(message = "Đường dẫn ảnh không được để trống!")
     private String imageLink;
 
     private String imageType;

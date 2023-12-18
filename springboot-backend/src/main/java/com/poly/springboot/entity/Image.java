@@ -30,6 +30,10 @@ public class Image extends BaseEntity{
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name = "color_id")
+    private Color color;
+
     @Column(name = "image_name")
     private String imageName;
 

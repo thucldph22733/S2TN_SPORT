@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Card, Button, Input, Form, Modal, notification, Select, Row, Col, Checkbox, InputNumber, Upload } from 'antd';
+import { Table, Space, Card, Button, Input, Form, Modal, notification, Select, Row, Col, Checkbox, InputNumber, Upload, message } from 'antd';
 import {
     DeleteOutlined,
     PlusOutlined,
@@ -15,6 +15,10 @@ import MaterialService from '~/service/MaterialService';
 import ColorService from '~/service/ColorService';
 import SizeService from '~/service/SizeService';
 import axios from 'axios';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import { firebaseApp, storage } from '../Customer/config';
+import { v4 } from 'uuid';
+
 const { useForm } = Form;
 const { TextArea } = Input;
 
@@ -164,7 +168,7 @@ function ProductDetail() {
         setColorTables(generatedColorTables);
     }, [selectedColors, selectedSizes, selectedProductName, selectedMaterial]);
 
-    const productDetailDataList = [];
+    const [productDetailDataList, setProductDetailDataList] = useState([]);
 
     function findColorIdByName(colorName) {
         const color = colors.find(c => c.colorName === colorName);
@@ -201,6 +205,11 @@ function ProductDetail() {
     };
 
 
+
+
+
+
+
     const createColorTable = (selectedColors, selectedSizes, selectedProductName, selectedMaterial) => {
         const dataSource = [];
 
@@ -221,6 +230,7 @@ function ProductDetail() {
                     // quantity: 1,
                     // price: 0,
                 };
+                // productDetailData.imageFile = null;
                 productDetailDataList.push(productDetailData);
                 colorGroup.push({
                     key,
@@ -231,7 +241,8 @@ function ProductDetail() {
                     material: selectedMaterial,
                     // Các thông tin khác của sản phẩm có thể thêm vào đây
                     quantity: productDetailData.quantity,  // Thêm quantity từ productDetailData
-                    price: productDetailData.price,        // Thêm price từ productDetailData
+                    price: productDetailData.price,
+                    imageFile: productDetailData.imageFile,      // Thêm price từ productDetailData
                 });
             }
 
@@ -301,15 +312,21 @@ function ProductDetail() {
                     record.index === 1 ? (
                         <Space size="middle" style={{ display: 'flex', justifyContent: 'center' }}>
                             <Upload
-                                action="/upload"  // Đặt URL bạn muốn gửi ảnh lên
+                                // action="/upload"  // Đặt URL bạn muốn gửi ảnh lên
                                 listType="picture-card"
                                 multiple={true}  // Cho phép chọn nhiều ảnh
                                 showUploadList={true}  // Hiển thị danh sách đã tải lên
-                                beforeUpload={() => false} // Ngăn chặn tự động tải lên
+                                beforeUpload={(file) => {
+                                    console.log('File type:', file.type);
+                                    // ... Các kiểm tra khác
+                                }}
                                 onPreview={handlePreview}
+                                onChange={(info) => handleImageChange(info, record.key)}
                             >
                                 {uploadButton}
                             </Upload>
+
+
                         </Space>
                     ) : null
                 ),
@@ -328,6 +345,7 @@ function ProductDetail() {
         };
     };
     ///phần xem ảnh
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
@@ -349,73 +367,6 @@ function ProductDetail() {
     };
 
     ///phần xem ảnh
-
-    const [form] = useForm();
-
-    const createProductDetail = async (productDetailData) => {
-        try {
-            const response = await axios.post('http://localhost:8080/api/v1/productDetails/create', productDetailData);
-
-            console.log('Response:', response.data);
-
-            return response.data;
-        } catch (error) {
-            console.error('Error:', error.message);
-            throw error;
-        }
-    };
-
-    const getColorIdByName = (colorName) => {
-        const color = colors.find(color => color.colorName === colorName);
-        return color ? color.id : null;
-    };
-
-    const getSizeIdByName = (sizeName) => {
-        const size = sizes.find(size => size.sizeName === sizeName);
-        return size ? size.id : null;
-    };
-    // Example usage
-    const handleCreateProductDetail = async () => {
-        form.submit();
-
-        // await new Promise(resolve => setTimeout(resolve, 100));
-
-        // Lấy dữ liệu từ các trường form
-        const formValues = await form.validateFields();
-
-        console.log('Form Values:', formValues);
-
-        // Lấy ID của sản phẩm
-        const productId = products.find(product => product.productName === formValues.productName)?.id;
-        console.log('Product Id:', productId);
-
-        const materialId = materials.find(material => material.materialName === formValues.materialName)?.id;
-        console.log('Material Id:', materialId);
-
-        // Lấy dữ liệu quantity và price từ trạng thái
-        const productDetailDataList = dataSource.map(item => ({
-            productId: productId,
-            materialId: materialId,
-            colorId: getColorIdByName(item.color), // Sử dụng hàm để lấy ID từ tên màu sắc
-            sizeId: getSizeIdByName(item.size),
-            quantity: item.quantity,
-            price: item.price,
-        }));
-
-        // Thực hiện xử lý dữ liệu nếu cần
-        // Ví dụ: gửi dữ liệu lên server
-        createProductDetail(productDetailDataList)
-            .then(responseData => {
-                // Xử lý phản hồi từ hàm createProductDetails nếu cần
-                console.log('Product details created successfully:', responseData);
-            })
-            .catch(error => {
-                // Xử lý lỗi nếu có
-                console.error('Failed to create product details:', error);
-            });
-    };
-
-
 
 
     //phần modal confirm thêm sản phẩm
@@ -442,6 +393,185 @@ function ProductDetail() {
         setModalVisible(false);
     };
     /////////
+
+
+    const createImage = async (data) => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/images/create', data);
+            return response.data.downloadURL; // Thay thế bằng cách lấy đường dẫn tải về từ response hoặc bất cứ cách nào phù hợp với API của bạn
+        } catch (error) {
+            console.error('Failed to create image:', error);
+            throw error;
+        }
+    };
+
+    const [form] = useForm();
+
+    const createProductDetail = async (productDetailData) => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/productDetails/create', productDetailData);
+
+            console.log('Response:', response.data);
+
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error.message);
+            throw error;
+        }
+    };
+
+    const getColorIdByName = (colorName) => {
+        const color = colors.find(color => color.colorName === colorName);
+        return color ? color.id : null;
+    };
+
+    const getSizeIdByName = (sizeName) => {
+        const size = sizes.find(size => size.sizeName === sizeName);
+        return size ? size.id : null;
+    };
+
+    const uploadFileToFirebase = async (file) => {
+        try {
+            // Kiểm tra lại định dạng file
+            if (!file || !file.type.startsWith('image/')) {
+                throw new Error('Invalid file type.');
+            }
+
+            const storage = getStorage(firebaseApp);
+            const storageRef = ref(storage, `files/${v4()}`);
+            const metadata = {
+                contentType: 'image/png', // hoặc 'image/jpeg', tùy vào định dạng ảnh bạn sử dụng
+            };
+            const task = uploadBytesResumable(storageRef, file, metadata);
+
+
+            return new Promise((resolve, reject) => {
+                task.on(
+                    'state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log(`Upload is ${progress.toFixed(2)}% done`);
+                    },
+                    (error) => {
+                        reject(error);
+                    },
+                    () => {
+                        getDownloadURL(task.snapshot.ref)
+                            .then((downloadURL) => {
+                                resolve(downloadURL);
+                            })
+                            .catch((error) => {
+                                reject(error);
+                            });
+                    },
+                );
+            });
+        } catch (error) {
+            console.error('Error uploading file to Firebase:', error);
+            throw error;
+        }
+    };
+
+
+
+    const [selectedFile, setSelectedFile] = useState(null);
+    // Trong hàm handleImageChange
+    const handleImageChange = (info, key) => {
+        console.log('Handling image change...', info.file);
+
+        if (info.file.originFileObj) {
+            console.log('Origin File Object:', info.file.originFileObj);
+
+            const file = info.file.originFileObj;
+            const updatedProductDetailDataList = productDetailDataList.map((item) => {
+                if (item.key === key) {
+                    // Thêm định dạng file vào key
+                    const fileExtension = info.file.type.split('/')[1]; // Lấy định dạng từ type của file
+                    const updatedKey = `${key}.${fileExtension}`;
+
+                    return {
+                        ...item,
+                        imageFile: info.file.originFileObj,
+                        key: updatedKey,
+                    };
+                }
+                return item;
+            });
+
+            setSelectedFile(file);
+            setProductDetailDataList(updatedProductDetailDataList);
+            console.log('Selected File:', file);
+        }
+    };
+
+
+    const handleCreateProductDetail = async () => {
+        form.submit();
+        if (!selectedFile) {
+            console.log('No image selected.');
+            return;
+        }
+        try {
+            // Wait for form validation
+            const formValues = await form.validateFields();
+
+            // Get the product ID based on the selected product name
+            const productId = products.find(product => product.productName === formValues.productName)?.id;
+
+            // Get the material ID based on the selected material name
+            const materialId = materials.find(material => material.materialName === formValues.materialName)?.id;
+
+            // Create an array to store product detail data
+            const productDetailDataList = dataSource.map(item => ({
+                productId: productId,
+                materialId: materialId,
+                colorId: getColorIdByName(item.color),
+                sizeId: getSizeIdByName(item.size),
+                quantity: item.quantity,
+                price: item.price,
+                imageFile: item.imageFile, // Thay đổi dòng này
+            }));
+            if (selectedFile) {
+                // Loop through each product detail data to handle image upload and creation
+                for (const item of productDetailDataList) {
+                    // Handle image upload and get the image URL
+                    const imageUrl = await uploadFileToFirebase(selectedFile);
+
+                    // Set the imageLink property of the productDetailData
+                    item.imageLink = imageUrl;
+
+                    // Create an image record (if needed)
+                    await createImage({
+                        productId: productId,
+                        colorId: item.colorId,
+                        imageLink: imageUrl,
+                    });
+                }
+
+                // Now, you can use productDetailDataList to createProductDetail
+                createProductDetail(productDetailDataList)
+                    .then(responseData => {
+                        // Handle the response if needed
+                        console.log('Product details created successfully:', responseData);
+                    })
+                    .catch(error => {
+                        // Handle errors if needed
+                        console.error('Failed to create product details:', error);
+                    });
+
+                message.success('Product details created successfully!');
+            } else {
+                console.error('No image selected.');
+            }
+
+        } catch (error) {
+            console.error('Failed to create product details:', error);
+            message.error('Failed to create product details. Please try again.');
+        }
+    };
+
+
+
 
     return (
         <>

@@ -4,6 +4,7 @@ import com.poly.springboot.dto.requestDto.ImageRequestDto;
 import com.poly.springboot.entity.Image;
 import com.poly.springboot.entity.ProductDetail;
 import com.poly.springboot.exception.ResourceNotFoundException;
+import com.poly.springboot.repository.ColorRepository;
 import com.poly.springboot.repository.ImageRepository;
 import com.poly.springboot.repository.ProductDetailRepository;
 import com.poly.springboot.repository.ProductRepository;
@@ -19,7 +20,10 @@ public class ImageServiceImpl implements ImageService {
     private ImageRepository imageRepository;
 
     @Autowired
-    private ProductDetailRepository productDetailRepository;
+    private ProductRepository productRepository;
+
+    @Autowired
+    private ColorRepository colorRepository;
     @Override
     public List<Image> getImages() {
         return imageRepository.findAll();
@@ -30,7 +34,8 @@ public class ImageServiceImpl implements ImageService {
 
         Image image = new Image();
 
-        image.setProductDetail(productDetailRepository.findById(imageRequestDto.getProductDetailId()).orElse(null));
+        image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
+        image.setColor(colorRepository.findById(imageRequestDto.getColorId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
         image.setImageLink(imageRequestDto.getImageLink());
         image.setImageType(imageRequestDto.getImageType());
@@ -44,7 +49,8 @@ public class ImageServiceImpl implements ImageService {
         Image image = imageRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id ảnh này!"));
 
-        image.setProductDetail(productDetailRepository.findById(imageRequestDto.getProductDetailId()).orElse(null));
+        image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
+        image.setColor(colorRepository.findById(imageRequestDto.getColorId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
         image.setImageLink(imageRequestDto.getImageLink());
         image.setImageType(imageRequestDto.getImageType());

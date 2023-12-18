@@ -20,6 +20,8 @@ import Profile from './pages/Profile/Profile';
 import Address from './pages/Profile/Address';
 import ChangePassword from './pages/Auth/ChangePassword';
 import User from './pages/Profile/User';
+import Image from './pages/Product/Image';
+import OrderDetail from './pages/Order/OrderDetail';
 
 function App() {
     const router = createBrowserRouter([
@@ -54,6 +56,10 @@ function App() {
                     element: <Product />,
                 },
 
+                {
+                    path: 'imageDB',
+                    element: <Image />,
+                },
                 {
                     path: path_name.product_detail,
                     element: <ProductDetail />,
@@ -97,6 +103,10 @@ function App() {
                         {
                             path: path_name.user,
                             element: <User />,
+                        },
+                        {
+                            path: path_name.orderView + '/:id',
+                            element: <OrderDetail />,
                         },
                     ],
                 },

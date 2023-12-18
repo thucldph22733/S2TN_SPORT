@@ -22,17 +22,11 @@ public interface OrderService {
     Page<Order> getAllOrders(Long orderStatusId, Pageable pageable);
     List<Map<String, Object>>getRevenueByMonthForCurrentYear();
     List<Map<String, Object>> getTotalOrdersByStatus();
-
     Page<Order> findAllOrderByStatusId(Pageable pageable);
-
     Boolean createOrder(OrderRequestDto orderRequestDto);
-
     Boolean deleteOrder(Long id);
-
     Double monthlyRevenue();
-
     Double revenueToday();
-
     Page<Order> findAllOrdersByUserId(Long userId,Long orderStatusId, Pageable pageable);
 
     List<OrderResponseDto> getAllOrders();

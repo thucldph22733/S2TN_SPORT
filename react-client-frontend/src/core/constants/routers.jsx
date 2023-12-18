@@ -14,6 +14,7 @@ const path_name = {
     user: '/user',
     change_password: '/change-password',
     address: '/address',
+    orderView: '/order-detail'
 };
 
 export default path_name;

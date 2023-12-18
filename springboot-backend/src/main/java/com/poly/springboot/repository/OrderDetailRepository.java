@@ -3,6 +3,8 @@ package com.poly.springboot.repository;
 import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
 import com.poly.springboot.entity.OrderDetail;
 import com.poly.springboot.entity.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +17,11 @@ import java.util.Optional;
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
 
     List<OrderDetail> findByOrderId(Long orderId);
+
+    @Query("SELECT od FROM OrderDetail od WHERE od.order.id = :orderId")
+
+    Page<OrderDetail> findOrderDetailByOrderId(@Param("orderId") Long orderId, Pageable pageable);
+
     List<OrderDetail> findByOrder(Order order);
 
     Optional<OrderDetail> findByOrderIdAndProductDetailId(Long orderId, Long productDetailId);

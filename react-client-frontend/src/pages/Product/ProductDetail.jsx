@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Product.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Breadcrumb, Button, Col, Image, InputNumber, Modal, Rate, Row, Table } from 'antd';
@@ -7,6 +7,7 @@ import imgage1 from '~/assets/images/product/product-21.jpg';
 import imgage2 from '~/assets/images/product/product-20.jpg';
 import { Link } from 'react-router-dom';
 import { MdLabelImportantOutline } from 'react-icons/md';
+import ProductDetailService from '~/service/ProductDetailService';
 
 
 function ProductDetail() {
@@ -47,6 +48,22 @@ function ProductDetail() {
         },
     ];
 
+    const [productDetail, setProductDetail] = useState([]);
+    const fetchProductDetail = async () => {
+        await ProductDetailService.getAll()
+            .then(response => {
+
+                setProductDetail(response);
+
+                console.log(response)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    useEffect(() => {
+        fetchProductDetail();
+    }, []);
+
     const columns = [
         {
             title: 'Size',
@@ -66,35 +83,35 @@ function ProductDetail() {
     ];
     const [selectedColor, setSelectedColor] = useState(null); // New state for selected color
 
-    const [productDetail, setProductDetail] = useState({
-        name: 'Leopard Shirt Dress',
-        price: '8.000.000 VND',
-        color: '',
-        size: '',
-        quantity: 1,
-    });
+    // const [productDetail, setProductDetail] = useState({
+    //     name: 'Leopard Shirt Dress',
+    //     price: '8.000.000 VND',
+    //     color: '',
+    //     size: '',
+    //     quantity: 1,
+    // });
 
     const handleColorClick = (color) => {
         setSelectedColor(color === selectedColor ? null : color);
         setProductDetail({ ...productDetail, color });
     };
 
-    const handleAddCard = () => {
-        // Lưu giá trị từ các label vào localStorage
-        localStorage.setItem('product-detail', JSON.stringify({
-            name: getLabelValue('productName'),
-            price: getLabelValue('productPrice'),
-            color: productDetail.color,
-            size: productDetail.size,
-            quantity: productDetail.quantity,
-        }));
-    };
+    // const handleAddCard = () => {
+    //     // Lưu giá trị từ các label vào localStorage
+    //     localStorage.setItem('product-detail', JSON.stringify({
+    //         name: getLabelValue('productName'),
+    //         price: getLabelValue('productPrice'),
+    //         color: productDetail.color,
+    //         size: productDetail.size,
+    //         quantity: productDetail.quantity,
+    //     }));
+    // };
 
     // Hàm để lấy giá trị từ các label
-    const getLabelValue = (key) => {
-        const labelElement = document.getElementById(key);
-        return labelElement ? labelElement.innerText : '';
-    };
+    // const getLabelValue = (key) => {
+    //     const labelElement = document.getElementById(key);
+    //     return labelElement ? labelElement.innerText : '';
+    // };
     return (
         <div className='product-detail'>
             <div className='container' style={{ height: '80px', padding: '30px 10px', }} >
@@ -145,7 +162,7 @@ function ProductDetail() {
                                 id="productName"
                                 onChange={(e) => setProductDetail({ ...productDetail, name: e.target.innerText })}
                             >
-                                {productDetail.name}
+                                {productDetail.productName}
                             </h1>
                         </Row>
                         <Row style={{ marginTop: '5px' }}>
@@ -216,7 +233,7 @@ function ProductDetail() {
                                 />
                             </Col>
                             <Col span={10}>
-                                <Button type='primary' onClick={handleAddCard} style={{ marginLeft: '20px' }} icon={<ShoppingCartOutlined />} >Thêm vào giỏ hàng</Button>
+                                <Button type='primary' style={{ marginLeft: '20px' }} icon={<ShoppingCartOutlined />} >Thêm vào giỏ hàng</Button>
                             </Col>
                         </Row>
                         <Row style={{ marginTop: '10px' }}>

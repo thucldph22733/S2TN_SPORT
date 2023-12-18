@@ -1,5 +1,5 @@
-import { DeleteOutlined, HomeOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Popconfirm, Space, Table, Tabs, Tag } from 'antd';
+import { CloseCircleOutlined, CloseSquareOutlined, DeleteOutlined, HomeOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Popconfirm, Space, Table, Tabs, Tag, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -92,19 +92,15 @@ const columns = [
         render: (record) => {
 
             return <Space size="middle">
-                <Link to={`${path_name.orderView}/${record.id}`}>
-                    <Button type="link" icon={<FaEye style={{ color: 'rgb(214, 103, 12)' }} />} />
-                </Link>
-                <Popconfirm
-                    title="Xóa hóa đơn"
-                    description="Bạn có chắc chắn xóa hóa đơn này không?"
-                    placement="leftTop"
-                    // onConfirm={() => handleDelete(record.id)}
-                    okText="Đồng ý"
-                    cancelText="Hủy bỏ"
-                >
-                    <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                </Popconfirm>
+                <Tooltip title="Xem chi tiết" placement="top">
+                    <Link to={`${path_name.orderView}/${record.id}`}>
+                        <Button type="text" icon={<FaEye style={{ color: 'rgb(214, 103, 12)' }} />} />
+                    </Link>
+                </Tooltip>
+
+                <Tooltip title="Hủy đơn" placement="top">
+                    <Button type="text" icon={<CloseSquareOutlined />} style={{ color: 'red' }} />
+                </Tooltip>
             </Space>
         },
     },
@@ -213,14 +209,14 @@ function Order() {
         setOrderStatusId(key)
     };
     return (
-        <>
-            <div className='container'>
-                <h6>Đơn hàng của tôi</h6>
-                <Tabs defaultActiveKey=""
-                    items={items}
-                    onChange={handleTabChange}></Tabs>
-            </div>
-        </>
+        <div style={{ marginLeft: '30px' }}>
+
+            <h6>Đơn hàng của tôi</h6>
+            <Tabs defaultActiveKey=""
+                items={items}
+                onChange={handleTabChange}></Tabs>
+
+        </div>
 
     );
 }

@@ -2,7 +2,6 @@ import HttpClient from '~/utils/http-client';
 
 const API_URL = 'orders/';
 
-
 const OrderService = {
     getAllOrdersByUserId: (pageNo, pageSize, userId, orderStatusId) => {
         return HttpClient.get(`${API_URL}getAllOrdersByUserId`, {
@@ -16,10 +15,8 @@ const OrderService = {
     },
 
 
-    getAllOrderByStatusId: (pageNo, pageSize) => {
-        return HttpClient.get(`${API_URL}getAllOrderByStatusId`, {
-            params: { pageNo, pageSize }
-        })
+    findOrderById: (id) => {
+        return HttpClient.get(`${API_URL}findOrderById?id=${id}`)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);

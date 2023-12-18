@@ -5,11 +5,15 @@ import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.OrderDetailRequestDto;
 import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.ResponseHandler;
 import com.poly.springboot.entity.OrderDetail;
 import com.poly.springboot.service.OrderDetailService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -68,6 +72,16 @@ public class OrderDetailController {
         }
 
         return new ResponseEntity<>(orderDetails, HttpStatus.OK);
+    }
+
+    @GetMapping("getOrderDetailByOrderId")
+    public ResponseEntity<?> getOrderDetailByOrderId(@RequestParam(defaultValue = "0") Integer pageNo,
+                                                     @RequestParam(defaultValue = "10") Integer pageSize,
+                                                     @RequestParam Long orderId) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+        Page<OrderDetail> orderDetailPage = orderDetailService.getOrderDetailByOrderId(orderId,pageable);
+        List<OrderDetail> orderDetailList = orderDetailPage.getContent();
+        return ResponseHandler.generateResponse(HttpStatus.OK,orderDetailList,orderDetailPage);
     }
     @GetMapping("getByOrderId")
     public ResponseEntity<List<OrderDetailResponseDto>> getOrderDetail(@RequestParam Long id) {

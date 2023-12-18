@@ -13,7 +13,7 @@ public class CartDetailResponseDto {
 
     private Long id;
 
-    private String productImage;
+//    private String productImage;
 
     private String colorName;
 

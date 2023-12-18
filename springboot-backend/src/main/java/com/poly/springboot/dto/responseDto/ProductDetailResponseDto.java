@@ -19,7 +19,7 @@ public class ProductDetailResponseDto {
 
     private String colorName;
 
-//    private String materialName;
+    private String materialName;
 
     private String sizeName;
 

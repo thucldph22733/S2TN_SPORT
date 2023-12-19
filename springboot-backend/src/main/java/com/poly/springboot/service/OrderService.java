@@ -1,20 +1,17 @@
 package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
-import com.poly.springboot.dto.requestDto.OrderUpdateRequestDto;
+import com.poly.springboot.dto.requestDto.OrderCancelRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
 import com.poly.springboot.entity.Order;
-import com.poly.springboot.entity.OrderStatus;
 import com.poly.springboot.entity.User;
 import com.poly.springboot.entity.Voucher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface OrderService {
 
@@ -28,7 +25,7 @@ public interface OrderService {
     Double monthlyRevenue();
     Double revenueToday();
     Page<Order> findAllOrdersByUserId(Long userId,Long orderStatusId, Pageable pageable);
-
+    Boolean orderCancel (Long id,OrderCancelRequestDto orderCancelRequestDto);
     List<OrderResponseDto> getAllOrders();
 
     List<OrderResponseDto> getPagination(Integer pageNo);
@@ -50,8 +47,8 @@ public interface OrderService {
 
     Voucher findVoucherByOrderId(Long orderId);
 
-    Boolean updateOrderStatus(Long orderId, OrderUpdateRequestDto orderUpdateRequestDto);
+    Boolean updateOrderStatus(Long orderId, OrderCancelRequestDto orderUpdateRequestDto);
 
-    Boolean updateOrderStatusCancle(Long orderId, OrderUpdateRequestDto orderUpdateRequestDto);
+    Boolean updateOrderStatusCancle(Long orderId, OrderCancelRequestDto orderUpdateRequestDto);
 
 }

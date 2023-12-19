@@ -2,13 +2,12 @@ package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
-import com.poly.springboot.dto.requestDto.OrderUpdateRequestDto;
+import com.poly.springboot.dto.requestDto.OrderCancelRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseHandler;
 import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
 import com.poly.springboot.entity.Order;
-import com.poly.springboot.entity.OrderStatus;
 import com.poly.springboot.entity.User;
 import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.service.OrderService;
@@ -24,7 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -121,7 +119,17 @@ public class OrderController {
                         orderList,
                         orderPage);
     }
-
+    @PatchMapping("orderCancel")
+    public ResponseEntity<ResponseDto> orderCancel(@RequestBody OrderCancelRequestDto orderCancelRequestDto, @RequestParam Long id) {
+        Boolean isCancel = orderService.orderCancel(id,orderCancelRequestDto);
+        if (isCancel) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
+    }
     @DeleteMapping("delete")
     public ResponseEntity<ResponseDto> deleteOrder(@RequestParam Long id) {
         Boolean isDelete = orderService.deleteOrder(id);
@@ -148,7 +156,7 @@ public class OrderController {
     }
 
     @PutMapping("updateOrderStatus")
-    public ResponseEntity<ResponseDto> updateOrderStatus(@Valid @RequestBody OrderUpdateRequestDto orderUpdateRequestDto, @RequestParam Long id) {
+    public ResponseEntity<ResponseDto> updateOrderStatus(@Valid @RequestBody OrderCancelRequestDto orderUpdateRequestDto, @RequestParam Long id) {
         Boolean isUpdated = orderService.updateOrderStatus(id, orderUpdateRequestDto);
 
         if (isUpdated) {
@@ -161,7 +169,7 @@ public class OrderController {
     }
 
     @PutMapping("updateOrderStatusCancle")
-    public ResponseEntity<ResponseDto> updateOrderStatusCancle(@Valid @RequestBody OrderUpdateRequestDto orderUpdateRequestDto, @RequestParam Long id) {
+    public ResponseEntity<ResponseDto> updateOrderStatusCancle(@Valid @RequestBody OrderCancelRequestDto orderUpdateRequestDto, @RequestParam Long id) {
         Boolean isUpdated = orderService.updateOrderStatusCancle(id, orderUpdateRequestDto);
 
         if (isUpdated) {

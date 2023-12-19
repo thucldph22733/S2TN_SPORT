@@ -1,7 +1,7 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
-import com.poly.springboot.dto.requestDto.OrderUpdateRequestDto;
+import com.poly.springboot.dto.requestDto.OrderCancelRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
 import com.poly.springboot.entity.*;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
@@ -29,8 +28,7 @@ public class OrderServiceImpl implements OrderService {
     private UserRepository userRepository;
     private VoucherRepository voucherRepository;
     private OrderDetailRepository orderDetailRepository;
-    private TimeLineRepository timeLineRepository;
-
+    private OrderHistoryRepository orderHistoryRepository;
     private ProductDetailRepository productDetailRepository;
 
 
@@ -44,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
                             UserRepository userRepository,
                             OrderDetailRepository orderDetailRepository,
                             VoucherRepository voucherRepository,
-                            TimeLineRepository timeLineRepository) {
+                            OrderHistoryRepository orderHistoryRepository) {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.orderStatusRepository = orderStatusRepository;
@@ -53,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
         this.productDetailRepository = productDetailRepository;
         this.paymentMethodRepository = paymentMethodRepository;
         this.voucherRepository = voucherRepository;
-        this.timeLineRepository = timeLineRepository;
+        this.orderHistoryRepository = orderHistoryRepository;
     }
 
 
@@ -221,11 +219,11 @@ public class OrderServiceImpl implements OrderService {
 // Lưu vào cơ sở dữ liệu
         orderRepository.save(order);
 
-        TimeLine timeLine = new TimeLine();
+        OrderHistory timeLine = new OrderHistory();
         timeLine.setOrder(order);
-        timeLine.setStatus(1);
+        timeLine.setStatus(orderStatus);
         timeLine.setDeleted(true);
-        timeLineRepository.save(timeLine);
+        orderHistoryRepository.save(timeLine);
 
         return true;
     }
@@ -258,6 +256,28 @@ public class OrderServiceImpl implements OrderService {
             orderPage = orderRepository.findAllOrdersByUserId(userId,orderStatusId,pageable);
         }
         return orderPage;    }
+
+    @Override
+    public Boolean orderCancel(Long id,OrderCancelRequestDto orderCancelRequestDto) {
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng này!"));
+
+        OrderStatus orderStatus = orderStatusRepository.findById(orderCancelRequestDto.getStatusId()).orElse(null);
+
+        order.setNote(orderCancelRequestDto.getNote());
+        order.setOrderStatus(orderStatus);
+        orderRepository.save(order);
+        //Xét lịch sử đơn hàng
+        OrderHistory orderHistory = new OrderHistory();
+        orderHistory.setOrder(order);
+        orderHistory.setStatus(orderStatus);
+        orderHistory.setNote(orderCancelRequestDto.getNote());
+        orderHistory.setDeleted(true);
+        orderHistoryRepository.save(orderHistory);
+
+        return true;
+    }
 
     @Override
     public Boolean updateOrder(OrderRequestDto orderRequestDto, Long id) {
@@ -305,151 +325,153 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Boolean updateOrders(OrderRequestDto orderRequestDto, Long id) {
-        try {
-            // Lấy thông tin các đối tượng liên quan từ ID
-            User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
-            Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
-            Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
-            OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
-            Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
-
-            // Lấy thông tin đơn hàng từ ID
-            Order order = orderRepository.findById(id)
-                    .orElseThrow(() -> {
-                        System.out.println("Order not found with id: " + id);
-                        return new ResourceNotFoundException("Không tìm thấy id hóa đơn này");
-                    });
-
-            // Cập nhật thông tin đơn hàng
-            order.setUser(user);
-            order.setDelivery(delivery);
-            order.setPayment(payment);
-            order.setOrderStatus(orderStatus);
-            order.setVoucher(voucher);
-            order.setOrderTotal(orderRequestDto.getOrderTotal());
-            order.setNote(orderRequestDto.getNote());
-            order.setOrderTotalInitial(order.getOrderTotalInitial());
-            order.setOrderType(orderRequestDto.getOrderType());
-
-            // Tính toán giảm giá và cập nhật
-            if (voucher != null) {
-                double discountRate = voucher.getDiscountRate();
-                double giamGia = (orderRequestDto.getOrderTotalInitial() * discountRate) / 100;
-                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
-            }
-
-            // Kiểm tra xem có TimeLine nào đã được tạo mới cho đơn hàng với trạng thái là 2 không
-            TimeLine existingTimeLine = timeLineRepository.findByOrderAndStatusAndDeletedTrue(order, 2);
-
-            if (existingTimeLine == null) {
-                // Nếu không có, hãy tạo mới TimeLine
-
-                TimeLine timeLine = new TimeLine();
-                timeLine.setOrder(order);
-                timeLine.setStatus(5);
-                timeLine.setDeleted(true);
-                timeLine.setNote("Đã thanh toán");
-                timeLineRepository.save(timeLine);
-            } else {
-                // TimeLine đã tồn tại
-            }
-
-            // Lưu đơn hàng và trả về true
-            orderRepository.save(order);
-
-            List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
-            for (OrderDetail orderDetail : orderDetails) {
-                ProductDetail productDetail = orderDetail.getProductDetail();
-                if (productDetail != null) {
-                    // Lấy số lượng từ productDetail và orderDetail
-                    int productDetailQuantity = productDetail.getQuantity();
-                    int orderDetailQuantity = orderDetail.getQuantity();
-
-                    // Kiểm tra tránh trường hợp số lượng âm
-                    int newProductDetailQuantity = Math.max(productDetailQuantity - orderDetailQuantity, 0);
-
-                    // Cập nhật số lượng mới cho productDetail
-                    productDetail.setQuantity(newProductDetailQuantity);
-
-                    // Lưu productDetail
-                    productDetailRepository.save(productDetail);
-                }
-            }
-            return true;
-        } catch (Exception e) {
-            // Xử lý ngoại lệ và log lỗi nếu cần
-            e.printStackTrace();
-            return false;
-        }
+//        try {
+//            // Lấy thông tin các đối tượng liên quan từ ID
+//            User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
+//            Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
+//            Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
+//            OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
+//            Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
+//
+//            // Lấy thông tin đơn hàng từ ID
+//            Order order = orderRepository.findById(id)
+//                    .orElseThrow(() -> {
+//                        System.out.println("Order not found with id: " + id);
+//                        return new ResourceNotFoundException("Không tìm thấy id hóa đơn này");
+//                    });
+//
+//            // Cập nhật thông tin đơn hàng
+//            order.setUser(user);
+//            order.setDelivery(delivery);
+//            order.setPayment(payment);
+//            order.setOrderStatus(orderStatus);
+//            order.setVoucher(voucher);
+//            order.setOrderTotal(orderRequestDto.getOrderTotal());
+//            order.setNote(orderRequestDto.getNote());
+//            order.setOrderTotalInitial(order.getOrderTotalInitial());
+//            order.setOrderType(orderRequestDto.getOrderType());
+//
+//            // Tính toán giảm giá và cập nhật
+//            if (voucher != null) {
+//                double discountRate = voucher.getDiscountRate();
+//                double giamGia = (orderRequestDto.getOrderTotalInitial() * discountRate) / 100;
+//                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
+//            }
+//
+//            // Kiểm tra xem có TimeLine nào đã được tạo mới cho đơn hàng với trạng thái là 2 không
+//            OrderHistory existingTimeLine = orderHistoryRepository.findByOrderAndStatusIdAndDeletedTrue(order, 2);
+//
+//            if (existingTimeLine == null) {
+//                // Nếu không có, hãy tạo mới TimeLine
+//
+//                OrderHistory timeLine = new OrderHistory();
+//                timeLine.setOrder(order);
+//                timeLine.setStatus(orderStatus);
+//                timeLine.setDeleted(true);
+//                timeLine.setNote("Đã thanh toán");
+//                orderHistoryRepository.save(timeLine);
+//            } else {
+//                // TimeLine đã tồn tại
+//            }
+//
+//            // Lưu đơn hàng và trả về true
+//            orderRepository.save(order);
+//
+//            List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
+//            for (OrderDetail orderDetail : orderDetails) {
+//                ProductDetail productDetail = orderDetail.getProductDetail();
+//                if (productDetail != null) {
+//                    // Lấy số lượng từ productDetail và orderDetail
+//                    int productDetailQuantity = productDetail.getQuantity();
+//                    int orderDetailQuantity = orderDetail.getQuantity();
+//
+//                    // Kiểm tra tránh trường hợp số lượng âm
+//                    int newProductDetailQuantity = Math.max(productDetailQuantity - orderDetailQuantity, 0);
+//
+//                    // Cập nhật số lượng mới cho productDetail
+//                    productDetail.setQuantity(newProductDetailQuantity);
+//
+//                    // Lưu productDetail
+//                    productDetailRepository.save(productDetail);
+//                }
+//            }
+//            return true;
+//        } catch (Exception e) {
+//            // Xử lý ngoại lệ và log lỗi nếu cần
+//            e.printStackTrace();
+//            return false;
+//        }
+        return null;
     }
 
     @Override
     public Boolean updateOrdersOnline(OrderRequestDto orderRequestDto, Long id) {
-        try {
-            // Lấy thông tin các đối tượng liên quan từ ID
-            User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
-            Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
-            Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
-            OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
-            Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
-
-            // Lấy thông tin đơn hàng từ ID
-            Order order = orderRepository.findById(id)
-                    .orElseThrow(() -> {
-                        System.out.println("Order not found with id: " + id);
-                        return new ResourceNotFoundException("Không tìm thấy id hóa đơn này");
-                    });
-
-            // Cập nhật thông tin đơn hàng
-            order.setUser(user);
-            order.setDelivery(delivery);
-            order.setPayment(payment);
-            order.setOrderStatus(orderStatus);
-            order.setVoucher(voucher);
-            order.setOrderTotal(orderRequestDto.getOrderTotal());
-            order.setNote(orderRequestDto.getNote());
-            order.setOrderTotalInitial(orderRequestDto.getOrderTotalInitial());
-            order.setOrderType(orderRequestDto.getOrderType());
-            order.setRecipientName(orderRequestDto.getRecipientName());
-            order.setPhoneNumber(orderRequestDto.getPhoneNumber());
-            order.setCity(orderRequestDto.getCity());
-            order.setDistrict(orderRequestDto.getDistrict());
-            order.setWard(orderRequestDto.getWard());
-            order.setAddressDetail(orderRequestDto.getAddressDetail());
-
-            // Tính toán giảm giá và cập nhật
-            if (voucher != null) {
-                double discountRate = voucher.getDiscountRate();
-                double giamGia = (orderRequestDto.getOrderTotalInitial() * discountRate) / 100;
-                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
-            }
+//        try {
+//            // Lấy thông tin các đối tượng liên quan từ ID
+//            User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
+//            Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
+//            Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
+//            OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
+//            Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
+//
+//            // Lấy thông tin đơn hàng từ ID
+//            Order order = orderRepository.findById(id)
+//                    .orElseThrow(() -> {
+//                        System.out.println("Order not found with id: " + id);
+//                        return new ResourceNotFoundException("Không tìm thấy id hóa đơn này");
+//                    });
+//
+//            // Cập nhật thông tin đơn hàng
+//            order.setUser(user);
+//            order.setDelivery(delivery);
+//            order.setPayment(payment);
+//            order.setOrderStatus(orderStatus);
+//            order.setVoucher(voucher);
+//            order.setOrderTotal(orderRequestDto.getOrderTotal());
+//            order.setNote(orderRequestDto.getNote());
+//            order.setOrderTotalInitial(orderRequestDto.getOrderTotalInitial());
+//            order.setOrderType(orderRequestDto.getOrderType());
+//            order.setRecipientName(orderRequestDto.getRecipientName());
+//            order.setPhoneNumber(orderRequestDto.getPhoneNumber());
+//            order.setCity(orderRequestDto.getCity());
+//            order.setDistrict(orderRequestDto.getDistrict());
+//            order.setWard(orderRequestDto.getWard());
+//            order.setAddressDetail(orderRequestDto.getAddressDetail());
+//
+//            // Tính toán giảm giá và cập nhật
+//            if (voucher != null) {
+//                double discountRate = voucher.getDiscountRate();
+//                double giamGia = (orderRequestDto.getOrderTotalInitial() * discountRate) / 100;
+//                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
+//            }
 
             // Kiểm tra xem có TimeLine nào đã được tạo mới cho đơn hàng với trạng thái là 2 không
-            TimeLine existingTimeLine = timeLineRepository.findByOrderAndStatusAndDeletedTrue(order, 2);
-            if (existingTimeLine == null) {
-                // Nếu không có, hãy tạo mới TimeLine
-                TimeLine timeLine = new TimeLine();
-                timeLine.setOrder(order);
-                timeLine.setStatus(2);
-                timeLine.setDeleted(true);
-                timeLineRepository.save(timeLine);
-
-                TimeLine timeLine1 = new TimeLine();
-                timeLine1.setOrder(order);
-                timeLine1.setStatus(3);
-                timeLine1.setDeleted(true);
-                timeLineRepository.save(timeLine1);
-            } else {
-                // TimeLine đã tồn tại
-            }
-            // Lưu đơn hàng và trả về true
-            orderRepository.save(order);
-            return true;
-        } catch (Exception e) {
-            // Xử lý ngoại lệ và log lỗi nếu cần
-            e.printStackTrace();
-            return false;
-        }
+//            OrderHistory existingTimeLine = orderHistoryRepository.findByOrderAndStatusIdAndDeletedTrue(order, 2);
+//            if (existingTimeLine == null) {
+//                // Nếu không có, hãy tạo mới TimeLine
+//                OrderHistory timeLine = new OrderHistory();
+//                timeLine.setOrder(order);
+//                timeLine.setStatus(orderStatus);
+//                timeLine.setDeleted(true);
+//                orderHistoryRepository.save(timeLine);
+//
+//                OrderHistory timeLine1 = new OrderHistory();
+//                timeLine1.setOrder(order);
+//                timeLine1.setStatus(orderStatus);
+//                timeLine1.setDeleted(true);
+//                orderHistoryRepository.save(timeLine1);
+//            } else {
+//                // TimeLine đã tồn tại
+//            }
+//            // Lưu đơn hàng và trả về true
+//            orderRepository.save(order);
+//            return true;
+//        } catch (Exception e) {
+//            // Xử lý ngoại lệ và log lỗi nếu cần
+//            e.printStackTrace();
+//            return false;
+//        }
+        return null;
     }
 
 
@@ -489,7 +511,7 @@ public class OrderServiceImpl implements OrderService {
         ).collect(Collectors.toList());
     }
     @Override
-    public Boolean updateOrderStatus(Long orderId, OrderUpdateRequestDto orderUpdateRequestDto) {
+    public Boolean updateOrderStatus(Long orderId, OrderCancelRequestDto orderUpdateRequestDto) {
         try {
             Order order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng với ID: " + orderId));
@@ -530,7 +552,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Boolean updateOrderStatusCancle(Long orderId, OrderUpdateRequestDto orderUpdateRequestDto) {
+    public Boolean updateOrderStatusCancle(Long orderId, OrderCancelRequestDto orderUpdateRequestDto) {
         try {
             Order order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng với ID: " + orderId));

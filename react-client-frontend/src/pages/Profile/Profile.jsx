@@ -24,18 +24,18 @@ function Profile() {
             </div>
             <Row>
                 <Col span={5} style={{ borderRight: '1px solid #cdcdcd', paddingLeft: '10px' }}>
-                    <h6><MehOutlined style={{ marginRight: '5px' }} />Tài khoản của tôi</h6>
+                    <h6>Tài khoản của tôi <MehOutlined style={{ color: '#CC5500	' }} /></h6>
                     <Row>
-                        <Link style={{ margin: '10px 20px' }} to={path_name.user}><UserOutlined style={{ marginRight: '5px', marginBottom: '5px' }} />Hồ sơ</Link>
+                        <Link style={{ margin: '10px 20px' }} to={path_name.user}><UserOutlined style={{ marginRight: '5px', marginBottom: '5px', color: '#007BA7' }} />Hồ sơ</Link>
                     </Row>
                     <Row>
-                        <Link style={{ margin: '10px 20px' }} to={path_name.address}><FaMapLocationDot style={{ marginRight: '5px', marginBottom: '5px' }} />Địa chỉ</Link>
+                        <Link style={{ margin: '10px 20px' }} to={path_name.address}><FaMapLocationDot style={{ marginRight: '5px', marginBottom: '5px', color: '#008000' }} />Địa chỉ</Link>
                     </Row>
                     <Row>
-                        <Link style={{ margin: '10px 20px' }} to={path_name.change_password}><TbPasswordUser style={{ marginRight: '5px', marginBottom: '5px' }} />Đổi mật khẩu</Link>
+                        <Link style={{ margin: '10px 20px' }} to={path_name.change_password}><TbPasswordUser style={{ marginRight: '5px', marginBottom: '5px', color: '#9966CC' }} />Đổi mật khẩu</Link>
                     </Row>
                     <Row>
-                        <Link style={{ margin: '10px 20px' }} to={path_name.order}><FileTextOutlined style={{ marginRight: '5px', marginBottom: '5px' }} />Đơn mua</Link>
+                        <Link style={{ margin: '10px 20px' }} to={path_name.order}><FileTextOutlined style={{ marginRight: '5px', marginBottom: '5px', color: '#FF7F50' }} />Đơn mua</Link>
                     </Row>
                 </Col>
                 <Col span={19}>

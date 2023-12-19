@@ -12,5 +12,5 @@ public interface OrderStatusRepository extends JpaRepository<OrderStatus,Long> {
 
     Boolean existsByStatusName(String statusName);
 
-
+//    OrderStatus findByStatusName(String statusName);
 }

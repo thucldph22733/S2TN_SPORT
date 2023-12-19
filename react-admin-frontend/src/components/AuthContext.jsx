@@ -22,7 +22,8 @@ export function AuthProvider({ children }) {
                 console.log(response.data);
                 localStorage.setItem('token', response.data.access_token);
                 localStorage.setItem('refresh_token', response.data.refresh_token);
-                localStorage.setItem('user_name', response.data.userName);
+                const user = JSON.stringify(response.user);
+                localStorage.setItem('user1', user)
 
                 setUser(response.data);
             })

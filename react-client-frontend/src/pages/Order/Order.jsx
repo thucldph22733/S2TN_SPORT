@@ -1,5 +1,6 @@
-import { CloseCircleOutlined, CloseSquareOutlined, DeleteOutlined, HomeOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Popconfirm, Space, Table, Tabs, Tag, Tooltip } from 'antd';
+import { CloseCircleOutlined, CloseSquareOutlined, DeleteOutlined, ExclamationCircleOutlined, HomeOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Form, Modal, Popconfirm, Space, Table, Tabs, Tag, Tooltip, notification } from 'antd';
+import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -8,103 +9,7 @@ import OrderService from '~/service/OrderService';
 import FormatDate from '~/utils/format-date';
 
 
-const columns = [
-    {
-        title: '#',
-        dataIndex: 'key',
-        key: 'key',
-        width: "5%",
-    },
-    {
-        title: 'Mã',
-        dataIndex: 'id',
-        key: 'id',
-        width: "10%",
-        render: (text) => <a>HD{text}</a>,
-    },
-    {
-        title: 'Ngày đặt hàng',
-        dataIndex: 'createdAt',
-        key: 'createdAt',
-        width: "15%",
-    },
-    {
-        title: 'Loại đơn hàng',
-        dataIndex: 'orderTypeName',
-        key: 'orderTypeName',
-        width: "15%",
-        render: (text) => (
-            text === "InStore" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
-                : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>
-        )
-    },
 
-    {
-        title: 'Tiền giảm',
-        dataIndex: 'voucher',
-        key: 'voucher',
-        width: "10%",
-        render: (text) => <span>{text} %</span>,
-    },
-    {
-        title: 'Tổng tiền',
-        dataIndex: 'orderTotal',
-        key: 'orderTotal',
-        width: "10%",
-        render: (text) => (
-            <span style={{ color: 'red' }}>
-                {isNaN(parseFloat(text)) ? '' : parseFloat(text).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-            </span>
-        ),
-    },
-    {
-        title: 'Trạng thái',
-        dataIndex: 'orderStatusName',
-        key: 'orderStatusName',
-        width: "15%",
-        render: (text) => {
-            switch (text) {
-                case 'Chờ xác nhận':
-                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
-                    break;
-                case 'Chờ lấy hàng':
-                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Chờ lấy hàng</Tag>
-                    break;
-                case 'Chờ giao hàng':
-                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="purple">Chờ giao hàng</Tag>
-                    break;
-                case 'Hoàn thành':
-                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="cyan">Hoàn thành</Tag>
-                    break;
-                case 'Đã hủy':
-                    return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="red">Đã hủy</Tag>
-                    break;
-                default:
-                    break;
-            }
-        }
-    },
-
-    {
-        title: 'Hành động',
-        key: 'action',
-        width: "10%",
-        render: (record) => {
-
-            return <Space size="middle">
-                <Tooltip title="Xem chi tiết" placement="top">
-                    <Link to={`${path_name.orderView}/${record.id}`}>
-                        <Button type="text" icon={<FaEye style={{ color: 'rgb(214, 103, 12)' }} />} />
-                    </Link>
-                </Tooltip>
-
-                <Tooltip title="Hủy đơn" placement="top">
-                    <Button type="text" icon={<CloseSquareOutlined />} style={{ color: 'red' }} />
-                </Tooltip>
-            </Space>
-        },
-    },
-];
 
 function Order() {
     const userString = localStorage.getItem('user2');
@@ -146,7 +51,120 @@ function Order() {
         });
 
     };
+    // ----------------------------------------------------------------------
+    const [open, setOpen] = useState({ isModal: false, reacord: null });
 
+    const showModal = (record) => {
+        setOpen({
+            isModal: true,
+            reacord: record,
+        });
+
+    };
+
+    const handleCancel = () => {
+        setOpen({
+            isModal: false,
+        });
+    };
+
+    const columns = [
+        {
+            title: '#',
+            dataIndex: 'key',
+            key: 'key',
+            width: "5%",
+        },
+        {
+            title: 'Mã',
+            dataIndex: 'id',
+            key: 'id',
+            width: "10%",
+            render: (text) => <a>HD{text}</a>,
+        },
+        {
+            title: 'Ngày đặt hàng',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            width: "15%",
+        },
+        {
+            title: 'Loại đơn hàng',
+            dataIndex: 'orderTypeName',
+            key: 'orderTypeName',
+            width: "15%",
+            render: (text) => (
+                text === "InStore" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
+                    : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>
+            )
+        },
+
+
+        {
+            title: 'Tổng tiền',
+            dataIndex: 'orderTotal',
+            key: 'orderTotal',
+            width: "10%",
+            render: (text) => (
+                <span style={{ color: 'red' }}>
+                    {isNaN(parseFloat(text)) ? '' : parseFloat(text).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                </span>
+            ),
+        },
+        {
+            title: 'Ghi chú',
+            dataIndex: 'note',
+            key: 'note',
+            width: "10%",
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'orderStatusName',
+            key: 'orderStatusName',
+            width: "15%",
+            render: (text) => {
+                switch (text) {
+                    case 'Chờ xác nhận':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
+                        break;
+                    case 'Chờ lấy hàng':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Chờ lấy hàng</Tag>
+                        break;
+                    case 'Chờ giao hàng':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="purple">Chờ giao hàng</Tag>
+                        break;
+                    case 'Hoàn thành':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="cyan">Hoàn thành</Tag>
+                        break;
+                    case 'Đã hủy':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="red">Đã hủy</Tag>
+                        break;
+                    default:
+                        break;
+                }
+            }
+        },
+
+        {
+            title: 'Hành động',
+            key: 'action',
+            width: "10%",
+            render: (record) => {
+
+                return <Space size="middle">
+                    <Tooltip title="Xem chi tiết" placement="top">
+                        <Link to={`${path_name.orderView}/${record.id}`}>
+                            <Button type="text" icon={<FaEye style={{ color: 'rgb(214, 103, 12)' }} />} />
+                        </Link>
+                    </Tooltip>
+
+                    {(record.orderStatusName === "Chờ xác nhận" || record.orderStatusName === "Chờ lấy hàng") && <Tooltip title="Hủy đơn" placement="top">
+                        <Button type="text" onClick={() => showModal(record)} icon={<CloseSquareOutlined />} style={{ color: 'red' }} />
+                    </Tooltip>}
+                </Space>
+            },
+        },
+    ];
     const tabContent = () => (
 
         <Table
@@ -154,7 +172,7 @@ function Order() {
                 ...order,
                 key: order.id,
                 createdAt: FormatDate(order.createdAt),
-                voucher: order.voucher ? order.voucher.discountRate : 0,
+                // voucher: order.voucher ? order.voucher.discountRate : 0,
                 customerName: order.user ? order.user.usersName : "Khách lẻ",
                 orderStatusName: order.orderStatus ? order.orderStatus.statusName : "",
                 orderTypeName: order.orderType ? order.orderType.orderTypeName : ""
@@ -208,6 +226,7 @@ function Order() {
     const handleTabChange = (key) => {
         setOrderStatusId(key)
     };
+
     return (
         <div style={{ marginLeft: '30px' }}>
 
@@ -215,10 +234,72 @@ function Order() {
             <Tabs defaultActiveKey=""
                 items={items}
                 onChange={handleTabChange}></Tabs>
+            {
+                open.isModal && <OrderModal
+                    isModal={open.isModal}
+                    hideModal={handleCancel}
+                    fetchOrders={fetchOrders}
+                    reacord={open.reacord}
+                />
+            }
 
         </div>
 
     );
 }
+const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
 
+    const [form] = Form.useForm();
+
+    const handleOrderCancel = () => {
+        form.validateFields().then(async () => {
+
+            const data = form.getFieldsValue();
+            data.statusId = 6     //6 là trạng thái đã hủy
+            console.log(data)
+            await OrderService.orderCancel(reacord.id, data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Hủy đơn hàng thành công!',
+                    });
+                    fetchOrders();
+                    // Đóng modal
+                    hideModal();
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Hủy đơn thất bại!',
+                    });
+                    console.error(error);
+                });
+
+        }).catch(error => {
+            console.error(error);
+        })
+
+    }
+
+    return (
+        <Modal
+            title={<><ExclamationCircleOutlined style={{ color: 'red', marginRight: '7px' }} />Thông báo!!! </>}
+            open={isModal}
+            onOk={handleOrderCancel}
+            onCancel={hideModal}
+            okText={"Xác nhận"}
+            cancelText="Hủy bỏ"
+        >
+            <Form
+                name="validateOnly" layout="vertical" autoComplete="off"
+
+                form={form}
+            >
+                <Form.Item label="Ghi chú:" name="note" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                    <TextArea rows={4} placeholder="Nhập lý do hủy..." />
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
+};
 export default Order;

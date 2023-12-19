@@ -10,8 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderUpdateRequestDto {
+public class OrderCancelRequestDto {
 
     private Long statusId;
 
+    private String note;
 }

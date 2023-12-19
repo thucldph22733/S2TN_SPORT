@@ -332,7 +332,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                         </Col>
                     </Row>
                     <Form.Item name="deleted" valuePropName="checked">
-                        <Checkbox >Đặt làm địa chỉ mặc định</Checkbox>
+                        <Checkbox disabled={isMode === "edit" && reacord.deleted == true}>Đặt làm địa chỉ mặc định</Checkbox>
                     </Form.Item>
                 </Form>
             </Modal>

@@ -1,12 +1,10 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
-import com.poly.springboot.dto.requestDto.ColorRequestDto;
-import com.poly.springboot.dto.requestDto.TimeLineRequestDto;
+import com.poly.springboot.dto.requestDto.OrderHistoryRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
-import com.poly.springboot.dto.responseDto.TimeLineResponseDto;
-import com.poly.springboot.entity.TimeLine;
-import com.poly.springboot.service.TimeLineService;
+import com.poly.springboot.entity.OrderHistory;
+import com.poly.springboot.service.OrderHistoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +17,15 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/v1/timeline/")
-//@Tag(name = "Customers", description = "( Rest API Hiển thị, thêm, sửa, xóa, tìm kiếm, phân trang nhân viên )")
-public class TimeLineController {
+@Tag(name = "OrderHistory", description = "( Rest API Hiển thị lịch sử hóa đơn )")
+public class OrderHistoryController {
 
     @Autowired
-    private TimeLineService timeLineService;
+    private OrderHistoryService orderHistoryService;
 
     @GetMapping("findAllTimelineByOrderId")
     public ResponseEntity<?> getAllTimelineByOrderId(@RequestParam Long id){
-        List<TimeLine> response = timeLineService.findAllTimeLinesByOrderId(id);
+        List<OrderHistory> response = orderHistoryService.findAllTimeLinesByOrderId(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
@@ -35,15 +33,15 @@ public class TimeLineController {
 
     @GetMapping("findByOrderIdAndStatus")
     public ResponseEntity<?> findByOrderIdAndStatus(@RequestParam Long id){
-        List<TimeLine> response = timeLineService.findByOrderIdAndStatus(id);
+        List<OrderHistory> response = orderHistoryService.findByOrderIdAndStatus(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
     }
 
     @PostMapping("create")
-    public ResponseEntity<ResponseDto> createTimeLine(@Valid @RequestBody TimeLineRequestDto timeLineRequestDto) {
-        Boolean isCreated = timeLineService.createTimeLine(timeLineRequestDto);
+    public ResponseEntity<ResponseDto> createTimeLine(@Valid @RequestBody OrderHistoryRequestDto timeLineRequestDto) {
+        Boolean isCreated = orderHistoryService.createTimeLine(timeLineRequestDto);
         if (isCreated) {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));

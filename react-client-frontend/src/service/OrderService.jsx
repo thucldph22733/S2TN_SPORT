@@ -14,7 +14,6 @@ const OrderService = {
             });
     },
 
-
     findOrderById: (id) => {
         return HttpClient.get(`${API_URL}findOrderById?id=${id}`)
             .then(response => response.data)
@@ -33,8 +32,8 @@ const OrderService = {
             });
     },
 
-    updateOrderStatus: (id, data) => {
-        return HttpClient.put(`${API_URL}updateOrderStatus?id=${id}`, data)
+    orderCancel: (id, data) => {
+        return HttpClient.patch(`${API_URL}orderCancel?id=${id}`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in update:', error);

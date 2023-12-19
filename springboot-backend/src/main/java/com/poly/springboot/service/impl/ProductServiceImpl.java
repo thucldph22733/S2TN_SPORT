@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ProductRequestDto;
 import com.poly.springboot.dto.responseDto.ProductResponseDto;
+import com.poly.springboot.dto.responseDto.ProductUserResponseDto;
 import com.poly.springboot.entity.Product;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
@@ -50,6 +51,22 @@ public class ProductServiceImpl implements ProductService {
         }
         return productPage.map(this::mapProductToDto);
     }
+
+    @Override
+    public Page<ProductUserResponseDto> getProductHomePageByProductNew(Pageable pageable) {
+        return  productRepository.findProductHomePageByProductNew(pageable);
+    }
+
+    @Override
+    public Page<ProductUserResponseDto> getProductHomePageByProductHot(Pageable pageable) {
+        return productRepository.findProductHomePageByProductHot(pageable);
+    }
+
+    @Override
+    public Page<ProductUserResponseDto> getProductHomePageByProductSale(Pageable pageable) {
+        return productRepository.findProductHomePageByProductSale(pageable);
+    }
+
 
 //    @Override
 //    public Boolean deleteProduct(Long id) {

@@ -40,6 +40,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllByDeletedIsTrue(Pageable pageable);
     Page<Order> findAllByOrderStatusIdAndDeletedIsTrue(Long orderStatusId, Pageable pageable);
 
+
     @Modifying
     @Query("UPDATE Order o SET o.orderStatus.id = :statusId WHERE o.id = :orderId")
     void updateStatusById(@Param("orderId") Long orderId, Long statusId);

@@ -1,10 +1,12 @@
 import HttpClient from '~/utils/http-client';
 
-const API_URL = 'productDetails/';
+const API_URL = 'products/';
 
-const ProductDetailService = {
-    getAll: () => {
-        return HttpClient.get(`${API_URL}getAll`)
+const ProductService = {
+    getProductHomePageByProductSale: (pageNo, pageSize) => {
+        return HttpClient.get(`${API_URL}getProductHomePageByProductSale`, {
+            params: { pageNo, pageSize }
+        })
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);
@@ -12,6 +14,26 @@ const ProductDetailService = {
             });
     },
 
+    getProductHomePageByProductNew: (pageNo, pageSize) => {
+        return HttpClient.get(`${API_URL}getProductHomePageByProductNew`, {
+            params: { pageNo, pageSize }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
+    getProductHomePageByProductHot: (pageNo, pageSize) => {
+        return HttpClient.get(`${API_URL}getProductHomePageByProductHot`, {
+            params: { pageNo, pageSize }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
     create: (data) => {
         return HttpClient.post(`${API_URL}create`, data)
             .then(response => response.data)
@@ -40,4 +62,4 @@ const ProductDetailService = {
     },
 };
 
-export default ProductDetailService;
+export default ProductService;

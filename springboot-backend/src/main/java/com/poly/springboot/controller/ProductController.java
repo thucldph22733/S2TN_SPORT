@@ -3,6 +3,7 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.ProductRequestDto;
 import com.poly.springboot.dto.responseDto.ProductResponseDto;
+import com.poly.springboot.dto.responseDto.ProductUserResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseHandler;
 import com.poly.springboot.entity.Product;
@@ -46,6 +47,45 @@ public class ProductController {
                 HttpStatus.OK
                 , productResponseDtoList
                 , productPage);
+    }
+    @GetMapping("getProductHomePageByProductNew")
+    public ResponseEntity<?> getProductHomePageByProductNew(@RequestParam(defaultValue = "0") Integer pageNo,
+                                         @RequestParam(defaultValue = "10") Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<ProductUserResponseDto> productUserResponseDtoPage = productService.getProductHomePageByProductNew( pageable);
+
+        List<ProductUserResponseDto> productUserResponseDtoList = productUserResponseDtoPage.getContent();
+        return ResponseHandler.generateResponse(
+                HttpStatus.OK
+                , productUserResponseDtoList
+                , productUserResponseDtoPage);
+    }
+    @GetMapping("getProductHomePageByProductSale")
+    public ResponseEntity<?> getProductHomePageByProductSale(@RequestParam(defaultValue = "0") Integer pageNo,
+                                                            @RequestParam(defaultValue = "10") Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<ProductUserResponseDto> productUserResponseDtoPage = productService.getProductHomePageByProductSale(pageable);
+
+        List<ProductUserResponseDto> productUserResponseDtoList = productUserResponseDtoPage.getContent();
+        return ResponseHandler.generateResponse(
+                HttpStatus.OK
+                , productUserResponseDtoList
+                , productUserResponseDtoPage);
+    }
+    @GetMapping("getProductHomePageByProductHot")
+    public ResponseEntity<?> getProductHomePageByProductHot(@RequestParam(defaultValue = "0") Integer pageNo,
+                                                            @RequestParam(defaultValue = "10") Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<ProductUserResponseDto> productUserResponseDtoPage = productService.getProductHomePageByProductHot( pageable);
+
+        List<ProductUserResponseDto> productUserResponseDtoList = productUserResponseDtoPage.getContent();
+        return ResponseHandler.generateResponse(
+                HttpStatus.OK
+                , productUserResponseDtoList
+                , productUserResponseDtoPage);
     }
 
     @GetMapping("findAllByDeletedTrue")

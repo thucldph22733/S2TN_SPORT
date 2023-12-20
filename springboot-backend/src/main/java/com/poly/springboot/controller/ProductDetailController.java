@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/productDetails/")
 @Tag(name = "ProductDetails",description = "( Rest API Hiển thị, thêm, sửa, xóa sản, phân trang, tìm kiếm sản phẩm chi tiết)")

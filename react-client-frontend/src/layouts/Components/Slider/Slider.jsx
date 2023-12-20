@@ -1,11 +1,11 @@
 import React from 'react';
 import { Carousel } from 'antd';
-import banner_football1 from '~/assets/images/banner_football1.png';
+import banner_football1 from '~/assets/images/banner3.png';
 import banner_football2 from '~/assets/images/banner1.png';
 
 function Slider() {
     const contentStyle = {
-        height: '500px',
+        height: '450px',
         color: '#fff',
         lineHeight: '160px',
         textAlign: 'center',

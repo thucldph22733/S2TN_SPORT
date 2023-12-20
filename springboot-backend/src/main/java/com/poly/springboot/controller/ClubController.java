@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/clubs/")
 @Tag(name = "Clubs", description = "( Rest API Hiển thị, thêm, sửa, xóa câu lạc bộ )")

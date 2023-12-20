@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/materials/")
 @Tag(name = "Materials",description = "( Rest API Hiển thị, thêm, sửa, xóa chất liệu )")

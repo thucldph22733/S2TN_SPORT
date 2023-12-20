@@ -14,15 +14,26 @@ public interface ProductService {
     Page<ProductResponseDto> getProducts(String name, List<Boolean> status, Pageable pageable);
 
     Page<ProductUserResponseDto> getProductHomePageByProductNew(Pageable pageable);
+
     Page<ProductUserResponseDto> getProductHomePageByProductHot(Pageable pageable);
+
     Page<ProductUserResponseDto> getProductHomePageByProductSale(Pageable pageable);
 
 //    Boolean deleteProduct(Long id);
 
     Boolean createProduct(ProductRequestDto productRequestDto);
 
-    Boolean updateProduct(ProductRequestDto productRequestDto,Long id);
+    Boolean updateProduct(ProductRequestDto productRequestDto, Long id);
 
     List<Product> findAllByDeletedTrue();
+
+    Page<ProductUserResponseDto> findProductsByFilters(List<Long> categoryIds,
+                                                       List<Long> brandIds,
+                                                       List<Long> colorIds,
+                                                       List<Long> materialIds,
+                                                       List<Long> sizeIds,
+//                                                       Double minPrice,
+//                                                       Double maxPrice,
+                                                       Pageable pageable);
 
 }

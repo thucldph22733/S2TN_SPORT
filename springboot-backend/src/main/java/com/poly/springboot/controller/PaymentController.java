@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/payments/")
 @Tag(name = "Payments",description = "( Rest API Hiển thị, thêm, sửa, xóa phương thức thanh toán )")

@@ -11,7 +11,6 @@ function MainLayout() {
             <Header />
             <Outlet />
             <Footer />
-
         </Fragment>
     );
 }

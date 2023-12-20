@@ -99,7 +99,6 @@ function Order() {
             )
         },
 
-
         {
             title: 'Tổng tiền',
             dataIndex: 'orderTotal',

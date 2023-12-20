@@ -20,19 +20,16 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductRepository productRepository;
     private CategoryRepository categoryRepository;
-    private MaterialRepository materialRepository;
     private BrandRepository brandRepository;
     private SupplierRepository supplierRepository;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
-                              MaterialRepository materialRepository,
                               BrandRepository brandRepository,
                               SupplierRepository supplierRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
-        this.materialRepository = materialRepository;
         this.brandRepository = brandRepository;
         this.supplierRepository = supplierRepository;
     }
@@ -105,6 +102,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> findAllByDeletedTrue() {
         return productRepository.findAllByDeletedTrue();
+    }
+
+    @Override
+    public Page<ProductUserResponseDto> findProductsByFilters(List<Long> categoryIds, List<Long> brandIds, List<Long> colorIds, List<Long> materialIds, List<Long> sizeIds,
+//                                                              Double minPrice, Double maxPrice,
+                                                              Pageable pageable) {
+        return productRepository.findProductsByFilters(categoryIds,brandIds,colorIds,materialIds,sizeIds
+//                ,minPrice,maxPrice
+                ,pageable);
     }
 
 

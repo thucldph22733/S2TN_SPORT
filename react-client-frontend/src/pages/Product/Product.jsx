@@ -9,8 +9,8 @@ import banner4 from '~/assets/images/banner/banner_4.jpg'
 import { GiBurningRoundShot } from "react-icons/gi";
 import { FaSalesforce } from "react-icons/fa";
 import { MdFiberNew } from "react-icons/md";
-import { Breadcrumb, Card, Checkbox, Col, Collapse, Image, Pagination, Row } from 'antd';
-import { FilterOutlined, HomeOutlined } from '@ant-design/icons';
+import { Breadcrumb, Card, Checkbox, Col, Collapse, Empty, Image, Pagination, Row } from 'antd';
+import { ExclamationCircleOutlined, FilterOutlined, FrownOutlined, HomeOutlined } from '@ant-design/icons';
 import path_name from '~/core/constants/routers';
 import CategoryService from '~/service/CategoryService';
 import BrandService from '~/service/BrandService';
@@ -110,6 +110,7 @@ function Product() {
     }
     //-----------------------------Sản phẩm-----------------------------
     const [products, setProducts] = useState([]);
+
     const [filterProduct, setFilterProduct] = useState({
         pageNo: 0,
         pageSize: 12,
@@ -119,66 +120,81 @@ function Product() {
         materialIds: null,
         sizeIds: null
     });
-    console.log(filterProduct)
-    // const [pagination, setPagination] = useState({ current: 1, pageSize: 2, total: 0 });
-    // const [selectedCategories, setSelectedCategories] = useState(null);
-    // const [selectedBrands, setSelectedBrands] = useState([]);
-    // const [selectedMaterials, setSelectedMaterials] = useState([]);
-    // const [selectedColors, setSelectedColors] = useState([]);
-    // const [selectedSizes, setSelectedSizes] = useState([]);
-    // console.log(selectedCategories)
-    const handleCategoryChange = (checkedValues) => {
-        console.log(checkedValues)
-        setFilterProduct({
-            ...filterProduct,
-            categoryIds: checkedValues.length == 0 ? null : checkedValues
-        });
 
-    };
-    // console.log(selectedCategories)
-    // const handleBrandChange = (checkedValues) => {
-    //     setSelectedBrands(checkedValues);
-    // };
-
-    // const handleMaterialChange = (checkedValues) => {
-    //     setSelectedMaterials(checkedValues);
-    // };
-
-    // const handleColorChange = (checkedValues) => {
-    //     setSelectedColors(checkedValues);
-    // };
-
-    // const handleSizesChange = (checkedValues) => {
-    //     setSelectedSizes(checkedValues);
-    // };
-
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
     const findProductsByFilters = async () => {
 
         await ProductService.findProductsByFilters(filterProduct)
             .then(response => {
                 setProducts(response.data);
-                // setPagination({
-                //     ...pagination,
-                //     current: response.pagination.currentPage,
-                //     pageSize: response.pagination.pageSize,
-                //     total: response.totalCount,
-                // });
+                setPagination({
+                    ...pagination,
+                    current: response.pagination.currentPage,
+                    pageSize: response.pagination.pageSize,
+                    total: response.totalCount,
+                });
 
             }).catch(error => {
                 console.error(error);
             })
     }
-    // const handlePageChange = (page, pageSize) => {
-    //     findProductsByFilters(page - 1, pageSize);
-    // };
-
-    // const handleSizeChange = (current, size) => {
-    //     findProductsByFilters(0, size);
-    // };
+    const handlePageChange = (page, pageSize) => {
+        setFilterProduct({
+            ...filterProduct,
+            pageNo: page - 1,
+            pageSize: pageSize
+        })
+    };
 
     useEffect(() => {
         findProductsByFilters();
     }, [filterProduct]);
+
+    // lọc danh mục
+    const handleCategoryChange = (checkedValues) => {
+        console.log(checkedValues)
+        setFilterProduct({
+            ...filterProduct,
+            categoryIds: checkedValues.length == 0 ? null : checkedValues,
+            pageNo: 0
+        });
+
+    };
+    //lọc thương hiệu
+    const handleBrandChange = (checkedValues) => {
+        console.log(checkedValues)
+        setFilterProduct({
+            ...filterProduct,
+            brandIds: checkedValues.length == 0 ? null : checkedValues,
+            pageNo: 0
+        });
+    };
+    //lọc chất liệu
+    const handleMaterialChange = (checkedValues) => {
+        setFilterProduct({
+            ...filterProduct,
+            materialIds: checkedValues.length == 0 ? null : checkedValues,
+            pageNo: 0
+        });
+    };
+    //lọc màu sắc
+    const handleColorChange = (checkedValues) => {
+        setFilterProduct({
+            ...filterProduct,
+            colorIds: checkedValues.length == 0 ? null : checkedValues,
+            pageNo: 0
+        });
+    };
+    //lọc kích thước
+    const handleSizesChange = (checkedValues) => {
+        setFilterProduct({
+            ...filterProduct,
+            sizeIds: checkedValues.length == 0 ? null : checkedValues,
+            pageNo: 0
+        });
+    };
+
+
     return (
         <>
             <div className='container' style={{ height: '80px', padding: '30px 10px' }} >
@@ -233,11 +249,17 @@ function Product() {
                                     key: '1',
                                     label: 'Thương hiệu',
                                     children: <>
-                                        {brands.map((brand) => (
-                                            <Row key={brand.id}>
-                                                <Checkbox value={brand.id}>{brand.brandName}</Checkbox>
+                                        <Checkbox.Group onChange={(checkedValue) => handleBrandChange(checkedValue)}>
+                                            <Row gutter={[6, 6]} >
+                                                {brands.map((brand) => (
+                                                    <Col key={brand.id} span={24}>
+                                                        <Checkbox value={brand.id}>
+                                                            {brand.brandName}
+                                                        </Checkbox>
+                                                    </Col>
+                                                ))}
                                             </Row>
-                                        ))}
+                                        </Checkbox.Group>
                                     </>
 
                                 },
@@ -251,11 +273,15 @@ function Product() {
                                     key: '1',
                                     label: 'Chất liệu',
                                     children: <>
-                                        {materials.map((material) => (
-                                            <Row key={material.id}>
-                                                <Checkbox value={material.id}>{material.materialName}</Checkbox>
+                                        <Checkbox.Group onChange={(checkedValue) => handleMaterialChange(checkedValue)}>
+                                            <Row gutter={[6, 6]} >
+                                                {materials.map((material) => (
+                                                    <Col key={material.id} span={24}>
+                                                        <Checkbox value={material.id}>{material.materialName}</Checkbox>
+                                                    </Col>
+                                                ))}
                                             </Row>
-                                        ))}
+                                        </Checkbox.Group>
                                     </>
                                 },
                             ]}
@@ -268,18 +294,21 @@ function Product() {
                                     key: '1',
                                     label: 'Màu sắc',
                                     children: <>
-                                        {colors.map((color) => (
-                                            <Row key={color.id}>
-                                                <Checkbox value={color.id}>{color.colorName}</Checkbox>
+                                        <Checkbox.Group onChange={(checkedValue) => handleColorChange(checkedValue)}>
+                                            <Row gutter={[6, 6]} >
+                                                {colors.map((color) => (
+                                                    <Col key={color.id} span={12}>
+                                                        <Checkbox value={color.id}>{color.colorName}</Checkbox>
+                                                    </Col>
+                                                ))}
                                             </Row>
-                                        ))}
+                                        </Checkbox.Group>
                                     </>
 
                                 },
                             ]}
                         />
                         <Collapse
-
                             size="small"
                             style={{ border: 'none' }}
                             items={[
@@ -287,18 +316,20 @@ function Product() {
                                     key: '1',
                                     label: 'Kích thước',
                                     children: <>
-                                        {sizes.map((size) => (
-                                            <Row key={size.id}>
-                                                <Checkbox value={size.id}>{size.sizeName}</Checkbox>
+                                        <Checkbox.Group onChange={(checkedValue) => handleSizesChange(checkedValue)}>
+                                            <Row gutter={[6, 6]} >
+                                                {sizes.map((size) => (
+                                                    <Col key={size.id} span={12}>
+                                                        <Checkbox value={size.id}>{size.sizeName}</Checkbox>
+                                                    </Col>
+                                                ))}
                                             </Row>
-                                        ))}
+                                        </Checkbox.Group>
                                     </>
-
                                 },
                             ]}
                         />
                         <Collapse
-
                             size="small"
                             style={{ border: 'none' }}
                             items={[
@@ -318,33 +349,39 @@ function Product() {
                         />
                     </Col>
                     <Col span={19}>
-                        <Row gutter={[16, 16]} >
-                            {products && products.map((item) => (
-                                <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
-                                    <Link to={`${path_name.product_detail}/${item.id}`}>
-                                        <Card
-                                            hoverable
-                                            style={{
-                                                width: '100%',
-                                                textAlign: 'center',
-                                            }}
-                                            cover={<Image alt="example" src={item.imageUrl} />}
-                                        >
-                                            <Meta title={item.productName} description={<span style={{ color: 'red', fontWeight: '550' }}>{formatCurrency(item.minPrice)}</span>} />
-                                        </Card>
-                                    </Link>
-                                </Col>
-                            ))}
-                        </Row>
-                        {/* <Pagination
-                            onChange={handlePageChange}
-                            onShowSizeChange={handleSizeChange}
-                            defaultCurrent={1}
-                            current={pagination.current}
-                            pageSize={pagination.pageSize}
-                            total={pagination.total}
-                            style={{ float: 'right', marginTop: '10px' }}
-                        /> */}
+                        {products.length === 0 ? (
+                            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                <Empty description="Không tìm thấy sản phẩm nào!" />
+                            </div>
+                        ) : (
+                            <>
+                                <Row gutter={[16, 16]}>
+                                    {products.map((item) => (
+                                        <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
+                                            <Link to={`${path_name.product_detail}/${item.id}`}>
+                                                <Card
+                                                    hoverable
+                                                    style={{
+                                                        width: '100%',
+                                                        textAlign: 'center',
+                                                    }}
+                                                    cover={<Image alt="example" src={item.imageUrl} />}
+                                                >
+                                                    <Meta title={item.productName} description={<span style={{ color: 'red', fontWeight: '550' }}>{formatCurrency(item.minPrice)}</span>} />
+                                                </Card>
+                                            </Link>
+                                        </Col>
+                                    ))}
+                                </Row>
+                                <Pagination
+                                    onChange={handlePageChange}
+                                    current={pagination.current}
+                                    pageSize={pagination.pageSize}
+                                    total={pagination.total}
+                                    style={{ float: 'right', marginTop: '10px' }}
+                                />
+                            </>
+                        )}
                     </Col>
                 </Row>
 

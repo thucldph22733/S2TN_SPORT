@@ -68,9 +68,9 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> findImageByProductId(Long id) {
+    public List<Image> findImageByProductId(Long productId) {
 
-        List<Image> imageList = imageRepository.findImageByProductId(id);
+        List<Image> imageList = imageRepository.findImageByProductId(productId);
 
         return imageList;
     }

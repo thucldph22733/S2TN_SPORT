@@ -2,14 +2,13 @@ package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
-import com.poly.springboot.dto.responseDto.BestSellingProductResponsesDto;
-import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
-import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.*;
 import com.poly.springboot.entity.ProductDetail;
 import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.service.ProductDetailService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +33,36 @@ public class ProductDetailController {
                 .body(productDetailResponseDtoList);
     }
 
-
-
-    @GetMapping("pagination")
-    public ResponseEntity<List<ProductDetailResponseDto>> getPagination(@RequestParam Optional<Integer> pageNo) {
-        List<ProductDetailResponseDto> productDetailResponseDtoList = productDetailService.getPagination(pageNo.orElse(0));
+    @GetMapping("getProductDetailsByProductId")
+    public ResponseEntity<ProductDetailInfoResponseDto> getProductDetailsByProductId(@RequestParam Long productId) {
+        ProductDetailInfoResponseDto productDetailInfoResponseDtos = productDetailService.getProductDetailsByProductId(productId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(productDetailResponseDtoList);
+                .body(productDetailInfoResponseDtos);
     }
+    @GetMapping("findQuantityAndPriceUpdateByProductDetail")
+    public ResponseEntity<PDUpdateResponseDto> findQuantityAndPriceUpdateByProductDetail(@RequestParam Long productId,@RequestParam Long colorId,@RequestParam Long sizeId) {
+        PDUpdateResponseDto pdUpdateResponseDto = productDetailService.findQuantityAndPriceByProductIdAndColorIdAndSizeId(productId,colorId,sizeId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(pdUpdateResponseDto);
+    }
+
+    @GetMapping("findColorNamesByProductId")
+    public ResponseEntity< List<ColorInfoResponseDto>> findColorNamesByProductId(@RequestParam Long productId) {
+        List<ColorInfoResponseDto> colorInfoResponseDtos = productDetailService.getColorNamesByProductId(productId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(colorInfoResponseDtos);
+    }
+
+    @GetMapping("findSizeNamesByProductId")
+    public ResponseEntity<List<SizeInfoResponseDto>> findSizeNamesByProductId(@RequestParam Long productId) {
+        List<SizeInfoResponseDto>  sizeInfoResponseDtos = productDetailService.getSizeNamesByProductId(productId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(sizeInfoResponseDtos);
+    }
+
+
+
+
 
     @PostMapping("/create")
     public ResponseEntity<?> createProductDetails(@RequestBody List<ProductDetailRequestDto> productDetailRequestDtos) {
@@ -85,7 +106,7 @@ public class ProductDetailController {
     }
 
     @GetMapping("findProductDetailById")
-    public ResponseEntity<ProductDetail> finddProductDetailById(@RequestParam Long id){
+    public ResponseEntity<ProductDetail> findProductDetailById(@RequestParam Long id){
         ProductDetail productDetail = productDetailService.findByIdProductDetailsId(id);
         return ResponseEntity
                 .status(HttpStatus.OK)

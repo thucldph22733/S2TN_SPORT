@@ -45,9 +45,9 @@ public class ImageController {
     }
 
     @GetMapping("findImageByProductId")
-    public ResponseEntity<List<Image>> findImageByProductId(@RequestParam Long id) {
+    public ResponseEntity<List<Image>> findImageByProductId(@RequestParam Long productId) {
 
-        List<Image> imageList = imageService.findImageByProductId(id);
+        List<Image> imageList = imageService.findImageByProductId(productId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(imageList);

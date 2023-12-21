@@ -13,8 +13,8 @@ import java.util.Optional;
 public interface ImageRepository extends JpaRepository<Image,Long> {
 
 
-    @Query("SELECT i FROM Image i WHERE i.product.id = :id")
-    List<Image> findImageByProductId(@Param("id") Long id);
+    @Query("SELECT i FROM Image i WHERE i.product.id = :productId")
+    List<Image> findImageByProductId(@Param("productId") Long productId);
 
     Optional<Image> findByImageName(String fileName);
 

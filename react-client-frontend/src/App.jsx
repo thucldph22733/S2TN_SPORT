@@ -61,7 +61,7 @@ function App() {
                     element: <Image />,
                 },
                 {
-                    path: path_name.product_detail,
+                    path: path_name.product_detail + '/:id',
                     element: <ProductDetail />,
                 },
                 {

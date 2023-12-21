@@ -1,8 +1,7 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
-import com.poly.springboot.dto.responseDto.BestSellingProductResponsesDto;
-import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
+import com.poly.springboot.dto.responseDto.*;
 import com.poly.springboot.entity.ProductDetail;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.*;
@@ -59,25 +58,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
 
-    @Override
-    public List<ProductDetailResponseDto> getPagination(Integer pageNo) {
-
-        List<ProductDetailResponseDto> productDetailResponseDtoList = productDetailRepository.findAll().stream().map(
-                productDetail -> new ProductDetailResponseDto(
-                        productDetail.getId(),
-                        productDetail.getProduct().getProductName(),
-//                        productDetail.getProduct().getAvatar(),
-                        productDetail.getColor().getColorName(),
-                        productDetail.getMaterial().getMaterialName(),
-                        productDetail.getSize().getSizeName(),
-                        productDetail.getQuantity(),
-                        productDetail.getPrice(),
-//                        productDetail.getPromotionPrice(),
-                        productDetail.getDeleted())
-
-        ).collect(Collectors.toList());
-        return productDetailResponseDtoList;
-    }
 
     @Override
     public Boolean deleteProductDetail(Long id) {
@@ -118,6 +98,16 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         productDetailRepository.saveAll(productDetails);
         return true;
+    }
+
+    @Override
+    public ProductDetailInfoResponseDto getProductDetailsByProductId(Long productId) {
+        return productDetailRepository.getProductDetailsByProductId(productId);
+    }
+
+    @Override
+    public PDUpdateResponseDto findQuantityAndPriceByProductIdAndColorIdAndSizeId(Long productId, Long colorId, Long sizeId) {
+        return productDetailRepository.findQuantityAndPriceByProductIdAndColorIdAndSizeId(productId,colorId,sizeId);
     }
 
 
@@ -167,5 +157,13 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
         return formattedList;
     }
+
+    @Override
+    public List<SizeInfoResponseDto> getSizeNamesByProductId(Long productId) {
+        return productDetailRepository.findSizeNamesByProductId(productId);    }
+
+    @Override
+    public List<ColorInfoResponseDto> getColorNamesByProductId(Long productId) {
+        return productDetailRepository.findColorNamesByProductId(productId);    }
 
 }

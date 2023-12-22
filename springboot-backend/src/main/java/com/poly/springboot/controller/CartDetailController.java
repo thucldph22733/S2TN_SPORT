@@ -9,16 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,9 +23,9 @@ public class CartDetailController {
     private CartDetailService cartDetailService;
 
     //get all cart detail rest api
-    @GetMapping("getAll")
-    public ResponseEntity<List<CartDetailResponseDto>> getCartDetails(@RequestParam(required = false) Long cartId) {
-        List<CartDetailResponseDto> cartDetailResponseDtoList = cartDetailService.getCartDetails(cartId);
+    @GetMapping("getAllCartDetailByCartId")
+    public ResponseEntity<List<CartDetailResponseDto>> getAllCartDetailByCartId(@RequestParam(required = false) Long cartId) {
+        List<CartDetailResponseDto> cartDetailResponseDtoList = cartDetailService.getAllCartDetailByCartId(cartId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(cartDetailResponseDtoList);
@@ -55,7 +46,7 @@ public class CartDetailController {
     }
 
     // update cart detail rest api
-    @PutMapping("update")
+    @PatchMapping("update")
     public ResponseEntity<ResponseDto> updateCartDetail(@RequestBody CartDetailRequestDto cartDetailRequestDto, @RequestParam Long id) {
         Boolean isUpdated = cartDetailService.updateCartDetail(cartDetailRequestDto,id);
 

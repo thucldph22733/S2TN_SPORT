@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Product.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Breadcrumb, Button, Col, Image, InputNumber, Modal, Rate, Row, Table, Tabs } from 'antd';
+import { Breadcrumb, Button, Col, Image, InputNumber, Modal, Rate, Row, Table, Tabs, message, notification } from 'antd';
 import { HomeOutlined, SendOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import imgage1 from '~/assets/images/product/product-21.jpg';
 import imgage2 from '~/assets/images/product/product-20.jpg';
@@ -10,6 +10,8 @@ import { MdLabelImportantOutline } from 'react-icons/md';
 import ProductDetailService from '~/service/ProductDetailService';
 import formatCurrency from '~/utils/format-currency';
 import ImageService from '~/service/ImageService';
+import CartService from '~/service/CartService';
+import CartDetailService from '~/service/CartDetailService';
 
 const columns = [
     {
@@ -143,7 +145,7 @@ function ProductDetail() {
     //-----------------------------------------------------------
     const [selectedColorId, setSelectedColorId] = useState(null);
     const [selectedSizeId, setSelectedSizeId] = useState(null);
-
+    const [error, setError] = useState(null)
 
     const [quantity, setQuantity] = useState(productDetail.quantityTotal);
     const [price, setSetPrice] = useState(productDetail.minPrice);
@@ -155,7 +157,7 @@ function ProductDetail() {
 
                 setQuantity(response.quantity);
                 setSetPrice(response.price)
-
+                setCartDetail(prevCartDetail => ({ ...prevCartDetail, productDetailId: response.id }));
             }).catch(error => {
                 console.error(error);
             })
@@ -168,6 +170,7 @@ function ProductDetail() {
     useEffect(() => {
         if (selectedColorId !== null && selectedSizeId !== null) {
             findQuantityAndPriceUpdateByProductDetail(selectedColorId, selectedSizeId);
+            setError(null);
         } else {
             resetQuantityAndPrice();
         }
@@ -177,20 +180,71 @@ function ProductDetail() {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
 
+
     const handleItemClick = (item, type) => {
         // Kiểm tra nếu đã chọn item này rồi thì hủy chọn
+
         if (type === 'color') {
             setSelectedColorId(selectedColor === item ? null : item.id);
             setSelectedColor(selectedColor === item ? null : item);
         } else if (type === 'size') {
             setSelectedSizeId(selectedSize === item ? null : item.id);
             setSelectedSize(selectedSize === item ? null : item);
+
         } else {
             if (selectedColorId !== null && selectedSizeId !== null) {
                 findQuantityAndPriceUpdateByProductDetail(id, selectedColorId, selectedSizeId);
+                setError(null);
             } else {
                 resetQuantityAndPrice(); // Gọi hàm reset khi không có màu và kích thước được chọn
+
             }
+        }
+    };
+    //-------------------------Thêm sản phẩm vào giỏ hàng-------------------------------
+    const userString = localStorage.getItem('user2');
+    const user = userString ? JSON.parse(userString) : null;
+    const [cartDetail, setCartDetail] = useState({
+        cartId: null,
+        productDetailId: null,
+        quantity: 1,
+    })
+
+    const handleAddCart = async () => {
+        if (selectedColor === null || selectedSize === null) {
+            setError("Vui lòng chọn phân loại hàng!!!")
+            return
+        } else if (cartDetail.quantity < 0) {
+            setError("Vui lòng chọn phân loại hàng!!!")
+        }
+        const response = await CartService.create(user.id);
+        console.log(response);
+        // Trích xuất ID của giỏ hàng từ response
+        const newCartId = response.id;
+
+        // Lưu ID của giỏ hàng
+        setCartDetail(prevCartDetail => ({
+            ...prevCartDetail,
+            cartId: newCartId,
+        }));
+        if (newCartId !== null) {
+            // Gọi service để thêm sản phẩm vào giỏ hàng
+            const newCartDetail = {
+                cartId: newCartId,
+                productDetailId: cartDetail.productDetailId,
+                quantity: cartDetail.quantity,
+            };
+            console.log(newCartDetail)
+            CartDetailService.create(newCartDetail).then(() => {
+
+                message.success('Sản phẩm đã được thêm vào giỏ hàng!');
+                // navigate("/")
+            }).catch(err => {
+                notification.error({
+                    message: 'Thông báo',
+                    description: 'Vui lòng nhập số lượng!',
+                });
+            });
         }
     };
 
@@ -253,22 +307,19 @@ function ProductDetail() {
                     <Col span={12} xs={24} md={12} style={{ padding: '0 40px ' }}>
 
                         <Row>
-                            <h1
-                                style={{ color: '#656565', fontSize: '23px' }}
-                                id="productName"
-                                onChange={(e) => setProductDetail({ ...productDetail, name: e.target.innerText })}
-                            >
+                            <h1 style={{ color: '#656565', fontSize: '23px' }}  >
                                 {productDetail.productName}
                             </h1>
                         </Row>
                         <Row style={{ marginTop: '5px' }}>
-                            <Rate style={{ fontSize: '16px', marginTop: '3px', marginRight: '5px' }} /><span>(Đánh giá)</span>
+                            <Rate style={{ fontSize: '16px', marginTop: '3px', marginRight: '5px' }} />
+                            <span>( Đánh giá )</span>
+                            <span style={{ marginLeft: '15px' }}>| 10 Đánh giá</span>
+                            <span style={{ marginLeft: '10px' }}>| 10 Đã bán</span>
                         </Row>
                         <Row style={{ marginTop: '15px' }}>
                             <label
-                                id="productPrice"
                                 style={{ fontWeight: 'bolder', color: 'red' }}
-                                onChange={(e) => setProductDetail({ ...productDetail, price: e.target.innerText })}
                             >
                                 {formatCurrency(price)}
                             </label>
@@ -317,17 +368,30 @@ function ProductDetail() {
                         <Row style={{ marginTop: '15px' }}>
                             <Col span={5}>
                                 <InputNumber
-                                    value={1}
-                                    onChange={(value) => setProductDetail({ ...productDetail, quantity: value })}
-                                    min={1} max={10} defaultValue={1}
+                                    onChange={(value) => {
+                                        // Kiểm tra nếu giá trị mới không phải là số, không làm gì cả
+                                        if (isNaN(value)) {
+                                            return;
+                                        }
+
+                                        // Nếu giá trị mới là số, thì cập nhật state
+                                        setCartDetail(prevCartDetail => ({ ...prevCartDetail, quantity: value }));
+                                    }}
+                                    min={1}
+                                    max={quantity}
+                                    defaultValue={1}
+
                                 />
                             </Col>
                             <Col span={10}>
-                                <Button type='primary' style={{ marginLeft: '20px' }} icon={<ShoppingCartOutlined />} >Thêm vào giỏ hàng</Button>
+                                <Button type='primary' style={{ marginLeft: '20px' }} icon={<ShoppingCartOutlined />} onClick={handleAddCart}>Thêm vào giỏ hàng</Button>
                             </Col>
                         </Row>
                         <Row style={{ marginTop: '15px' }}>
                             <span> <b>{quantity}</b> sản phẩm có sẵn</span>
+                        </Row>
+                        <Row style={{ margin: '10px 0' }}>
+                            {error && <span style={{ color: 'red' }}>{error}</span>}
                         </Row>
                         {/* <Row style={{ marginTop: '10px' }}>
                             <span>Danh mục: {productDetail.categoryName}</span>
@@ -335,7 +399,7 @@ function ProductDetail() {
                         <Row style={{ marginTop: '10px' }}>
                             <span>Thương hiệu: {productDetail.brandName}</span>
                         </Row> */}
-                        <Row style={{ marginTop: '15px' }}>
+                        <Row >
                             <Button type='primary' onClick={showModal} icon={<SendOutlined />} >Bảng hướng dẫn chọn size</Button>
                         </Row>
                     </Col>

@@ -1,8 +1,10 @@
 package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.CartRequestDto;
+import com.poly.springboot.entity.Cart;
+import com.poly.springboot.entity.User;
 
 public interface CartService {
-    Boolean createCart(CartRequestDto cartRequestDto);
+    Cart createCart(CartRequestDto cartRequestDto );
 
 }

@@ -10,6 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PDUpdateResponseDto {
+
+    private  Long id;
     private  Integer quantity;
     private  Double price;
 }

@@ -4,8 +4,8 @@ const API_URL = 'cartDetails/';
 
 
 const CartDetailService = {
-    getAll: (cartId) => {
-        return HttpClient.get(`${API_URL}getAll?cartId=${cartId}`)
+    getAllCartDetailByCartId: (cartId) => {
+        return HttpClient.get(`${API_URL}getAllCartDetailByCartId?cartId=${cartId}`)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);

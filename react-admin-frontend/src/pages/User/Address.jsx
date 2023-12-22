@@ -258,7 +258,6 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                     initialValues={{
                         ...reacord,
                         city: reacord.city
-
                     }}
                 >
                     <Form.Item label="Họ và tên:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>

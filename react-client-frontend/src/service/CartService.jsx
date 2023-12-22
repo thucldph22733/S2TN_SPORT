@@ -5,7 +5,6 @@ const API_URL = 'carts/';
 
 const CartService = {
 
-
     create: (data) => {
         return HttpClient.post(`${API_URL}create`, data)
             .then(response => response.data)

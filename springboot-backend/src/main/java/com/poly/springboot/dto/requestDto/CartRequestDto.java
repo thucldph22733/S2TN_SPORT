@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CartRequestDto {
 
-    private Long customerId;
+    private Long userId;
 
 }

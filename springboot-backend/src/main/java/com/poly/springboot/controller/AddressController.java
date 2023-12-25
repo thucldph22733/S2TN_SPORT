@@ -32,6 +32,13 @@ public class AddressController {
                 .status(HttpStatus.OK)
                 .body(addressList);
     }
+    @GetMapping("findAddressesByUserIdAnDeletedTrue")
+    public ResponseEntity<Address> findAddressesByUserIdAnDeletedTrue(@RequestParam Long userId) {
+        Address address = addressService.findAddressesByUserIdAnDeletedTrue(userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(address);
+    }
     @PostMapping("create")
     public ResponseEntity<ResponseDto> createAddress(@Valid @RequestBody AddressRequestDto addressRequestDto) {
         Boolean isCreated = addressService.createAddress(addressRequestDto);

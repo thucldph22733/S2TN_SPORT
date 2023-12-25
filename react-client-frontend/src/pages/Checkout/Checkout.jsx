@@ -4,10 +4,12 @@ import { Breadcrumb, Button, Col, Collapse, Form, Input, Radio, Row, Select } fr
 import TextArea from 'antd/es/input/TextArea';
 import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
 import { HomeOutlined, SendOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CartDetailService from '~/service/CartDetailService';
 import CartService from '~/service/CartService';
 import formatCurrency from '~/utils/format-currency';
+import AddressService from '~/service/AddressService';
+import PaymentService from '~/service/PaymentService';
 
 function Checkout() {
 
@@ -97,8 +99,54 @@ function Checkout() {
         cartDetail.forEach(item => {
             totalAmount += parseFloat(item.totalPrice);
         });
-        return formatCurrency(totalAmount + 30000);
+        return (parseFloat(totalAmount) + 30000);
     };
+    //----------------------------load địa chỉ mặc định------------------------
+    const [form] = Form.useForm();
+    const [address, setAddress] = useState({});
+
+    const findAddressesByUserIdAnDeletedTrue = async () => {
+        await AddressService.findAddressesByUserIdAnDeletedTrue(user.id)
+            .then(response => {
+                setAddress(response);
+                console.log(response)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    useEffect(() => {
+        findAddressesByUserIdAnDeletedTrue();
+    }, [])
+    //------------------------Thanh toán-----------------------------------------
+    const [payment, setPayment] = useState();
+
+    console.log(payment)
+
+    const create = async () => {
+        const data = { amount: calculateTotal() }
+        await PaymentService.create(data)
+            .then(response => {
+                setPayment(response);
+                console.log(response)
+
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    useEffect(() => {
+        create();
+    }, [])
+
+    // const navigate = useNavigate();
+    const handlePlaceOrder = () => {
+
+        console.log(payment.data)
+        var a = document.createElement("a");
+        // a.target = '_blank';
+        a.href = payment.data;
+        a.click();
+    }
+
     return (
         <section className="checkout">
             <div className='container' style={{ height: '80px', padding: '30px 10px', }} >
@@ -120,15 +168,15 @@ function Checkout() {
             </div>
             <div className="container">
 
-                <Form name="validateOnly" layout="vertical" autoComplete="off">
+                <Form name="validateOnly" layout="vertical" autoComplete="off" form={form}>
                     <Row>
-                        <Col span={16} lg={16} md={12}>
+                        <Col span={16} lg={16} md={12} key={address.id}>
                             {/* <h6 className="coupon__code">
                                 <span className="icon_tag_alt"></span>Bạn đã có tài khoản? <a style={{ color: 'red' }} href="#">Ấn vào đây để đăng nhập</a>
                             </h6> */}
                             <Row style={{ borderBottom: '1px solid #e1e1e1', marginBottom: '30px', paddingBottom: '20px' }}>
-                                <Col span={21}><h6 className="checkout__title">THÔNG TIN THANH TOÁN</h6></Col>
-                                <Col span={3}>
+                                <Col span={20}><h6 className="checkout__title">THÔNG TIN THANH TOÁN</h6></Col>
+                                <Col span={4}>
                                     <Button type='dashed'>Chọn địa chỉ</Button>
                                 </Col>
                             </Row>
@@ -137,13 +185,14 @@ function Checkout() {
                                     <div className="checkout__input">
                                         <Form.Item
                                             label="Họ và tên"
-                                            name="username"
+                                            name="recipientName"
                                             rules={[
                                                 {
                                                     required: true,
                                                     message: 'Vui lòng nhập họ và tên!',
                                                 },
                                             ]}
+                                            initialValue={address?.recipientName}
                                         >
                                             <Input placeholder="Nhập họ và tên..." />
                                         </Form.Item>
@@ -161,6 +210,7 @@ function Checkout() {
                                                     message: 'Vui lòng nhập số điện thoại!',
                                                 },
                                             ]}
+                                            initialValue={address?.phoneNumber}
                                         >
                                             <Input placeholder="Nhập số điện thoại..." />
                                         </Form.Item>
@@ -170,7 +220,10 @@ function Checkout() {
                             <Row>
                                 <Col span={12}>
                                     <div className="checkout__input">
-                                        <Form.Item label="Tỉnh/Thành phố:" name="city" rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố!' }]}>
+                                        <Form.Item label="Tỉnh/Thành phố:" name="city"
+                                            rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố!' }]}
+                                            initialValue={address?.city}
+                                        >
                                             <Select
                                                 showSearch
                                                 style={{
@@ -192,7 +245,9 @@ function Checkout() {
 
                                 <Col span={12}>
                                     <div className="checkout__input">
-                                        <Form.Item label="Quận/Huyện:" name="district" rules={[{ required: true, message: 'Vui lòng chọn quận/huyện!' }]}>
+                                        <Form.Item label="Quận/Huyện:" name="district"
+                                            initialValue={address?.district}
+                                            rules={[{ required: true, message: 'Vui lòng chọn quận/huyện!' }]}>
                                             <Select
                                                 showSearch
                                                 style={{
@@ -216,7 +271,9 @@ function Checkout() {
                             <Row>
                                 <Col span={12}>
                                     <div className="checkout__input">
-                                        <Form.Item label="Phường/Xã:" name="ward" rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]}>
+                                        <Form.Item label="Phường/Xã:" name="ward"
+                                            initialValue={address?.ward}
+                                            rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]}>
                                             <Select
                                                 showSearch
                                                 style={{
@@ -237,14 +294,16 @@ function Checkout() {
                                 </Col>
                                 <Col span={12}>
                                     <div className="checkout__input">
-                                        <Form.Item label="Địa chỉ cụ thể:" name="addressDetail" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
+                                        <Form.Item label="Địa chỉ cụ thể:" name="addressDetail"
+                                            initialValue={address?.addressDetail}
+                                            rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
                                             <Input placeholder="Địa chỉ cụ thể..." />
                                         </Form.Item>
                                     </div>
                                 </Col>
                             </Row>
                             <div className="checkout__input">
-                                <Form.Item label="Ghi chú:" name="sizeDescribe" >
+                                <Form.Item label="Ghi chú:" name="note" >
                                     <TextArea rows={4} placeholder="Nhập ghi chú..." />
                                 </Form.Item>
                             </div>
@@ -263,15 +322,14 @@ function Checkout() {
                                     </Col>
                                 </Row>
                                 {cartDetail.map((item, index) => (
-                                    <Row style={{ marginTop: '10px', borderTop: '1px solid #cdcdcd' }}>
-                                        <Col span={18} >
+                                    <Row key={index} style={{ marginTop: '10px', borderTop: '1px solid #cdcdcd' }}>
+                                        <Col span={18} key={item.key}>
                                             <p>{index + 1}. {item.productName} [ {item.colorName} - {item.sizeName} ]</p>
                                             <span style={{ color: 'red' }}>{formatCurrency(item.price)}</span> | x{item.quantity}
                                         </Col>
-                                        <Col span={6}>
+                                        <Col span={6} key={`totalPrice_${index}`}>
                                             <p style={{ float: 'right', color: 'red' }}>{formatCurrency(item.totalPrice)}</p>
                                         </Col>
-
                                     </Row>
                                 ))}
                                 <div className="checkout__total__all">
@@ -304,7 +362,7 @@ function Checkout() {
                                             <p> Tổng tiền:</p>
                                         </Col>
                                         <Col span={14} >
-                                            <span style={{ float: 'right' }}>{calculateTotal()}</span>
+                                            <span style={{ float: 'right' }}>{formatCurrency(calculateTotal())}</span>
                                         </Col>
                                     </Row>
 
@@ -323,7 +381,7 @@ function Checkout() {
                                         },
                                     ]}
                                 />
-                                <Button type='primary' style={{ width: '100%', height: '40px', marginTop: '20px', fontSize: '16px', fontWeight: '600' }}>
+                                <Button onClick={handlePlaceOrder} type='primary' style={{ width: '100%', height: '40px', marginTop: '20px', fontSize: '16px', fontWeight: '600' }}>
                                     Đặt hàng
                                 </Button>
                             </div>

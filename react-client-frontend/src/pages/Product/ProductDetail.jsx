@@ -280,28 +280,27 @@ function ProductDetail() {
             <div className='container'>
                 <Row >
                     <Col span={12}>
-                        <Row >
-                            <Col span={4} xs={24} md={5}>
-                                {images.map((image) => (
-                                    <Row key={image.id} style={{ marginBottom: '10px' }}>
-                                        <Image width={100} src={image.imageLink} alt={image} />
-                                    </Row>
-                                ))}
-                            </Col>
+                        <Row>
+                            {images.length !== 1 && (
+                                <Col span={4} xs={24} md={5}>
+                                    {images.map((image) => (
+                                        <Row key={image.id} style={{ marginBottom: '10px' }}>
+                                            <Image width={100} src={image.imageLink} alt={image} />
+                                        </Row>
+                                    ))}
+                                </Col>
+                            )}
                             <Col span={20} xs={24} md={19}>
-
                                 <Image
-
+                                    key={images[0]?.id}
                                     width={400}
                                     height={430}
-                                    src={images.find(image => !image.deleted)?.imageLink || ""}
-                                // alt={image.altText}
+                                    src={images[0]?.imageLink || ""}
                                 />
-
                             </Col>
                         </Row>
                     </Col>
-                    <Col span={12} xs={24} md={12} style={{ padding: '0 40px ' }}>
+                    <Col span={12} xs={24} md={12} >
 
                         <Row>
                             <h1 style={{ color: '#656565', fontSize: '23px' }}  >

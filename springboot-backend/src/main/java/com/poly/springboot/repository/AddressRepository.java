@@ -17,6 +17,10 @@ import java.util.List;
 public interface AddressRepository extends JpaRepository<Address, Long> {
     @Query("SELECT a FROM Address a WHERE a.user.id = :userId")
     List<Address> findAddressesByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT a FROM Address a WHERE a.user.id = :userId and a.deleted = true")
+    Address findAddressesByUserIdAnDeletedTrue(@Param("userId") Long userId);
+
     List<Address> findByUserId(Long userId);
 
     @Modifying

@@ -82,5 +82,10 @@ public class AddressServiceImpl implements AddressService {
         return true;
     }
 
+    @Override
+    public Address findAddressesByUserIdAnDeletedTrue(Long userId) {
+        return addressRepository.findAddressesByUserIdAnDeletedTrue(userId);
+    }
+
 }
 

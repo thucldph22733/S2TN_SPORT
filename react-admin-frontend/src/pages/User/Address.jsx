@@ -39,7 +39,6 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
         fetchAddress();
     }, [])
 
-
     const handleDelete = async (id) => {
 
         await AddressService.delete(id).then(response => {
@@ -56,7 +55,6 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
                 description: 'Xóa thất bại!',
             });
         });
-
     };
     return (
         <>

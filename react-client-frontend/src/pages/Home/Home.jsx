@@ -53,7 +53,7 @@ const Home = () => {
 
     //-----------------------Sản phẩm mới----------------------------------------------------
     const [productNew, setProductNew] = useState([]);
-    const [paginationNew, setPaginationNew] = useState({ current: 1, pageSize: 2, total: 0 });
+    const [paginationNew, setPaginationNew] = useState({ current: 1, pageSize: 4, total: 0 });
     const getProductHomePageByProductNew = async (page, pageSize) => {
 
         await ProductService.getProductHomePageByProductNew(page, pageSize)

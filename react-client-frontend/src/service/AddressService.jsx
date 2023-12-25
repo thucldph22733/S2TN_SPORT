@@ -13,7 +13,16 @@ const AddressService = {
                 throw error;
             });
     },
-
+    findAddressesByUserIdAnDeletedTrue: (userId) => {
+        return HttpClient.get(`${API_URL}findAddressesByUserIdAnDeletedTrue`, {
+            params: { userId }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
     create: (data) => {
         return HttpClient.post(`${API_URL}create`, data)
             .then(response => response.data)

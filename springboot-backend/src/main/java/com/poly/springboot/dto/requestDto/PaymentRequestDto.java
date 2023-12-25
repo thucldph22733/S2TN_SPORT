@@ -12,8 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PaymentRequestDto {
 
-    @NotBlank(message = "Tên phương thức thanh toán không được để trống!")
-    private String paymentName;
+       private long amount;
 
-    private String paymentDescribe;
 }

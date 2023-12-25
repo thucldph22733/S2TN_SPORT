@@ -166,7 +166,7 @@ const ShoppingCart = () => {
                 <div>
                     <InputNumber
                         min={1}
-                        max={10}
+                        max={10000}
                         defaultValue={record.quantity}
                         onChange={(newQuantity) => handleQuantityChange(record.id, parseInt(newQuantity, 10))} />
                 </div>

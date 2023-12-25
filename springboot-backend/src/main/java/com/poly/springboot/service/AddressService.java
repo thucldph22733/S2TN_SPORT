@@ -2,6 +2,7 @@ package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.AddressRequestDto;
 import com.poly.springboot.entity.Address;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ public interface AddressService {
 
      Boolean deleteAddress(Long id);
 
+     Address findAddressesByUserIdAnDeletedTrue(Long userId);
 }

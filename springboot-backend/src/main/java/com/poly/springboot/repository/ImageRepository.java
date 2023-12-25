@@ -13,10 +13,14 @@ import java.util.Optional;
 public interface ImageRepository extends JpaRepository<Image,Long> {
 
 
-    @Query("SELECT i FROM Image i WHERE i.product.id = :productId")
-    List<Image> findImageByProductId(@Param("productId") Long productId);
+    @Query("SELECT i FROM Image i WHERE i.product.id = :id")
+    List<Image> findImageByProductId(@Param("id") Long id);
 
     Optional<Image> findByImageName(String fileName);
 
-    // Lọc những bản ghi chưa bị xóa mềm
+    List<Image> findByColorId(Long colorId);
+
+    List<Image> findByImageLink(String imageLink);
+
 }
+// Lọc nhữ

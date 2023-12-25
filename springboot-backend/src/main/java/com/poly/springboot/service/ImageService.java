@@ -15,5 +15,9 @@ public interface ImageService {
 
     Boolean deleteImage(Long id);
 
-    List<Image> findImageByProductId(Long productId);
+    List<Image> findImageByProductId(Long id);
+
+    List<Image> findByColorId(Long colorId);
+
+    List<Image> findByImageLink(String imageLink);
 }

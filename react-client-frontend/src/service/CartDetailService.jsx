@@ -22,8 +22,8 @@ const CartDetailService = {
             });
     },
 
-    update: (id, data) => {
-        return HttpClient.put(`${API_URL}update?id=${id}`, data)
+    update: (quantity, id) => {
+        return HttpClient.patch(`${API_URL}updateQuantity?quantity=${quantity}&id=${id}`)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in update:', error);

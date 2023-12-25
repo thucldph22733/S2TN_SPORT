@@ -5,6 +5,9 @@ import TextArea from 'antd/es/input/TextArea';
 import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
 import { HomeOutlined, SendOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import CartDetailService from '~/service/CartDetailService';
+import CartService from '~/service/CartService';
+import formatCurrency from '~/utils/format-currency';
 
 function Checkout() {
 
@@ -52,6 +55,50 @@ function Checkout() {
         setSelectedDistrict(value);
         setSelectedWard('');
     };
+    //--------------------------load sản phẩm trong giỏ hàng--------------------------
+    const [cartDetail, setCartDetail] = useState([]);
+
+    const userString = localStorage.getItem('user2');
+    const user = userString ? JSON.parse(userString) : null;
+
+    const findImageByProductId = async () => {
+        const response = await CartService.create(user.id);
+        console.log(response);
+        // Trích xuất ID của giỏ hàng từ response
+        const newCartId = response.id;
+        console.log(newCartId)
+        await CartDetailService.getAllCartDetailByCartId(newCartId)
+            .then(response => {
+
+                const cartDetailMap = response.map((item, index) => ({
+                    ...item,
+                    key: index + 1,
+                    totalPrice: item.quantity * item.price
+                }));
+                setCartDetail(cartDetailMap);
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    useEffect(() => {
+        findImageByProductId();
+    }, []);
+    // Calculate the total amount
+    const calculateTotalAmount = () => {
+        let totalAmount = 0;
+        cartDetail.forEach(item => {
+            totalAmount += parseFloat(item.totalPrice);
+        });
+        return formatCurrency(totalAmount);
+    };
+
+    const calculateTotal = () => {
+        let totalAmount = 0;
+        cartDetail.forEach(item => {
+            totalAmount += parseFloat(item.totalPrice);
+        });
+        return formatCurrency(totalAmount + 30000);
+    };
     return (
         <section className="checkout">
             <div className='container' style={{ height: '80px', padding: '30px 10px', }} >
@@ -76,10 +123,15 @@ function Checkout() {
                 <Form name="validateOnly" layout="vertical" autoComplete="off">
                     <Row>
                         <Col span={16} lg={16} md={12}>
-                            <h6 className="coupon__code">
+                            {/* <h6 className="coupon__code">
                                 <span className="icon_tag_alt"></span>Bạn đã có tài khoản? <a style={{ color: 'red' }} href="#">Ấn vào đây để đăng nhập</a>
-                            </h6>
-                            <h6 className="checkout__title">THÔNG TIN THANH TOÁN</h6>
+                            </h6> */}
+                            <Row style={{ borderBottom: '1px solid #e1e1e1', marginBottom: '30px', paddingBottom: '20px' }}>
+                                <Col span={21}><h6 className="checkout__title">THÔNG TIN THANH TOÁN</h6></Col>
+                                <Col span={3}>
+                                    <Button type='dashed'>Chọn địa chỉ</Button>
+                                </Col>
+                            </Row>
                             <Row>
                                 <Col span={12} lg={12} >
                                     <div className="checkout__input">
@@ -210,29 +262,25 @@ function Checkout() {
                                         <b style={{ float: 'right' }}>TẠM TÍNH</b>
                                     </Col>
                                 </Row>
-                                <Row style={{ marginTop: '10px' }}>
-                                    <Col span={18}>
-                                        <p> 01. Vanilla salted cadsfhb afbasd bad dsrghaeb drfbarfb sh</p>
-                                    </Col>
-                                    <Col span={6} style={{ float: 'right' }}>
-                                        <p style={{ float: 'right' }}>$ 300.0</p>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col span={18}>
-                                        <p> 01. Vanilla salted caramel</p>
-                                    </Col>
-                                    <Col span={6} style={{ float: 'right' }}>
-                                        <p style={{ float: 'right' }}>$ 300.0</p>
-                                    </Col>
-                                </Row>
+                                {cartDetail.map((item, index) => (
+                                    <Row style={{ marginTop: '10px', borderTop: '1px solid #cdcdcd' }}>
+                                        <Col span={18} >
+                                            <p>{index + 1}. {item.productName} [ {item.colorName} - {item.sizeName} ]</p>
+                                            <span style={{ color: 'red' }}>{formatCurrency(item.price)}</span> | x{item.quantity}
+                                        </Col>
+                                        <Col span={6}>
+                                            <p style={{ float: 'right', color: 'red' }}>{formatCurrency(item.totalPrice)}</p>
+                                        </Col>
+
+                                    </Row>
+                                ))}
                                 <div className="checkout__total__all">
                                     <Row>
                                         <Col span={10}>
                                             <p>Tạm tính:</p>
                                         </Col>
                                         <Col span={14}>
-                                            <span style={{ float: 'right' }}>$750.99</span>
+                                            <span style={{ float: 'right' }}>{calculateTotalAmount()}</span>
                                         </Col>
                                     </Row>
                                     <Row>
@@ -240,15 +288,15 @@ function Checkout() {
                                             <p>Giảm giá:</p>
                                         </Col>
                                         <Col span={14} >
-                                            <span style={{ float: 'right' }}>$750.99</span>
+                                            <span style={{ float: 'right' }}>{formatCurrency(0)}</span>
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col span={10}>
-                                            <p>Phí ship:</p>
+                                            <p>Phí giao hàng:</p>
                                         </Col>
                                         <Col span={14} >
-                                            <span style={{ float: 'right' }}>$750.99</span>
+                                            <span style={{ float: 'right' }}>{formatCurrency(30000)}</span>
                                         </Col>
                                     </Row>
                                     <Row >
@@ -256,7 +304,7 @@ function Checkout() {
                                             <p> Tổng tiền:</p>
                                         </Col>
                                         <Col span={14} >
-                                            <span style={{ float: 'right' }}>$750.99</span>
+                                            <span style={{ float: 'right' }}>{calculateTotal()}</span>
                                         </Col>
                                     </Row>
 

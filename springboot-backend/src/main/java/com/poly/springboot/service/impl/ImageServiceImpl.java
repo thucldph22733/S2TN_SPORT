@@ -33,7 +33,6 @@ public class ImageServiceImpl implements ImageService {
     public Boolean createImage(ImageRequestDto imageRequestDto) {
 
         Image image = new Image();
-
         image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
         image.setColor(colorRepository.findById(imageRequestDto.getColorId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
@@ -49,7 +48,6 @@ public class ImageServiceImpl implements ImageService {
         Image image = imageRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id ảnh này!"));
 
-        image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
         image.setColor(colorRepository.findById(imageRequestDto.getColorId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
         image.setImageLink(imageRequestDto.getImageLink());
@@ -68,10 +66,20 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> findImageByProductId(Long productId) {
+    public List<Image> findImageByProductId(Long id) {
 
-        List<Image> imageList = imageRepository.findImageByProductId(productId);
+        List<Image> imageList = imageRepository.findImageByProductId(id);
 
         return imageList;
+    }
+
+    @Override
+    public List<Image> findByColorId(Long colorId) {
+        return imageRepository.findByColorId(colorId);
+    }
+
+    @Override
+    public List<Image> findByImageLink(String imageLink) {
+        return imageRepository.findByImageLink(imageLink);
     }
 }

@@ -240,10 +240,7 @@ function ProductDetail() {
                 message.success('Sản phẩm đã được thêm vào giỏ hàng!');
                 // navigate("/")
             }).catch(err => {
-                notification.error({
-                    message: 'Thông báo',
-                    description: 'Vui lòng nhập số lượng!',
-                });
+                message.error('Lỗi thêm sản phẩm vào giỏ hàng!');
             });
         }
     };

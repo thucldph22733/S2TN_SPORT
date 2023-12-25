@@ -1,4 +1,4 @@
-.checkout{
+.checkout {
     margin-bottom: 50px;
 }
 .coupon__code {
@@ -22,11 +22,11 @@
     color: #111111;
     font-weight: 700;
     text-transform: uppercase;
-    border-bottom: 1px solid #e1e1e1;
-    padding-bottom: 25px;
-    margin-bottom: 30px;
+
+    /* padding-bottom: 25px;
+    margin-bottom: 30px; */
 }
-.checkout__input{
+.checkout__input {
     padding-right: 15px;
 }
 .checkout__input input {
@@ -40,7 +40,6 @@
     border-radius: 3px;
 }
 
-
 .checkout__order {
     background: #ecf2f5;
     padding: 30px;
@@ -51,10 +50,9 @@
     color: #111111;
     font-weight: 700;
     text-transform: uppercase;
-    border-bottom: 1px solid #d7d7d7;
+    border-bottom: 2px solid #d7d7d7;
     padding-bottom: 25px;
     margin-bottom: 25px;
-   
 }
 
 .checkout__order p {
@@ -91,8 +89,8 @@
 }
 
 .checkout__total__all {
-    border-top: 1px solid #d7d7d7;
-    border-bottom: 1px solid #d7d7d7;
+    border-top: 2px solid #d7d7d7;
+    border-bottom: 2px solid #d7d7d7;
     padding: 15px 0;
     margin-bottom: 20px;
 }
@@ -105,7 +103,7 @@
     overflow: hidden;
 }
 
-.checkout__total__all span{
+.checkout__total__all span {
     color: #e53637;
     font-weight: 600;
     float: right;

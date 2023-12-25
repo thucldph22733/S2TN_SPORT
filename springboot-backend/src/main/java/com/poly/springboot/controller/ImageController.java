@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/v1/images/")
 @Tag(name = "Images",description = "( Rest API Hiển thị, thêm, sửa, xóa ảnh )")
@@ -45,9 +45,27 @@ public class ImageController {
     }
 
     @GetMapping("findImageByProductId")
-    public ResponseEntity<List<Image>> findImageByProductId(@RequestParam Long productId) {
+    public ResponseEntity<List<Image>> findImageByProductId(@RequestParam Long id) {
 
-        List<Image> imageList = imageService.findImageByProductId(productId);
+        List<Image> imageList = imageService.findImageByProductId(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(imageList);
+    }
+
+    @GetMapping("findImageByColorId")
+    public ResponseEntity<List<Image>> findImageByColorId(@RequestParam Long id) {
+
+        List<Image> imageList = imageService.findByColorId(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(imageList);
+    }
+
+    @GetMapping("findImageByImageLink")
+    public ResponseEntity<List<Image>> findImageByImageLink(@RequestParam String imageLink) {
+
+        List<Image> imageList = imageService.findByImageLink(imageLink);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(imageList);

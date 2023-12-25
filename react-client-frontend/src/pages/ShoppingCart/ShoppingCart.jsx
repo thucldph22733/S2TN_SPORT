@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './ShoppingCart.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { DeleteFilled, DoubleLeftOutlined, ExportOutlined, SendOutlined, TransactionOutlined, HomeOutlined } from '@ant-design/icons';
-import { InputNumber, Button, Table, Image, Row, Col, Input, Breadcrumb, notification, Result } from 'antd';
+import { InputNumber, Button, Table, Image, Row, Col, Input, Breadcrumb, notification, Result, message } from 'antd';
 import path_name from '~/core/constants/routers';
 import cart from '~/assets/images/cart_icon.png'
 import CartDetailService from '~/service/CartDetailService';
@@ -43,8 +43,12 @@ const ShoppingCart = () => {
     }, []);
 
     const handleDelete = async (id) => {
-        await CartDetailService.delete(id)
-        findImageByProductId();
+        await CartDetailService.delete(id).then(() => {
+            message.success('Xóa sản phẩm khỏi giỏ hàng thành công!');
+            findImageByProductId();
+        }).catch(() => {
+            message.error('Lỗi xóa sản phẩm khỏi giỏ hàng!');
+        })
 
     };
     // Calculate the total amount
@@ -74,11 +78,52 @@ const ShoppingCart = () => {
     };
 
     //-------------------update----------------------------------
-    const handleUpdateClick = () => {
-        // Handle update logic here
-        // ...
-        // After handling update, disable the button again
-        setIsUpdateDisabled(true);
+    const handleUpdateClick = async () => {
+        try {
+            // Tạo một mảng promises cho các hoạt động cập nhật
+            const updatePromises = cartDetail.map(async item => {
+                // Gọi API cập nhật số lượng cho từng sản phẩm trong giỏ hàng
+                await CartDetailService.update(item.quantity, item.id);
+            });
+
+            // Chờ cho tất cả promises được giải quyết
+            await Promise.all(updatePromises);
+            message.success('Cập nhật giỏ hàng thành công!');
+            // Sau khi tất cả cập nhật hoàn thành, cập nhật lại trạng thái cartDetail
+            findImageByProductId();
+        } catch (error) {
+            console.error("Error updating cart details:", error);
+            message.success('Lỗi cập nhật giỏ hàng!');
+            // Hiển thị thông báo lỗi, có thể sử dụng notification.error() từ Ant Design hoặc các phương pháp khác
+        } finally {
+            // Vô hiệu hóa nút cập nhật sau khi hoàn thành
+            setIsUpdateDisabled(true);
+        };
+    };
+    //-------------------checkout----------------------------------
+    const navigate = useNavigate();
+
+    const handleCheckoutClick = async () => {
+        // Kiểm tra xem có sản phẩm nào có số lượng thay đổi mà chưa được cập nhật hay không
+        if (isUpdateDisabled) {
+            // Nếu nút "Cập nhật" bị vô hiệu hóa, chuyển hướng trực tiếp
+            navigate(path_name.checkout);
+        } else {
+            // Nếu nút "Cập nhật" không bị vô hiệu hóa, thực hiện cập nhật giỏ hàng trước khi chuyển hướng
+            try {
+                const updatePromises = cartDetail.map(async item => {
+                    // Gọi API cập nhật số lượng cho từng sản phẩm trong giỏ hàng
+                    await CartDetailService.update(item.quantity, item.id);
+                });
+                // Chờ cho tất cả promises được giải quyết
+                await Promise.all(updatePromises);
+                navigate(path_name.checkout);
+            } catch (error) {
+                console.error("Error during automatic update before checkout:", error);
+                // Hiển thị thông báo lỗi nếu có lỗi trong quá trình cập nhật
+                message.error('Lỗi cập nhật giỏ hàng trước khi đặt hàng!');
+            }
+        }
     };
     const columns = [
         {
@@ -220,14 +265,16 @@ const ShoppingCart = () => {
                                             Giảm giá: <span>$ 169.50</span>
                                         </li> */}
                                         <li>
-                                            Tổng tiền: <span>$ 169.50</span>
+                                            Tổng tiền: <span>{calculateTotalAmount()}</span>
                                         </li>
                                     </ul>
-                                    <Link to={path_name.checkout}>
-                                        <Button type="primary" icon={<SendOutlined />} style={{ width: '100%', height: '40px' }}>
-                                            Tiến hành đặt hàng
-                                        </Button>
-                                    </Link>
+
+                                    <Button type="primary" icon={<SendOutlined />}
+                                        style={{ width: '100%', height: '40px' }}
+                                        onClick={handleCheckoutClick}>
+                                        Tiến hành đặt hàng
+                                    </Button>
+
                                 </div>
                             </Col>
                         </Row>

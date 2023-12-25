@@ -79,12 +79,12 @@ public class CartDetailServiceImpl implements CartDetailService {
     }
 
     @Override
-    public Boolean updateCartDetail(CartDetailRequestDto cartDetailRequestDto, Long id) {
+    public Boolean updateCartDetail(Integer quantity, Long id) {
 
         CartDetail cartDetail = cartDetailRepository.findById(id)
                 .orElseThrow( ()-> new ResourceNotFoundException("Không tìm thấy id giỏ hàng chi tiết này!"));
         // Neu tim thay thi set cart detail va luu lai
-        cartDetail.setQuantity(cartDetailRequestDto.getQuantity());
+        cartDetail.setQuantity(quantity);
 
         cartDetailRepository.save(cartDetail);
 

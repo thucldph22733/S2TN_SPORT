@@ -46,9 +46,9 @@ public class CartDetailController {
     }
 
     // update cart detail rest api
-    @PatchMapping("update")
-    public ResponseEntity<ResponseDto> updateCartDetail(@RequestBody CartDetailRequestDto cartDetailRequestDto, @RequestParam Long id) {
-        Boolean isUpdated = cartDetailService.updateCartDetail(cartDetailRequestDto,id);
+    @PatchMapping("updateQuantity")
+    public ResponseEntity<ResponseDto> updateCartDetail(@RequestParam Integer quantity, @RequestParam Long id) {
+        Boolean isUpdated = cartDetailService.updateCartDetail(quantity,id);
 
         if (isUpdated) {
             return ResponseEntity.status(HttpStatus.OK)

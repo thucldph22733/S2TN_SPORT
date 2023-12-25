@@ -11,7 +11,7 @@ public interface CartDetailService {
 
     Boolean createCartDetail(CartDetailRequestDto cartDetailRequestDto);
 
-    Boolean updateCartDetail(CartDetailRequestDto cartDetailRequestDto,Long id);
+    Boolean updateCartDetail(Integer quantity,Long id);
 
     Boolean deleteCartDetail(Long id);
 

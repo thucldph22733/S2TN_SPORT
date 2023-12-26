@@ -7,6 +7,7 @@ import path_name from '~/core/constants/routers';
 import { useState, useEffect } from 'react';
 import { AutoComplete, Avatar, Badge, Button, Col, Dropdown, Input, Row, Tooltip } from 'antd';
 import { ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
+import ShoppingCart from '~/pages/ShoppingCart/ShoppingCart';
 
 function Header() {
 

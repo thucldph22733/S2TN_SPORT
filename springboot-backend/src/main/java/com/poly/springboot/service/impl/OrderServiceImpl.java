@@ -31,8 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderHistoryRepository orderHistoryRepository;
     private ProductDetailRepository productDetailRepository;
 
-
-
+    private CartRepository cartRepository;
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderStatusRepository orderStatusRepository,
@@ -42,7 +41,8 @@ public class OrderServiceImpl implements OrderService {
                             UserRepository userRepository,
                             OrderDetailRepository orderDetailRepository,
                             VoucherRepository voucherRepository,
-                            OrderHistoryRepository orderHistoryRepository) {
+                            OrderHistoryRepository orderHistoryRepository,
+                            CartRepository cartRepository) {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.orderStatusRepository = orderStatusRepository;
@@ -52,32 +52,33 @@ public class OrderServiceImpl implements OrderService {
         this.paymentMethodRepository = paymentMethodRepository;
         this.voucherRepository = voucherRepository;
         this.orderHistoryRepository = orderHistoryRepository;
+        this.cartRepository = cartRepository;
     }
-
 
 
     @Override
     public List<OrderResponseDto> getAllOrders() {
-        return orderRepository.findAll().stream().map(
-                order -> new OrderResponseDto(
-                        order.getId(),
-                        order.getVoucher() != null ? order.getVoucher().getId() : null,
-                        order.getUser() != null ? order.getUser().getId() : null,
-                        order.getUser() != null ? order.getUser().getUsersName() : "",  // Thay thế từ getCustomer() sang getUser()
-                        order.getPhoneNumber(), // Thay thế từ getCustomer() sang getUser()
-                        order.getPayment() != null ? order.getPayment().getPaymentName() : "",
-                        order.getAddressDetail(),
-                        order.getRecipientName(),
-                        order.getWard(),
-                        order.getDistrict(),
-                        order.getCity(),
-                        order.getVoucher() != null ? order.getVoucher().getVoucherName() : "",
-                        order.getOrderStatus() != null ? order.getOrderStatus().getStatusName() : "",
-                        order.getNote(),
-                        order.getOrderTotal(),
-                        order.getOrderTotalInitial()
-                )
-        ).collect(Collectors.toList());
+//        return orderRepository.findAll().stream().map(
+//                order -> new OrderResponseDto(
+//                        order.getId(),
+//                        order.getVoucher() != null ? order.getVoucher().getId() : null,
+//                        order.getUser() != null ? order.getUser().getId() : null,
+//                        order.getUser() != null ? order.getUser().getUsersName() : "",  // Thay thế từ getCustomer() sang getUser()
+//                        order.getPhoneNumber(), // Thay thế từ getCustomer() sang getUser()
+////                        order.getPayment() != null ? order.getPayment().getPaymentName() : "",
+//                        order.getAddressDetail(),
+//                        order.getRecipientName(),
+//                        order.getWard(),
+//                        order.getDistrict(),
+//                        order.getCity(),
+//                        order.getVoucher() != null ? order.getVoucher().getVoucherName() : "",
+//                        order.getOrderStatus() != null ? order.getOrderStatus().getStatusName() : "",
+//                        order.getNote(),
+//                        order.getOrderTotal(),
+//                        order.getOrderTotalInitial()
+//                )
+//        ).collect(Collectors.toList());
+        return null;
     }
 
     @Override
@@ -132,8 +133,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
-
     //    @Override
 //    public Order findOrderById(Long id) {
 //
@@ -161,10 +160,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<Order> getAllOrders(Long orderStatusId, Pageable pageable) {
         Page<Order> orderPage;
-        if (orderStatusId == null){
+        if (orderStatusId == null) {
             orderPage = orderRepository.findAllByDeletedIsTrue(pageable);
-        }else {
-            orderPage = orderRepository.findAllByOrderStatusIdAndDeletedIsTrue(orderStatusId,pageable);
+        } else {
+            orderPage = orderRepository.findAllByOrderStatusIdAndDeletedIsTrue(orderStatusId, pageable);
         }
         return orderPage;
     }
@@ -174,34 +173,78 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAllOrderByStatusId(pageable);
     }
 
+//    @Override
+//    public Boolean createOrder(OrderRequestDto orderRequestDto) {
+//
+//        Long userId = orderRequestDto.getUserId();
+//        Long paymentId = orderRequestDto.getPaymentId();
+//        Long deliveryId = orderRequestDto.getDeliveryId();
+//        Long voucherId = orderRequestDto.getVoucherId();
+//// Kiểm tra và tìm đối tượng Customer
+//        User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
+//
+//// Kiểm tra và tìm đối tượng Payment
+//        Payment payment = paymentId != null ? paymentMethodRepository.findById(paymentId).orElse(null) : null;
+//
+//// Kiểm tra và tìm đối tượng Delivery
+//        Delivery delivery = deliveryId != null ? shippingMethodRepository.findById(deliveryId).orElse(null) : null;
+//
+//// Kiểm tra và tìm đối tượng voucher
+//        Voucher voucher = voucherId != null ? voucherRepository.findById(voucherId).orElse(null) : null;
+//
+//// Tìm đối tượng OrderStatus (set luôn là null nếu không tìm thấy)
+//        OrderStatus orderStatus = orderStatusRepository.findById(1L).orElse(null);
+//
+//
+//// Tạo đối tượng Order và set các giá trị đã tìm được
+//        Order order = new Order();
+//        order.setUser(user);
+//        order.setDelivery(delivery);
+//        order.setPayment(payment);
+//        order.setOrderStatus(orderStatus);
+//        order.setVoucher(voucher);
+//        order.setOrderTotal(orderRequestDto.getOrderTotal());
+//        order.setNote(orderRequestDto.getNote());
+//        order.setDeleted(true);
+//        order.setOrderType(orderRequestDto.getOrderType());
+//        //dịa chỉ giao
+//        order.setRecipientName(orderRequestDto.getRecipientName());
+//        order.setPhoneNumber(orderRequestDto.getPhoneNumber());
+//        order.setAddressDetail(orderRequestDto.getAddressDetail());
+//        order.setWard(orderRequestDto.getWard());
+//        order.setDistrict(orderRequestDto.getDistrict());
+//        order.setCity(orderRequestDto.getCity());
+//
+//// Lưu vào cơ sở dữ liệu
+//        orderRepository.save(order);
+//
+//        OrderHistory timeLine = new OrderHistory();
+//        timeLine.setOrder(order);
+//        timeLine.setStatus(orderStatus);
+//        timeLine.setDeleted(true);
+//        orderHistoryRepository.save(timeLine);
+//
+//        return true;
+//    }
+
     @Override
-    public Boolean createOrder(OrderRequestDto orderRequestDto) {
+    public Order createOrder(OrderRequestDto orderRequestDto) {
 
-        Long userId = orderRequestDto.getUserId();
-        Long paymentId = orderRequestDto.getPaymentId();
-        Long deliveryId = orderRequestDto.getDeliveryId();
-        Long voucherId = orderRequestDto.getVoucherId();
-// Kiểm tra và tìm đối tượng Customer
-        User user = userId != null ? userRepository.findById(userId).orElse(null) : null;
+        User user = (orderRequestDto.getUserId() != null) ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
 
-// Kiểm tra và tìm đối tượng Payment
-        Payment payment = paymentId != null ? paymentMethodRepository.findById(paymentId).orElse(null) : null;
+        // Kiểm tra và tìm đối tượng Delivery
+        Delivery delivery = (orderRequestDto.getDeliveryId() != null) ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
 
-// Kiểm tra và tìm đối tượng Delivery
-        Delivery delivery = deliveryId != null ? shippingMethodRepository.findById(deliveryId).orElse(null) : null;
+        // Kiểm tra và tìm đối tượng voucher
+        Voucher voucher = (orderRequestDto.getVoucherId() != null) ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
 
-// Kiểm tra và tìm đối tượng voucher
-        Voucher voucher = voucherId != null ? voucherRepository.findById(voucherId).orElse(null) : null;
-
-// Tìm đối tượng OrderStatus (set luôn là null nếu không tìm thấy)
-        OrderStatus orderStatus = orderStatusRepository.findById(1L).orElse(null);
-
-
+        // Tìm đối tượng OrderStatus (set luôn là null nếu không tìm thấy)
+        OrderStatus orderStatus = (orderRequestDto.getStatusId() != null) ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
 // Tạo đối tượng Order và set các giá trị đã tìm được
         Order order = new Order();
         order.setUser(user);
         order.setDelivery(delivery);
-        order.setPayment(payment);
+//        order.setPayment(payment);
         order.setOrderStatus(orderStatus);
         order.setVoucher(voucher);
         order.setOrderTotal(orderRequestDto.getOrderTotal());
@@ -216,21 +259,48 @@ public class OrderServiceImpl implements OrderService {
         order.setDistrict(orderRequestDto.getDistrict());
         order.setCity(orderRequestDto.getCity());
 
-// Lưu vào cơ sở dữ liệu
+        // Lưu vào cơ sở dữ liệu
         orderRepository.save(order);
+
+        // Chuyển đổi từ giỏ hàng chi tiết sang hóa đơn chi tiết và lưu lại
+        // Lấy giỏ hàng của người dùng
+        Optional<Cart> optionalCart = cartRepository.findByUserId(orderRequestDto.getUserId());
+
+        if (optionalCart.isPresent()) {
+            Cart cart = optionalCart.get();
+
+            // Lưu danh sách chi tiết đơn hàng từ giỏ hàng
+            List<CartDetail> cartDetails = cart.getCartDetails();
+            for (CartDetail cartDetail : cartDetails) {
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setProductDetail(cartDetail.getProductDetail());
+                orderDetail.setOrder(order);
+                orderDetail.setQuantity(cartDetail.getQuantity());
+                orderDetail.setPrice(cartDetail.getProductDetail().getPrice()); // Bạn có thể sửa giá cả theo logic của bạn
+                orderDetail.setNote(""); // Bạn có thể thêm ghi chú nếu cần
+
+                // Lưu hóa đơn chi tiết
+                orderDetailRepository.save(orderDetail);
+                // Xóa giỏ hàng sau khi đã tạo đơn hàng thành công
+                cartRepository.delete(cart);
+            }
+            // Xóa giỏ hàng sau khi đã tạo đơn hàng thành công
+
+        }
+
 
         OrderHistory timeLine = new OrderHistory();
         timeLine.setOrder(order);
         timeLine.setStatus(orderStatus);
         timeLine.setDeleted(true);
         orderHistoryRepository.save(timeLine);
-
-        return true;
+        return order;
     }
+
     @Override
     public Boolean deleteOrder(Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));
-         orderRepository.delete(order);
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));
+        orderRepository.delete(order);
 //        order.setDeleted(false);
 //
 //        orderRepository.save(order);
@@ -248,17 +318,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<Order> findAllOrdersByUserId(Long userId,Long orderStatusId, Pageable pageable) {
+    public Page<Order> findAllOrdersByUserId(Long userId, Long orderStatusId, Pageable pageable) {
         Page<Order> orderPage;
-        if (orderStatusId == null){
-            orderPage = orderRepository.findAllOrdersByUserId(userId,pageable);
-        }else {
-            orderPage = orderRepository.findAllOrdersByUserId(userId,orderStatusId,pageable);
+        if (orderStatusId == null) {
+            orderPage = orderRepository.findAllOrdersByUserId(userId, pageable);
+        } else {
+            orderPage = orderRepository.findAllOrdersByUserId(userId, orderStatusId, pageable);
         }
-        return orderPage;    }
+        return orderPage;
+    }
 
     @Override
-    public Boolean orderCancel(Long id,OrderCancelRequestDto orderCancelRequestDto) {
+    public Boolean orderCancel(Long id, OrderCancelRequestDto orderCancelRequestDto) {
 
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng này!"));
@@ -284,7 +355,6 @@ public class OrderServiceImpl implements OrderService {
         try {
             // Lấy thông tin các đối tượng liên quan từ ID
             User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
-            Payment payment = orderRequestDto.getPaymentId() != null ? paymentMethodRepository.findById(orderRequestDto.getPaymentId()).orElse(null) : null;
             Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
             OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
             Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
@@ -299,7 +369,7 @@ public class OrderServiceImpl implements OrderService {
             // Cập nhật thông tin đơn hàng
             order.setUser(user);
             order.setDelivery(delivery);
-            order.setPayment(payment);
+//            order.setPayment(payment);
             order.setOrderStatus(orderStatus);
             order.setVoucher(voucher);
             order.setOrderTotal(orderRequestDto.getOrderTotal());
@@ -307,11 +377,11 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderTotalInitial(order.getOrderTotalInitial());
 
             // Tính toán giảm giá và cập nhật
-            if (voucher != null) {
-                double discountRate = voucher.getDiscountRate();
-                double giamGia = (orderRequestDto.getOrderTotalInitial() * discountRate) / 100;
-                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
-            }
+//            if (voucher != null) {
+//                double discountRate = voucher.getDiscountRate();
+//                double giamGia = (orderRequestDto.getOrderTotalInitial() * discountRate) / 100;
+//                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
+//            }
 
             // Lưu đơn hàng và trả về true
             orderRepository.save(order);
@@ -445,7 +515,7 @@ public class OrderServiceImpl implements OrderService {
 //                order.setOrderTotal(orderRequestDto.getOrderTotalInitial() - giamGia);
 //            }
 
-            // Kiểm tra xem có TimeLine nào đã được tạo mới cho đơn hàng với trạng thái là 2 không
+        // Kiểm tra xem có TimeLine nào đã được tạo mới cho đơn hàng với trạng thái là 2 không
 //            OrderHistory existingTimeLine = orderHistoryRepository.findByOrderAndStatusIdAndDeletedTrue(order, 2);
 //            if (existingTimeLine == null) {
 //                // Nếu không có, hãy tạo mới TimeLine
@@ -486,30 +556,7 @@ public class OrderServiceImpl implements OrderService {
         ).collect(Collectors.toList());
     }
 
-    @Override
-    public List<OrderResponseDto> getPagination(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 10);
-        return orderRepository.findAll(pageable).stream().map(
-                order -> new OrderResponseDto(
-                        order.getId(),
-                        order.getVoucher().getId(),
-                        order.getUser().getId(),
-                        order.getUser().getUsersName(),
-                        order.getUser().getPhoneNumber(),
-                        order.getPayment().getPaymentName(),
-                        order.getAddressDetail(),
-                        order.getRecipientName(),
-                        order.getWard(),
-                        order.getDistrict(),
-                        order.getCity(),
-                        order.getVoucher().getVoucherName(),
-                        order.getOrderStatus().getStatusName(),
-                        order.getNote(),
-                        order.getOrderTotal(),
-                        order.getOrderTotalInitial()
-                )
-        ).collect(Collectors.toList());
-    }
+
     @Override
     public Boolean updateOrderStatus(Long orderId, OrderCancelRequestDto orderUpdateRequestDto) {
         try {
@@ -573,12 +620,6 @@ public class OrderServiceImpl implements OrderService {
             return false;
         }
     }
-
-
-
-
-
-
 
 
 }

@@ -9,6 +9,7 @@ import com.poly.springboot.entity.User;
 import com.poly.springboot.service.AuthenticationService;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/auth/")
-
+@Tag(name = "Authentication")
 public class AuthenticationController {
 
     @Autowired

@@ -16,6 +16,7 @@ import { DoubleLeftOutlined } from '@ant-design/icons';
 import path_name from '~/core/constants/routers';
 import OrderDetailService from '~/service/OrderDetailService';
 import formatCurrency from '~/utils/format-currency';
+import { render } from '@testing-library/react';
 
 export default function OrderDetail() {
     const { id } = useParams();
@@ -52,25 +53,16 @@ export default function OrderDetail() {
     const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
     const fetchOrderDetail = async () => {
-        setLoading(true)
         await OrderDetailService.getOrderDetailByOrderId(pagination.current - 1, pagination.pageSize, id)
             .then(response => {
-                const orderDetatilMap = response.data.map((orderDetail, index) => ({
 
-                    key: index + 1,
-                    productName: orderDetail.productDetail.product.productName
-                        + ' [ ' + orderDetail.productDetail.color.colorName + ' - ' +
-                        orderDetail.productDetail.size.sizeName + ' ] ',
-                    price: orderDetail.price,
-                    quantity: orderDetail.quantity,
-                    total: orderDetail.price * orderDetail.quantity
-                }))
-                setOrderDetails(orderDetatilMap);
+                setOrderDetails(response.data);
                 setPagination({
                     ...pagination,
                     total: response.totalCount,
                 });
-                setLoading(false)
+                console.log(response.data)
+
             }).catch(error => {
                 console.error(error);
             })
@@ -81,6 +73,13 @@ export default function OrderDetail() {
         });
 
     };
+    const calculateTotalAmount = () => {
+        let totalAmount = 0;
+        orderDetails.forEach(item => {
+            totalAmount += parseFloat(item.price);
+        });
+        return formatCurrency(totalAmount);
+    };
     const columnOrderDetail = [
         {
             title: '#',
@@ -90,18 +89,20 @@ export default function OrderDetail() {
         },
         {
             title: 'Ảnh',
-            dataIndex: 'image',
-            width: '15%',
-            render: () => (
-                <Image width={50} height={50} src="" alt="Avatar" />
+            dataIndex: 'productImage',
+            key: 'productImage',
+            width: '10%',
+            render: (text) => (
+                <Image width={50} height={50} src={text} alt="Avatar" />
             ),
         },
         {
             title: 'Sản phẩm',
-            key: 'productName',
-            dataIndex: 'productName',
-            width: '35%',
 
+            width: '45%',
+            render: (record) => (
+                <span>{`${record.productName} [${record.colorName} - ${record.sizeName}]`}</span>
+            )
         },
         {
             title: 'Đơn giá',
@@ -118,7 +119,7 @@ export default function OrderDetail() {
             title: 'Số lượng',
             key: 'quantity',
             dataIndex: 'quantity',
-            width: '15%',
+            width: '10%',
         },
         {
             title: 'Thành tiền',
@@ -189,39 +190,32 @@ export default function OrderDetail() {
         {
             title: '#',
             dataIndex: 'index',
-            width: 50,
+            width: '5%',
             render: (index) => index + 1, // Hiển thị STT bắt đầu từ 1
         },
         {
-            title: 'Số tiền',
+            title: 'Số tiền thanh toán',
             dataIndex: '',
-            width: 60,
+            width: '15%',
             // render: () => <span style={{ color: 'red' }}>{formatCurrency(order.orderTotal)}</span>,
         },
         {
             title: 'Thời gian',
             dataIndex: 'createdAt',
-            width: 100,
+            width: '20%',
         },
         {
             title: 'Phương thức thanh toán',
             dataIndex: '',
-            width: 60,
+            width: '30%',
             // render: () => order.payment.paymentName
-        },
-        {
-            title: 'Nhân viên xác nhận',
-            dataIndex: 'createdBy',
-            width: 60,
         },
         {
             title: 'Ghi chú',
             dataIndex: 'note',
-            width: 60,
+            width: '20%',
         },
     ];
-
-
     return (
         <>
 
@@ -256,6 +250,26 @@ export default function OrderDetail() {
                         </Timeline>
                     </div>
                 </div>
+                <div style={{ borderBottom: '2px solid black', marginTop: '20px' }}>
+                    <h6>SẢN PHẨM</h6>
+                </div>
+                <Table
+                    onChange={handleTableChange}
+                    loading={loading}
+                    columns={columnOrderDetail}
+                    dataSource={orderDetails.map((orderDetail, index) => ({
+                        ...orderDetail,
+                        key: index + 1,
+                        total: orderDetail.price * orderDetail.quantity// Sử dụng ID hoặc một giá trị duy nhất khác
+                    }))}
+                    pagination={{
+                        current: pagination.current,
+                        pageSize: pagination.pageSize,
+                        defaultPageSize: 5,
+                        pageSizeOptions: ['5', '10', '15'],
+                        total: pagination.total,
+                        showSizeChanger: true,
+                    }}></Table >
                 <div style={{ borderBottom: '2px solid black', marginBottom: '10px' }}>
                     <h6>THÔNG TIN ĐƠN HÀNG</h6>
                 </div>
@@ -275,12 +289,12 @@ export default function OrderDetail() {
                     </Descriptions.Item>
                     <Descriptions.Item label="Họ và tên">{orders.recipientName == null ? 'Khách lẻ' : orders.recipientName}</Descriptions.Item>
                     <Descriptions.Item label="Số điện thoại">{orders.phoneNumber == null ? 'Không có' : orders.phoneNumber}</Descriptions.Item>
-                    <Descriptions.Item label="Địa chỉ">  {orders.ward && orders.district && orders.city
-                        ? `${orders.ward} - ${orders.district} - ${orders.city}`
+                    <Descriptions.Item label="Địa chỉ">  {orders.ward && orders.district && orders.city && orders.addressDetail
+                        ? `${orders.addressDetail} - ${orders.ward} - ${orders.district} - ${orders.city}`
                         : "Không có"}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Phí ship">300</Descriptions.Item>
-                    <Descriptions.Item label="Giá giảm">{orders.voucher != null ? orders.voucher.discountRate : ''}</Descriptions.Item>
+                    <Descriptions.Item label="Phí vận chuyển">{formatCurrency(30000)}</Descriptions.Item>
+                    <Descriptions.Item label="Voucher từ Shop">-{formatCurrency(30000)}</Descriptions.Item>
                     <Descriptions.Item label="Tổng tiền">{formatCurrency(orders.orderTotal)}</Descriptions.Item>
                 </Descriptions>
 
@@ -302,22 +316,7 @@ export default function OrderDetail() {
                         y: 240,
                     }}
                 />
-                <div style={{ borderBottom: '2px solid black', marginTop: '20px' }}>
-                    <h6>SẢN PHẨM</h6>
-                </div>
-                <Table
-                    onChange={handleTableChange}
-                    loading={loading}
-                    columns={columnOrderDetail}
-                    dataSource={orderDetails}
-                    pagination={{
-                        current: pagination.current,
-                        pageSize: pagination.pageSize,
-                        defaultPageSize: 5,
-                        pageSizeOptions: ['5', '10', '15'],
-                        total: pagination.total,
-                        showSizeChanger: true,
-                    }}></Table >
+
 
             </div>
         </>

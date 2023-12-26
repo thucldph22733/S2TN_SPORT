@@ -16,7 +16,7 @@ public interface OrderDetailService {
     List<OrderDetailResponseDto> getOrderDetails();
     Integer getTotalQuantitySoldThisMonth();
 
-    Page<OrderDetail> getOrderDetailByOrderId(Long orderId, Pageable pageable);
+    Page<OrderDetailResponseDto> getOrderDetailByOrderId(Long orderId, Pageable pageable);
 
     Boolean createOrderDetail(OrderDetailRequestDto orderDetailRequestDto) throws Exception;
 

@@ -204,8 +204,9 @@ function ProductDetail() {
     //-------------------------Thêm sản phẩm vào giỏ hàng-------------------------------
     const userString = localStorage.getItem('user2');
     const user = userString ? JSON.parse(userString) : null;
+
     const [cartDetail, setCartDetail] = useState({
-        cartId: null,
+        userId: user.id,
         productDetailId: null,
         quantity: 1,
     })
@@ -217,32 +218,15 @@ function ProductDetail() {
         } else if (cartDetail.quantity < 0) {
             setError("Vui lòng chọn phân loại hàng!!!")
         }
-        const response = await CartService.create(user.id);
-        console.log(response);
-        // Trích xuất ID của giỏ hàng từ response
-        const newCartId = response.id;
 
-        // Lưu ID của giỏ hàng
-        setCartDetail(prevCartDetail => ({
-            ...prevCartDetail,
-            cartId: newCartId,
-        }));
-        if (newCartId !== null) {
-            // Gọi service để thêm sản phẩm vào giỏ hàng
-            const newCartDetail = {
-                cartId: newCartId,
-                productDetailId: cartDetail.productDetailId,
-                quantity: cartDetail.quantity,
-            };
-            console.log(newCartDetail)
-            CartDetailService.create(newCartDetail).then(() => {
+        CartService.create(cartDetail).then(() => {
 
-                message.success('Sản phẩm đã được thêm vào giỏ hàng!');
-                // navigate("/")
-            }).catch(err => {
-                message.error('Lỗi thêm sản phẩm vào giỏ hàng!');
-            });
-        }
+            message.success('Sản phẩm đã được thêm vào giỏ hàng!');
+            // navigate("/")
+        }).catch(err => {
+            message.error('Lỗi thêm sản phẩm vào giỏ hàng!');
+        });
+
     };
 
     const items = [

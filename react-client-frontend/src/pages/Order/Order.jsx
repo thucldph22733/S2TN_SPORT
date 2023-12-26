@@ -282,7 +282,7 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
 
     return (
         <Modal
-            title={<><ExclamationCircleOutlined style={{ color: 'red', marginRight: '7px' }} />Thông báo!!! </>}
+            title={<><ExclamationCircleOutlined style={{ color: 'red', marginRight: '7px' }} />Thông báo xác nhận hủy đơn hàng! </>}
             open={isModal}
             onOk={handleOrderCancel}
             onCancel={hideModal}
@@ -294,7 +294,7 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
 
                 form={form}
             >
-                <Form.Item label="Ghi chú:" name="note" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                <Form.Item name="note" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
                     <TextArea rows={4} placeholder="Nhập lý do hủy..." />
                 </Form.Item>
             </Form>

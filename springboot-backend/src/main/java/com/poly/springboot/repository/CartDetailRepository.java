@@ -21,10 +21,10 @@ public interface CartDetailRepository extends JpaRepository<CartDetail,Long> {
             "JOIN pd.product p " +
             "JOIN pd.color c " +
             "JOIN pd.size s " +
-            "JOIN Image i ON i.product.id = p.id AND i.color.id = c.id " +
-            "WHERE cd.cart.id = :cartId")
+            "JOIN Image i ON i.product.id = p.id " +
+            "WHERE cd.carts.id = :cartId And i.color.id = c.id GROUP BY cd.id,i.imageLink, c.colorName, s.sizeName, p.productName, cd.quantity, pd.price")
     List<CartDetailResponseDto> getCartDetailInfo(@Param("cartId") Long cartId);
 
-    Optional<CartDetail> findByProductDetailIdAndCartId(Long productDetailId, Long cartId);
+    Optional<CartDetail> findByProductDetailIdAndCartsId(Long productDetailId, Long cartId);
 
 }

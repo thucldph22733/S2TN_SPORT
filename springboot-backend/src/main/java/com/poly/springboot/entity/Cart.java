@@ -1,10 +1,13 @@
 package com.poly.springboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -21,4 +24,12 @@ public class Cart extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    // Phương thức để lấy danh sách chi tiết giỏ hàng
+
+    @JsonIgnore
+    @Getter
+    @OneToMany(mappedBy = "carts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartDetail> cartDetails;
+
 }

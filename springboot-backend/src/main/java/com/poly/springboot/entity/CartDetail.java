@@ -33,7 +33,7 @@ public class CartDetail extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
-    private Cart cart;
+    private Cart carts;
 
     @Column(name = "quantity")
     private Integer quantity;

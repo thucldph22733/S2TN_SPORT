@@ -13,4 +13,7 @@ public class CartRequestDto {
 
     private Long userId;
 
+    private Long productDetailId;
+
+    private Integer quantity;
 }

@@ -1,45 +1,113 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CartRequestDto;
+import com.poly.springboot.dto.responseDto.CartDetailResponseDto;
 import com.poly.springboot.entity.Cart;
+import com.poly.springboot.entity.CartDetail;
+import com.poly.springboot.entity.ProductDetail;
 import com.poly.springboot.entity.User;
 import com.poly.springboot.exception.ResourceNotFoundException;
+import com.poly.springboot.repository.CartDetailRepository;
 import com.poly.springboot.repository.CartRepository;
+import com.poly.springboot.repository.ProductDetailRepository;
 import com.poly.springboot.repository.UserRepository;
 import com.poly.springboot.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CartServiceImpl implements CartService {
 
-    @Autowired
+    private CartDetailRepository cartDetailRepository;
+
+    private ProductDetailRepository productDetailRepository;
+
     private CartRepository cartRepository;
 
-    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    public CartServiceImpl(CartDetailRepository cartDetailRepository,
+                                 ProductDetailRepository productDetailRepository,
+                                 CartRepository cartRepository,
+                                 UserRepository userRepository) {
+        this.cartDetailRepository = cartDetailRepository;
+        this.productDetailRepository = productDetailRepository;
+        this.cartRepository = cartRepository;
+        this.userRepository = userRepository;
+
+    }
+
     @Override
-    public Cart  createCart(CartRequestDto cartRequestDto) {
+    public Boolean createCart(CartRequestDto cartRequestDto) {
+        User user = userRepository.findById(cartRequestDto.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại!"));
 
         Optional<Cart> existingCart = cartRepository.findByUserId(cartRequestDto.getUserId());
 
-        if (existingCart.isPresent()) {
-            // Nếu đã có giỏ hàng, trả về giỏ hàng hiện tại của người dùng
-            return existingCart.get();
-        } else {
-            // Nếu chưa có giỏ hàng, tạo mới một giỏ hàng
-            User user = userRepository.findById(cartRequestDto.getUserId()).orElse(null);
+        Cart cart = existingCart.orElseGet(() -> {
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+            return cartRepository.save(newCart);
+        });
 
-            if (user != null) {
-                Cart newCart = new Cart();
-                newCart.setUser(user);
-                return cartRepository.save(newCart);
-            } else {
-                // Xử lý trường hợp người dùng không tồn tại
-                throw new ResourceNotFoundException("Người dùng không tồn tại!");
-            }
+        Optional<CartDetail> existingCartDetail = cartDetailRepository.findByProductDetailIdAndCartsId(
+                cartRequestDto.getProductDetailId(), cart.getId());
+
+        if (existingCartDetail.isPresent()) {
+            // Nếu cartDetail đã tồn tại, cập nhật số lượng
+            CartDetail cartDetail = existingCartDetail.get();
+            cartDetail.setQuantity(cartDetail.getQuantity() + cartRequestDto.getQuantity());
+            cartDetailRepository.save(cartDetail);
+        } else {
+            // Nếu cartDetail không tồn tại, tạo mới
+            ProductDetail productDetail = productDetailRepository.findById(cartRequestDto.getProductDetailId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
+
+            CartDetail newCartDetail = new CartDetail();
+            newCartDetail.setProductDetail(productDetail);
+            newCartDetail.setCarts(cart);
+            newCartDetail.setQuantity(cartRequestDto.getQuantity());
+            cartDetailRepository.save(newCartDetail);
         }
+
+        return true;
     }
+
+    @Override
+    public List<CartDetailResponseDto> getAllCartDetailByCartId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại!"));
+
+        Optional<Cart> existingCart = cartRepository.findByUserId(user.getId());
+        System.out.println(existingCart);
+
+        return cartDetailRepository.getCartDetailInfo(existingCart.get().getId());
+    }
+
+    @Override
+    public Boolean updateCartDetail(Integer quantity, Long id) {
+        CartDetail cartDetail = cartDetailRepository.findById(id)
+                .orElseThrow( ()-> new ResourceNotFoundException("Không tìm thấy id giỏ hàng chi tiết này!"));
+        // Neu tim thay thi set cart detail va luu lai
+        cartDetail.setQuantity(quantity);
+
+        cartDetailRepository.save(cartDetail);
+
+        return true;
+    }
+
+    @Override
+    public Boolean deleteCartDetail(Long id) {
+        CartDetail cartDetail = cartDetailRepository.findById(id)
+                .orElseThrow( ()-> new ResourceNotFoundException("Không tìm thấy id giỏ hàng chi tiết này!"));
+
+        cartDetailRepository.deleteById(cartDetail.getId());
+
+        return true;
+    }
+
 }

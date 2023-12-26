@@ -1,5 +1,6 @@
 package com.poly.springboot.repository;
 
+import com.poly.springboot.dto.responseDto.CartDetailResponseDto;
 import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
 import com.poly.springboot.entity.OrderDetail;
 import com.poly.springboot.entity.Order;
@@ -18,9 +19,18 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 
     List<OrderDetail> findByOrderId(Long orderId);
 
-    @Query("SELECT od FROM OrderDetail od WHERE od.order.id = :orderId")
+//    @Query("SELECT od FROM OrderDetail od WHERE od.order.id = :orderId")
 
-    Page<OrderDetail> findOrderDetailByOrderId(@Param("orderId") Long orderId, Pageable pageable);
+    @Query("SELECT new com.poly.springboot.dto.responseDto.OrderDetailResponseDto(" +
+            "od.id,i.imageLink, c.colorName, s.sizeName, p.productName, od.quantity, od.price) " +
+            "FROM OrderDetail od " +
+            "JOIN od.productDetail pd " +
+            "JOIN pd.product p " +
+            "JOIN pd.color c " +
+            "JOIN pd.size s " +
+            "JOIN Image i ON i.product.id = p.id AND i.color.id = c.id " +
+            "WHERE od.order.id = :orderId")
+    Page<OrderDetailResponseDto> findOrderDetailByOrderId(@Param("orderId") Long orderId, Pageable pageable);
 
     List<OrderDetail> findByOrder(Order order);
 

@@ -79,8 +79,8 @@ public class OrderDetailController {
                                                      @RequestParam(defaultValue = "10") Integer pageSize,
                                                      @RequestParam Long orderId) {
         Pageable pageable = PageRequest.of(pageNo,pageSize);
-        Page<OrderDetail> orderDetailPage = orderDetailService.getOrderDetailByOrderId(orderId,pageable);
-        List<OrderDetail> orderDetailList = orderDetailPage.getContent();
+        Page<OrderDetailResponseDto> orderDetailPage = orderDetailService.getOrderDetailByOrderId(orderId,pageable);
+        List<OrderDetailResponseDto> orderDetailList = orderDetailPage.getContent();
         return ResponseHandler.generateResponse(HttpStatus.OK,orderDetailList,orderDetailPage);
     }
     @GetMapping("getByOrderId")
@@ -93,7 +93,6 @@ public class OrderDetailController {
 
         return new ResponseEntity<>(orderDetails, HttpStatus.OK);
     }
-
     @DeleteMapping("deleteProducts")
     public ResponseEntity<ResponseDto> deleteSize(@RequestParam Long id){
         Boolean isDeleted = orderDetailService.deleteOrderDetail(id);

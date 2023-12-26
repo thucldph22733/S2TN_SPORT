@@ -39,22 +39,23 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     public List<OrderDetailResponseDto> getOrderDetails() {
-        return orderDetailRepository.findAll()
-                .stream().map(
-                        orderDetail -> new OrderDetailResponseDto(
-                                orderDetail.getId(),
-                                orderDetail.getOrder().getId(),
-                                orderDetail.getProductDetail().getId(),
-//                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
-                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
-                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
-                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
-                                orderDetail.getQuantity(),
-                                orderDetail.getPrice(),
-                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getPrice(): 0,
-                                orderDetail.getOrder().getOrderTotal(),
-                                orderDetail.getNote())
-                ).collect(Collectors.toList());
+//        return orderDetailRepository.findAll()
+//                .stream().map(
+//                        orderDetail -> new OrderDetailResponseDto(
+//                                orderDetail.getId(),
+//                                orderDetail.getOrder().getId(),
+//                                orderDetail.getProductDetail().getId(),
+////                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
+//                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
+//                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
+//                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
+//                                orderDetail.getQuantity(),
+//                                orderDetail.getPrice(),
+//                                orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getPrice(): 0,
+//                                orderDetail.getOrder().getOrderTotal(),
+//                                orderDetail.getNote())
+//                ).collect(Collectors.toList());
+        return null;
     }
 
     @Override
@@ -63,7 +64,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
-    public Page<OrderDetail> getOrderDetailByOrderId(Long orderId, Pageable pageable) {
+    public Page<OrderDetailResponseDto> getOrderDetailByOrderId(Long orderId, Pageable pageable) {
         return orderDetailRepository.findOrderDetailByOrderId(orderId,pageable);
     }
 
@@ -162,21 +163,22 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     public List<OrderDetailResponseDto> getOrderDetailsByOrderId(Long orderId) {
-        return orderDetailRepository.findByOrderId(orderId).stream().map(
-                orderDetail -> new OrderDetailResponseDto(
-                        orderDetail.getId(),
-                        orderDetail.getOrder().getId(),
-                        orderDetail.getProductDetail().getId(),
-//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
-                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
-                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
-                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
-                        orderDetail.getQuantity(),
-                        orderDetail.getPrice(),
-                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getPrice(): 0,
-                        orderDetail.getOrder().getOrderTotal(),
-                        orderDetail.getNote())
-        ).collect(Collectors.toList());
+//        return orderDetailRepository.findByOrderId(orderId).stream().map(
+//                orderDetail -> new OrderDetailResponseDto(
+//                        orderDetail.getId(),
+//                        orderDetail.getOrder().getId(),
+//                        orderDetail.getProductDetail().getId(),
+////                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
+//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
+//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
+//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
+//                        orderDetail.getQuantity(),
+//                        orderDetail.getPrice(),
+//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getPrice(): 0,
+//                        orderDetail.getOrder().getOrderTotal(),
+//                        orderDetail.getNote())
+//        ).collect(Collectors.toList());
+        return null;
     }
 
     @Override

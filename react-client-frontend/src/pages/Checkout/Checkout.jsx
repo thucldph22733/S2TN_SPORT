@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Checkout.css';
-import { Breadcrumb, Button, Col, Collapse, Form, Input, Radio, Row, Select } from 'antd';
+import { Breadcrumb, Button, Col, Collapse, Form, Input, Radio, Row, Select, notification } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
 import { HomeOutlined, SendOutlined } from '@ant-design/icons';
@@ -10,6 +10,9 @@ import CartService from '~/service/CartService';
 import formatCurrency from '~/utils/format-currency';
 import AddressService from '~/service/AddressService';
 import PaymentService from '~/service/PaymentService';
+import Order from '../Order/Order';
+import OrderService from '~/service/OrderService';
+import path_name from '~/core/constants/routers';
 
 function Checkout() {
 
@@ -64,12 +67,8 @@ function Checkout() {
     const user = userString ? JSON.parse(userString) : null;
 
     const findImageByProductId = async () => {
-        const response = await CartService.create(user.id);
-        console.log(response);
-        // Trích xuất ID của giỏ hàng từ response
-        const newCartId = response.id;
-        console.log(newCartId)
-        await CartDetailService.getAllCartDetailByCartId(newCartId)
+
+        await CartService.getAllCartDetailByUserId(user.id)
             .then(response => {
 
                 const cartDetailMap = response.map((item, index) => ({
@@ -89,20 +88,17 @@ function Checkout() {
     const calculateTotalAmount = () => {
         let totalAmount = 0;
         cartDetail.forEach(item => {
-            totalAmount += parseFloat(item.totalPrice);
+            totalAmount += parseInt(item.totalPrice);
         });
-        return formatCurrency(totalAmount);
+        return totalAmount;
     };
 
     const calculateTotal = () => {
-        let totalAmount = 0;
-        cartDetail.forEach(item => {
-            totalAmount += parseFloat(item.totalPrice);
-        });
-        return (parseFloat(totalAmount) + 30000);
+        return (parseInt(calculateTotalAmount()) + 30000);
     };
+
     //----------------------------load địa chỉ mặc định------------------------
-    const [form] = Form.useForm();
+
     const [address, setAddress] = useState({});
 
     const findAddressesByUserIdAnDeletedTrue = async () => {
@@ -120,10 +116,8 @@ function Checkout() {
     //------------------------Thanh toán-----------------------------------------
     const [payment, setPayment] = useState();
 
-    console.log(payment)
-
     const create = async () => {
-        const data = { amount: calculateTotal() }
+        const data = { amount: 10000000 }
         await PaymentService.create(data)
             .then(response => {
                 setPayment(response);
@@ -137,15 +131,54 @@ function Checkout() {
         create();
     }, [])
 
+    const [form] = Form.useForm();
+
+
+    const handleCreate = async () => {
+        try {
+            const values = await form.validateFields();
+            // Sử dụng giá trị từ values thay vì form.getFieldsValue()
+            values.userId = user.id;
+            values.deliveryId = 1;
+            values.voucherId = 1;
+            values.statusId = 2;
+            values.orderTotal = calculateTotal();
+            values.orderType = 'Online';
+
+            await OrderService.create(values)
+                .then((response) => {
+                    navigate(`${path_name.show_bill_check}/${response.id}`)
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Đặt hàng thành công!',
+                    });
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Đặt hàng thất bại!',
+                    });
+                    console.error(error);
+                });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const navigate = useNavigate();
+    const [paymentMethod, setPaymentMethod] = useState(1);
     // const navigate = useNavigate();
     const handlePlaceOrder = () => {
+        handleCreate();
+        if (paymentMethod === 2) {
+            var a = document.createElement("a");
+            a.href = payment.data;
+            a.click();
+        }
 
-        console.log(payment.data)
-        var a = document.createElement("a");
-        // a.target = '_blank';
-        a.href = payment.data;
-        a.click();
+
     }
+
 
     return (
         <section className="checkout">
@@ -308,7 +341,6 @@ function Checkout() {
                                 </Form.Item>
                             </div>
 
-
                         </Col>
                         <Col span={8} lg={8} md={12}>
                             <div className="checkout__order">
@@ -338,7 +370,7 @@ function Checkout() {
                                             <p>Tạm tính:</p>
                                         </Col>
                                         <Col span={14}>
-                                            <span style={{ float: 'right' }}>{calculateTotalAmount()}</span>
+                                            <span style={{ float: 'right' }}>{formatCurrency(calculateTotalAmount())}</span>
                                         </Col>
                                     </Row>
                                     <Row>
@@ -367,13 +399,13 @@ function Checkout() {
                                     </Row>
 
                                 </div>
-
                                 <Collapse
                                     items={[
                                         {
                                             label: 'Phương thức thanh toán',
                                             children: <Radio.Group
-                                            // onChange={onChange} value={value}
+                                                onChange={(e) => setPaymentMethod(e.target.value)}
+                                                value={paymentMethod}
                                             >
                                                 <Radio style={{ marginBottom: '10px' }} value={1}>Thanh toán khi nhận hàng</Radio>
                                                 <Radio value={2}>Chuyển khoản ngân hàng</Radio>

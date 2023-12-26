@@ -20,12 +20,8 @@ const ShoppingCart = () => {
     const user = userString ? JSON.parse(userString) : null;
 
     const findImageByProductId = async () => {
-        const response = await CartService.create(user.id);
-        console.log(response);
-        // Trích xuất ID của giỏ hàng từ response
-        const newCartId = response.id;
-        console.log(newCartId)
-        await CartDetailService.getAllCartDetailByCartId(newCartId)
+
+        await CartService.getAllCartDetailByUserId(user.id)
             .then(response => {
 
                 const cartDetailMap = response.map((item, index) => ({
@@ -43,7 +39,7 @@ const ShoppingCart = () => {
     }, []);
 
     const handleDelete = async (id) => {
-        await CartDetailService.delete(id).then(() => {
+        await CartService.delete(id).then(() => {
             message.success('Xóa sản phẩm khỏi giỏ hàng thành công!');
             findImageByProductId();
         }).catch(() => {
@@ -58,6 +54,10 @@ const ShoppingCart = () => {
             totalAmount += parseFloat(item.totalPrice);
         });
         return formatCurrency(totalAmount);
+    };
+    // Hàm thực hiện cập nhật số lượng sản phẩm trong giỏ hàng
+    const updateItemCount = () => {
+        cartDetail.reduce((total, item) => total + item.quantity, 0);
     };
 
     const [isUpdateDisabled, setIsUpdateDisabled] = useState(true);
@@ -83,7 +83,7 @@ const ShoppingCart = () => {
             // Tạo một mảng promises cho các hoạt động cập nhật
             const updatePromises = cartDetail.map(async item => {
                 // Gọi API cập nhật số lượng cho từng sản phẩm trong giỏ hàng
-                await CartDetailService.update(item.quantity, item.id);
+                await CartService.update(item.quantity, item.id);
             });
 
             // Chờ cho tất cả promises được giải quyết

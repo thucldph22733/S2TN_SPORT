@@ -139,7 +139,6 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
 
 
     useEffect(() => {
-
         // Gọi hàm từ service API để lấy dữ liệu tỉnh/thành phố
         getProvinces(3)
             .then(data => setCities(data))

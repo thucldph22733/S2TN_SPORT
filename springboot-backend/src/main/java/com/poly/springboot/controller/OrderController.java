@@ -70,26 +70,15 @@ public class OrderController {
                 .body(order);
     }
 
-    //    phan trang
-    @GetMapping("pagination")
-    public ResponseEntity<List<OrderResponseDto>> getPaginationOrder(@RequestParam Optional<Integer> pageNo, @RequestParam Integer pageSize) {
-        List<OrderResponseDto> orderResponseDtoList = orderService.getPagination(pageNo.orElse(0));
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(orderResponseDtoList);
-    }
+
 
     // create order rest api
     @PostMapping("create")
-    public ResponseEntity<ResponseDto> createOrder(@Valid @RequestBody OrderRequestDto orderRequestDto) {
-        Boolean isCreated = orderService.createOrder(orderRequestDto);
-        if (isCreated) {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
-        }
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderRequestDto orderRequestDto) {
+        System.out.println(orderRequestDto);
+        Order  order = orderService.createOrder(orderRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(order);
     }
 
     @GetMapping("getAllOrderByStatusId")

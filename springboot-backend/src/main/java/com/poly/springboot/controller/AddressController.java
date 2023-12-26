@@ -61,7 +61,6 @@ public class AddressController {
                     .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
-
     @DeleteMapping("delete")
     public ResponseEntity<ResponseDto> deleteAddress(@RequestParam Long id) {
         Boolean isDelete = addressService.deleteAddress(id);

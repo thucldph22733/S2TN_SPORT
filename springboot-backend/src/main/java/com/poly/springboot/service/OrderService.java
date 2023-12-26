@@ -20,15 +20,14 @@ public interface OrderService {
     List<Map<String, Object>>getRevenueByMonthForCurrentYear();
     List<Map<String, Object>> getTotalOrdersByStatus();
     Page<Order> findAllOrderByStatusId(Pageable pageable);
-    Boolean createOrder(OrderRequestDto orderRequestDto);
+//    Boolean createOrder(OrderRequestDto orderRequestDto);
+    Order createOrder(OrderRequestDto orderRequestDto);
     Boolean deleteOrder(Long id);
     Double monthlyRevenue();
     Double revenueToday();
     Page<Order> findAllOrdersByUserId(Long userId,Long orderStatusId, Pageable pageable);
     Boolean orderCancel (Long id,OrderCancelRequestDto orderCancelRequestDto);
     List<OrderResponseDto> getAllOrders();
-
-    List<OrderResponseDto> getPagination(Integer pageNo);
 
     Order findOrderById(Long id);
 

@@ -17,15 +17,13 @@ public class OrderRequestDto {
 
     private Long deliveryId;
 
-    private Long paymentId;
-
     private Long voucherId;
 
     private Long statusId;
 
     private Double orderTotal;
 
-    private Double orderTotalInitial;
+//    private Double orderTotalInitial;
 
     private String note;
 

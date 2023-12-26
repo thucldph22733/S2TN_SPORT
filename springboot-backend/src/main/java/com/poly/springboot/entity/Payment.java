@@ -1,15 +1,12 @@
 package com.poly.springboot.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 
 @Setter
@@ -24,10 +21,22 @@ public class Payment extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "payment_name")
-    private String paymentName;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order orders;
 
-    @Column(name = "payment_describe")
-    private String paymentDescribe;
+    @Column(name = "payment_date")
+    private LocalDateTime paymentDate;
 
+    @Column(name = "amount")
+    private Double amount ;
+
+    @Column(name = "payment_method")
+    private String paymentMethod;
+
+    @Column(name = "note")
+    private String note;
+
+    @Column(name = "payment_status")
+    private String status;
 }

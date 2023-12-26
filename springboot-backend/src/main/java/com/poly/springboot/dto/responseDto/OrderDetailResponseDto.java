@@ -14,11 +14,7 @@ public class OrderDetailResponseDto {
 
     private Long id;
 
-    private Long idOrder;
-
-    private Long idProductDetail;
-
-//    private String productAvatar;
+    private String productImage;
 
     private String colorName;
 
@@ -29,10 +25,4 @@ public class OrderDetailResponseDto {
     private Integer quantity;
 
     private Double price;
-
-    private Double priceSecond;
-
-    private Double orderTotal;
-
-    private String note;
 }

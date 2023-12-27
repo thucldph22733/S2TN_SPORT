@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './ShoppingCart.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { DeleteFilled, DoubleLeftOutlined, ExportOutlined, SendOutlined, TransactionOutlined, HomeOutlined } from '@ant-design/icons';
-import { InputNumber, Button, Table, Image, Row, Col, Input, Breadcrumb, notification, Result, message } from 'antd';
+import { DeleteFilled, DoubleLeftOutlined, ExportOutlined, SendOutlined, TransactionOutlined, HomeOutlined, TagsOutlined } from '@ant-design/icons';
+import { InputNumber, Button, Table, Image, Row, Col, Input, Breadcrumb, notification, Result, message, Modal, Radio } from 'antd';
 import path_name from '~/core/constants/routers';
 import cart from '~/assets/images/cart_icon.png'
 import CartDetailService from '~/service/CartDetailService';
 import CartService from '~/service/CartService';
 import formatCurrency from '~/utils/format-currency';
-
+import voucher_icon from '~/assets/images/voucher_logo.png';
+import VoucherService from '~/service/VoucherService';
+import FormatDate from '~/utils/format-date';
 
 const ShoppingCart = () => {
 
@@ -53,7 +55,7 @@ const ShoppingCart = () => {
         cartDetail.forEach(item => {
             totalAmount += parseFloat(item.totalPrice);
         });
-        return formatCurrency(totalAmount);
+        return totalAmount;
     };
     // Hàm thực hiện cập nhật số lượng sản phẩm trong giỏ hàng
     const updateItemCount = () => {
@@ -188,6 +190,36 @@ const ShoppingCart = () => {
             ),
         },
     ];
+
+    //Mở modal hiển thị voucher
+    const [voucherModal, setVoucherModal] = useState({ isModal: false, reacord: null });
+
+    const showVoucherModal = (record) => {
+        setVoucherModal({
+            isModal: true,
+            reacord: record,
+        });
+    };
+
+    const hideVoucherModal = () => {
+        setVoucherModal({ isModal: false });
+    };
+    //---------------------------------------------------
+    // const [voucherss, setVoucherss] = useState([]);
+    const [selectedVoucher, setSelectedVoucher] = useState([]);
+    // Hàm callback để nhận mã giảm giá từ ModalVoucher
+    console.log(selectedVoucher)
+
+    const calculateTotal = () => {
+
+        return (calculateTotalAmount() - selectedVoucher.discountRate);
+    };
+
+    const handleVoucherOk = (selectedVoucherInfo) => {
+
+        setSelectedVoucher(selectedVoucherInfo);
+
+    };
     return (
         <>
             {cartDetail.length === 0 ? (
@@ -244,31 +276,39 @@ const ShoppingCart = () => {
 
                             </Col>
 
-                            <Col span={8} lg={8} style={{ padding: '0 0 0 20px' }}>
-                                <Row>
-                                    <Col span={17}>
-                                        <Input style={{ height: '40px' }} type="text" placeholder="Mã giảm giá" />
-                                    </Col>
-                                    <Col span={7}>
-                                        <Button type="primary" icon={<TransactionOutlined />} style={{ height: '40px', float: 'right' }}>
-                                            Áp dụng
-                                        </Button>
-                                    </Col>
-                                </Row>
+                            <Col span={8} lg={8} style={{ paddingLeft: '20px' }}>
                                 <div className="cart__total">
                                     <h6>Cộng giỏ hàng</h6>
-                                    <ul>
-                                        <li>
-                                            Tạm tính: <span>{calculateTotalAmount()}</span>
-                                        </li>
-                                        {/* <li>
-                                            Giảm giá: <span>$ 169.50</span>
-                                        </li> */}
-                                        <li>
-                                            Tổng tiền: <span>{calculateTotalAmount()}</span>
-                                        </li>
-                                    </ul>
+                                    <Row style={{ borderBottom: '1px solid #cdcdcd', padding: '7px 0 10px 0px' }}>
+                                        <Col span={12}>
+                                            <Button type='text' icon={<TagsOutlined />} style={{ fontWeight: '600' }}>Voucher</Button>
+                                        </Col>
+                                        <Col span={12}>
+                                            <Button type='link' style={{ float: 'right' }} onClick={() => showVoucherModal()}>Chọn mã giảm giá</Button>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ padding: '10px 12px 10px 14px' }}>
+                                        <Col span={12}>
+                                            <span >Tạm tính:</span>
+                                        </Col>
+                                        <Col span={12}>
+                                            <span style={{ float: 'right' }}>{formatCurrency(calculateTotalAmount())}</span>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ padding: '10px 12px 10px 14px' }}>
+                                        <Col span={12}>
+                                            <span >Giảm giá:</span>
+                                        </Col>
+                                        <Col span={12}>
+                                            <span style={{ float: 'right' }}>{formatCurrency(-selectedVoucher.discountRate)}</span>
+                                        </Col>
+                                    </Row>
 
+                                    <Row style={{ borderTop: '1px solid #cdcdcd', padding: '20px 50px' }}>
+                                        <h5>
+                                            Tổng tiền: <span style={{ color: 'red', fontWeight: '550' }}>{formatCurrency(calculateTotal())}</span>
+                                        </h5>
+                                    </Row>
                                     <Button type="primary" icon={<SendOutlined />}
                                         style={{ width: '100%', height: '40px' }}
                                         onClick={handleCheckoutClick}>
@@ -279,10 +319,100 @@ const ShoppingCart = () => {
                             </Col>
                         </Row>
                     </div>
+                    {voucherModal.isModal && <ModalVoucher
+
+                        hideModal={hideVoucherModal}
+                        isModal={voucherModal.isModal}
+                        onVoucherSelect={handleVoucherOk}
+
+                    />}
                 </section>
             )}
         </>
     );
 };
 
+const ModalVoucher = ({ hideModal, isModal, onVoucherSelect }) => {
+
+    const [vouchers, setVouchers] = useState([]);
+    const [selectedVoucher, setSelectedVoucher] = useState(null); // Thêm state mới
+
+    const fetchVoucher = async () => {
+        await VoucherService.findAllVoucherByDeletedTrue()
+            .then(response => {
+                setVouchers(response.data);
+                console.log(response.data)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+    useEffect(() => {
+        fetchVoucher();
+    }, [])
+
+    const handleRadioChange = (e) => {
+        const voucherId = e.target.value;
+        setSelectedVoucher(voucherId);
+        // Lấy thông tin voucher tương ứng từ danh sách và gọi hàm callback để thông báo cho ShoppingCart
+
+    };
+
+    // Hàm xử lý khi ấn "OK" trên Modal
+    const handleOk = () => {
+
+        const selectedVoucherInfo = vouchers.find(voucher => voucher.id === selectedVoucher);
+        onVoucherSelect(selectedVoucherInfo);
+        // Đóng modal
+        hideModal();
+    };
+
+    return (
+        <>
+            <Modal
+                title={<span>Chọn mã giảm giá </span>}
+                open={isModal}
+                onOk={handleOk}
+                cancelText="Hủy bỏ"
+                onCancel={hideModal}
+            >
+                <Row style={{ marginTop: '20px', padding: '15px', backgroundColor: '#ece9e9' }}>
+                    <Col span={18}>
+                        <Input placeholder="Mã giảm giá"></Input>
+                    </Col>
+                    <Col span={6}>
+                        <Button style={{ float: 'right' }} type='primary'>Áp dụng</Button>
+                    </Col>
+                </Row>
+                <h6 style={{ marginTop: '20px' }}>Chọn 1 mã giảm giá</h6>
+                <div style={{
+                    height: '250px',
+                    overflowY: 'auto',  // Thêm thanh cuộn khi nội dung vượt quá chiều cao
+                }}>
+                    {vouchers.map((item, index) => (
+                        <Row key={index + 1} style={{ marginTop: '7px', padding: '7px', border: '1px solid #cdcdcd' }}>
+                            <Col span={5} style={{ borderRight: '1px dashed #cdcdcd' }}>
+                                <img width={90} src={voucher_icon} alt={`Voucher ${item.voucherId}`} />
+                            </Col>
+                            <Col span={17} style={{ fontSize: '13px', paddingLeft: '10px' }}>
+                                <p style={{ marginBottom: '0' }}>{item.voucherName}</p>
+                                <p style={{ marginBottom: '0' }}>Giảm: {formatCurrency(item.discountRate)} | <span>Giảm tối đa:{formatCurrency(item.maxReduce)}</span></p>
+                                <p style={{ marginBottom: '0' }}>Đơn tối thiểu: {formatCurrency(item.orderMinimum)}</p>
+                                <p style={{ marginBottom: '0' }}>HSD: {FormatDate(item.endDate)}</p>
+                            </Col>
+                            <Col span={2}>
+                                <Radio
+                                    value={item.id}
+                                    style={{ marginTop: '35px' }}
+                                    checked={selectedVoucher === item.id}
+                                    onChange={handleRadioChange}
+                                />
+                            </Col>
+                        </Row>
+                    ))}
+                </div>
+            </Modal >
+        </>
+    );
+};
 export default ShoppingCart;

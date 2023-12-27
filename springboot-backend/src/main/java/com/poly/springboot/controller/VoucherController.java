@@ -53,8 +53,8 @@ public class VoucherController {
         }
     }
 
-    @GetMapping("findAllByDeletedTrue")
-    public ResponseEntity<List<Voucher>> findAllByDeletedTrue() {
+    @GetMapping("findAllVoucherByDeletedTrue")
+    public ResponseEntity<List<Voucher>> findAllVoucherByDeletedTrue() {
         List<Voucher> voucherList = voucherService.findByDeletedTrue();
         return ResponseEntity
                 .status(HttpStatus.OK)

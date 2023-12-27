@@ -294,7 +294,7 @@ export default function OrderDetail() {
                         : "Không có"}
                     </Descriptions.Item>
                     <Descriptions.Item label="Phí vận chuyển">{formatCurrency(30000)}</Descriptions.Item>
-                    <Descriptions.Item label="Voucher từ Shop">-{formatCurrency(30000)}</Descriptions.Item>
+                    <Descriptions.Item label="Giảm giá từ Shop">-{formatCurrency(30000)}</Descriptions.Item>
                     <Descriptions.Item label="Tổng tiền">{formatCurrency(orders.orderTotal)}</Descriptions.Item>
                 </Descriptions>
 

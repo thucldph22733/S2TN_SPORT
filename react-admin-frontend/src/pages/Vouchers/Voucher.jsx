@@ -183,7 +183,7 @@ function Voucher() {
             key: 'discountRate',
             width: '8%',
             sorter: (a, b) => a.discountRate - b.discountRate,
-            render: (text) => <span>{text} %</span>,
+            render: (text) => <span>{text} VND</span>,
         },
         {
             title: 'Ngày bắt đầu',
@@ -434,7 +434,6 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                                         required: true,
                                         type: 'number',
                                         min: 0,
-                                        max: 100,
                                     }]}>
                                     <InputNumber style={{ width: '100%' }} addonAfter={selectAfter} />
                                 </Form.Item>

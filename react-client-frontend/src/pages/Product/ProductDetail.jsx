@@ -218,7 +218,6 @@ function ProductDetail() {
         } else if (cartDetail.quantity < 0) {
             setError("Vui lòng chọn phân loại hàng!!!")
         }
-
         CartService.create(cartDetail).then(() => {
 
             message.success('Sản phẩm đã được thêm vào giỏ hàng!');

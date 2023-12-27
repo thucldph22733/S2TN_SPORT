@@ -1,5 +1,5 @@
 import { CloseCircleOutlined, CloseSquareOutlined, DeleteOutlined, ExclamationCircleOutlined, HomeOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Form, Modal, Popconfirm, Space, Table, Tabs, Tag, Tooltip, notification } from 'antd';
+import { Breadcrumb, Button, Form, Modal, Popconfirm, Radio, Space, Table, Tabs, Tag, Tooltip, notification } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
@@ -79,20 +79,20 @@ function Order() {
             title: 'Mã',
             dataIndex: 'id',
             key: 'id',
-            width: "10%",
+            width: "8%",
             render: (text) => <a>HD{text}</a>,
         },
         {
             title: 'Ngày đặt hàng',
             dataIndex: 'createdAt',
             key: 'createdAt',
-            width: "15%",
+            width: "12%",
         },
         {
-            title: 'Loại đơn hàng',
+            title: 'Loại ĐH',
             dataIndex: 'orderTypeName',
             key: 'orderTypeName',
-            width: "15%",
+            width: "12%",
             render: (text) => (
                 text === "InStore" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
                     : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>
@@ -114,7 +114,7 @@ function Order() {
             title: 'Ghi chú',
             dataIndex: 'note',
             key: 'note',
-            width: "10%",
+            width: "25%",
         },
         {
             title: 'Trạng thái',
@@ -279,10 +279,21 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
         })
 
     }
+    const onRadioChange = (e) => {
+        const radioValue = e.target.value;
+        // Update the value of the 'note' field in the form
+        form.setFieldsValue({
+            note: radioValue,
+        });
+    };
 
+    const onFinish = (values) => {
+        console.log('Received values:', values);
+        // Perform your form submission logic here
+    };
     return (
         <Modal
-            title={<><ExclamationCircleOutlined style={{ color: 'red', marginRight: '7px' }} />Thông báo xác nhận hủy đơn hàng! </>}
+            title={<span><ExclamationCircleOutlined style={{ color: 'red', marginRight: '7px' }} />Thông báo xác nhận lý do hủy đơn hàng! </span>}
             open={isModal}
             onOk={handleOrderCancel}
             onCancel={hideModal}
@@ -291,12 +302,28 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
         >
             <Form
                 name="validateOnly" layout="vertical" autoComplete="off"
+                onFinish={onFinish}
 
                 form={form}
             >
+                <Radio.Group
+                    onChange={onRadioChange}
+                    style={{ margin: '10px 0' }}
+                >
+                    <Space direction="vertical">
+                        <Radio value={"Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng."}>
+                            Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng.</Radio>
+                        <Radio value={"Tôi muốn thêm thay đổi mã giảm giá."}>Tôi muốn thêm thay đổi mã giảm giá.</Radio>
+                        <Radio value={"Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng)"}>Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng)</Radio>
+                        <Radio value={"Tôi tìm thấy chỗ mua khác tốt hơn (rẻ hơn, uy tín hơn, giao nhanh hơn...)"}>Tôi tìm thấy chỗ mua khác tốt hơn (rẻ hơn, uy tín hơn, giao nhanh hơn...)</Radio>
+                        <Radio value={"Tôi không có nhu cầu nữa."}>Tôi không có nhu cầu nữa.</Radio>
+                        <Radio value={"Thủ tục thanh toán rắc rối."}>Thủ tục thanh toán rắc rối.</Radio>
+                    </Space>
+                </Radio.Group>
                 <Form.Item name="note" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
                     <TextArea rows={4} placeholder="Nhập lý do hủy..." />
                 </Form.Item>
+
             </Form>
         </Modal>
     );

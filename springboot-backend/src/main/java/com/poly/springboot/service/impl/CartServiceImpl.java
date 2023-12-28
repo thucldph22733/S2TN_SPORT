@@ -1,16 +1,11 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CartRequestDto;
+import com.poly.springboot.dto.requestDto.UpdateCartVoucherRequestDto;
 import com.poly.springboot.dto.responseDto.CartDetailResponseDto;
-import com.poly.springboot.entity.Cart;
-import com.poly.springboot.entity.CartDetail;
-import com.poly.springboot.entity.ProductDetail;
-import com.poly.springboot.entity.User;
+import com.poly.springboot.entity.*;
 import com.poly.springboot.exception.ResourceNotFoundException;
-import com.poly.springboot.repository.CartDetailRepository;
-import com.poly.springboot.repository.CartRepository;
-import com.poly.springboot.repository.ProductDetailRepository;
-import com.poly.springboot.repository.UserRepository;
+import com.poly.springboot.repository.*;
 import com.poly.springboot.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,15 +24,19 @@ public class CartServiceImpl implements CartService {
 
     private UserRepository userRepository;
 
+    private VoucherRepository voucherRepository;
+
     @Autowired
     public CartServiceImpl(CartDetailRepository cartDetailRepository,
                                  ProductDetailRepository productDetailRepository,
                                  CartRepository cartRepository,
-                                 UserRepository userRepository) {
+                                 UserRepository userRepository,
+                           VoucherRepository voucherRepository) {
         this.cartDetailRepository = cartDetailRepository;
         this.productDetailRepository = productDetailRepository;
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
+        this.voucherRepository = voucherRepository;
 
     }
 
@@ -89,6 +88,11 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    public Cart findCartByUserId(Long userId) {
+        return cartRepository.findByUserId(userId).orElse(null);
+    }
+
+    @Override
     public Boolean updateCartDetail(Integer quantity, Long id) {
         CartDetail cartDetail = cartDetailRepository.findById(id)
                 .orElseThrow( ()-> new ResourceNotFoundException("Không tìm thấy id giỏ hàng chi tiết này!"));
@@ -97,6 +101,23 @@ public class CartServiceImpl implements CartService {
 
         cartDetailRepository.save(cartDetail);
 
+        return true;
+    }
+
+    @Override
+    public Boolean updateCart(UpdateCartVoucherRequestDto requestDto) {
+        Cart cart = cartRepository.findById(requestDto.getCartId()).orElse(null);
+
+        if (requestDto.getVoucherId() == null) {
+            // Nếu voucherId là null, đặt giá trị voucher trong giỏ hàng thành null
+            cart.setVoucher(null);
+        } else {
+            // Nếu voucherId không phải null, thì lấy thông tin voucher từ repository
+            Voucher voucher = voucherRepository.findById(requestDto.getVoucherId()).orElse(null);
+            cart.setVoucher(voucher);
+        }
+
+        cartRepository.save(cart);
         return true;
     }
 

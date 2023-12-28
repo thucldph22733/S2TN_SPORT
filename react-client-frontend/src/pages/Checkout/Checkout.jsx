@@ -15,7 +15,7 @@ import { FaMapMarkedAlt } from 'react-icons/fa';
 import VoucherService from '~/service/VoucherService';
 import FormatDate from '~/utils/format-date';
 import voucher_icon from '~/assets/images/voucher_logo.png';
-
+import vnpay from '~/assets/images/vnpayy.webp';
 function Checkout() {
 
     const [cities, setCities] = useState([]);
@@ -86,17 +86,44 @@ function Checkout() {
     useEffect(() => {
         findImageByProductId();
     }, []);
-    // Calculate the total amount
+    //load data cart
+    const [carts, setCarts] = useState({});
+
+    const getCartByUserId = async () => {
+
+        await CartService.getCartByUserId(user.id)
+            .then(response => {
+                setCarts(response);
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    useEffect(() => {
+        getCartByUserId();
+    }, []);
+    //Tổng tiền
+    const calculateTotal = () => {
+        const total = calculateTotalAmount() + 30000 - calculateDiscountRate()
+        if (total < 0) {
+            return 0
+        }
+        return total;
+    };
+    // Giảm giá
+    const calculateDiscountRate = () => {
+        if (carts.voucher == null) {
+            return 0;
+        } else {
+            return carts.voucher.deleted == false ? 0 : carts.voucher.discountRate
+        }
+    };
+    // Tạm tính
     const calculateTotalAmount = () => {
         let totalAmount = 0;
         cartDetail.forEach(item => {
-            totalAmount += parseInt(item.totalPrice);
+            totalAmount += parseFloat(item.totalPrice);
         });
         return totalAmount;
-    };
-
-    const calculateTotal = () => {
-        return (parseInt(calculateTotalAmount()) + 30000);
     };
 
     //----------------------------load địa chỉ mặc định------------------------
@@ -133,7 +160,7 @@ function Checkout() {
     const [payment, setPayment] = useState();
 
     const create = async () => {
-        const data = { amount: 10000000 }
+        const data = { amount: parseInt(calculateTotal() + 30000) }
         await PaymentService.create(data)
             .then(response => {
                 setPayment(response);
@@ -153,7 +180,7 @@ function Checkout() {
             // Sử dụng giá trị từ values thay vì form.getFieldsValue()
             values.userId = user.id;
             values.deliveryId = 1;
-            values.voucherId = 1;
+            values.voucherId = carts.voucher == null ? null : carts.voucher.id;
             values.statusId = 2;
             values.orderTotal = calculateTotal();
             values.orderType = 'Online';
@@ -178,8 +205,6 @@ function Checkout() {
         }
     };
 
-
-
     //-------------------------------------
     const [selectedMethod, setSelectedMethod] = useState("cashOnDelivery");
 
@@ -202,8 +227,13 @@ function Checkout() {
             var a = document.createElement("a");
             a.href = payment.data;
             a.click();
-        } else {
+        } else if (selectedMethod === "cashOnDelivery") {
             handleCreate();
+        } else {
+            notification.error({
+                message: 'Thông báo',
+                description: 'Vui lòng chọn phương thức thanh toán!',
+            });
         }
 
 
@@ -414,6 +444,7 @@ function Checkout() {
                                                     margin: '10px',
                                                     cursor: 'pointer',
                                                     color: selectedMethod === 'cashOnDelivery' ? '#2123bf' : 'black',
+                                                    backgroundColor: '#ffffff'
                                                 }}
                                                 onClick={() => handlePaymentMethodClick('cashOnDelivery')}
                                             >
@@ -428,10 +459,11 @@ function Checkout() {
                                                     margin: '10px',
                                                     cursor: 'pointer',
                                                     color: selectedMethod === 'vnpay' ? '#2123bf' : 'black',
+                                                    backgroundColor: '#ffffff'
                                                 }}
                                                 onClick={() => handlePaymentMethodClick('vnpay')}
                                             >
-                                                <p style={{ textAlign: 'center', margin: '10px 0' }}>Thanh toán VNPay</p>
+                                                <p style={{ textAlign: 'center', margin: '10px 0' }}>Thanh toán VNPay <img width={25} src={vnpay} alt="" /></p>
                                             </div>
                                         </Col>
                                     </Row>
@@ -478,7 +510,7 @@ function Checkout() {
                                             <p>Giảm giá:</p>
                                         </Col>
                                         <Col span={14} >
-                                            <span style={{ float: 'right' }}>{formatCurrency(0)}</span>
+                                            <span style={{ float: 'right' }}>{formatCurrency(-calculateDiscountRate())}</span>
                                         </Col>
                                     </Row>
                                     <Row>
@@ -517,11 +549,10 @@ function Checkout() {
                 />
             }
             {voucherModal && <ModalVoucher
-
                 hideModal={hideVoucherModal}
                 isModal={voucherModal}
-            // onVoucherSelect={handleVoucherOk}
-
+                carts={carts}
+                getCartByUserId={getCartByUserId}
             />}
         </section >
     );
@@ -862,11 +893,11 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
         </>
     );
 };
-const ModalVoucher = ({ hideModal, isModal }) => {
+const ModalVoucher = ({ hideModal, isModal, carts, getCartByUserId }) => {
 
     const [vouchers, setVouchers] = useState([]);
-    // const [selectedVoucher, setSelectedVoucher] = useState(null); // Thêm state mới
-
+    const [selectedVoucher, setSelectedVoucher] = useState(null); // Thêm state mới
+    const [isRadioSelected, setIsRadioSelected] = useState(false);
     const fetchVoucher = async () => {
         await VoucherService.findAllVoucherByDeletedTrue()
             .then(response => {
@@ -881,28 +912,49 @@ const ModalVoucher = ({ hideModal, isModal }) => {
         fetchVoucher();
     }, [])
 
-    // const handleRadioChange = (e) => {
-    //     const voucherId = e.target.value;
-    //     setSelectedVoucher(voucherId);
-    //     // Lấy thông tin voucher tương ứng từ danh sách và gọi hàm callback để thông báo cho ShoppingCart
+    useEffect(() => {
+        // Kiểm tra xem giỏ hàng đã có voucher hay không
+        const cartVoucherId = carts.voucher ? carts.voucher.id : null;
+        setSelectedVoucher(cartVoucherId);
+        setIsRadioSelected(!!cartVoucherId);
+    }, [carts]);
 
-    // };
+    const handleRadioChange = e => {
+        console.log('Radio changed!');
+        const voucherId = e.target.value;
+
+        // Nếu radio chưa được chọn, thì set selectedVoucher
+        // Nếu radio đã được chọn, thì set selectedVoucher thành null để hủy chọn
+        setSelectedVoucher(selectedVoucher === voucherId ? null : voucherId);
+        setIsRadioSelected(!selectedVoucher); // Đảo ngược trạng thái isRadioSelected
+    };
 
     // Hàm xử lý khi ấn "OK" trên Modal
-    // const handleOk = () => {
+    const handleOk = async () => {
+        try {
+            if (selectedVoucher == null && carts.voucher == null) {
+                hideModal();
+            } else {
+                const data = { cartId: carts.id, voucherId: selectedVoucher };
+                await CartService.updateCartVoucher(data);
 
-    //     const selectedVoucherInfo = vouchers.find(voucher => voucher.id === selectedVoucher);
-    //     onVoucherSelect(selectedVoucherInfo);
-    //     // Đóng modal
-    //     hideModal();
-    // };
+                // Gọi API `getCartByUserId` sau khi cập nhật voucher
+                await getCartByUserId();
+
+                // Đóng modal
+                hideModal();
+            }
+        } catch (error) {
+            console.error("Error updating voucher:", error);
+        }
+    };
 
     return (
         <>
             <Modal
                 title={<span>Chọn mã giảm giá </span>}
                 open={isModal}
-                // onOk={handleOk}
+                onOk={handleOk}
                 cancelText="Hủy bỏ"
                 onCancel={hideModal}
             >
@@ -934,8 +986,8 @@ const ModalVoucher = ({ hideModal, isModal }) => {
                                 <Radio
                                     value={item.id}
                                     style={{ marginTop: '35px' }}
-                                // checked={selectedVoucher === item.id}
-                                // onChange={handleRadioChange}
+                                    checked={selectedVoucher === item.id}
+                                    onChange={handleRadioChange}
                                 />
                             </Col>
                         </Row>

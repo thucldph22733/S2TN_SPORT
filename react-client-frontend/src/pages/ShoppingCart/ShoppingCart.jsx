@@ -20,7 +20,7 @@ const ShoppingCart = () => {
 
     const userString = localStorage.getItem('user2');
     const user = userString ? JSON.parse(userString) : null;
-
+    //load data cartDeatil
     const findImageByProductId = async () => {
 
         await CartService.getAllCartDetailByUserId(user.id)
@@ -39,7 +39,22 @@ const ShoppingCart = () => {
     useEffect(() => {
         findImageByProductId();
     }, []);
+    //load data cart
+    const [carts, setCarts] = useState({});
 
+    const getCartByUserId = async () => {
+
+        await CartService.getCartByUserId(user.id)
+            .then(response => {
+                setCarts(response);
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    useEffect(() => {
+        getCartByUserId();
+    }, []);
+    //-------------------------------
     const handleDelete = async (id) => {
         await CartService.delete(id).then(() => {
             message.success('Xóa sản phẩm khỏi giỏ hàng thành công!');
@@ -49,14 +64,7 @@ const ShoppingCart = () => {
         })
 
     };
-    // Calculate the total amount
-    const calculateTotalAmount = () => {
-        let totalAmount = 0;
-        cartDetail.forEach(item => {
-            totalAmount += parseFloat(item.totalPrice);
-        });
-        return totalAmount;
-    };
+
     // Hàm thực hiện cập nhật số lượng sản phẩm trong giỏ hàng
     const updateItemCount = () => {
         cartDetail.reduce((total, item) => total + item.quantity, 0);
@@ -192,34 +200,44 @@ const ShoppingCart = () => {
     ];
 
     //Mở modal hiển thị voucher
-    const [voucherModal, setVoucherModal] = useState({ isModal: false, reacord: null });
+    const [voucherModal, setVoucherModal] = useState(false);
 
-    const showVoucherModal = (record) => {
-        setVoucherModal({
-            isModal: true,
-            reacord: record,
-        });
+    const showVoucherModal = () => {
+        setVoucherModal(true);
     };
 
     const hideVoucherModal = () => {
-        setVoucherModal({ isModal: false });
+        setVoucherModal(false);
     };
-    //---------------------------------------------------
-    // const [voucherss, setVoucherss] = useState([]);
-    const [selectedVoucher, setSelectedVoucher] = useState([]);
-    // Hàm callback để nhận mã giảm giá từ ModalVoucher
-    console.log(selectedVoucher)
 
+    //---------------- Các hàm tính toán  -----------------------------
+    //Tổng tiền
     const calculateTotal = () => {
+        const total = calculateTotalAmount() - calculateDiscountRate()
+        if (total < 0) {
+            return 0
+        }
+        return total;
+    };
+    // Giảm giá
+    const calculateDiscountRate = () => {
+        if (carts.voucher == null) {
+            return 0;
+        } else {
 
-        return (calculateTotalAmount() - selectedVoucher.discountRate);
+            return carts.voucher.deleted == false ? 0 : carts.voucher.discountRate
+        }
+    };
+    // Tạm tính
+    const calculateTotalAmount = () => {
+        let totalAmount = 0;
+        cartDetail.forEach(item => {
+            totalAmount += parseFloat(item.totalPrice);
+        });
+        return totalAmount;
     };
 
-    const handleVoucherOk = (selectedVoucherInfo) => {
 
-        setSelectedVoucher(selectedVoucherInfo);
-
-    };
     return (
         <>
             {cartDetail.length === 0 ? (
@@ -256,7 +274,7 @@ const ShoppingCart = () => {
                                 <Table dataSource={cartDetail} pagination={false} columns={columns} />
                                 <Row style={{ marginTop: '20px' }}>
                                     <Col lg={12} md={12} sm={12}>
-                                        <Link to={path_name.product}>
+                                        <Link to={path_name.home}>
                                             <Button type="link" icon={<DoubleLeftOutlined />}>
                                                 Tiếp tục mua sắm
                                             </Button>
@@ -300,7 +318,7 @@ const ShoppingCart = () => {
                                             <span >Giảm giá:</span>
                                         </Col>
                                         <Col span={12}>
-                                            <span style={{ float: 'right' }}>{formatCurrency(-selectedVoucher.discountRate)}</span>
+                                            <span style={{ float: 'right' }}>{formatCurrency(-calculateDiscountRate())}</span>
                                         </Col>
                                     </Row>
 
@@ -319,12 +337,11 @@ const ShoppingCart = () => {
                             </Col>
                         </Row>
                     </div>
-                    {voucherModal.isModal && <ModalVoucher
-
+                    {voucherModal && <ModalVoucher
                         hideModal={hideVoucherModal}
-                        isModal={voucherModal.isModal}
-                        onVoucherSelect={handleVoucherOk}
-
+                        isModal={voucherModal}
+                        carts={carts}
+                        getCartByUserId={getCartByUserId}
                     />}
                 </section>
             )}
@@ -332,11 +349,11 @@ const ShoppingCart = () => {
     );
 };
 
-const ModalVoucher = ({ hideModal, isModal, onVoucherSelect }) => {
+const ModalVoucher = ({ hideModal, isModal, carts, getCartByUserId }) => {
 
     const [vouchers, setVouchers] = useState([]);
     const [selectedVoucher, setSelectedVoucher] = useState(null); // Thêm state mới
-
+    const [isRadioSelected, setIsRadioSelected] = useState(false);
     const fetchVoucher = async () => {
         await VoucherService.findAllVoucherByDeletedTrue()
             .then(response => {
@@ -351,20 +368,41 @@ const ModalVoucher = ({ hideModal, isModal, onVoucherSelect }) => {
         fetchVoucher();
     }, [])
 
-    const handleRadioChange = (e) => {
-        const voucherId = e.target.value;
-        setSelectedVoucher(voucherId);
-        // Lấy thông tin voucher tương ứng từ danh sách và gọi hàm callback để thông báo cho ShoppingCart
+    useEffect(() => {
+        // Kiểm tra xem giỏ hàng đã có voucher hay không
+        const cartVoucherId = carts.voucher ? carts.voucher.id : null;
+        setSelectedVoucher(cartVoucherId);
+        setIsRadioSelected(!!cartVoucherId);
+    }, [carts]);
 
+    const handleRadioChange = e => {
+        console.log('Radio changed!');
+        const voucherId = e.target.value;
+
+        // Nếu radio chưa được chọn, thì set selectedVoucher
+        // Nếu radio đã được chọn, thì set selectedVoucher thành null để hủy chọn
+        setSelectedVoucher(selectedVoucher === voucherId ? null : voucherId);
+        setIsRadioSelected(!selectedVoucher); // Đảo ngược trạng thái isRadioSelected
     };
 
     // Hàm xử lý khi ấn "OK" trên Modal
-    const handleOk = () => {
+    const handleOk = async () => {
+        try {
+            if (selectedVoucher == null && carts.voucher == null) {
+                hideModal();
+            } else {
+                const data = { cartId: carts.id, voucherId: selectedVoucher };
+                await CartService.updateCartVoucher(data);
 
-        const selectedVoucherInfo = vouchers.find(voucher => voucher.id === selectedVoucher);
-        onVoucherSelect(selectedVoucherInfo);
-        // Đóng modal
-        hideModal();
+                // Gọi API `getCartByUserId` sau khi cập nhật voucher
+                await getCartByUserId();
+
+                // Đóng modal
+                hideModal();
+            }
+        } catch (error) {
+            console.error("Error updating voucher:", error);
+        }
     };
 
     return (

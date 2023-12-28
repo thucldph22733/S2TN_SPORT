@@ -2,8 +2,10 @@ package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.CartRequestDto;
+import com.poly.springboot.dto.requestDto.UpdateCartVoucherRequestDto;
 import com.poly.springboot.dto.responseDto.CartDetailResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.entity.Cart;
 import com.poly.springboot.service.CartService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,14 @@ public class CartController {
                 .body(cartDetailResponseDtoList);
     }
 
+    @GetMapping("getCartByUserId")
+    public ResponseEntity<Cart> getCartByUserId(@RequestParam(required = false)  Long userId) {
+        Cart cart = cartService.findCartByUserId(userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(cart);
+    }
+
     // create cart detail rest api
     @PostMapping("create")
     public ResponseEntity<ResponseDto> saveCartDetail(@RequestBody CartRequestDto cartRequestDto) {
@@ -42,6 +52,20 @@ public class CartController {
         if (isCreated) {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
+    }
+
+    // create cart detail rest api
+    @PatchMapping("updateCartVoucher")
+    public ResponseEntity<ResponseDto> updateCartVoucher(@RequestBody UpdateCartVoucherRequestDto cartRequestDto) {
+        Boolean isCreated = cartService.updateCart(cartRequestDto);
+
+        if (isCreated) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));

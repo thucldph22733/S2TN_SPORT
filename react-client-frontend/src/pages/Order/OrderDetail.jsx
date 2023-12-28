@@ -277,28 +277,28 @@ export default function OrderDetail() {
                     size='default'
                     // layout="vertical"
                     // bordered
-                    style={{ padding: '0 10px' }}
+                    style={{ padding: '10px 10px' }}
                 >
-                    <Descriptions.Item label="Mã đơn hàng" ><p style={{ color: 'red' }}>HD{orders.id}</p> </Descriptions.Item>
-                    <Descriptions.Item label="Loại đơn hàng">
-                        {orders.orderType && orders.orderType !== "Online" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
-                            : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="success">Online</Tag>}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Trạng thái">
-                        <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="red">{orders.orderStatus == null ? '' : orders.orderStatus.statusName}</Tag>
-                    </Descriptions.Item>
+                    <Descriptions.Item label="Mã đơn hàng" ><span style={{ color: 'red' }}>HD{orders.id}</span> </Descriptions.Item>
+                    <Descriptions.Item label="Giảm giá từ Shop"> {formatCurrency(orders.voucher != null ? -orders.voucher.discountRate : 0)}</Descriptions.Item>
                     <Descriptions.Item label="Họ và tên">{orders.recipientName == null ? 'Khách lẻ' : orders.recipientName}</Descriptions.Item>
+                    <Descriptions.Item label="Trạng thái">
+                        {orders.orderStatus == null ? '' : <Tag color="blue">{orders.orderStatus.statusName}</Tag>}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Phí vận chuyển">{formatCurrency(-30000)}</Descriptions.Item>
                     <Descriptions.Item label="Số điện thoại">{orders.phoneNumber == null ? 'Không có' : orders.phoneNumber}</Descriptions.Item>
+                    <Descriptions.Item label="Loại đơn hàng">
+                        {orders.orderType && orders.orderType !== "Online" ? <Tag color="purple">Online</Tag> : <Tag color="volcano">Tại quầy</Tag>}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Tổng tiền">{formatCurrency(orders.orderTotal)}</Descriptions.Item>
                     <Descriptions.Item label="Địa chỉ">  {orders.ward && orders.district && orders.city && orders.addressDetail
                         ? `${orders.addressDetail} - ${orders.ward} - ${orders.district} - ${orders.city}`
                         : "Không có"}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Phí vận chuyển">{formatCurrency(30000)}</Descriptions.Item>
-                    <Descriptions.Item label="Giảm giá từ Shop">-{formatCurrency(30000)}</Descriptions.Item>
-                    <Descriptions.Item label="Tổng tiền">{formatCurrency(orders.orderTotal)}</Descriptions.Item>
+                    <Descriptions.Item label="Phương thức thanh toán"><Tag color="green">Thanh toán khi nhận hàng</Tag></Descriptions.Item>
                 </Descriptions>
 
-                <div style={{ borderBottom: '2px solid black', marginTop: '10px' }}>
+                {/* <div style={{ borderBottom: '2px solid black', marginTop: '10px' }}>
                     <h6>LỊCH SỬ THANH TOÁN</h6>
                 </div>
                 <Table
@@ -315,7 +315,7 @@ export default function OrderDetail() {
                     scroll={{
                         y: 240,
                     }}
-                />
+                /> */}
 
 
             </div>

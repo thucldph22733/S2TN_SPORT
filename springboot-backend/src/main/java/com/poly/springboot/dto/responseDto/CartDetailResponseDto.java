@@ -24,4 +24,6 @@ public class CartDetailResponseDto {
     private Integer quantity;
 
     private Double price;
+
+
 }

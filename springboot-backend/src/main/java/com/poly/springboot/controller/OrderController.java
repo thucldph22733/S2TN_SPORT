@@ -3,6 +3,7 @@ package com.poly.springboot.controller;
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.requestDto.OrderCancelRequestDto;
+import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseHandler;
@@ -144,9 +145,9 @@ public class OrderController {
         }
     }
 
-    @PutMapping("updateOrderStatus")
-    public ResponseEntity<ResponseDto> updateOrderStatus(@Valid @RequestBody OrderCancelRequestDto orderUpdateRequestDto, @RequestParam Long id) {
-        Boolean isUpdated = orderService.updateOrderStatus(id, orderUpdateRequestDto);
+    @PatchMapping("updateOrderStatus")
+    public ResponseEntity<ResponseDto> updateOrderStatus(@RequestBody OrderStatusRequestDto orderStatusRequestDto) {
+        Boolean isUpdated = orderService.updateOrderStatus(orderStatusRequestDto);
 
         if (isUpdated) {
             return ResponseEntity.status(HttpStatus.OK)

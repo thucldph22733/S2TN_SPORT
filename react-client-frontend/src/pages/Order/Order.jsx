@@ -1,5 +1,5 @@
-import { CloseCircleOutlined, CloseSquareOutlined, DeleteOutlined, ExclamationCircleOutlined, HomeOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Form, Modal, Popconfirm, Radio, Space, Table, Tabs, Tag, Tooltip, notification } from 'antd';
+import { CloseSquareOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Button, Form, Modal, Radio, Space, Table, Tabs, Tag, Tooltip, notification } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
@@ -254,9 +254,10 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
         form.validateFields().then(async () => {
 
             const data = form.getFieldsValue();
-            data.statusId = 6     //6 là trạng thái đã hủy
+            data.newStatusId = 6;
+            data.orderId = reacord.id    //6 là trạng thái đã hủy
             console.log(data)
-            await OrderService.orderCancel(reacord.id, data)
+            await OrderService.updateOrderStatus(data)
                 .then(() => {
                     notification.success({
                         message: 'Thông báo',

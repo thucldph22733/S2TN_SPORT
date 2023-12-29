@@ -1,5 +1,7 @@
 package com.poly.springboot.repository;
 
+import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
+import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
 import com.poly.springboot.dto.responseDto.ProductUserResponseDto;
 import com.poly.springboot.entity.Product;
 import com.poly.springboot.entity.Size;
@@ -22,6 +24,8 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     Page<Product> findByProductNameContainingAndDeletedIn(String name, List<Boolean> status, Pageable pageable);
 
     List<Product> findAllByDeletedTrue();
+
+
 
     @Query(nativeQuery = true, value =
             "SELECT p.id, p.product_name AS productName, i.image_link AS imageUrl, MIN(pd.price) AS minPrice " +

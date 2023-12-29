@@ -2,6 +2,7 @@ package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.requestDto.OrderCancelRequestDto;
+import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
 import com.poly.springboot.entity.Order;
@@ -28,6 +29,8 @@ public interface OrderService {
     Page<Order> findAllOrdersByUserId(Long userId,Long orderStatusId, Pageable pageable);
     Boolean orderCancel (Long id,OrderCancelRequestDto orderCancelRequestDto);
     List<OrderResponseDto> getAllOrders();
+
+    Boolean updateOrderStatus(OrderStatusRequestDto orderStatusRequestDto);
 
     Order findOrderById(Long id);
 

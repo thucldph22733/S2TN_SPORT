@@ -15,19 +15,17 @@ public class ProductDetailResponseDto {
 
     private String productName;
 
-//    private String productAvatar;
+    private String productAvatar;
 
     private String colorName;
 
-    private String materialName;
-
     private String sizeName;
+
+    private String materialName;
 
     private Integer quantity;
 
     private Double price;
-
-//    private Double promotionPrice;
 
     private Boolean status;
 

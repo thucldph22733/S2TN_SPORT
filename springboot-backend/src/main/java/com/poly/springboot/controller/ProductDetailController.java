@@ -8,6 +8,9 @@ import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.service.ProductDetailService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +29,18 @@ public class ProductDetailController {
    @Autowired
    private ProductDetailService productDetailService;
 
-    @GetMapping("getAll")
-    public ResponseEntity<List<ProductDetailResponseDto>> getProductDetails() {
-        List<ProductDetailResponseDto> productDetailResponseDtoList = productDetailService.getProductDetails();
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(productDetailResponseDtoList);
+    @GetMapping("getAllProductDetails")
+    public ResponseEntity<?> getProductDetails(@RequestParam(defaultValue = "0") Integer pageNo,
+                                               @RequestParam(defaultValue = "10") Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<ProductDetailResponseDto> productPage = productDetailService.getProductDetails( pageable);
+
+        List<ProductDetailResponseDto> productResponseDtoList = productPage.getContent();
+        return ResponseHandler.generateResponse(
+                HttpStatus.OK
+                , productResponseDtoList
+                , productPage);
     }
 
     @GetMapping("getProductDetailsByProductId")

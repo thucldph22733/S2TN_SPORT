@@ -1,10 +1,9 @@
 package com.poly.springboot.repository;
 
-import com.poly.springboot.dto.responseDto.ColorInfoResponseDto;
-import com.poly.springboot.dto.responseDto.PDUpdateResponseDto;
-import com.poly.springboot.dto.responseDto.ProductDetailInfoResponseDto;
-import com.poly.springboot.dto.responseDto.SizeInfoResponseDto;
+import com.poly.springboot.dto.responseDto.*;
 import com.poly.springboot.entity.ProductDetail;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -47,4 +46,15 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail,Lon
             @Param("colorId") Long colorId,
             @Param("sizeId") Long sizeId
     );
+    @Query("SELECT new com.poly.springboot.dto.responseDto.ProductDetailResponseDto(" +
+            "pd.id,p.productName,i.imageLink, c.colorName, s.sizeName, m.materialName, pd.quantity,pd.price,pd.deleted) " +
+            "FROM ProductDetail pd " +
+            "JOIN pd.product p " +
+            "JOIN pd.color c " +
+            "JOIN pd.size s " +
+            "JOIN pd.material m "+
+            "JOIN Image i ON i.product.id = p.id  " +
+            "WHERE pd.deleted = true AND i.color.id = c.id ")
+//            "GROUP BY pd.id,p.productName,i.imageLink, c.colorName, s.sizeName, m.materialName, pd.quantity,pd.price,pd.deleted ")
+    Page<ProductDetailResponseDto> getProducts(Pageable pageable);
 }

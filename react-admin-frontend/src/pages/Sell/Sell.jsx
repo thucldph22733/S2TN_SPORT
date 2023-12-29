@@ -54,7 +54,7 @@ import ShowAddressModal from '../User/Address';
 import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
 
 
-export default function OrderDetail() {
+export default function Sell() {
     const {
         token: { colorBgContainer },
     } = theme.useToken();

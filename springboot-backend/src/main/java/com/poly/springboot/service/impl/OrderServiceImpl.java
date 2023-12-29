@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.requestDto.OrderCancelRequestDto;
+import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
 import com.poly.springboot.dto.responseDto.OrderResponseDto;
 import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
 import com.poly.springboot.entity.*;
@@ -82,6 +83,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Boolean updateOrderStatus(OrderStatusRequestDto orderStatusRequestDto) {
+        Order order = orderRepository.findById(orderStatusRequestDto.getOrderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng này!"));
+
+        OrderStatus orderStatus = orderStatusRepository.findById(orderStatusRequestDto.getNewStatusId()).orElse(null);
+
+        order.setNote(orderStatusRequestDto.getNote());
+        order.setOrderStatus(orderStatus);
+        orderRepository.save(order);
+        //Xét lịch sử đơn hàng
+        OrderHistory orderHistory = new OrderHistory();
+        orderHistory.setOrder(order);
+        orderHistory.setStatus(orderStatus);
+        orderHistory.setNote(orderStatusRequestDto.getNote());
+        orderHistory.setDeleted(true);
+        orderHistoryRepository.save(orderHistory);
+
+        return true;
+    }
+
+    @Override
     public List<Map<String, Object>> getRevenueByMonthForCurrentYear() {
         List<Map<String, Object>> revenueList = orderRepository.getRevenueByMonthForCurrentYear();
 
@@ -133,30 +155,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    //    @Override
-//    public Order findOrderById(Long id) {
-//
-//        Order order = orderRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này"));
-//
-//        return order;
-//    }
-//
-//    @Override
-//    public User findUserByOrderId(Long orderId) {
-//        User user = orderRepository.findUserByOrderId(orderId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này"));
-//        return user;
-//    }
-//
-//    @Override
-//    public Voucher findVoucherByOrderId(Long orderId) {
-//        Voucher voucher = orderRepository.findVoucherByOrderId(orderId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này"));
-//        return voucher;
-//    }
-//
-//
+
     @Override
     public Page<Order> getAllOrders(Long orderStatusId, Pageable pageable) {
         Page<Order> orderPage;

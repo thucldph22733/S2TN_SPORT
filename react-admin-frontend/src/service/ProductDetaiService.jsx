@@ -15,16 +15,16 @@ const ProductDetailService = {
     //         });
     // },
 
-    // getAllOrderByStatusId: (pageNo, pageSize) => {
-    //     return HttpClient.get(`${API_URL}getAllOrderByStatusId`, {
-    //         params: { pageNo, pageSize }
-    //     })
-    //         .then(response => response.data)
-    //         .catch(error => {
-    //             console.error('Error in getAll:', error);
-    //             throw error;
-    //         });
-    // },
+    getAllProductDetails: (pageNo, pageSize) => {
+        return HttpClient.get(`${API_URL}getAllProductDetails`, {
+            params: { pageNo, pageSize }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
 
     // create: (data) => {
     //     return HttpClient.post(`${API_URL}create`, data)

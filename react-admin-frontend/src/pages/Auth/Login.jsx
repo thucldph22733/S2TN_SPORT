@@ -1,22 +1,38 @@
 import React from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Input, notification } from 'antd';
 import './Auth.css'
 import { useAuth } from '~/components/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import path_name from '~/constants/routers';
+import AuthService from '~/service/AuthService';
 
 const Login = () => {
     const navigate = useNavigate();
 
     const [form] = Form.useForm();
-    const { login } = useAuth();
-
     const handleSubmit = () => {
         const data = form.getFieldsValue();
+        console.log(data);
+        AuthService.login(data).then((response) => {
+            console.log(response)
+            localStorage.setItem('access_token1', response.access_token)
+            localStorage.setItem('refresh_token2', response.refresh_token)
+            const user = JSON.stringify(response.user);
+            localStorage.setItem('user1', user)
 
-        login(data);
-        navigate(path_name.newSell)
+            notification.success({
+                message: 'Thông báo',
+                description: 'Đăng nhập thành công!',
+            });
+            navigate(path_name.newSell)
+
+        }).catch(err => {
+            notification.error({
+                message: 'Thông báo',
+                description: 'Đăng nhập thành công!',
+            });
+        });
     };
 
     return (
@@ -60,7 +76,7 @@ const Login = () => {
                 />
             </Form.Item>
             <Form.Item>
-                <Form.Item name="remember" noStyle >
+                <Form.Item noStyle >
                     <Checkbox>Ghi nhớ</Checkbox>
                 </Form.Item>
 

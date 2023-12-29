@@ -15,6 +15,23 @@ const OrderService = {
             });
     },
 
+    findOrderById: (id) => {
+        return HttpClient.get(`${API_URL}findOrderById?id=${id}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
+
+    orderCancel: (id, data) => {
+        return HttpClient.patch(`${API_URL}orderCancel?id=${id}`, data)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in update:', error);
+                throw error;
+            });
+    },
 
     getAllOrderByStatusId: (pageNo, pageSize) => {
         return HttpClient.get(`${API_URL}getAllOrderByStatusId`, {
@@ -36,18 +53,18 @@ const OrderService = {
             });
     },
 
-    updateOrderStatus: (id, data) => {
-        return HttpClient.put(`${API_URL}updateOrderStatus?id=${id}`, data)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in update:', error);
-                throw error;
-            });
-    },
+    // updateOrderStatus: (id, data) => {
+    //     return HttpClient.put(`${API_URL}updateOrderStatus?id=${id}`, data)
+    //         .then(response => response.data)
+    //         .catch(error => {
+    //             console.error('Error in update:', error);
+    //             throw error;
+    //         });
+    // },
 
 
-    updateOrderStatusCancle: (id, data) => {
-        return HttpClient.put(`${API_URL}updateOrderStatusCancle?id=${id}`, data)
+    updateOrderStatus: (data) => {
+        return HttpClient.patch(`${API_URL}updateOrderStatus`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in update:', error);

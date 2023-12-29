@@ -20,7 +20,7 @@ import { render } from '@testing-library/react';
 
 export default function OrderDetail() {
     const { id } = useParams();
-    const [loading, setLoading] = useState(false);
+
 
 
     const [timeLines, setTimeLines] = useState([]); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
@@ -271,51 +271,35 @@ export default function OrderDetail() {
                         showSizeChanger: true,
                     }}></Table >
                 <div style={{ borderBottom: '2px solid black', marginBottom: '10px' }}>
-                    <h6>THÔNG TIN ĐƠN HÀNG</h6>
+                    <h6>THÔNG TIN ĐƠN HÀNG: <span style={{ color: 'red' }}>HD{orders.id}</span></h6>
                 </div>
                 <Descriptions
                     size='default'
                     // layout="vertical"
-                    // bordered
+                    bordered
                     style={{ padding: '10px 10px' }}
                 >
-                    <Descriptions.Item label="Mã đơn hàng" ><span style={{ color: 'red' }}>HD{orders.id}</span> </Descriptions.Item>
-                    <Descriptions.Item label="Giảm giá từ Shop"> {formatCurrency(orders.voucher != null ? -orders.voucher.discountRate : 0)}</Descriptions.Item>
-                    <Descriptions.Item label="Họ và tên">{orders.recipientName == null ? 'Khách lẻ' : orders.recipientName}</Descriptions.Item>
+                    <Descriptions.Item label="Họ và tên">
+                        {orders.recipientName == null ? 'Khách lẻ' : orders.recipientName}</Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
                         {orders.orderStatus == null ? '' : <Tag color="blue">{orders.orderStatus.statusName}</Tag>}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Phí vận chuyển">{formatCurrency(-30000)}</Descriptions.Item>
-                    <Descriptions.Item label="Số điện thoại">{orders.phoneNumber == null ? 'Không có' : orders.phoneNumber}</Descriptions.Item>
+                    <Descriptions.Item label="Voucher"> {formatCurrency(orders.voucher != null ? -orders.voucher.discountRate : 0)}</Descriptions.Item>
+
+                    <Descriptions.Item label="Số điện thoại" >{orders.phoneNumber == null ? 'Không có' : orders.phoneNumber}</Descriptions.Item>
                     <Descriptions.Item label="Loại đơn hàng">
                         {orders.orderType && orders.orderType !== "Online" ? <Tag color="purple">Online</Tag> : <Tag color="volcano">Tại quầy</Tag>}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Tổng tiền">{formatCurrency(orders.orderTotal)}</Descriptions.Item>
-                    <Descriptions.Item label="Địa chỉ">  {orders.ward && orders.district && orders.city && orders.addressDetail
+                    <Descriptions.Item label="Phí vận chuyển">{formatCurrency(-30000)}</Descriptions.Item>
+
+                    <Descriptions.Item label="Địa chỉ" span={2}>  {orders.ward && orders.district && orders.city && orders.addressDetail
                         ? `${orders.addressDetail} - ${orders.ward} - ${orders.district} - ${orders.city}`
                         : "Không có"}
                     </Descriptions.Item>
+                    <Descriptions.Item label="Tổng tiền">{formatCurrency(orders.orderTotal)}</Descriptions.Item>
+
                     <Descriptions.Item label="Phương thức thanh toán"><Tag color="green">Thanh toán khi nhận hàng</Tag></Descriptions.Item>
                 </Descriptions>
-
-                {/* <div style={{ borderBottom: '2px solid black', marginTop: '10px' }}>
-                    <h6>LỊCH SỬ THANH TOÁN</h6>
-                </div>
-                <Table
-                    columns={columnPaymentHistory}
-                    // dataSource={timeLines.map((tl, index) => ({
-                    //     ...tl,
-                    //     key: index + 1,
-                    //     createdAt: FormatDate(tl.createdAt),
-
-                    // }))}
-                    // pagination={{
-                    //     pageSize: 50,
-                    // }}
-                    scroll={{
-                        y: 240,
-                    }}
-                /> */}
 
 
             </div>

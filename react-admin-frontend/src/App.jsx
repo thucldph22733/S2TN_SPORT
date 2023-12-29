@@ -20,13 +20,12 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import User from './pages/User/User';
 import Role from './pages/Role/Role';
 import NewSell from './pages/Sell/NewSell';
-import OrderDetail from './pages/Sell/OrderDetail';
-import OrderView from './pages/Orders/OrderView';
 import Error404 from './pages/Error/Error404';
 import Error403 from './pages/Error/Error403';
 import ChangePassword from './pages/Auth/ChangePassword';
-import BarChart from './pages/Dashboard/BarChart';
 import ProductDetail from './pages/Products/ProductDetail';
+import Sell from './pages/Sell/Sell';
+import OrderDetail from './pages/Orders/OrderDetail';
 function App() {
 
     const router = createBrowserRouter([
@@ -110,12 +109,12 @@ function App() {
                     element: <Voucher />,
                 },
                 {
-                    path: path_name.orderDetail + '/:id',
-                    element: <OrderDetail />,
+                    path: path_name.sell + '/:id',
+                    element: <Sell />,
                 },
                 {
-                    path: path_name.orderView + '/:id',
-                    element: <OrderView />,
+                    path: path_name.order_detail + '/:id',
+                    element: <OrderDetail />,
                 },
                 {
                     path: path_name.change_password,
@@ -129,9 +128,10 @@ function App() {
 
         },
     ]);
-    return <AuthProvider>
-        <RouterProvider router={router} />;
-    </AuthProvider>
+    return <RouterProvider router={router} />;
+    // <AuthProvider>
+
+    // </AuthProvider>
 }
 
 export default App;

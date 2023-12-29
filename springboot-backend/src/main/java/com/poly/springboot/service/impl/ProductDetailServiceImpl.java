@@ -7,6 +7,8 @@ import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.*;
 import com.poly.springboot.service.ProductDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,22 +41,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
 
     @Override
-    public List<ProductDetailResponseDto> getProductDetails() {
+    public Page<ProductDetailResponseDto> getProductDetails(Pageable pageable) {
 
-        return productDetailRepository.findAll().stream().map(
-                productDetail -> new ProductDetailResponseDto(
-                        productDetail.getId(),
-                        productDetail.getProduct().getProductName(),
-//                        productDetail.getProduct().getAvatar(),
-                        productDetail.getColor().getColorName(),
-                        productDetail.getMaterial().getMaterialName(),
-                        productDetail.getSize().getSizeName(),
-                        productDetail.getQuantity(),
-                        productDetail.getPrice(),
-//                        productDetail.getPromotionPrice(),
-                        productDetail.getDeleted())
-
-        ).collect(Collectors.toList());
+        return productDetailRepository.getProducts(pageable);
     }
 
 

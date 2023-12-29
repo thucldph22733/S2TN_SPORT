@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
         return HttpClient.post(`${API_URL}login`, data)
             .then((response) => {
                 console.log(response.data);
-                localStorage.setItem('token', response.data.access_token);
+                localStorage.setItem('access_token', response.data.access_token);
                 localStorage.setItem('refresh_token', response.data.refresh_token);
                 const user = JSON.stringify(response.user);
                 localStorage.setItem('user1', user)

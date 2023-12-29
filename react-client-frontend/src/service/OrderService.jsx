@@ -32,8 +32,8 @@ const OrderService = {
             });
     },
 
-    orderCancel: (id, data) => {
-        return HttpClient.patch(`${API_URL}orderCancel?id=${id}`, data)
+    updateOrderStatus: (data) => {
+        return HttpClient.patch(`${API_URL}updateOrderStatus`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in update:', error);
@@ -41,33 +41,6 @@ const OrderService = {
             });
     },
 
-
-    updateOrderStatusCancle: (id, data) => {
-        return HttpClient.put(`${API_URL}updateOrderStatusCancle?id=${id}`, data)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in update:', error);
-                throw error;
-            });
-    },
-
-    updateTimeLine: (id, data) => {
-        return HttpClient.put(`${API_URL}updateTimeLine?id=${id}`, data)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in update:', error);
-                throw error;
-            });
-    },
-
-    updateTimeLine2: (id, data) => {
-        return HttpClient.put(`${API_URL}updateTimeLine2?id=${id}`, data)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in update:', error);
-                throw error;
-            });
-    },
 
     delete: (id) => {
         return HttpClient.delete(`${API_URL}delete?id=${id}`)

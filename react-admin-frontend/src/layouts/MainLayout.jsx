@@ -30,13 +30,15 @@ const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [selectedKeys, setSelectedKeys] = useState("/");
-    const { logout } = useAuth();
-    const { user } = useAuth();
-    const userName = localStorage.getItem('user_name')
+    //Đăng xuất
     const handleLogout = () => {
-        logout();
-        navigate("/");
-    };
+        localStorage.clear();
+        navigate(path_name.login)
+    }
+    //Lấy user từ local
+    const userString = localStorage.getItem('user1');
+    const user = userString ? JSON.parse(userString) : null;
+
     useEffect(() => {
         const pathName = location.pathname;
         setSelectedKeys(pathName);
@@ -67,7 +69,7 @@ const MainLayout = () => {
                             icon: <FileDoneOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý đơn hàng',
                         },
-                        // user?.role == "ADMIN" && 
+                        user?.role == "ADMIN" &&
                         {
                             key: path_name.dashboard,
                             icon: <BarChartOutlined style={{ fontSize: "16px" }} />,
@@ -119,13 +121,13 @@ const MainLayout = () => {
                                 },
                             ]
                         },
-                        // user?.role == "ADMIN" &&
+                        user?.role == "ADMIN" &&
                         {
                             key: path_name.voucher,
                             icon: <TagsOutlined style={{ fontSize: "16px" }} />,
                             label: 'Quản lý giảm giá',
                         },
-                        // user?.role == "ADMIN" &&
+                        user?.role == "ADMIN" &&
                         {
                             key: path_name.user,
                             icon: <UsergroupAddOutlined style={{ fontSize: "16px" }} />,
@@ -178,7 +180,7 @@ const MainLayout = () => {
                                 icon={<UserOutlined />}
                             />
                         </Tooltip>
-                        <p>Xin chào, {userName ? userName : ''}!</p>
+                        <p>Xin chào, {user ? user.userName : ''}!</p>
                     </div>
                 </Header>
                 <Content

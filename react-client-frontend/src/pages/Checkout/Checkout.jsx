@@ -3,7 +3,7 @@ import './Checkout.css';
 import { Breadcrumb, Button, Checkbox, Col, Collapse, Form, Input, Modal, Popconfirm, Radio, Row, Select, Tag, notification } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
-import { DeleteOutlined, FormOutlined, HomeOutlined, PlusOutlined, SendOutlined, TagsOutlined, TransactionOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FormOutlined, HomeOutlined, PlusOutlined, TagsOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import CartService from '~/service/CartService';
 import formatCurrency from '~/utils/format-currency';
@@ -11,7 +11,8 @@ import AddressService from '~/service/AddressService';
 import PaymentService from '~/service/PaymentService';
 import OrderService from '~/service/OrderService';
 import path_name from '~/core/constants/routers';
-import { FaMapMarkedAlt } from 'react-icons/fa';
+import { FaMapMarkedAlt, FaIdCard } from 'react-icons/fa';
+import { HiTruck } from "react-icons/hi2";
 import VoucherService from '~/service/VoucherService';
 import FormatDate from '~/utils/format-date';
 import voucher_icon from '~/assets/images/voucher_logo.png';
@@ -63,14 +64,29 @@ function Checkout() {
         setSelectedWard('');
     };
     //--------------------------load sản phẩm trong giỏ hàng--------------------------
-    const [cartDetail, setCartDetail] = useState([]);
 
     const userString = localStorage.getItem('user2');
     const user = userString ? JSON.parse(userString) : null;
+    const userId = user ? user.id : null;
 
+    //load data cart
+    const [carts, setCarts] = useState({});
+
+    const getCartByUserId = async () => {
+
+        await CartService.getCartByUserId(userId)
+            .then(response => {
+                setCarts(response);
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    const [cartDetail, setCartDetail] = useState([]);
+
+    //load data cartDeatil
     const findImageByProductId = async () => {
 
-        await CartService.getAllCartDetailByUserId(user.id)
+        await CartService.getAllCartDetailByUserId(userId)
             .then(response => {
 
                 const cartDetailMap = response.map((item, index) => ({
@@ -78,45 +94,58 @@ function Checkout() {
                     key: index + 1,
                     totalPrice: item.quantity * item.price
                 }));
+                console.log(cartDetailMap)
                 setCartDetail(cartDetailMap);
             }).catch(error => {
                 console.error(error);
             })
     }
+    // User is not logged in, fetch cart data from local storage
+    const localCartString = localStorage.getItem('localCart');
     useEffect(() => {
-        findImageByProductId();
-    }, []);
-    //load data cart
-    const [carts, setCarts] = useState({});
+        // Check if the user is logged in
+        if (userId) {
+            // User is logged in, fetch cart data from the server
+            findImageByProductId();
+            getCartByUserId();
+        } else {
 
-    const getCartByUserId = async () => {
-
-        await CartService.getCartByUserId(user.id)
-            .then(response => {
-                setCarts(response);
-            }).catch(error => {
-                console.error(error);
-            })
-    }
-    useEffect(() => {
-        getCartByUserId();
-    }, []);
+            if (localCartString) {
+                const localCart = JSON.parse(localCartString);
+                // Assuming localCart is an array of items in the same format as your API response
+                const cartDetailMap = localCart.map((item, index) => ({
+                    ...item,
+                    key: index + 1,
+                    totalPrice: item.quantity * item.price
+                }));
+                setCartDetail(cartDetailMap);
+            }
+        }
+    }, [userId]);
     //Tổng tiền
     const calculateTotal = () => {
-        const total = calculateTotalAmount() + 30000 - calculateDiscountRate()
+        const total = calculateTotalAmount() + calculateTransportFee() - discountRate
         if (total < 0) {
             return 0
         }
         return total;
     };
+
+    // Lấy danh sách giảm giá từ local storage (nếu có)
+    const localVouchersString = localStorage.getItem('localVoucher');
+    const localVouchers = localVouchersString ? JSON.parse(localVouchersString) : [];
     // Giảm giá
-    const calculateDiscountRate = () => {
-        if (carts.voucher == null) {
+    const discountRate = localVouchers.length != 0 ? localVouchers.discountRate : 0;
+
+    // Tính phí ship
+    const calculateTransportFee = () => {
+        if (calculateTotalAmount() >= 500000) {
             return 0;
         } else {
-            return carts.voucher.deleted == false ? 0 : carts.voucher.discountRate
+            return 30000;
         }
     };
+
     // Tạm tính
     const calculateTotalAmount = () => {
         let totalAmount = 0;
@@ -145,7 +174,7 @@ function Checkout() {
     }, [address, form]);
 
     const findAddressesByUserIdAnDeletedTrue = async () => {
-        await AddressService.findAddressesByUserIdAnDeletedTrue(user.id)
+        await AddressService.findAddressesByUserIdAnDeletedTrue(userId)
             .then(response => {
                 setAddress(response);
                 console.log(response)
@@ -178,12 +207,24 @@ function Checkout() {
         try {
             const values = await form.validateFields();
             // Sử dụng giá trị từ values thay vì form.getFieldsValue()
-            values.userId = user.id;
-            values.deliveryId = 1;
-            values.voucherId = carts.voucher == null ? null : carts.voucher.id;
+            values.userId = userId;
+            values.voucherId = localVouchers == null ? null : localVouchers.id;
             values.statusName = 'Chờ xác nhận';
             values.orderTotal = calculateTotal();
             values.orderType = 'Online';
+            values.transportFee = calculateTransportFee();
+
+            if (!user) {
+                const localCart = JSON.parse(localCartString);
+                values.orderDetail = localCart.map(item => ({
+                    productDetailId: item.id,
+                    quantity: item.quantity,
+                    price: item.price,
+                }));
+                values.city = cities.find(city => city.code === Number(values.city))?.name ?? ''
+                values.district = districts.find(district => district.code === Number(values.district))?.name ?? ''
+                values.ward = wards.find(ward => ward.code === Number(values.ward))?.name ?? ''
+            }
 
             await OrderService.create(values)
                 .then((response) => {
@@ -192,6 +233,8 @@ function Checkout() {
                         message: 'Thông báo',
                         description: 'Đặt hàng thành công!',
                     });
+                    localStorage.removeItem("localCart");
+                    localStorage.removeItem("localVoucher");
                 })
                 .catch(error => {
                     notification.error({
@@ -217,9 +260,7 @@ function Checkout() {
             setSelectedMethod(method);
         }
     };
-
     const navigate = useNavigate();
-
     // const navigate = useNavigate();
     const handlePlaceOrder = () => {
 
@@ -288,138 +329,141 @@ function Checkout() {
                             <Row style={{ borderBottom: '2px solid #2123bf', marginBottom: '30px', paddingBottom: '20px' }}>
                                 <Col span={20}><h6 className="checkout__title">THÔNG TIN THANH TOÁN</h6></Col>
                                 <Col span={4}>
-                                    <Button type='dashed' onClick={() => showAddressModal(user)}>Chọn địa chỉ</Button>
+                                    {user && <Button type='dashed' onClick={() => showAddressModal(user)}>Chọn địa chỉ</Button>}
                                 </Col>
                             </Row>
                             <Row>
-                                <Col span={12} lg={12} >
-                                    <div className="checkout__input">
-                                        <Form.Item
-                                            label="Họ và tên"
-                                            name="recipientName"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: 'Vui lòng nhập họ và tên!',
-                                                },
-                                            ]}
-                                            initialValue={address?.recipientName}
+                                <Col span={12} lg={12} style={{ paddingRight: '15px' }}>
+                                    <Form.Item
+                                        label="Họ và tên"
+                                        name="recipientName"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: 'Vui lòng nhập họ và tên!',
+                                            },
+                                        ]}
+                                        initialValue={address?.recipientName}
 
-                                        >
-                                            <Input placeholder="Nhập họ và tên..." disabled={true} />
-                                        </Form.Item>
-                                    </div>
-
+                                    >
+                                        <Input
+                                            placeholder="Nhập họ và tên..."
+                                            disabled={user ? true : false}
+                                            className='checkout__input' />
+                                    </Form.Item>
                                 </Col>
-                                <Col span={12} lg={12} >
-                                    <div className="checkout__input">
-                                        <Form.Item
-                                            label="Số điện thoại"
-                                            name="phoneNumber"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: 'Vui lòng nhập số điện thoại!',
-                                                },
-                                            ]}
-                                            initialValue={address?.phoneNumber}
-                                        >
-                                            <Input placeholder="Nhập số điện thoại..." disabled={true} />
-                                        </Form.Item>
-                                    </div>
+                                <Col span={12} lg={12} style={{ paddingRight: '15px' }}>
+                                    <Form.Item
+                                        label="Số điện thoại"
+                                        name="phoneNumber"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: 'Vui lòng nhập số điện thoại!',
+                                            },
+                                        ]}
+                                        initialValue={address?.phoneNumber}
+                                    >
+                                        <Input
+                                            className='checkout__input'
+                                            placeholder="Nhập số điện thoại..."
+                                            disabled={user ? true : false} />
+                                    </Form.Item>
                                 </Col>
                             </Row>
-                            <Row>
-                                <Col span={12}>
-                                    <div className="checkout__input">
-                                        <Form.Item label="Tỉnh/Thành phố:" name="city"
-                                            rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố!' }]}
-                                            initialValue={address?.city}
-                                        >
-                                            <Select
-                                                showSearch
-                                                style={{
-                                                    width: '100%',
-                                                    height: '45px'
-                                                }}
-                                                onChange={handleCityChange}
-                                                placeholder="Chọn Tỉnh/Thành phố"
-                                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                                                filterSort={(optionA, optionB) =>
-                                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                                }
-                                                options={cities.map(city => ({ value: city.code, label: city.name }))}
-                                                disabled={true}
-                                            />
+                            <Row style={{ marginTop: '10px' }}>
+                                <Col span={12} style={{ paddingRight: '15px' }}>
 
-                                        </Form.Item>
-                                    </div>
+                                    <Form.Item label="Tỉnh/Thành phố:" name="city"
+                                        rules={[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố!' }]}
+                                        initialValue={address?.city}
+                                    >
+                                        <Select
+                                            showSearch
+                                            style={{
+                                                width: '100%',
+                                                height: '45px',
+
+                                            }}
+                                            onChange={handleCityChange}
+                                            placeholder="Chọn Tỉnh/Thành phố"
+                                            filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            options={cities.map(city => ({ value: city.code, label: city.name }))}
+                                            disabled={user ? true : false}
+                                        />
+
+                                    </Form.Item>
+
                                 </Col>
+                                <Col span={12} style={{ paddingRight: '15px' }}>
 
-                                <Col span={12}>
-                                    <div className="checkout__input">
-                                        <Form.Item label="Quận/Huyện:" name="district"
-                                            initialValue={address?.district}
-                                            rules={[{ required: true, message: 'Vui lòng chọn quận/huyện!' }]}>
-                                            <Select
-                                                showSearch
-                                                style={{
-                                                    width: '100%',
-                                                    height: '45px'
-                                                }}
-                                                onChange={handleDistrictChange}
-                                                placeholder="Chọn Quận/Huyện"
-                                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                                                filterSort={(optionA, optionB) =>
-                                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                                }
-                                                disabled={!selectedCity}
-                                                options={districts.map(district => ({ value: district.code, label: district.name }))}
-                                            />
-                                        </Form.Item>
-                                    </div>
+                                    <Form.Item label="Quận/Huyện:" name="district"
+                                        initialValue={address?.district}
+                                        rules={[{ required: true, message: 'Vui lòng chọn quận/huyện!' }]}>
+                                        <Select
+                                            showSearch
+                                            style={{
+                                                width: '100%',
+                                                height: '45px'
+                                            }}
+                                            onChange={handleDistrictChange}
+                                            placeholder="Chọn Quận/Huyện"
+                                            filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            disabled={!selectedCity}
+                                            options={districts.map(district => ({ value: district.code, label: district.name }))}
+                                        />
+                                    </Form.Item>
+
                                 </Col>
                             </Row>
 
-                            <Row>
-                                <Col span={12}>
-                                    <div className="checkout__input">
-                                        <Form.Item label="Phường/Xã:" name="ward"
-                                            initialValue={address?.ward}
-                                            rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]}>
-                                            <Select
-                                                showSearch
-                                                style={{
-                                                    width: '100%',
-                                                    height: '45px'
-                                                }}
-                                                placeholder="Chọn Phường/Xã"
-                                                onChange={value => setSelectedWard(value)}
-                                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                                                filterSort={(optionA, optionB) =>
-                                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
-                                                }
-                                                disabled={!selectedDistrict}
-                                                options={wards.map(ward => ({ value: ward.code, label: ward.name }))}
-                                            />
-                                        </Form.Item>
-                                    </div>
+                            <Row style={{ marginTop: '10px' }}>
+                                <Col span={12} style={{ paddingRight: '15px' }}>
+
+                                    <Form.Item label="Phường/Xã:" name="ward"
+                                        initialValue={address?.ward}
+                                        rules={[{ required: true, message: 'Vui lòng chọn phường/xã!' }]}>
+                                        <Select
+                                            showSearch
+                                            style={{
+                                                width: '100%',
+                                                height: '45px'
+                                            }}
+                                            placeholder="Chọn Phường/Xã"
+                                            onChange={value => setSelectedWard(value)}
+                                            filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                            }
+                                            disabled={!selectedDistrict}
+                                            options={wards.map(ward => ({ value: ward.code, label: ward.name }))}
+                                        />
+                                    </Form.Item>
+
                                 </Col>
-                                <Col span={12}>
-                                    <div className="checkout__input">
-                                        <Form.Item label="Địa chỉ cụ thể:" name="addressDetail"
-                                            initialValue={address?.addressDetail}
-                                            rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
-                                            <Input placeholder="Địa chỉ cụ thể..." disabled={true} />
-                                        </Form.Item>
-                                    </div>
+                                <Col span={12} style={{ paddingRight: '15px' }}>
+
+                                    <Form.Item label="Địa chỉ cụ thể:" name="addressDetail"
+                                        initialValue={address?.addressDetail}
+                                        rules={[{ required: true, message: 'Vui lòng nhập địa chỉ cụ thể!' }]}>
+                                        <Input
+                                            placeholder="Địa chỉ cụ thể..."
+                                            disabled={user ? true : false}
+                                            className='checkout__input' />
+                                    </Form.Item>
                                 </Col>
                             </Row>
-                            <div className="checkout__input">
-                                <Form.Item label="Ghi chú:" name="note" >
-                                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
+                            <Row style={{ paddingRight: '10px' }}>
+                                <Form.Item label="Ghi chú:" name="note" style={{ width: '100%' }}>
+                                    <TextArea style={{ width: '100%' }} rows={4} placeholder="Nhập ghi chú..." />
                                 </Form.Item>
-                            </div>
+                            </Row>
                             <Row style={{ padding: '15px 0' }}>
                                 <Col span={12} style={{ borderRight: '1px dashed #cdcdcd' }}>
                                     <h6 style={{ marginLeft: '10px', fontWeight: '600' }}><TagsOutlined />Giảm giá</h6>
@@ -433,8 +477,9 @@ function Checkout() {
 
                                     </Row>
                                 </Col>
+
                                 <Col span={12}>
-                                    <h6 style={{ marginLeft: '10px', fontWeight: '600' }}>Phương thức thanh toán</h6>
+                                    <h6 style={{ marginLeft: '10px', fontWeight: '600' }}>Phương thức thanh toán <FaIdCard /></h6>
                                     <Row>
                                         <Col span={12}>
                                             <div
@@ -498,6 +543,9 @@ function Checkout() {
                                 ))}
                                 <div className="checkout__total__all">
                                     <Row>
+                                        <span style={{ color: '#2123bf', margin: '10px 0' }}> Miễn phí vận chuyển cho đơn hàng trên 500k </span> <HiTruck style={{ fontSize: '20px', color: 'orange', margin: '10px 5px' }} />
+                                    </Row>
+                                    <Row>
                                         <Col span={10}>
                                             <p>Tạm tính:</p>
                                         </Col>
@@ -510,7 +558,7 @@ function Checkout() {
                                             <p>Giảm giá:</p>
                                         </Col>
                                         <Col span={14} >
-                                            <span style={{ float: 'right' }}>{formatCurrency(-calculateDiscountRate())}</span>
+                                            <span style={{ float: 'right' }}>{formatCurrency(-discountRate)}</span>
                                         </Col>
                                     </Row>
                                     <Row>
@@ -518,7 +566,7 @@ function Checkout() {
                                             <p>Phí giao hàng:</p>
                                         </Col>
                                         <Col span={14} >
-                                            <span style={{ float: 'right' }}>{formatCurrency(30000)}</span>
+                                            <span style={{ float: 'right' }}>{formatCurrency(calculateTransportFee())}</span>
                                         </Col>
                                     </Row>
                                     <Row >
@@ -551,8 +599,8 @@ function Checkout() {
             {voucherModal && <ModalVoucher
                 hideModal={hideVoucherModal}
                 isModal={voucherModal}
-                carts={carts}
-                getCartByUserId={getCartByUserId}
+                voucher={localVouchers}
+            // getCartByUserId={getCartByUserId}
             />}
         </section >
     );
@@ -879,7 +927,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                         </Col>
                         <Col span={2} />
                         <Col span={11}>
-                            <Form.Item label="Địa chỉ cụ thể:" name="addressDetail" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
+                            <Form.Item label="Địa chỉ cụ thể:" name="addressDetail" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ cụ thể!' }]}>
                                 <Input placeholder="Địa chỉ cụ thể..." />
                             </Form.Item>
                         </Col>
@@ -893,16 +941,16 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
         </>
     );
 };
-const ModalVoucher = ({ hideModal, isModal, carts, getCartByUserId }) => {
+
+const ModalVoucher = ({ hideModal, isModal, voucher }) => {
 
     const [vouchers, setVouchers] = useState([]);
     const [selectedVoucher, setSelectedVoucher] = useState(null); // Thêm state mới
-    const [isRadioSelected, setIsRadioSelected] = useState(false);
     const fetchVoucher = async () => {
         await VoucherService.findAllVoucherByDeletedTrue()
             .then(response => {
                 setVouchers(response.data);
-                console.log(response.data)
+
             }).catch(error => {
                 console.error(error);
             })
@@ -914,36 +962,28 @@ const ModalVoucher = ({ hideModal, isModal, carts, getCartByUserId }) => {
 
     useEffect(() => {
         // Kiểm tra xem giỏ hàng đã có voucher hay không
-        const cartVoucherId = carts.voucher ? carts.voucher.id : null;
+        const cartVoucherId = voucher ? voucher.id : null;
         setSelectedVoucher(cartVoucherId);
-        setIsRadioSelected(!!cartVoucherId);
-    }, [carts]);
+    }, [voucher]);
 
     const handleRadioChange = e => {
         console.log('Radio changed!');
         const voucherId = e.target.value;
-
-        // Nếu radio chưa được chọn, thì set selectedVoucher
-        // Nếu radio đã được chọn, thì set selectedVoucher thành null để hủy chọn
         setSelectedVoucher(selectedVoucher === voucherId ? null : voucherId);
-        setIsRadioSelected(!selectedVoucher); // Đảo ngược trạng thái isRadioSelected
     };
 
     // Hàm xử lý khi ấn "OK" trên Modal
     const handleOk = async () => {
         try {
-            if (selectedVoucher == null && carts.voucher == null) {
+            if (selectedVoucher == null) {
                 hideModal();
             } else {
-                const data = { cartId: carts.id, voucherId: selectedVoucher };
-                await CartService.updateCartVoucher(data);
-
-                // Gọi API `getCartByUserId` sau khi cập nhật voucher
-                await getCartByUserId();
-
-                // Đóng modal
-                hideModal();
+                const selectedVoucherData = vouchers.find(voucher => voucher.id === selectedVoucher);
+                localStorage.setItem('localVoucher', JSON.stringify(selectedVoucherData));
             }
+            // Đóng modal
+            hideModal();
+
         } catch (error) {
             console.error("Error updating voucher:", error);
         }

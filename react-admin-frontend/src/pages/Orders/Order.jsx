@@ -25,10 +25,16 @@ function Order() {
             render: (text) => <a>HD{text}</a>,
         },
         {
+            title: 'Khách hàng',
+            dataIndex: 'customerName',
+            key: 'customerName',
+            width: "10%",
+        },
+        {
             title: 'Loại đơn hàng',
             dataIndex: 'orderType',
             key: 'orderType',
-            width: "10%",
+            width: "15%",
             render: (text) => (
                 text === "InStore" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
                     : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>
@@ -87,7 +93,7 @@ function Order() {
             width: "10%",
             render: (text) => (
                 <span style={{ color: 'red' }}>
-                    {isNaN(parseFloat(text)) ? '' : parseFloat(text).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                    {formatCurrency(text)}
                 </span>
             ),
         },
@@ -149,14 +155,14 @@ function Order() {
     const tabContent = () => (
 
         <Table
-            dataSource={orders.map((order) => ({
+            dataSource={orders.map((order, index) => ({
                 ...order,
-                key: order.id,
+                key: index + 1,
                 createdAt: FormatDate(order.createdAt),
                 voucher: order.voucher ? order.voucher.discountRate : 0,
                 customerName: order.user ? order.user.usersName : "Khách lẻ",
                 orderStatusName: order.orderStatus ? order.orderStatus.statusName : "",
-                orderTypeName: order.orderType ? order.orderType.orderTypeName : ""
+                // orderTypeName: order.orderType ? order.orderType.orderTypeName : ""
 
             }))}
             onChange={handleTableChange}

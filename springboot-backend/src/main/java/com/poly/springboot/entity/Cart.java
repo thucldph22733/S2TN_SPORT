@@ -25,10 +25,6 @@ public class Cart extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Phương thức để lấy danh sách chi tiết giỏ hàng
-    @ManyToOne
-    @JoinColumn(name = "voucher_id")
-    private Voucher voucher;
 
     @JsonIgnore
     @OneToMany(mappedBy = "carts", cascade = CascadeType.ALL, orphanRemoval = true)

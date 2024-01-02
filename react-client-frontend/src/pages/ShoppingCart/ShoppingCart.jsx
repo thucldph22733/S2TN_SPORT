@@ -20,10 +20,23 @@ const ShoppingCart = () => {
 
     const userString = localStorage.getItem('user2');
     const user = userString ? JSON.parse(userString) : null;
+    const userId = user ? user.id : null;
+    //load data cart
+    const [carts, setCarts] = useState({});
+
+    const getCartByUserId = async () => {
+
+        await CartService.getCartByUserId(userId)
+            .then(response => {
+                setCarts(response);
+            }).catch(error => {
+                console.error(error);
+            })
+    }
     //load data cartDeatil
     const findImageByProductId = async () => {
 
-        await CartService.getAllCartDetailByUserId(user.id)
+        await CartService.getAllCartDetailByUserId(userId)
             .then(response => {
 
                 const cartDetailMap = response.map((item, index) => ({
@@ -31,38 +44,62 @@ const ShoppingCart = () => {
                     key: index + 1,
                     totalPrice: item.quantity * item.price
                 }));
+                console.log(cartDetailMap)
                 setCartDetail(cartDetailMap);
             }).catch(error => {
                 console.error(error);
             })
     }
     useEffect(() => {
-        findImageByProductId();
-    }, []);
-    //load data cart
-    const [carts, setCarts] = useState({});
+        // Check if the user is logged in
+        if (userId) {
+            // User is logged in, fetch cart data from the server
+            findImageByProductId();
+            getCartByUserId();
+        } else {
+            // User is not logged in, fetch cart data from local storage
+            const localCartString = localStorage.getItem('localCart');
+            if (localCartString) {
+                const localCart = JSON.parse(localCartString);
+                // Assuming localCart is an array of items in the same format as your API response
+                const cartDetailMap = localCart.map((item, index) => ({
+                    ...item,
+                    key: index + 1,
+                    totalPrice: item.quantity * item.price
 
-    const getCartByUserId = async () => {
+                }));
+                setCartDetail(cartDetailMap);
+            }
+        }
+    }, [userId]);
 
-        await CartService.getCartByUserId(user.id)
-            .then(response => {
-                setCarts(response);
-            }).catch(error => {
-                console.error(error);
-            })
-    }
-    useEffect(() => {
-        getCartByUserId();
-    }, []);
     //-------------------------------
     const handleDelete = async (id) => {
-        await CartService.delete(id).then(() => {
-            message.success('Xóa sản phẩm khỏi giỏ hàng thành công!');
-            findImageByProductId();
-        }).catch(() => {
-            message.error('Lỗi xóa sản phẩm khỏi giỏ hàng!');
-        })
+        if (user) {
+            await CartService.delete(id).then(() => {
+                message.success('Xóa sản phẩm khỏi giỏ hàng thành công!');
+                findImageByProductId(); // Reload data from the server cart
+            }).catch(() => {
+                message.error('Lỗi xóa sản phẩm khỏi giỏ hàng!');
+            });
+        } else {
+            const existingCart = JSON.parse(localStorage.getItem('localCart')) || [];
 
+            // Find the index of the item with the specified id in the local cart
+            const index = existingCart.findIndex(item => item.id === id);
+
+            if (index !== -1) {
+                // Remove the item from the local cart
+                existingCart.splice(index, 1);
+
+                // Update the local storage
+                localStorage.setItem('localCart', JSON.stringify(existingCart));
+                setCartDetail(existingCart);
+                message.success('Xóa sản phẩm khỏi giỏ hàng thành công!');
+            } else {
+                message.error('Lỗi xóa sản phẩm khỏi giỏ hàng!');
+            }
+        }
     };
 
     // Hàm thực hiện cập nhật số lượng sản phẩm trong giỏ hàng
@@ -92,8 +129,20 @@ const ShoppingCart = () => {
         try {
             // Tạo một mảng promises cho các hoạt động cập nhật
             const updatePromises = cartDetail.map(async item => {
-                // Gọi API cập nhật số lượng cho từng sản phẩm trong giỏ hàng
-                await CartService.update(item.quantity, item.id);
+                if (user) {
+                    // If user is logged in, call the API to update cart details
+                    await CartService.update(item.quantity, item.id);
+                } else {
+                    // If user is not logged in, update the local cart
+                    const existingCart = JSON.parse(localStorage.getItem('localCart')) || [];
+                    const updatedCart = existingCart.map(cartItem => {
+                        if (cartItem.id === item.id) {
+                            return { ...cartItem, quantity: item.quantity };
+                        }
+                        return cartItem;
+                    });
+                    localStorage.setItem('localCart', JSON.stringify(updatedCart));
+                }
             });
 
             // Chờ cho tất cả promises được giải quyết
@@ -108,7 +157,7 @@ const ShoppingCart = () => {
         } finally {
             // Vô hiệu hóa nút cập nhật sau khi hoàn thành
             setIsUpdateDisabled(true);
-        };
+        }
     };
     //-------------------checkout----------------------------------
     const navigate = useNavigate();
@@ -122,8 +171,20 @@ const ShoppingCart = () => {
             // Nếu nút "Cập nhật" không bị vô hiệu hóa, thực hiện cập nhật giỏ hàng trước khi chuyển hướng
             try {
                 const updatePromises = cartDetail.map(async item => {
-                    // Gọi API cập nhật số lượng cho từng sản phẩm trong giỏ hàng
-                    await CartDetailService.update(item.quantity, item.id);
+                    if (user) {
+                        // If user is logged in, call the API to update cart details
+                        await CartService.update(item.quantity, item.id);
+                    } else {
+                        // If user is not logged in, update the local cart
+                        const existingCart = JSON.parse(localStorage.getItem('localCart')) || [];
+                        const updatedCart = existingCart.map(cartItem => {
+                            if (cartItem.id === item.id) {
+                                return { ...cartItem, quantity: item.quantity };
+                            }
+                            return cartItem;
+                        });
+                        localStorage.setItem('localCart', JSON.stringify(updatedCart));
+                    }
                 });
                 // Chờ cho tất cả promises được giải quyết
                 await Promise.all(updatePromises);
@@ -213,21 +274,17 @@ const ShoppingCart = () => {
     //---------------- Các hàm tính toán  -----------------------------
     //Tổng tiền
     const calculateTotal = () => {
-        const total = calculateTotalAmount() - calculateDiscountRate()
-        if (total < 0) {
-            return 0
-        }
+        const totalAmount = calculateTotalAmount();
+        const discountedTotal = totalAmount - discountRate;
+        const total = discountedTotal < 0 ? 0 : discountedTotal;
         return total;
-    };
-    // Giảm giá
-    const calculateDiscountRate = () => {
-        if (carts.voucher == null) {
-            return 0;
-        } else {
+    }
+    // Lấy danh sách giảm giá từ local storage (nếu có)
+    const localVouchersString = localStorage.getItem('localVoucher');
 
-            return carts.voucher.deleted == false ? 0 : carts.voucher.discountRate
-        }
-    };
+    const localVouchers = localVouchersString ? JSON.parse(localVouchersString) : [];
+    // Giảm giá
+    const discountRate = localVouchers.length != 0 ? localVouchers.discountRate : 0;
     // Tạm tính
     const calculateTotalAmount = () => {
         let totalAmount = 0;
@@ -236,7 +293,6 @@ const ShoppingCart = () => {
         });
         return totalAmount;
     };
-
 
     return (
         <>
@@ -318,7 +374,7 @@ const ShoppingCart = () => {
                                             <span >Giảm giá:</span>
                                         </Col>
                                         <Col span={12}>
-                                            <span style={{ float: 'right' }}>{formatCurrency(-calculateDiscountRate())}</span>
+                                            <span style={{ float: 'right' }}>{formatCurrency(-discountRate)}</span>
                                         </Col>
                                     </Row>
 
@@ -340,8 +396,9 @@ const ShoppingCart = () => {
                     {voucherModal && <ModalVoucher
                         hideModal={hideVoucherModal}
                         isModal={voucherModal}
-                        carts={carts}
-                        getCartByUserId={getCartByUserId}
+                        voucher={localVouchers}
+                    // getCartByUserId={getCartByUserId}
+                    // user={user}
                     />}
                 </section>
             )}
@@ -349,16 +406,15 @@ const ShoppingCart = () => {
     );
 };
 
-const ModalVoucher = ({ hideModal, isModal, carts, getCartByUserId }) => {
+const ModalVoucher = ({ hideModal, isModal, voucher }) => {
 
     const [vouchers, setVouchers] = useState([]);
     const [selectedVoucher, setSelectedVoucher] = useState(null); // Thêm state mới
-    const [isRadioSelected, setIsRadioSelected] = useState(false);
     const fetchVoucher = async () => {
         await VoucherService.findAllVoucherByDeletedTrue()
             .then(response => {
                 setVouchers(response.data);
-                console.log(response.data)
+
             }).catch(error => {
                 console.error(error);
             })
@@ -368,38 +424,31 @@ const ModalVoucher = ({ hideModal, isModal, carts, getCartByUserId }) => {
         fetchVoucher();
     }, [])
 
+
     useEffect(() => {
         // Kiểm tra xem giỏ hàng đã có voucher hay không
-        const cartVoucherId = carts.voucher ? carts.voucher.id : null;
+        const cartVoucherId = voucher ? voucher.id : null;
         setSelectedVoucher(cartVoucherId);
-        setIsRadioSelected(!!cartVoucherId);
-    }, [carts]);
+    }, [voucher]);
 
     const handleRadioChange = e => {
         console.log('Radio changed!');
         const voucherId = e.target.value;
-
-        // Nếu radio chưa được chọn, thì set selectedVoucher
-        // Nếu radio đã được chọn, thì set selectedVoucher thành null để hủy chọn
         setSelectedVoucher(selectedVoucher === voucherId ? null : voucherId);
-        setIsRadioSelected(!selectedVoucher); // Đảo ngược trạng thái isRadioSelected
     };
 
     // Hàm xử lý khi ấn "OK" trên Modal
     const handleOk = async () => {
         try {
-            if (selectedVoucher == null && carts.voucher == null) {
+            if (selectedVoucher == null) {
                 hideModal();
             } else {
-                const data = { cartId: carts.id, voucherId: selectedVoucher };
-                await CartService.updateCartVoucher(data);
-
-                // Gọi API `getCartByUserId` sau khi cập nhật voucher
-                await getCartByUserId();
-
-                // Đóng modal
-                hideModal();
+                const selectedVoucherData = vouchers.find(voucher => voucher.id === selectedVoucher);
+                localStorage.setItem('localVoucher', JSON.stringify(selectedVoucherData));
             }
+            // Đóng modal
+            hideModal();
+
         } catch (error) {
             console.error("Error updating voucher:", error);
         }
@@ -416,10 +465,10 @@ const ModalVoucher = ({ hideModal, isModal, carts, getCartByUserId }) => {
             >
                 <Row style={{ marginTop: '20px', padding: '15px', backgroundColor: '#ece9e9' }}>
                     <Col span={18}>
-                        <Input placeholder="Mã giảm giá"></Input>
+                        <Input placeholder="Mã giảm giá" onChange={(e) => setSelectedVoucher(e.target.value ? null : e.target.value)} />
                     </Col>
                     <Col span={6}>
-                        <Button style={{ float: 'right' }} type='primary'>Áp dụng</Button>
+                        <Button style={{ float: 'right' }} type='primary' onClick={handleOk}>Áp dụng</Button>
                     </Col>
                 </Row>
                 <h6 style={{ marginTop: '20px' }}>Chọn 1 mã giảm giá</h6>

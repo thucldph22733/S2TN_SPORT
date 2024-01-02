@@ -14,7 +14,9 @@ function Header() {
     const navigate = useNavigate();
     //Đăng xuất
     const handleLogout = () => {
-        localStorage.clear();
+        localStorage.removeItem("access_token2");
+        localStorage.removeItem("refresh_token2");
+        localStorage.removeItem("user2");
         navigate('/')
     }
     //Lấy user từ local

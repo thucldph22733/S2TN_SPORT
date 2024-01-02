@@ -406,7 +406,7 @@ export default function OrderDetail() {
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Phí vận chuyển">
-                        {formatCurrency(30000)}
+                        {formatCurrency(orders.transportFee)}
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Phương thức thanh toán" span={2}>

@@ -1,5 +1,6 @@
 package com.poly.springboot.service.impl;
 
+import com.poly.springboot.dto.requestDto.OrderDetailRequestDto;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.requestDto.OrderCancelRequestDto;
 import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
@@ -223,25 +224,24 @@ public class OrderServiceImpl implements OrderService {
 
         User user = (orderRequestDto.getUserId() != null) ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
 
-        // Kiểm tra và tìm đối tượng Delivery
-        Delivery delivery = (orderRequestDto.getDeliveryId() != null) ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
-
         // Kiểm tra và tìm đối tượng voucher
         Voucher voucher = (orderRequestDto.getVoucherId() != null) ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
 
         // Tìm đối tượng OrderStatus (set luôn là null nếu không tìm thấy)
         OrderStatus orderStatus = (orderRequestDto.getStatusName() != null) ? orderStatusRepository.findByStatusName(orderRequestDto.getStatusName()).orElse(null) : null;
-// Tạo đối tượng Order và set các giá trị đã tìm được
+
+        // Tạo đối tượng Order và set các giá trị đã tìm được
         Order order = new Order();
         order.setUser(user);
-        order.setDelivery(delivery);
-//        order.setPayment(payment);
+
         order.setOrderStatus(orderStatus);
         order.setVoucher(voucher);
         order.setOrderTotal(orderRequestDto.getOrderTotal());
         order.setNote(orderRequestDto.getNote());
         order.setDeleted(true);
         order.setOrderType(orderRequestDto.getOrderType());
+        order.setTransportFee(orderRequestDto.getTransportFee());
+
         //dịa chỉ giao
         order.setRecipientName(orderRequestDto.getRecipientName());
         order.setPhoneNumber(orderRequestDto.getPhoneNumber());
@@ -253,30 +253,42 @@ public class OrderServiceImpl implements OrderService {
         // Lưu vào cơ sở dữ liệu
         orderRepository.save(order);
 
-        // Chuyển đổi từ giỏ hàng chi tiết sang hóa đơn chi tiết và lưu lại
-        // Lấy giỏ hàng của người dùng
-        Optional<Cart> optionalCart = cartRepository.findByUserId(orderRequestDto.getUserId());
-
-        if (optionalCart.isPresent()) {
-            Cart cart = optionalCart.get();
-
-            // Lưu danh sách chi tiết đơn hàng từ giỏ hàng
-            List<CartDetail> cartDetails = cart.getCartDetails();
-            for (CartDetail cartDetail : cartDetails) {
+        // Đối với trường hợp người dùng không đăng nhập, sử dụng dữ liệu từ orderRequestDto
+        if (user == null) {
+            List<OrderDetailRequestDto> orderDetails = orderRequestDto.getOrderDetail();
+            for (OrderDetailRequestDto detailDto : orderDetails) {
                 OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setProductDetail(cartDetail.getProductDetail());
+                ProductDetail productDetail = productDetailRepository.findById(detailDto.getProductDetailId()).orElse(null);
+                orderDetail.setProductDetail(productDetail);
                 orderDetail.setOrder(order);
-                orderDetail.setQuantity(cartDetail.getQuantity());
-                orderDetail.setPrice(cartDetail.getProductDetail().getPrice()); // Bạn có thể sửa giá cả theo logic của bạn
-                orderDetail.setNote(""); // Bạn có thể thêm ghi chú nếu cần
+                orderDetail.setQuantity(detailDto.getQuantity());
+                orderDetail.setPrice(detailDto.getPrice());
 
                 // Lưu hóa đơn chi tiết
                 orderDetailRepository.save(orderDetail);
+            }
+        } else {
+            // Lấy giỏ hàng của người dùng
+            Optional<Cart> optionalCart = cartRepository.findByUserId(orderRequestDto.getUserId());
+
+            if (optionalCart.isPresent()) {
+                Cart cart = optionalCart.get();
+
+                // Lưu danh sách chi tiết đơn hàng từ giỏ hàng
+                List<CartDetail> cartDetails = cart.getCartDetails();
+                for (CartDetail cartDetail : cartDetails) {
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setProductDetail(cartDetail.getProductDetail());
+                    orderDetail.setOrder(order);
+                    orderDetail.setQuantity(cartDetail.getQuantity());
+                    orderDetail.setPrice(cartDetail.getProductDetail().getPrice()); // Bạn có thể sửa giá cả theo logic của bạn
+
+                    // Lưu hóa đơn chi tiết
+                    orderDetailRepository.save(orderDetail);
+                }
                 // Xóa giỏ hàng sau khi đã tạo đơn hàng thành công
                 cartRepository.delete(cart);
             }
-            // Xóa giỏ hàng sau khi đã tạo đơn hàng thành công
-
         }
 
 
@@ -596,7 +608,7 @@ public class OrderServiceImpl implements OrderService {
             order.setOrderStatus(orderStatus);
             order.setVoucher(null);
             order.setOrderTotal((double) 0);
-            order.setOrderTotalInitial((double) 0);
+//            order.setOrderTotalInitial((double) 0);
             order.setNote("Đơn hàng đã hủy");
             // Lưu đơn hàng để cập nhật trạng thái
             orderRepository.save(order);

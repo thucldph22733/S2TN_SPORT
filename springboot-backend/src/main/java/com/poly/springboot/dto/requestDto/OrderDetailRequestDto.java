@@ -14,13 +14,10 @@ public class OrderDetailRequestDto {
 
     private Long productDetailId;
 
-    private Long orderId;
+//    private Long orderId;
 
     private Integer quantity;
 
     private Double price;
 
-    private Integer status;
-
-    private String note;
 }

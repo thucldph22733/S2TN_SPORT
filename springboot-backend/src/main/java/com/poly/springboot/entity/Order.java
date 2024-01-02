@@ -62,9 +62,8 @@ public class Order extends BaseEntity {
     @Column(name = "orderTotal")
     private Double orderTotal; // tổng tiền
 
-    @Column(name = "orderTotal_initial")
-    private Double orderTotalInitial; //tổng tiền ban đầu
-
+    @Column(name = "transport_fee")
+    private Integer transportFee; //Phí giao hàng
 
 
 }

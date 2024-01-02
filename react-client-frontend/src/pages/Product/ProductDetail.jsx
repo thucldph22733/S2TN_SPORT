@@ -59,10 +59,10 @@ const dataSource = [
     },
 ];
 
-
 function ProductDetail() {
 
     let { id } = useParams();
+
     const [open, setOpen] = useState(false);
 
     const showModal = () => {
@@ -71,7 +71,7 @@ function ProductDetail() {
     const handleCancel = () => {
         setOpen(false);
     };
-    //----------------Màu sắc----------------------------------
+    //----------------load Màu sắc----------------------------------
     const [colors, setColors] = useState([]);
 
     const findColorNamesByProductId = async () => {
@@ -88,7 +88,7 @@ function ProductDetail() {
         findColorNamesByProductId();
     }, []);
 
-    //------------------Kích thước------------------------------------
+    //----------------Load--Kích thước------------------------------------
 
     const [sizes, setSizes] = useState([]);
 
@@ -108,7 +108,7 @@ function ProductDetail() {
         findSizeNamesByProductId();
     }, []);
 
-    //---------------------sản phẩm -----------------------------------
+    //---------------------Load sản phẩm -----------------------------------
     const [productDetail, setProductDetail] = useState([]);
     const fetchProductDetail = async () => {
         await ProductDetailService.getProductDetailsByProductId(id)
@@ -125,14 +125,15 @@ function ProductDetail() {
         fetchProductDetail();
     }, []);
 
-    //---------------------ảnh------------------------------
+    //--------------------Load-ảnh------------------------------
     const [images, setImages] = useState([]);
     const findImageByProductId = async () => {
         await ImageService.findImageByProductId(id)
             .then(response => {
 
                 setImages(response);
-                console.log(response)
+                // setCart(item => ({ ...item, productImage: response.imageLink }));
+
             }).catch(error => {
                 console.error(error);
             })
@@ -150,7 +151,7 @@ function ProductDetail() {
     const [quantity, setQuantity] = useState(productDetail.quantityTotal);
     const [price, setSetPrice] = useState(productDetail.minPrice);
 
-
+    const [productId, setProductId] = useState(null);
     const findQuantityAndPriceUpdateByProductDetail = async (colorId, sizeId) => {
         await ProductDetailService.findQuantityAndPriceUpdateByProductDetail(id, colorId, sizeId)
             .then(response => {
@@ -158,6 +159,7 @@ function ProductDetail() {
                 setQuantity(response.quantity);
                 setSetPrice(response.price)
                 setCartDetail(prevCartDetail => ({ ...prevCartDetail, productDetailId: response.id }));
+                setProductId(response.id)
             }).catch(error => {
                 console.error(error);
             })
@@ -202,29 +204,61 @@ function ProductDetail() {
         }
     };
     //-------------------------Thêm sản phẩm vào giỏ hàng-------------------------------
+    //Them khi có đăng nhập
     const userString = localStorage.getItem('user2');
     const user = userString ? JSON.parse(userString) : null;
-
+    const userId = user ? user.id : null;
     const [cartDetail, setCartDetail] = useState({
-        userId: user.id,
+        userId: userId,
         productDetailId: null,
         quantity: 1,
     })
+    //Them khi khôg đăng nhập
+    const addToLocalStorageCart = () => {
+        const existingCart = JSON.parse(localStorage.getItem('localCart')) || [];
+
+        const existingCartItem = existingCart.find(item => item.id === productId);
+
+        if (existingCartItem) {
+            // Product already exists in the local cart, update the quantity
+            existingCartItem.quantity += cartDetail.quantity;
+        } else {
+            // Product doesn't exist in the local cart, add a new item
+            const newCartItem = {
+                id: productId,
+                productImage: images[0]?.imageLink || '',
+                productName: productDetail.productName,
+                colorName: selectedColor?.colorName || '',
+                sizeName: selectedSize?.sizeName || '',
+                quantity: cartDetail.quantity,
+                price: price,
+                totalPrice: price * cartDetail.quantity,
+            };
+
+            existingCart.push(newCartItem);
+        }
+
+        localStorage.setItem('localCart', JSON.stringify(existingCart));
+
+        message.success('Sản phẩm đã được thêm vào giỏ hàng!');
+    };
 
     const handleAddCart = async () => {
         if (selectedColor === null || selectedSize === null) {
             setError("Vui lòng chọn phân loại hàng!!!")
             return
-        } else if (cartDetail.quantity < 0) {
-            setError("Vui lòng chọn phân loại hàng!!!")
         }
-        CartService.create(cartDetail).then(() => {
+        if (user != null) {
+            CartService.create(cartDetail).then(() => {
 
-            message.success('Sản phẩm đã được thêm vào giỏ hàng!');
-            // navigate("/")
-        }).catch(err => {
-            message.error('Lỗi thêm sản phẩm vào giỏ hàng!');
-        });
+                message.success('Sản phẩm đã được thêm vào giỏ hàng!');
+
+            }).catch(err => {
+                message.error('Lỗi thêm sản phẩm vào giỏ hàng!');
+            });
+        } else {
+            addToLocalStorageCart();
+        }
 
     };
 
@@ -355,6 +389,7 @@ function ProductDetail() {
 
                                         // Nếu giá trị mới là số, thì cập nhật state
                                         setCartDetail(prevCartDetail => ({ ...prevCartDetail, quantity: value }));
+                                        // setCart(item => ({ ...item, quantity: value }));
                                     }}
                                     min={1}
                                     max={quantity}

@@ -1,7 +1,6 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.CartRequestDto;
-import com.poly.springboot.dto.requestDto.UpdateCartVoucherRequestDto;
 import com.poly.springboot.dto.responseDto.CartDetailResponseDto;
 import com.poly.springboot.entity.*;
 import com.poly.springboot.exception.ResourceNotFoundException;
@@ -101,23 +100,6 @@ public class CartServiceImpl implements CartService {
 
         cartDetailRepository.save(cartDetail);
 
-        return true;
-    }
-
-    @Override
-    public Boolean updateCart(UpdateCartVoucherRequestDto requestDto) {
-        Cart cart = cartRepository.findById(requestDto.getCartId()).orElse(null);
-
-        if (requestDto.getVoucherId() == null) {
-            // Nếu voucherId là null, đặt giá trị voucher trong giỏ hàng thành null
-            cart.setVoucher(null);
-        } else {
-            // Nếu voucherId không phải null, thì lấy thông tin voucher từ repository
-            Voucher voucher = voucherRepository.findById(requestDto.getVoucherId()).orElse(null);
-            cart.setVoucher(voucher);
-        }
-
-        cartRepository.save(cart);
         return true;
     }
 

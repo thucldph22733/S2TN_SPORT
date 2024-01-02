@@ -71,61 +71,61 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public Boolean createOrderDetail(OrderDetailRequestDto orderDetailRequestDto) throws Exception {
         // Tìm ProductDetail theo ID
-        ProductDetail productDetail = productDetailRepository.findById(orderDetailRequestDto.getProductDetailId()).orElse(null);
-
-        // Tìm Order theo ID
-        Order order = orderRepository.findById(orderDetailRequestDto.getOrderId()).orElse(null);
-
-        if (productDetail != null && order != null) {
-            // Kiểm tra xem ProductDetail đã tồn tại trong Order chưa
-            Optional<OrderDetail> existingOrderDetail = orderDetailRepository.findByOrderIdAndProductDetailId(order.getId(), productDetail.getId());
-
-            if (existingOrderDetail.isPresent()) {
-                // Nếu ProductDetail đã tồn tại trong Order, cộng thêm số lượng
-                OrderDetail orderDetail = existingOrderDetail.get();
-                int requestedQuantity = orderDetailRequestDto.getQuantity();
-
-                // Kiểm tra xem có đủ số lượng để cộng không
-                if (productDetail.getQuantity() >= requestedQuantity) {
-                    // Cộng thêm số lượng vào OrderDetail
-                    orderDetail.setQuantity(orderDetail.getQuantity() + requestedQuantity);
-
-                    // Tính tổng giá trị (số lượng * giá) và cập nhật vào OrderDetail
-                    orderDetail.setPrice(productDetail.getPrice());
-                    orderDetail.setNote(orderDetailRequestDto.getNote());
-
-                    // Lưu cập nhật OrderDetail
-                    orderDetailRepository.save(orderDetail);
-                } else {
-                    // Xử lý trường hợp không đủ số lượng
-                    throw new RuntimeException("Số lượng sản phẩm không đủ");
-                }
-            } else {
-                // Nếu ProductDetail chưa tồn tại trong Order, tạo mới OrderDetail
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setOrder(order);
-                orderDetail.setProductDetail(productDetail);
-                orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
-
-                // Tính tổng giá trị (số lượng * giá) và set vào OrderDetail
-                orderDetail.setPrice(productDetail.getPrice());
-
-                orderDetail.setNote(orderDetailRequestDto.getNote());
-
-                // Lưu OrderDetail
-                orderDetailRepository.save(orderDetail);
-            }
-
-            // Cập nhật lại tổng giá trị của hóa đơn sau mỗi lần thêm OrderDetail
-            double orderTotal = orderDetailRepository.calculateOrderTotal(order.getId());
-            order.setOrderTotalInitial(orderTotal);
-            orderRepository.save(order);
+//        ProductDetail productDetail = productDetailRepository.findById(orderDetailRequestDto.getProductDetailId()).orElse(null);
+//
+//        // Tìm Order theo ID
+////        Order order = orderRepository.findById(orderDetailRequestDto.getOrderId()).orElse(null);
+//
+//        if (productDetail != null && order != null) {
+//            // Kiểm tra xem ProductDetail đã tồn tại trong Order chưa
+//            Optional<OrderDetail> existingOrderDetail = orderDetailRepository.findByOrderIdAndProductDetailId(order.getId(), productDetail.getId());
+//
+//            if (existingOrderDetail.isPresent()) {
+//                // Nếu ProductDetail đã tồn tại trong Order, cộng thêm số lượng
+//                OrderDetail orderDetail = existingOrderDetail.get();
+//                int requestedQuantity = orderDetailRequestDto.getQuantity();
+//
+//                // Kiểm tra xem có đủ số lượng để cộng không
+//                if (productDetail.getQuantity() >= requestedQuantity) {
+//                    // Cộng thêm số lượng vào OrderDetail
+//                    orderDetail.setQuantity(orderDetail.getQuantity() + requestedQuantity);
+//
+//                    // Tính tổng giá trị (số lượng * giá) và cập nhật vào OrderDetail
+//                    orderDetail.setPrice(productDetail.getPrice());
+////                    orderDetail.setNote(orderDetailRequestDto.getNote());
+//
+//                    // Lưu cập nhật OrderDetail
+//                    orderDetailRepository.save(orderDetail);
+//                } else {
+//                    // Xử lý trường hợp không đủ số lượng
+//                    throw new RuntimeException("Số lượng sản phẩm không đủ");
+//                }
+//            } else {
+//                // Nếu ProductDetail chưa tồn tại trong Order, tạo mới OrderDetail
+//                OrderDetail orderDetail = new OrderDetail();
+//                orderDetail.setOrder(order);
+//                orderDetail.setProductDetail(productDetail);
+//                orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
+//
+//                // Tính tổng giá trị (số lượng * giá) và set vào OrderDetail
+//                orderDetail.setPrice(productDetail.getPrice());
+//
+////                orderDetail.setNote(orderDetailRequestDto.getNote());
+//
+//                // Lưu OrderDetail
+//                orderDetailRepository.save(orderDetail);
+//            }
+//
+//            // Cập nhật lại tổng giá trị của hóa đơn sau mỗi lần thêm OrderDetail
+//            double orderTotal = orderDetailRepository.calculateOrderTotal(order.getId());
+////            order.setOrderTotalInitial(orderTotal);
+//            orderRepository.save(order);
 
             return true;
-        } else {
-            // Xử lý trường hợp không tìm thấy ProductDetail hoặc Order
-            throw new Exception("Không tìm thấy ProductDetail hoặc Order");
-        }
+//        } else {
+//            // Xử lý trường hợp không tìm thấy ProductDetail hoặc Order
+//            throw new Exception("Không tìm thấy ProductDetail hoặc Order");
+//        }
     }
 
 
@@ -135,27 +135,27 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     public Boolean updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto, Long id) {
         // Log giá trị id để kiểm tra
-        System.out.println("Received id: " + id);
-
-        //find productDetail by id
-        ProductDetail productDetail = productDetailRepository.findById(orderDetailRequestDto.getProductDetailId()).orElse(null);
-        //find orderRepository by id
-        Order order = orderRepository.findById(orderDetailRequestDto.getOrderId()).orElse(null);
-
-        OrderDetail orderDetail = orderDetailRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn chi tiết"));
-
-        orderDetail.setOrder(order);
-        orderDetail.setProductDetail(productDetail);
-        orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
-        orderDetail.setPrice(productDetail.getPrice());
-        orderDetail.setNote(orderDetailRequestDto.getNote());
-
-        orderDetailRepository.save(orderDetail);
-
-        double orderTotal = orderDetailRepository.calculateOrderTotal(order.getId());
-        order.setOrderTotalInitial(orderTotal);
-        orderRepository.save(order);
+//        System.out.println("Received id: " + id);
+//
+//        //find productDetail by id
+//        ProductDetail productDetail = productDetailRepository.findById(orderDetailRequestDto.getProductDetailId()).orElse(null);
+//        //find orderRepository by id
+////        Order order = orderRepository.findById(orderDetailRequestDto.getOrderId()).orElse(null);
+//
+//        OrderDetail orderDetail = orderDetailRepository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn chi tiết"));
+//
+//        orderDetail.setOrder(order);
+//        orderDetail.setProductDetail(productDetail);
+//        orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
+//        orderDetail.setPrice(productDetail.getPrice());
+////        orderDetail.setNote(orderDetailRequestDto.getNote());
+//
+//        orderDetailRepository.save(orderDetail);
+//
+//        double orderTotal = orderDetailRepository.calculateOrderTotal(order.getId());
+////        order.setOrderTotalInitial(orderTotal);
+//        orderRepository.save(order);
 
         return true;
     }
@@ -201,7 +201,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             double orderTotal = orderDetailRepository.calculateOrderTotal(order.getId());
             double discountMoney = calculateDiscountMoney(order); // Thêm hàm tính discountMoney
 
-            order.setOrderTotalInitial(orderTotal);
+//            order.setOrderTotalInitial(orderTotal);
 //            order.setDiscountMoney(discountMoney);
             order.setOrderTotal(orderTotal - discountMoney); // Cập nhật orderTotal sau khi giảm giá
 
@@ -216,20 +216,21 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     private double calculateDiscountMoney(Order order) {
-        // Lấy thông tin voucher từ Order
-        Voucher voucher = order.getVoucher();
-
-        if (voucher != null) {
-            // Nếu có voucher, tính discountMoney dựa trên tỷ lệ giảm giá và tổng tiền đơn hàng
-            double discountRate = voucher.getDiscountRate();
-            double orderTotalInitial = order.getOrderTotalInitial();
-
-            return (orderTotalInitial * discountRate) / 100;
-        } else {
-            // Nếu không có voucher, discountMoney sẽ là 0
-            return 0;
-        }
+//        // Lấy thông tin voucher từ Order
+//        Voucher voucher = order.getVoucher();
+//
+//        if (voucher != null) {
+//            // Nếu có voucher, tính discountMoney dựa trên tỷ lệ giảm giá và tổng tiền đơn hàng
+//            double discountRate = voucher.getDiscountRate();
+////            double orderTotalInitial = order.getOrderTotalInitial();
+//
+////            return (orderTotalInitial * discountRate) / 100;
+////        } else {
+////            // Nếu không có voucher, discountMoney sẽ là 0
+////            return 0;
+////        }
+////    }
+        return 3;
     }
-
 }
 

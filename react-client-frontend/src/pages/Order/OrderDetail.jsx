@@ -274,8 +274,6 @@ export default function OrderDetail() {
                     }} />
 
 
-
-
                 <div style={{ borderBottom: '2px solid black', marginBottom: '10px' }}>
                     <h6>THÔNG TIN ĐƠN HÀNG: <span style={{ color: 'red' }}>HD{orders.id}</span></h6>
                 </div>
@@ -316,7 +314,7 @@ export default function OrderDetail() {
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Phí vận chuyển">
-                        {formatCurrency(30000)}
+                        {formatCurrency(orders.transportFee)}
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Phương thức thanh toán" span={2}>

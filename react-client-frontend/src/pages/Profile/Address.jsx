@@ -329,7 +329,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                         </Col>
                         <Col span={2} />
                         <Col span={11}>
-                            <Form.Item label="Địa chỉ cụ thể:" name="addressDetail" rules={[{ required: true, message: 'Vui lòng nhập tên vai trò!' }]}>
+                            <Form.Item label="Địa chỉ cụ thể:" name="addressDetail" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ cụ thể!' }]}>
                                 <Input placeholder="Địa chỉ cụ thể..." />
                             </Form.Item>
                         </Col>

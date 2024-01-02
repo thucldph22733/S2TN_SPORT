@@ -6,6 +6,7 @@ import { FaEye } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import path_name from '~/core/constants/routers';
 import OrderService from '~/service/OrderService';
+import formatCurrency from '~/utils/format-currency';
 import FormatDate from '~/utils/format-date';
 
 
@@ -13,62 +14,8 @@ import FormatDate from '~/utils/format-date';
 
 function Order() {
 
-    //lấy user từ loacal storage
-    const userString = localStorage.getItem('user2');
-    const user = userString ? JSON.parse(userString) : null;
 
-    const [loading, setLoading] = useState(false);
-
-    const [orders, setOrders] = useState([]);
-
-    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
-
-    const [orderStatusName, setOrderStatusName] = useState(null);
-
-    const fetchOrders = async () => {
-        setLoading(true)
-        await OrderService.getAllOrdersByUserId(pagination.current - 1, pagination.pageSize, user.id, orderStatusName)
-            .then(response => {
-                console.log(response.data)
-                setOrders(response.data);
-
-                setPagination({
-                    ...pagination,
-                    total: response.totalCount,
-                });
-
-                setLoading(false)
-            }).catch(error => {
-                console.error(error);
-            })
-    }
-
-    useEffect(() => {
-        fetchOrders();
-    }, [pagination.current, pagination.pageSize, orderStatusName]);
-
-    const handleTableChange = (pagination) => {
-        setPagination({
-            ...pagination,
-        });
-
-    };
-    // --------------------------Mở modal hủy đơn hàng--------------------------------------------
-    const [open, setOpen] = useState({ isModal: false, reacord: null });
-
-    const showModal = (record) => {
-        setOpen({
-            isModal: true,
-            reacord: record,
-        });
-
-    };
-
-    const handleCancel = () => {
-        setOpen({
-            isModal: false,
-        });
-    };
+    // const columns = [
     const columns = [
         {
             title: '#',
@@ -91,15 +38,14 @@ function Order() {
         },
         {
             title: 'Loại ĐH',
-            dataIndex: 'orderTypeName',
-            key: 'orderTypeName',
+            dataIndex: 'orderType',
+            key: 'orderType',
             width: "12%",
             render: (text) => (
                 text === "InStore" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
                     : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>
             )
         },
-
         {
             title: 'Tổng tiền',
             dataIndex: 'orderTotal',
@@ -107,7 +53,7 @@ function Order() {
             width: "10%",
             render: (text) => (
                 <span style={{ color: 'red' }}>
-                    {isNaN(parseFloat(text)) ? '' : parseFloat(text).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                    {formatCurrency(text)}
                 </span>
             ),
         },
@@ -150,7 +96,6 @@ function Order() {
                 }
             }
         },
-
         {
             title: 'Hành động',
             key: 'action',
@@ -172,19 +117,72 @@ function Order() {
         },
     ];
 
+    //lấy user từ loacal storage
+    const userString = localStorage.getItem('user2');
+    const user = userString ? JSON.parse(userString) : null;
 
+    const [loading, setLoading] = useState(false);
 
-    const tabContent = () => {
+    const [orders, setOrders] = useState([]);
+
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
+
+    const [orderStatusName, setOrderStatusName] = useState(null);
+
+    const fetchOrders = async () => {
+        setLoading(true)
+        await OrderService.getAllOrdersByUserId(pagination.current - 1, pagination.pageSize, user.id, orderStatusName)
+            .then(response => {
+                console.log(response.data)
+                setOrders(response.data);
+
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
+
+                setLoading(false)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+    useEffect(() => {
+        fetchOrders();
+    }, [pagination.current, pagination.pageSize, orderStatusName]);
+
+    const handleTableChange = (pagination) => {
+        setPagination({
+            ...pagination,
+        });
+
+    };
+
+    // --------------------------Mở modal hủy đơn hàng--------------------------------------------
+    const [open, setOpen] = useState({ isModal: false, reacord: null });
+
+    const showModal = (record) => {
+        setOpen({
+            isModal: true,
+            reacord: record,
+        });
+
+    };
+
+    const handleCancel = () => {
+        setOpen({
+            isModal: false,
+        });
+    };
+
+    const tabContent = () => (
 
         <Table
-            dataSource={orders.map((order) => ({
+            dataSource={orders.map((order, index) => ({
                 ...order,
-                key: order.id,
+                key: index + 1,
                 createdAt: FormatDate(order.createdAt),
-                // voucher: order.voucher ? order.voucher.discountRate : 0,
-                customerName: order.user ? order.user.usersName : "Khách lẻ",
                 orderStatusName: order.orderStatus ? order.orderStatus.statusName : "",
-                orderTypeName: order.orderType ? order.orderType.orderTypeName : ""
 
             }))}
             onChange={handleTableChange}
@@ -198,8 +196,7 @@ function Order() {
                 total: pagination.total,
                 showSizeChanger: true,
             }}></Table >
-
-    };
+    );
 
 
     const items = [
@@ -240,25 +237,20 @@ function Order() {
         },
 
     ];
+
     const handleTabChange = (key) => {
         setOrderStatusName(key)
     };
 
     return (
         <div style={{ marginLeft: '30px' }}>
-            {/* {orders === null ? (
-                <Empty description="Không có đơn hàng nào" />
-            ) : ( */}
-            <>
-                <h6>Đơn hàng của tôi</h6>
-                <>
-                    <Tabs defaultActiveKey=""
-                        items={items}
-                        onChange={handleTabChange}></Tabs>
 
-                </>
-            </>
-            {/* )} */}
+            <h6>Đơn hàng của tôi</h6>
+
+            <Tabs defaultActiveKey=""
+                items={items}
+                onChange={handleTabChange}></Tabs>
+
             {open.isModal && (
                 <OrderModal
                     isModal={open.isModal}

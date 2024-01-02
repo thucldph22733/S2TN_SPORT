@@ -2,7 +2,6 @@ package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.CartRequestDto;
-import com.poly.springboot.dto.requestDto.UpdateCartVoucherRequestDto;
 import com.poly.springboot.dto.responseDto.CartDetailResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.entity.Cart;
@@ -58,19 +57,6 @@ public class CartController {
         }
     }
 
-    // create cart detail rest api
-    @PatchMapping("updateCartVoucher")
-    public ResponseEntity<ResponseDto> updateCartVoucher(@RequestBody UpdateCartVoucherRequestDto cartRequestDto) {
-        Boolean isCreated = cartService.updateCart(cartRequestDto);
-
-        if (isCreated) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
-        }
-    }
 
     // update cart detail rest api
     @PatchMapping("updateQuantity")

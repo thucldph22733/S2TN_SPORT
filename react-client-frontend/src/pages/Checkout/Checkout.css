@@ -19,18 +19,14 @@
     /* padding-bottom: 25px;
     margin-bottom: 30px; */
 }
+
 .checkout__input {
-    padding-right: 15px;
-}
-.checkout__input input {
     height: 45px;
     width: 100%;
     border: 1px solid #e1e1e1;
     font-size: 14px;
     color: #302e2e;
-    padding-left: 20px;
-    margin-bottom: 20px;
-    border-radius: 3px;
+    padding-left: 15px;
 }
 
 .checkout__order {

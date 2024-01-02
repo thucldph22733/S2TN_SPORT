@@ -19,7 +19,7 @@ public class OrderRequestDto {
 
     private Long voucherId;
 
-    private Long statusId;
+    private String statusName;
 
     private Double orderTotal;
 

@@ -296,7 +296,7 @@ const ShoppingCart = () => {
 
                             <Col span={8} lg={8} style={{ paddingLeft: '20px' }}>
                                 <div className="cart__total">
-                                    <h6>Cộng giỏ hàng</h6>
+                                    <h6>Tổng giỏ hàng</h6>
                                     <Row style={{ borderBottom: '1px solid #cdcdcd', padding: '7px 0 10px 0px' }}>
                                         <Col span={12}>
                                             <Button type='text' icon={<TagsOutlined />} style={{ fontWeight: '600' }}>Voucher</Button>

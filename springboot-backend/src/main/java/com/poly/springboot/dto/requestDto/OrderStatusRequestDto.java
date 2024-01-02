@@ -12,6 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderStatusRequestDto {
     private Long orderId;
-    private Long newStatusId;
+    private String newStatusName;
     private String note;
 }

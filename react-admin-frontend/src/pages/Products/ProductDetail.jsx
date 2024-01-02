@@ -605,7 +605,7 @@ function ProductDetail() {
                 form={form}
             >
                 <h3 style={{ fontWeight: 'bold' }}>Thêm mới sản phẩm </h3>
-                <Card >
+                <Card style={{ border: '1px solid #cdcdcd' }}>
                     <Row>
                         <Col span={10}>
                             <Form.Item label="Tên sản phẩm:" name="productName" rules={[{ required: true, message: 'Vui lòng chọn tên sản phẩm !' }]} >
@@ -636,7 +636,7 @@ function ProductDetail() {
                     </Row>
                 </Card>
 
-                <Card title="Thuộc tính" bordered={false} style={{ marginTop: '20px' }} >
+                <Card title="Thuộc tính" bordered={false} style={{ marginTop: '20px', border: '1px solid #cdcdcd' }} >
                     <Row>
                         <Col span={10}>
                             <Form.Item label="Chất liệu:" name="materialName" rules={[{ required: true, message: 'Vui lòng chọn chất liệu !' }]} >
@@ -669,7 +669,7 @@ function ProductDetail() {
                         <Col span={12}>
                             <Row>
                                 <Col span={20}>
-                                    <Form.Item label="Máu sắc" name="colorName" rules={[{ required: true, message: 'Vui lòng chọn màu sắc !' }]}>
+                                    <Form.Item label="Màu sắc" name="colorName" rules={[{ required: true, message: 'Vui lòng chọn màu sắc !' }]}>
                                         <Select
                                             mode="multiple"
                                             allowClear

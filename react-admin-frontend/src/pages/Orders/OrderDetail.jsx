@@ -1,50 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Table,
-    Image,
-    Tag,
-    Button,
-    Descriptions,
-    Col,
-    Space,
-    notification,
-    Modal,
-    Radio,
-    Form,
-    Popconfirm,
-    Row,
-    InputNumber
-} from 'antd';
+import { Table, Image, Tag, Button, Descriptions, Space, notification, Modal, Form } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline';
-import { FaBox, FaMinus, FaRegCalendarCheck, FaRegFileAlt, FaTruck, FaFileSignature } from 'react-icons/fa';
+import { FaBox, FaMinus, FaRegCalendarCheck, FaRegFileAlt, FaTruck, FaCheckCircle } from 'react-icons/fa';
 import FormatDate from '~/utils/format-date';
 import OrderHistoryService from '~/service/OrderHistoryService';
 import OrderService from '~/service/OrderService';
-import { DeleteOutlined, DoubleLeftOutlined, ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { DoubleLeftOutlined } from '@ant-design/icons';
 import path_name from '~/constants/routers';
 import OrderDetailService from '~/service/OrderDetailService';
 import formatCurrency from '~/utils/format-currency';
 import TextArea from 'antd/es/input/TextArea';
-import ProductDetailService from '~/service/ProductDetaiService';
-// import { render } from '@testing-library/react';
 
 export default function OrderDetail() {
 
-    //----------------------------------Lịch sử đơn hàng---------------------------------------------------------------
     const { id } = useParams();
-    const [timeLines, setTimeLines] = useState([]); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
-    const [orderHisstorys, setOrderHistorys] = useState([]);
+    //----------------------------------Lịch sử đơn hàng---------------------------------------------------------------
+
+    //Lưu timeline đơn hàng
+    const [timeLines, setTimeLines] = useState([]);
+
+    //Lưu lịch sử để load đơn hàng
+    const [orderHistories, setOrderHistories] = useState([]);
+
     const getAllTimeLineByOrderId = async () => {
         OrderHistoryService.getAllTimeLineByOrderId(id).then(response => {
+
             const convertedTimeline = response.map((event) => ({
                 title: event.status.statusName,
                 subtitle: FormatDate(event.createdAt),
-                color: getStatusColor(event.status.id),
-                icon: getIconByStatus(event.status.id),
+                color: getStatusColor(event.status.statusName),
+                icon: getIconByStatus(event.status.statusName),
             }));
+
             setTimeLines(convertedTimeline);
-            setOrderHistorys(response.map((item, index) => (
+
+            setOrderHistories(response.map((item, index) => (
                 {
                     key: index + 1,
                     date: FormatDate(item.createdAt),
@@ -53,48 +44,53 @@ export default function OrderDetail() {
                     note: item.note
                 }
             )))
-            console.log(response)
+
         }).catch((error) => {
-            console.error('Error fetching timeline:', error);
+            console.error('Lỗi:', error);
         })
 
     };
+
+    // Logic chuyển đổi màu sắc tùy thuộc vào status
     const getStatusColor = (status) => {
-        // Logic chuyển đổi màu sắc tùy thuộc vào status
-        // Ví dụ:
-        if (status === 1) {
+
+        if (status === 'Tạo đơn hàng') {
             return 'green';
-        } else if (status === 2) {
+        } else if (status === 'Chờ xác nhận') {
             return '#40826D';
-        } else if (status === 3) {
+        } else if (status === 'Chờ giao hàng') {
             return '#007FFF	';
-        } else if (status === 4) {
+        } else if (status === 'Đang vận chuyển') {
             return '#FF6600';
-        } else if (status === 5) {
+        } else if (status === 'Đã giao hàng') {
             return '#007BA7';
-        } else if (status === 6) {
+        } else if (status === 'Hoàn thành') {
+            return '#7859f2';
+        } else if (status === 'Đã hủy') {
             return 'red';
         }
     };
-
+    // Logic chuyển đổi biểu tượng tùy thuộc vào status
     const getIconByStatus = (status) => {
-        // Logic chuyển đổi biểu tượng tùy thuộc vào status
-        // Ví dụ:
-        if (status === 1) {
+
+        if (status === 'Tạo đơn hàng') {
             return FaRegFileAlt;
-        } else if (status === 2) {
-            return FaFileSignature;
-        } else if (status === 3) {
+        } else if (status === 'Chờ xác nhận') {
+            return FaRegFileAlt;
+        } else if (status === 'Chờ giao hàng') {
             return FaBox;
-        } else if (status === 4) {
+        } else if (status === 'Đang vận chuyển') {
             return FaTruck;
-        } else if (status === 5) {
+        } else if (status === 'Đã giao hàng') {
             return FaRegCalendarCheck;
-        } else if (status === 6) {
+        } else if (status === 'Hoàn thành') {
+            return FaCheckCircle;
+        } else if (status === 'Đã hủy') {
             return FaMinus;
         }
     };
     //----------------------Hóa đơn---------------------------------------------
+
     const [orders, setOrders] = useState([]);
 
     const fetchOrder = async () => {
@@ -103,13 +99,13 @@ export default function OrderDetail() {
 
                 setOrders(response);
 
-                console.log(response)
             }).catch(error => {
                 console.error(error);
             })
     };
 
     //---------------------------------Hóa đơn chi tiết--------------------------------------------------------
+
     const [orderDetails, setOrderDetails] = useState([]);
 
     const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
@@ -120,11 +116,11 @@ export default function OrderDetail() {
             .then(response => {
 
                 setOrderDetails(response.data);
+
                 setPagination({
                     ...pagination,
                     total: response.totalCount,
                 });
-
 
             }).catch(error => {
                 console.error(error);
@@ -135,17 +131,18 @@ export default function OrderDetail() {
             ...pagination,
         });
 
-    };
-    //------------------------------------------------------------
+    }
+
+    //------------------Load dữ liệu------------------------------------------
 
     useEffect(() => {
         fetchOrder();
         fetchOrderDetail();
         getAllTimeLineByOrderId();
-        // loadOrderDetails();
+
     }, []);
 
-
+    //----------------------------Định nghĩa tên cột load dữ liệu cho bảng-------------------------------------------
     // const columnCart = [
     //     {
     //         title: '#',
@@ -200,7 +197,7 @@ export default function OrderDetail() {
         {
             title: 'Sản phẩm',
 
-            width: '40%',
+            width: '45%',
             render: (record) => (
                 <span>{`${record.productName} [${record.colorName} - ${record.sizeName}]`}</span>
             )
@@ -226,50 +223,28 @@ export default function OrderDetail() {
             title: 'Thành tiền',
             key: 'total',
             dataIndex: 'total',
-            width: '10%',
+            width: '15%',
             render: (text) => (
                 <span style={{ color: 'red' }}>
                     {formatCurrency(text)}
                 </span>
             ),
         },
-        {
-            title: 'Hành động',
-            key: 'action',
-            width: "10%",
-            render: (record) => {
 
-                return <Space size="middle">
-                    <Popconfirm
-                        title="Xóa sản phẩm"
-                        description="Bạn có chắc chắn xóa sản phẩm này không?"
-                        placement="leftTop"
-                        // onConfirm={() => handleDelete(record.id)}
-                        okText="Đồng ý"
-                        cancelText="Hủy bỏ"
-                    >
-                        <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                    </Popconfirm>
-
-                </Space>
-            },
-        },
     ];
 
 
+    // ------------------------Mở modal trạng thái----------------------------------------------
 
+    const [openStatus, setOpenStatus] = useState({ isModal: false, isMode: '' });
 
-    // ------------------------Mở modal cập nhật trạng thái----------------------------------------------
-
-    const [openCansel, setOpenCansel] = useState({ isModal: false, isMode: '' });
-
-    const showModalCansel = (isMode) => {
-        setOpenCansel({ isModal: true, isMode: isMode });
+    const showModalStatus = (isMode) => {
+        setOpenStatus({ isModal: true, isMode: isMode });
 
     };
 
-    const handleCancel = () => {
-        setOpenCansel({ isModal: false });
+    const handleStatusCancel = () => {
+        setOpenStatus({ isModal: false });
     };
 
     //----------------Mở modal lịch sử đơn hàng-------------------------
@@ -284,17 +259,15 @@ export default function OrderDetail() {
         setOrderHistory(false);
     };
 
-    //----------------Mở modal sản phẩm-------------------------
-    const [openProduct, setOpenProduct] = useState(false);
-
-    const showModalProduct = () => {
-        setOpenProduct(true);
-
+    // Hàm  tính tổng tiền hàng
+    const calculateTotalAmount = () => {
+        let totalAmount = 0;
+        orderDetails.forEach(item => {
+            totalAmount += parseFloat(item.price * item.quantity);
+        });
+        return totalAmount;
     };
 
-    const handleProductCancel = () => {
-        setOpenProduct(false);
-    };
     return (
         <>
 
@@ -305,16 +278,18 @@ export default function OrderDetail() {
                     </Button>
                 </Link>
             </div>
+
+
             <div className='container' style={{ marginTop: '10px' }}>
                 <div style={{
                     width: '100%',
                     overflowX: 'scroll',
-                    // marginBottom: '20px'
                 }}>
+
                     <div style={{
                         width: '1300px',
                     }}>
-                        <Timeline minEvents={6} placeholder >
+                        <Timeline minEvents={7} placeholder >
                             {timeLines.map((timeLine, index) => (
                                 <TimelineEvent
                                     key={index}
@@ -328,84 +303,56 @@ export default function OrderDetail() {
                             ))}
                         </Timeline>
                     </div>
+
+
                     <Space size="middle" style={{ marginBottom: '20px' }}>
-                        {(orders.orderStatus?.statusName === 'Chờ xác nhận' || orders.orderStatus?.statusName === 'Chờ lấy hàng' || orders.orderStatus?.statusName === 'Chờ giao hàng') && (
-                            <>
-                                <Button type='primary' style={{ borderRadius: '5px' }} onClick={() => showModalCansel('status')}>
+
+                        <>
+                            {(orders.orderStatus?.statusName !== 'Hoàn thành' &&
+                                <Button type='primary' style={{ borderRadius: '5px' }} onClick={() => showModalStatus('status')}>
                                     {orders.orderStatus?.statusName === 'Chờ xác nhận' ? 'Xác nhận' : ''}
-                                    {orders.orderStatus?.statusName === 'Chờ lấy hàng' ? 'Giao hàng' : ''}
-                                    {orders.orderStatus?.statusName === 'Chờ giao hàng' ? 'Hoàn thành' : ''}
+                                    {orders.orderStatus?.statusName === 'Chờ giao hàng' ? 'Giao hàng' : ''}
+                                    {orders.orderStatus?.statusName === 'Đang vận chuyển' ? 'Lấy hàng' : ''}
+                                    {orders.orderStatus?.statusName === 'Đã giao hàng' ? 'Hoàn thành' : ''}
                                 </Button>
-                                <Button type='primary' style={{ backgroundColor: 'red', borderRadius: '5px' }} onClick={() => showModalCansel('Cancel')}>
-                                    Hủy đơn
-                                </Button>
-                            </>
-                        )}
+                            )}
+                            {(orders.orderStatus?.statusName === 'Chờ xác nhận'
+                                || orders.orderStatus?.statusName === 'Chờ giao hàng'
+                                || orders.orderStatus?.statusName === 'Đang vận chuyển'
+                                // || orders.orderStatus?.statusName === 'Đã giao hàng'
+                            ) && (
+                                    <Button type='primary' style={{ backgroundColor: 'red', borderRadius: '5px' }} onClick={() => showModalStatus('Cancel')}>
+                                        Hủy đơn
+                                    </Button>
+                                )}
+                        </>
+
                     </Space>
+
+
                     <Button type='primary' style={{ float: 'right', margin: '0 20px 20px 20px', borderRadius: '5px', backgroundColor: 'black' }}
                         onClick={() => showModalOrderHistory()}>
                         Lịch sử
                     </Button>
+
+
                 </div>
+
+
+
 
                 <div style={{ borderBottom: '2px solid black', marginTop: '30px' }}>
-                    <Row>
-                        <Col span={12}>
-                            <h6 style={{ fontSize: '15px', fontWeight: '550' }}>THÔNG TIN ĐƠN HÀNG</h6>
-                        </Col>
-                        <Col span={12}>
-                            <Button type='primary' style={{ float: 'right', borderRadius: '5px', marginBottom: '5px', backgroundColor: '#5a76f3' }}>Thay đổi</Button>
-                        </Col>
-
-                    </Row>
+                    <h6 style={{ fontSize: '15px', fontWeight: '550' }}>SẢN PHẨM</h6>
                 </div>
-                <Descriptions
-                    size='default'
-                    // layout="vertical"
-                    bordered
-                    style={{ padding: '10px 10px' }}
-                >
-                    <Descriptions.Item label="Họ và tên">
-                        {orders.recipientName == null ? 'Khách lẻ' : orders.recipientName}</Descriptions.Item>
-                    <Descriptions.Item label="Trạng thái">
-                        {orders.orderStatus == null ? '' : <Tag color="blue">{orders.orderStatus.statusName}</Tag>}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Voucher"> {formatCurrency(orders.voucher != null ? -orders.voucher.discountRate : 0)}</Descriptions.Item>
-
-                    <Descriptions.Item label="Số điện thoại" >{orders.phoneNumber == null ? 'Không có' : orders.phoneNumber}</Descriptions.Item>
-                    <Descriptions.Item label="Loại đơn hàng">
-                        {orders.orderType && orders.orderType !== "Online" ? <Tag color="purple">Online</Tag> : <Tag color="volcano">Tại quầy</Tag>}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Phí vận chuyển">{formatCurrency(-30000)}</Descriptions.Item>
-
-                    <Descriptions.Item label="Địa chỉ" span={2}>  {orders.ward && orders.district && orders.city && orders.addressDetail
-                        ? `${orders.addressDetail} - ${orders.ward} - ${orders.district} - ${orders.city}`
-                        : "Không có"}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Tổng tiền">{formatCurrency(orders.orderTotal)}</Descriptions.Item>
-
-                    <Descriptions.Item label="Phương thức thanh toán"><Tag color="green">Thanh toán khi nhận hàng</Tag></Descriptions.Item>
-                </Descriptions>
-                <div style={{ borderBottom: '2px solid black', marginTop: '30px' }}>
-                    <Row>
-                        <Col span={12}>
-                            <h6 style={{ fontSize: '15px', fontWeight: '550' }}>SẢN PHẨM</h6>
-                        </Col>
-                        <Col span={12}>
-                            <Button type='primary' style={{ float: 'right', borderRadius: '5px', marginBottom: '5px', backgroundColor: '#5a76f3' }} icon={<PlusOutlined />} onClick={() => showModalProduct()}>Thêm sản phẩm</Button>
-                        </Col>
-
-                    </Row>
-                </div>
-
                 <Table
                     onChange={handleTableChange}
                     columns={columnOrderDetail}
                     dataSource={orderDetails.map((orderDetail, index) => ({
                         ...orderDetail,
                         key: index + 1,
-                        total: orderDetail.price * orderDetail.quantity// Sử dụng ID hoặc một giá trị duy nhất khác
+                        total: orderDetail.price * orderDetail.quantity
                     }))}
+
                     pagination={{
                         current: pagination.current,
                         pageSize: pagination.pageSize,
@@ -414,77 +361,147 @@ export default function OrderDetail() {
                         total: pagination.total,
                         showSizeChanger: true,
                     }} />
+
+
+
+                <div style={{ borderBottom: '2px solid black', marginTop: '30px' }}>
+                    <h6 style={{ fontSize: '15px', fontWeight: '550' }}>THÔNG TIN ĐƠN HÀNG: <span style={{ color: 'red' }}>HD{orders.id}</span></h6>
+                </div>
+                <Descriptions
+                    size='default'
+                    bordered
+                    style={{ padding: '10px 10px' }}
+                >
+
+                    <Descriptions.Item label="Họ và tên">
+                        {orders.recipientName == null ? 'Khách lẻ' : orders.recipientName}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Trạng thái">
+                        {orders.orderStatus == null ? '' : <Tag color="blue">{orders.orderStatus.statusName}</Tag>}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Tổng tiền hàng">
+                        {formatCurrency(calculateTotalAmount())}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Số điện thoại" >
+                        {orders.phoneNumber == null ? 'Không có' : orders.phoneNumber}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Loại đơn hàng">
+                        {orders.orderType && orders.orderType === "Online" ?
+                            <Tag color="purple">Online</Tag> :
+                            <Tag color="volcano">Tại quầy</Tag>}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Voucher">
+                        {formatCurrency(orders.voucher != null ? -orders.voucher.discountRate : 0)}
+                    </Descriptions.Item>
+
+
+                    <Descriptions.Item label="Địa chỉ" span={2}>  {orders.ward && orders.district && orders.city && orders.addressDetail
+                        ? `${orders.addressDetail} - ${orders.ward} - ${orders.district} - ${orders.city}`
+                        : "Không có"}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Phí vận chuyển">
+                        {formatCurrency(30000)}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Phương thức thanh toán" span={2}>
+                        <Tag color="green" >Thanh toán khi nhận hàng</Tag>
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Thành tiền">
+                        {formatCurrency(orders.orderTotal)}
+                    </Descriptions.Item>
+
+                </Descriptions>
             </div>
+
             {
-                openCansel.isModal && <OrderStatusModal
-                    isModal={openCansel.isModal}
-                    isMode={openCansel.isMode}
-                    hideModal={handleCancel}
-                    fetchOrders={fetchOrder}
-                    reacord={orders}
+                openStatus.isModal && <OrderStatusModal
+                    isModal={openStatus.isModal}
+                    isMode={openStatus.isMode}
+                    hideModal={handleStatusCancel}
+                    orders={orders}
                     getAllTimeLineByOrderId={getAllTimeLineByOrderId}
+                    fetchOrders={fetchOrder}
                 />
             }
+
             {
                 openOrderHistory && <OrderHistoryModal
                     isModal={openOrderHistory}
                     hideModal={handleOrderHistoryCancel}
-                    reacord={orderHisstorys}
+                    orderHistories={orderHistories}
                 />
             }
-            {
-                openProduct && <ProductModal
-                    isModal={openProduct}
-                    hideModal={handleProductCancel}
-                />
-            }
+
         </>
     );
 }
 
-const OrderStatusModal = ({ hideModal, isModal, isMode, fetchOrders, getAllTimeLineByOrderId, reacord }) => {
+const OrderStatusModal = ({ hideModal, isModal, isMode, fetchOrders, getAllTimeLineByOrderId, orders }) => {
 
     const [form] = Form.useForm();
 
     const handleOrderCancel = () => {
+
         form.validateFields().then(async () => {
+
             const data = form.getFieldsValue();
 
+            //Nếu click vào button hủy 
             if (isMode === "Cancel") {
-                data.newStatusId = 6;
+                //Lấy id trạng thái 6 = đã hủy
+                data.newStatusName = 'Đã hủy';
             } else {
-                const orderStatusName = reacord.orderStatus?.statusName || "";
+
+                const orderStatusName = orders.orderStatus?.statusName || "";
 
                 switch (orderStatusName) {
                     case "Chờ xác nhận":
-                        data.newStatusId = 3;
-                        break;
-                    case "Chờ lấy hàng":
-                        data.newStatusId = 4;
+                        data.newStatusName = 'Chờ giao hàng';
                         break;
                     case "Chờ giao hàng":
-                        data.newStatusId = 5;
+                        data.newStatusName = 'Đang vận chuyển';
+                        break;
+                    case "Đang vận chuyển":
+                        data.newStatusName = 'Đã giao hàng';
+                        break;
+                    case "Đã giao hàng":
+                        data.newStatusName = 'Hoàn thành';
                         break;
                     default:
+                        data.newStatusName = 'Tạo đơn hàng';
                         break;
                 }
             }
-            data.orderId = reacord.id
+
+            data.orderId = orders.id
+
             await OrderService.updateOrderStatus(data)
                 .then(() => {
+
                     notification.success({
                         message: 'Thông báo',
-                        description: 'Hủy đơn hàng thành công!',
+                        description: 'Xác nhận đơn hàng thành công!',
                     });
+
+                    //gọi lại hai hàm để đồng bộ lại dữ liệu khi sửa trang thái đơn hàng
                     fetchOrders();
                     getAllTimeLineByOrderId();
-                    // Đóng modal
+
+                    //đóng modal khi click xác nhận
                     hideModal();
                 })
                 .catch(error => {
+
                     notification.error({
                         message: 'Thông báo',
-                        description: 'Hủy đơn thất bại!',
+                        description: 'Xác nhận đơn hàng thất bại!',
                     });
                     console.error(error);
                 });
@@ -495,11 +512,6 @@ const OrderStatusModal = ({ hideModal, isModal, isMode, fetchOrders, getAllTimeL
 
     }
 
-
-    const onFinish = (values) => {
-        console.log('Received values:', values);
-        // Perform your form submission logic here
-    };
     return (
         <Modal
             title="Xác nhận đơn hàng"
@@ -511,32 +523,18 @@ const OrderStatusModal = ({ hideModal, isModal, isMode, fetchOrders, getAllTimeL
         >
             <Form
                 name="validateOnly" layout="vertical" autoComplete="off"
-                onFinish={onFinish}
                 form={form}
             >
-                {/* <Radio.Group
-                    onChange={onRadioChange}
-                    style={{ margin: '10px 0' }}
-                >
-                    <Space direction="vertical">
-                        <Radio value={"Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng."}>
-                            Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng.</Radio>
-                        <Radio value={"Tôi muốn thêm thay đổi mã giảm giá."}>Tôi muốn thêm thay đổi mã giảm giá.</Radio>
-                        <Radio value={"Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng)"}>Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng)</Radio>
-                        <Radio value={"Tôi tìm thấy chỗ mua khác tốt hơn (rẻ hơn, uy tín hơn, giao nhanh hơn...)"}>Tôi tìm thấy chỗ mua khác tốt hơn (rẻ hơn, uy tín hơn, giao nhanh hơn...)</Radio>
-                        <Radio value={"Tôi không có nhu cầu nữa."}>Tôi không có nhu cầu nữa.</Radio>
-                        <Radio value={"Thủ tục thanh toán rắc rối."}>Thủ tục thanh toán rắc rối.</Radio>
-                    </Space>
-                </Radio.Group> */}
                 <Form.Item name="note" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
-                    <TextArea rows={4} placeholder="Nhập lý do hủy..." />
+                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
                 </Form.Item>
+
             </Form>
         </Modal>
     );
 };
 
-const OrderHistoryModal = ({ isModal, hideModal, reacord }) => {
+const OrderHistoryModal = ({ isModal, hideModal, orderHistories }) => {
 
     const columns = [
         {
@@ -582,148 +580,148 @@ const OrderHistoryModal = ({ isModal, hideModal, reacord }) => {
                 footer={false}
                 width={900}
             >
-                <Table dataSource={reacord} columns={columns} pagination={false} />
+                <Table dataSource={orderHistories} columns={columns} pagination={false} />
             </Modal>
         </>
     );
 };
 
-const ProductModal = ({ isModal, hideModal }) => {
+// const ProductModal = ({ isModal, hideModal }) => {
 
-    const [productDetails, setProductDetails] = useState([]);
+//     const [productDetails, setProductDetails] = useState([]);
 
-    const [paginationProduct, setPaginationProduct] = useState({ current: 1, pageSize: 3, total: 0 });
+//     const [paginationProduct, setPaginationProduct] = useState({ current: 1, pageSize: 3, total: 0 });
 
-    const fetchProductDetails = async () => {
+//     const fetchProductDetails = async () => {
 
-        await ProductDetailService.getAllProductDetails(paginationProduct.current - 1, paginationProduct.pageSize)
-            .then(response => {
+//         await ProductDetailService.getAllProductDetails(paginationProduct.current - 1, paginationProduct.pageSize)
+//             .then(response => {
 
-                setProductDetails(response.data);
-                setPaginationProduct({
-                    ...paginationProduct,
-                    total: response.totalCount,
-                });
+//                 setProductDetails(response.data);
+//                 setPaginationProduct({
+//                     ...paginationProduct,
+//                     total: response.totalCount,
+//                 });
 
 
-            }).catch(error => {
-                console.error(error);
-            })
-    };
-    const handleTableProductChange = (pagination) => {
-        setPaginationProduct({
-            ...pagination,
-        });
+//             }).catch(error => {
+//                 console.error(error);
+//             })
+//     };
+//     const handleTableProductChange = (pagination) => {
+//         setPaginationProduct({
+//             ...pagination,
+//         });
 
-    };
-    useEffect(() => {
-        fetchProductDetails();
-    }, [paginationProduct.current - 1, paginationProduct.pageSize])
+//     };
+//     useEffect(() => {
+//         fetchProductDetails();
+//     }, [paginationProduct.current - 1, paginationProduct.pageSize])
 
-    const columns = [
-        {
-            title: '#',
-            dataIndex: 'index',
-            key: 'index',
-            width: '5%',
-            render: (text, record, index) => (
-                <span>{index + 1}</span>
-            ),
-        },
-        {
-            title: 'Ảnh',
-            dataIndex: 'productAvatar',
-            key: 'productAvatar',
-            width: '7%',
-            render: (text) => (
-                <Image width={50} height={50} src={text} alt="Avatar" />
-            ),
-        },
-        {
-            title: 'Sản phẩm',
-            width: '30%',
-            render: (record) => (
-                <>
-                    <span>{`${record.productName}`}</span>
-                    <p style={{ marginBottom: '0' }}>[{record.colorName} - {record.sizeName}]</p>
-                </>
-            )
-        },
-        {
-            title: 'Chất liệu',
-            dataIndex: 'materialName',
-            key: 'materialName',
-            width: '15%'
-        },
-        {
-            title: 'Đơn giá',
-            dataIndex: 'price',
-            key: 'price',
-            width: '10%',
-            render: (text) => (
-                <span >
-                    {formatCurrency(text)}
-                </span>
-            ),
-        },
-        {
-            title: 'Số lượng',
-            dataIndex: 'quantity',
-            key: 'quantity',
-            width: '10%'
-        },
-        {
-            title: 'Hành động',
-            key: 'action',
-            width: "10%",
-            render: (record) => {
-                return <Space size="middle">
+//     const columns = [
+//         {
+//             title: '#',
+//             dataIndex: 'index',
+//             key: 'index',
+//             width: '5%',
+//             render: (text, record, index) => (
+//                 <span>{index + 1}</span>
+//             ),
+//         },
+//         {
+//             title: 'Ảnh',
+//             dataIndex: 'productAvatar',
+//             key: 'productAvatar',
+//             width: '7%',
+//             render: (text) => (
+//                 <Image width={50} height={50} src={text} alt="Avatar" />
+//             ),
+//         },
+//         {
+//             title: 'Sản phẩm',
+//             width: '30%',
+//             render: (record) => (
+//                 <>
+//                     <span>{`${record.productName}`}</span>
+//                     <p style={{ marginBottom: '0' }}>[{record.colorName} - {record.sizeName}]</p>
+//                 </>
+//             )
+//         },
+//         {
+//             title: 'Chất liệu',
+//             dataIndex: 'materialName',
+//             key: 'materialName',
+//             width: '15%'
+//         },
+//         {
+//             title: 'Đơn giá',
+//             dataIndex: 'price',
+//             key: 'price',
+//             width: '10%',
+//             render: (text) => (
+//                 <span >
+//                     {formatCurrency(text)}
+//                 </span>
+//             ),
+//         },
+//         {
+//             title: 'Số lượng',
+//             dataIndex: 'quantity',
+//             key: 'quantity',
+//             width: '10%'
+//         },
+//         {
+//             title: 'Hành động',
+//             key: 'action',
+//             width: "10%",
+//             render: (record) => {
+//                 return <Space size="middle">
 
-                    <Button type="primary" style={{ borderRadius: '5px', backgroundColor: '#5a76f3' }} onClick={() => showModalQuantity()}>Chọn</Button>
+//                     <Button type="primary" style={{ borderRadius: '5px', backgroundColor: '#5a76f3' }} onClick={() => showModalQuantity()}>Chọn</Button>
 
-                </Space>
-            },
-        },
-    ];
-    const [quantityModal, setQuantityModal] = useState(false);
-    const showModalQuantity = () => {
-        setQuantityModal(true);
+//                 </Space>
+//             },
+//         },
+//     ];
+//     const [quantityModal, setQuantityModal] = useState(false);
+//     const showModalQuantity = () => {
+//         setQuantityModal(true);
 
-    };
+//     };
 
-    const handleQuantityCancel = () => {
-        setQuantityModal(false);
-    };
-    return (
-        <>
-            <Modal
-                title="Danh sách sản phẩm"
-                open={isModal}
-                onCancel={hideModal}
-                footer={false}
-                width={1000}
-            >
-                <Table onChange={handleTableProductChange} dataSource={productDetails} columns={columns} pagination={{
-                    current: paginationProduct.current,
-                    pageSize: paginationProduct.pageSize,
-                    defaultPageSize: 5,
-                    pageSizeOptions: ['5', '10', '15'],
-                    total: paginationProduct.total,
-                    showSizeChanger: true,
-                }} />
-            </Modal>
+//     const handleQuantityCancel = () => {
+//         setQuantityModal(false);
+//     };
+//     return (
+//         <>
+//             <Modal
+//                 title="Danh sách sản phẩm"
+//                 open={isModal}
+//                 onCancel={hideModal}
+//                 footer={false}
+//                 width={1000}
+//             >
+//                 <Table onChange={handleTableProductChange} dataSource={productDetails} columns={columns} pagination={{
+//                     current: paginationProduct.current,
+//                     pageSize: paginationProduct.pageSize,
+//                     defaultPageSize: 5,
+//                     pageSizeOptions: ['5', '10', '15'],
+//                     total: paginationProduct.total,
+//                     showSizeChanger: true,
+//                 }} />
+//             </Modal>
 
-            {quantityModal && <Modal
-                title="Số lượng sản phẩm"
-                open={quantityModal}
-                onCancel={handleQuantityCancel}
-                width={250}
-                style={{ textAlign: 'center' }}
-                okText="Thêm"
-                cancelText="Hủy bỏ"
-            >
-                <InputNumber min={1} max={10} defaultValue={3} />
-            </Modal>}
-        </>
-    );
-};
+//             {quantityModal && <Modal
+//                 title="Số lượng sản phẩm"
+//                 open={quantityModal}
+//                 onCancel={handleQuantityCancel}
+//                 width={250}
+//                 style={{ textAlign: 'center' }}
+//                 okText="Thêm"
+//                 cancelText="Hủy bỏ"
+//             >
+//                 <InputNumber min={1} max={10} defaultValue={3} />
+//             </Modal>}
+//         </>
+//     );
+// };

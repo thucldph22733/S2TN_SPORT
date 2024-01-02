@@ -17,7 +17,7 @@ import java.util.Map;
 public interface OrderService {
 
 //    List<OrderResponseDto> getAllOrdersCompleted();
-    Page<Order> getAllOrders(Long orderStatusId, Pageable pageable);
+    Page<Order> getAllOrders(String orderStatusName, Pageable pageable);
     List<Map<String, Object>>getRevenueByMonthForCurrentYear();
     List<Map<String, Object>> getTotalOrdersByStatus();
     Page<Order> findAllOrderByStatusId(Pageable pageable);
@@ -26,7 +26,7 @@ public interface OrderService {
     Boolean deleteOrder(Long id);
     Double monthlyRevenue();
     Double revenueToday();
-    Page<Order> findAllOrdersByUserId(Long userId,Long orderStatusId, Pageable pageable);
+    Page<Order> findAllOrdersByUserId(Long userId,String orderStatusName, Pageable pageable);
     Boolean orderCancel (Long id,OrderCancelRequestDto orderCancelRequestDto);
     List<OrderResponseDto> getAllOrders();
 

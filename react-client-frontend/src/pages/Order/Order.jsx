@@ -1,5 +1,5 @@
 import { CloseSquareOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Form, Modal, Radio, Space, Table, Tabs, Tag, Tooltip, notification } from 'antd';
+import { Button, Empty, Form, Modal, Radio, Space, Table, Tabs, Tag, Tooltip, notification } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
@@ -12,6 +12,8 @@ import FormatDate from '~/utils/format-date';
 
 
 function Order() {
+
+    //lấy user từ loacal storage
     const userString = localStorage.getItem('user2');
     const user = userString ? JSON.parse(userString) : null;
 
@@ -21,20 +23,20 @@ function Order() {
 
     const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
-    const [orderStatusId, setOrderStatusId] = useState(null);
+    const [orderStatusName, setOrderStatusName] = useState(null);
 
     const fetchOrders = async () => {
         setLoading(true)
-        await OrderService.getAllOrdersByUserId(pagination.current - 1, pagination.pageSize, user.id, orderStatusId)
+        await OrderService.getAllOrdersByUserId(pagination.current - 1, pagination.pageSize, user.id, orderStatusName)
             .then(response => {
-
-                setOrders(response.data);
                 console.log(response.data)
+                setOrders(response.data);
+
                 setPagination({
                     ...pagination,
                     total: response.totalCount,
                 });
-                console.log(response.data)
+
                 setLoading(false)
             }).catch(error => {
                 console.error(error);
@@ -43,7 +45,7 @@ function Order() {
 
     useEffect(() => {
         fetchOrders();
-    }, [pagination.current, pagination.pageSize, orderStatusId]);
+    }, [pagination.current, pagination.pageSize, orderStatusName]);
 
     const handleTableChange = (pagination) => {
         setPagination({
@@ -51,7 +53,7 @@ function Order() {
         });
 
     };
-    // ----------------------------------------------------------------------
+    // --------------------------Mở modal hủy đơn hàng--------------------------------------------
     const [open, setOpen] = useState({ isModal: false, reacord: null });
 
     const showModal = (record) => {
@@ -67,7 +69,6 @@ function Order() {
             isModal: false,
         });
     };
-
     const columns = [
         {
             title: '#',
@@ -123,14 +124,20 @@ function Order() {
             width: "15%",
             render: (text) => {
                 switch (text) {
+                    case 'Tạo đơn hàng':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Đơn hàng mới</Tag>
+                        break;
                     case 'Chờ xác nhận':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
                         break;
-                    case 'Chờ lấy hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Chờ lấy hàng</Tag>
-                        break;
                     case 'Chờ giao hàng':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="purple">Chờ giao hàng</Tag>
+                        break;
+                    case 'Đang vận chuyển':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Đang vận chuyển</Tag>
+                        break;
+                    case 'Đã giao hàng':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="magenta">Đã giao hàng</Tag>
                         break;
                     case 'Hoàn thành':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="cyan">Hoàn thành</Tag>
@@ -164,7 +171,10 @@ function Order() {
             },
         },
     ];
-    const tabContent = () => (
+
+
+
+    const tabContent = () => {
 
         <Table
             dataSource={orders.map((order) => ({
@@ -188,62 +198,76 @@ function Order() {
                 total: pagination.total,
                 showSizeChanger: true,
             }}></Table >
-    );
+
+    };
+
+
     const items = [
         {
-            key: '',
+            key: null,
             label: 'Tất cả',
             children: tabContent(),
         },
         {
-            key: '2',
+            key: 'Chờ xác nhận',
             label: 'Chờ xác nhận',
             children: tabContent(),
         },
         {
-            key: '3',
-            label: 'Chờ lấy hàng',
-            children: tabContent(),
-        },
-        {
-            key: '4',
+            key: 'Chờ giao hàng',
             label: 'Chờ giao hàng',
             children: tabContent(),
         },
         {
-            key: '5',
+            key: 'Đang vận chuyển',
+            label: 'Đang vận chuyển',
+            children: tabContent(),
+        },
+        {
+            key: 'Đã giao hàng',
+            label: 'Đã giao hàng',
+            children: tabContent(),
+        },
+        {
+            key: 'Hoàn thành',
             label: 'Hoàn thành',
             children: tabContent(),
         },
         {
-            key: '6',
+            key: 'Đã hủy',
             label: 'Đã hủy',
             children: tabContent(),
         },
 
     ];
     const handleTabChange = (key) => {
-        setOrderStatusId(key)
+        setOrderStatusName(key)
     };
 
     return (
         <div style={{ marginLeft: '30px' }}>
+            {/* {orders === null ? (
+                <Empty description="Không có đơn hàng nào" />
+            ) : ( */}
+            <>
+                <h6>Đơn hàng của tôi</h6>
+                <>
+                    <Tabs defaultActiveKey=""
+                        items={items}
+                        onChange={handleTabChange}></Tabs>
 
-            <h6>Đơn hàng của tôi</h6>
-            <Tabs defaultActiveKey=""
-                items={items}
-                onChange={handleTabChange}></Tabs>
-            {
-                open.isModal && <OrderModal
+                </>
+            </>
+            {/* )} */}
+            {open.isModal && (
+                <OrderModal
                     isModal={open.isModal}
                     hideModal={handleCancel}
                     fetchOrders={fetchOrders}
                     reacord={open.reacord}
                 />
-            }
-
+            )}
         </div>
-
     );
 }
 const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
@@ -254,9 +278,9 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
         form.validateFields().then(async () => {
 
             const data = form.getFieldsValue();
-            data.newStatusId = 6;
-            data.orderId = reacord.id    //6 là trạng thái đã hủy
-            console.log(data)
+            data.newStatusName = 'Đã hủy'; //6 là trạng thái đã hủy
+            data.orderId = reacord.id
+
             await OrderService.updateOrderStatus(data)
                 .then(() => {
                     notification.success({
@@ -280,18 +304,17 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
         })
 
     }
+
+
     const onRadioChange = (e) => {
         const radioValue = e.target.value;
-        // Update the value of the 'note' field in the form
+        // cập nhật giá trị cho ghi chú
         form.setFieldsValue({
             note: radioValue,
         });
     };
 
-    const onFinish = (values) => {
-        console.log('Received values:', values);
-        // Perform your form submission logic here
-    };
+
     return (
         <Modal
             title={<span><ExclamationCircleOutlined style={{ color: 'red', marginRight: '7px' }} />Thông báo xác nhận lý do hủy đơn hàng! </span>}
@@ -303,8 +326,6 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
         >
             <Form
                 name="validateOnly" layout="vertical" autoComplete="off"
-                onFinish={onFinish}
-
                 form={form}
             >
                 <Radio.Group
@@ -312,15 +333,40 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
                     style={{ margin: '10px 0' }}
                 >
                     <Space direction="vertical">
-                        <Radio value={"Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng."}>
-                            Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng.</Radio>
-                        <Radio value={"Tôi muốn thêm thay đổi mã giảm giá."}>Tôi muốn thêm thay đổi mã giảm giá.</Radio>
-                        <Radio value={"Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng)"}>Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng)</Radio>
-                        <Radio value={"Tôi tìm thấy chỗ mua khác tốt hơn (rẻ hơn, uy tín hơn, giao nhanh hơn...)"}>Tôi tìm thấy chỗ mua khác tốt hơn (rẻ hơn, uy tín hơn, giao nhanh hơn...)</Radio>
-                        <Radio value={"Tôi không có nhu cầu nữa."}>Tôi không có nhu cầu nữa.</Radio>
-                        <Radio value={"Thủ tục thanh toán rắc rối."}>Thủ tục thanh toán rắc rối.</Radio>
+
+                        <Radio
+                            value={"Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng."}>
+                            Tôi muốn cập nhật địa chỉ/số điện thoại nhận hàng.
+                        </Radio>
+
+                        <Radio
+                            value={"Tôi muốn thêm thay đổi mã giảm giá."}>
+                            Tôi muốn thêm thay đổi mã giảm giá.
+                        </Radio>
+
+                        <Radio
+                            value={"Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng)"}>
+                            Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng)
+                        </Radio>
+
+                        <Radio
+                            value={"Tôi tìm thấy chỗ mua khác tốt hơn (rẻ hơn, uy tín hơn, giao nhanh hơn...)"}>
+                            Tôi tìm thấy chỗ mua khác tốt hơn (rẻ hơn, uy tín hơn, giao nhanh hơn...)
+                        </Radio>
+
+                        <Radio
+                            value={"Tôi không có nhu cầu nữa."}>
+                            Tôi không có nhu cầu nữa.
+                        </Radio>
+
+                        <Radio
+                            value={"Thủ tục thanh toán rắc rối."}>
+                            Thủ tục thanh toán rắc rối.
+                        </Radio>
+
                     </Space>
                 </Radio.Group>
+
                 <Form.Item name="note" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
                     <TextArea rows={4} placeholder="Nhập lý do hủy..." />
                 </Form.Item>

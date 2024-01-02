@@ -181,7 +181,7 @@ function Checkout() {
             values.userId = user.id;
             values.deliveryId = 1;
             values.voucherId = carts.voucher == null ? null : carts.voucher.id;
-            values.statusId = 2;
+            values.statusName = 'Chờ xác nhận';
             values.orderTotal = calculateTotal();
             values.orderType = 'Online';
 

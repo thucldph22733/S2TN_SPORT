@@ -83,7 +83,6 @@ function User() {
         fetchUsers();
     }, [pagination.current, pagination.pageSize, searchName, searchPhone, searchEmail, deleted]);
 
-
     const handleDelete = async (id) => {
 
         await UserService.delete(id).then(response => {
@@ -116,7 +115,6 @@ function User() {
         });
         handleTableChange(pagination, null)
     };
-
 
     const handleTableChange = (pagination, filters) => {
         console.log(filters)

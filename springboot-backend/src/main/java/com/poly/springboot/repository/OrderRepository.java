@@ -37,8 +37,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.orderStatus.id = 1 AND o.deleted = true")
     Page<Order> findAllOrderByStatusId(Pageable pageable);
 
-    Page<Order> findAllByDeletedIsTrue(Pageable pageable);
-    Page<Order> findAllByOrderStatusIdAndDeletedIsTrue(Long orderStatusId, Pageable pageable);
+    @Query("SELECT o FROM Order o WHERE o.deleted = true AND (:orderStatusName IS NULL OR o.orderStatus.statusName = :orderStatusName)")
+    Page<Order> findAllByStatusNameAndDeletedIsTrue(@Param("orderStatusName") String orderStatusName, Pageable pageable);
 
 
     @Modifying
@@ -67,10 +67,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "FROM Order o " +
             "GROUP BY o.orderStatus.statusName")
     List< Object[]> getTotalOrdersByStatus();
-    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.deleted = true AND o.orderStatus.id = :orderStatusId")
-    Page<Order> findAllOrdersByUserId(@Param("userId") Long userId,@Param("orderStatusId") Long orderStatusId,Pageable pageable);
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.deleted = true AND (:orderStatusName IS NULL OR o.orderStatus.statusName = :orderStatusName)")
+    Page<Order> findAllOrdersByUserId(@Param("userId") Long userId,@Param("orderStatusName") String orderStatusName,Pageable pageable);
 
-    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.deleted = true")
-    Page<Order> findAllOrdersByUserId(@Param("userId") Long userId,Pageable pageable);
 }
 

@@ -37,13 +37,13 @@ public class OrderController {
     private OrderService orderService;
 
     // get all order rest api
-    @GetMapping("getAll")
+    @GetMapping("getAllOrders")
     public ResponseEntity<?> getOrders(@RequestParam(defaultValue = "0") Integer pageNo,
                                        @RequestParam(defaultValue = "10") Integer pageSize,
-                                       @RequestParam(required = false) Long orderStatusId) {
+                                       @RequestParam(required = false) String statusName) {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Order> orderPage = orderService.getAllOrders(orderStatusId, pageable);
+        Page<Order> orderPage = orderService.getAllOrders(statusName, pageable);
         List<Order> orderList = orderPage.getContent();
         return ResponseHandler
                 .generateResponse(
@@ -99,9 +99,9 @@ public class OrderController {
     public ResponseEntity<?> getAllOrdersByUserId(@RequestParam(defaultValue = "0") Integer pageNo,
                                                   @RequestParam(defaultValue = "10") Integer pageSize
                                                  ,@RequestParam(required = false) Long userId,
-                                                  @RequestParam(required = false) Long orderStatusId) {
+                                                  @RequestParam(required = false) String statusName) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Order> orderPage = orderService.findAllOrdersByUserId(userId,orderStatusId, pageable);
+        Page<Order> orderPage = orderService.findAllOrdersByUserId(userId,statusName, pageable);
         List<Order> orderList = orderPage.getContent();
         return ResponseHandler
                 .generateResponse(

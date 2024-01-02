@@ -25,7 +25,6 @@ public class OrderServiceImpl implements OrderService {
     private OrderRepository orderRepository;
     private OrderStatusRepository orderStatusRepository;
     private DeliveryRepository shippingMethodRepository;
-    private PaymentRepository paymentMethodRepository;
     private UserRepository userRepository;
     private VoucherRepository voucherRepository;
     private OrderDetailRepository orderDetailRepository;
@@ -37,7 +36,6 @@ public class OrderServiceImpl implements OrderService {
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderStatusRepository orderStatusRepository,
                             DeliveryRepository shippingMethodRepository,
-                            PaymentRepository paymentMethodRepository,
                             ProductDetailRepository productDetailRepository,
                             UserRepository userRepository,
                             OrderDetailRepository orderDetailRepository,
@@ -50,7 +48,6 @@ public class OrderServiceImpl implements OrderService {
         this.shippingMethodRepository = shippingMethodRepository;
         this.userRepository = userRepository;
         this.productDetailRepository = productDetailRepository;
-        this.paymentMethodRepository = paymentMethodRepository;
         this.voucherRepository = voucherRepository;
         this.orderHistoryRepository = orderHistoryRepository;
         this.cartRepository = cartRepository;
@@ -87,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderStatusRequestDto.getOrderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng này!"));
 
-        OrderStatus orderStatus = orderStatusRepository.findById(orderStatusRequestDto.getNewStatusId()).orElse(null);
+        OrderStatus orderStatus = orderStatusRepository.findByStatusName(orderStatusRequestDto.getNewStatusName()).orElse(null);
 
         order.setNote(orderStatusRequestDto.getNote());
         order.setOrderStatus(orderStatus);
@@ -157,14 +154,9 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Page<Order> getAllOrders(Long orderStatusId, Pageable pageable) {
-        Page<Order> orderPage;
-        if (orderStatusId == null) {
-            orderPage = orderRepository.findAllByDeletedIsTrue(pageable);
-        } else {
-            orderPage = orderRepository.findAllByOrderStatusIdAndDeletedIsTrue(orderStatusId, pageable);
-        }
-        return orderPage;
+    public Page<Order> getAllOrders(String orderStatusName, Pageable pageable) {
+
+        return orderRepository.findAllByStatusNameAndDeletedIsTrue(orderStatusName,pageable);
     }
 
     @Override
@@ -238,7 +230,7 @@ public class OrderServiceImpl implements OrderService {
         Voucher voucher = (orderRequestDto.getVoucherId() != null) ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
 
         // Tìm đối tượng OrderStatus (set luôn là null nếu không tìm thấy)
-        OrderStatus orderStatus = (orderRequestDto.getStatusId() != null) ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
+        OrderStatus orderStatus = (orderRequestDto.getStatusName() != null) ? orderStatusRepository.findByStatusName(orderRequestDto.getStatusName()).orElse(null) : null;
 // Tạo đối tượng Order và set các giá trị đã tìm được
         Order order = new Order();
         order.setUser(user);
@@ -317,14 +309,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<Order> findAllOrdersByUserId(Long userId, Long orderStatusId, Pageable pageable) {
-        Page<Order> orderPage;
-        if (orderStatusId == null) {
-            orderPage = orderRepository.findAllOrdersByUserId(userId, pageable);
-        } else {
-            orderPage = orderRepository.findAllOrdersByUserId(userId, orderStatusId, pageable);
-        }
-        return orderPage;
+    public Page<Order> findAllOrdersByUserId(Long userId, String orderStatusName, Pageable pageable) {
+
+        return orderRepository.findAllOrdersByUserId(userId, orderStatusName, pageable);
     }
 
     @Override
@@ -351,29 +338,29 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Boolean updateOrder(OrderRequestDto orderRequestDto, Long id) {
-        try {
-            // Lấy thông tin các đối tượng liên quan từ ID
-            User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
-            Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
-            OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
-            Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
-
-            // Lấy thông tin đơn hàng từ ID
-            Order order = orderRepository.findById(id)
-                    .orElseThrow(() -> {
-                        System.out.println("Order not found with id: " + id);
-                        return new ResourceNotFoundException("Không tìm thấy id hóa đơn này");
-                    });
-
-            // Cập nhật thông tin đơn hàng
-            order.setUser(user);
-            order.setDelivery(delivery);
-//            order.setPayment(payment);
-            order.setOrderStatus(orderStatus);
-            order.setVoucher(voucher);
-            order.setOrderTotal(orderRequestDto.getOrderTotal());
-            order.setNote(orderRequestDto.getNote());
-            order.setOrderTotalInitial(order.getOrderTotalInitial());
+//        try {
+//            // Lấy thông tin các đối tượng liên quan từ ID
+//            User user = orderRequestDto.getUserId() != null ? userRepository.findById(orderRequestDto.getUserId()).orElse(null) : null;
+//            Delivery delivery = orderRequestDto.getDeliveryId() != null ? shippingMethodRepository.findById(orderRequestDto.getDeliveryId()).orElse(null) : null;
+//            OrderStatus orderStatus = orderRequestDto.getStatusId() != null ? orderStatusRepository.findById(orderRequestDto.getStatusId()).orElse(null) : null;
+//            Voucher voucher = orderRequestDto.getVoucherId() != null ? voucherRepository.findById(orderRequestDto.getVoucherId()).orElse(null) : null;
+//
+//            // Lấy thông tin đơn hàng từ ID
+//            Order order = orderRepository.findById(id)
+//                    .orElseThrow(() -> {
+//                        System.out.println("Order not found with id: " + id);
+//                        return new ResourceNotFoundException("Không tìm thấy id hóa đơn này");
+//                    });
+//
+//            // Cập nhật thông tin đơn hàng
+//            order.setUser(user);
+//            order.setDelivery(delivery);
+////            order.setPayment(payment);
+//            order.setOrderStatus(orderStatus);
+//            order.setVoucher(voucher);
+//            order.setOrderTotal(orderRequestDto.getOrderTotal());
+//            order.setNote(orderRequestDto.getNote());
+//            order.setOrderTotalInitial(order.getOrderTotalInitial());
 
             // Tính toán giảm giá và cập nhật
 //            if (voucher != null) {
@@ -383,13 +370,14 @@ public class OrderServiceImpl implements OrderService {
 //            }
 
             // Lưu đơn hàng và trả về true
-            orderRepository.save(order);
-            return true;
-        } catch (Exception e) {
-            // Xử lý ngoại lệ và log lỗi nếu cần
-            e.printStackTrace();
-            return false;
-        }
+//            orderRepository.save(order);
+//            return true;
+//        } catch (Exception e) {
+//            // Xử lý ngoại lệ và log lỗi nếu cần
+//            e.printStackTrace();
+//            return false;
+//        }
+        return true;
     }
 
     @Override

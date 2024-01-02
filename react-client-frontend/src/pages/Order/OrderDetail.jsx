@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Table,
-    Image,
-    Tag,
-    Button,
-    Descriptions
-} from 'antd';
+import { Table, Image, Tag, Button, Descriptions } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline';
-import { FaBox, FaMinus, FaRegCalendarCheck, FaRegFileAlt, FaTruck, FaTruckLoading } from 'react-icons/fa';
+import { FaBox, FaMinus, FaRegCalendarCheck, FaRegFileAlt, FaTruck, FaCheckCircle } from 'react-icons/fa';
 import FormatDate from '~/utils/format-date';
 import OrderHistoryService from '~/service/OrderHistoryService';
 import OrderService from '~/service/OrderService';
@@ -16,23 +10,68 @@ import { DoubleLeftOutlined } from '@ant-design/icons';
 import path_name from '~/core/constants/routers';
 import OrderDetailService from '~/service/OrderDetailService';
 import formatCurrency from '~/utils/format-currency';
-import { render } from '@testing-library/react';
+
 
 export default function OrderDetail() {
     const { id } = useParams();
 
+    //----------------------------------Lịch sử đơn hàng---------------------------------------------------------------
+    const [timeLines, setTimeLines] = useState([]);
 
+    const getAllTimeLineByOrderId = async () => {
+        OrderHistoryService.getAllTimeLineByOrderId(id).then(response => {
+            const convertedTimeline = response.map((event) => ({
+                title: event.status.statusName,
+                subtitle: FormatDate(event.createdAt),
+                color: getStatusColor(event.status.statusName),
+                icon: getIconByStatus(event.status.statusName),
+            }));
+            setTimeLines(convertedTimeline);
+            console.log('Timeline:', response); // Add this line
+        }).catch((error) => {
+            console.error('Error fetching timeline:', error);
+        })
 
-    const [timeLines, setTimeLines] = useState([]); // Bạn có thể điều chỉnh cấu trúc của order theo nhu cầu
+    };
+    // Logic chuyển đổi màu sắc tùy thuộc vào status
+    const getStatusColor = (status) => {
 
-    useEffect(() => {
-        fetchOrder();
-        fetchOrderDetail();
-        getAllTimeLineByOrderId();
-        // loadOrderDetails();
-    }, []);
+        if (status === 'Tạo đơn hàng') {
+            return 'green';
+        } else if (status === 'Chờ xác nhận') {
+            return '#40826D';
+        } else if (status === 'Chờ giao hàng') {
+            return '#007FFF	';
+        } else if (status === 'Đang vận chuyển') {
+            return '#FF6600';
+        } else if (status === 'Đã giao hàng') {
+            return '#007BA7';
+        } else if (status === 'Hoàn thành') {
+            return '#7859f2';
+        } else if (status === 'Đã hủy') {
+            return 'red';
+        }
+    };
+    // Logic chuyển đổi biểu tượng tùy thuộc vào status
+    const getIconByStatus = (status) => {
 
-    //----------------------Hóa đơn---------------------------------------------
+        if (status === 'Tạo đơn hàng') {
+            return FaRegFileAlt;
+        } else if (status === 'Chờ xác nhận') {
+            return FaRegFileAlt;
+        } else if (status === 'Chờ giao hàng') {
+            return FaBox;
+        } else if (status === 'Đang vận chuyển') {
+            return FaTruck;
+        } else if (status === 'Đã giao hàng') {
+            return FaRegCalendarCheck;
+        } else if (status === 'Hoàn thành') {
+            return FaCheckCircle;
+        } else if (status === 'Đã hủy') {
+            return FaMinus;
+        }
+    };
+    //-------------------------------------------Hóa đơn---------------------------------------------
     const [orders, setOrders] = useState([]);
 
     const fetchOrder = async () => {
@@ -67,19 +106,21 @@ export default function OrderDetail() {
                 console.error(error);
             })
     };
+
     const handleTableChange = (pagination) => {
         setPagination({
             ...pagination,
         });
 
     };
-    const calculateTotalAmount = () => {
-        let totalAmount = 0;
-        orderDetails.forEach(item => {
-            totalAmount += parseFloat(item.price);
-        });
-        return formatCurrency(totalAmount);
-    };
+    //-------------------------Load dữ liệu---------------------------------------------
+    useEffect(() => {
+        fetchOrder();
+        fetchOrderDetail();
+        getAllTimeLineByOrderId();
+    }, []);
+
+    //-------------------------------Colum table--------------------------------------------------
     const columnOrderDetail = [
         {
             title: '#',
@@ -133,59 +174,7 @@ export default function OrderDetail() {
             ),
         },
     ];
-    //----------------------------------Lịch sử đơn hàng---------------------------------------------------------------
 
-    const getAllTimeLineByOrderId = async () => {
-        OrderHistoryService.getAllTimeLineByOrderId(id).then(response => {
-            const convertedTimeline = response.map((event) => ({
-                title: event.status.statusName,
-                subtitle: FormatDate(event.createdAt),
-                color: getStatusColor(event.status.id),
-                icon: getIconByStatus(event.status.id),
-            }));
-            setTimeLines(convertedTimeline);
-            console.log('Timeline:', response); // Add this line
-        }).catch((error) => {
-            console.error('Error fetching timeline:', error);
-        })
-
-    };
-    const getStatusColor = (status) => {
-        // Logic chuyển đổi màu sắc tùy thuộc vào status
-        // Ví dụ:
-        if (status === 1) {
-            return 'green';
-        } else if (status === 2) {
-            return '#40826D';
-        } else if (status === 3) {
-            return '#007FFF	';
-        } else if (status === 4) {
-            return '#FF6600';
-        } else if (status === 5) {
-            return '#007BA7';
-        } else if (status === 6) {
-            return 'red';
-        }
-    };
-
-    const getIconByStatus = (status) => {
-        // Logic chuyển đổi biểu tượng tùy thuộc vào status
-        // Ví dụ:
-        if (status === 1) {
-            return FaRegFileAlt;
-        } else if (status === 2) {
-            return FaTruckLoading;
-        } else if (status === 3) {
-            return FaBox;
-        } else if (status === 4) {
-            return FaTruck;
-        } else if (status === 5) {
-            return FaRegCalendarCheck;
-        } else if (status === 6) {
-            return FaMinus;
-        }
-    };
-    //-------------------------------------------------------------------------
     const columnPaymentHistory = [
         {
             title: '#',
@@ -216,6 +205,14 @@ export default function OrderDetail() {
             width: '20%',
         },
     ];
+    //----------------------------------- Hàm  tính tổng tiền hàng-------------------------------------------
+    const calculateTotalAmount = () => {
+        let totalAmount = 0;
+        orderDetails.forEach(item => {
+            totalAmount += parseFloat(item.price * item.quantity);
+        });
+        return totalAmount;
+    };
     return (
         <>
 
@@ -226,6 +223,9 @@ export default function OrderDetail() {
                     </Button>
                 </Link>
             </div>
+
+
+
             <div className='container' style={{ marginTop: '10px' }}>
                 <div style={{
                     width: '100%',
@@ -235,11 +235,10 @@ export default function OrderDetail() {
                     <div style={{
                         width: '1100px',
                     }}>
-                        <Timeline minEvents={9} placeholder >
+                        <Timeline minEvents={7} placeholder >
                             {timeLines.map((timeLine, index) => (
                                 <TimelineEvent
                                     key={index}
-                                    // style={{ display: 'inline-block', marginRight: '20px' }}
                                     color={timeLine.color}
                                     icon={timeLine.icon}
                                     title={timeLine.title}
@@ -250,12 +249,15 @@ export default function OrderDetail() {
                         </Timeline>
                     </div>
                 </div>
+
+
+
                 <div style={{ borderBottom: '2px solid black', marginTop: '20px' }}>
                     <h6>SẢN PHẨM</h6>
                 </div>
                 <Table
                     onChange={handleTableChange}
-                    loading={loading}
+
                     columns={columnOrderDetail}
                     dataSource={orderDetails.map((orderDetail, index) => ({
                         ...orderDetail,
@@ -269,38 +271,63 @@ export default function OrderDetail() {
                         pageSizeOptions: ['5', '10', '15'],
                         total: pagination.total,
                         showSizeChanger: true,
-                    }}></Table >
+                    }} />
+
+
+
+
                 <div style={{ borderBottom: '2px solid black', marginBottom: '10px' }}>
                     <h6>THÔNG TIN ĐƠN HÀNG: <span style={{ color: 'red' }}>HD{orders.id}</span></h6>
                 </div>
                 <Descriptions
                     size='default'
-                    // layout="vertical"
                     bordered
                     style={{ padding: '10px 10px' }}
                 >
                     <Descriptions.Item label="Họ và tên">
-                        {orders.recipientName == null ? 'Khách lẻ' : orders.recipientName}</Descriptions.Item>
+                        {orders.recipientName == null ? 'Khách lẻ' : orders.recipientName}
+                    </Descriptions.Item>
+
                     <Descriptions.Item label="Trạng thái">
                         {orders.orderStatus == null ? '' : <Tag color="blue">{orders.orderStatus.statusName}</Tag>}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Voucher"> {formatCurrency(orders.voucher != null ? -orders.voucher.discountRate : 0)}</Descriptions.Item>
 
-                    <Descriptions.Item label="Số điện thoại" >{orders.phoneNumber == null ? 'Không có' : orders.phoneNumber}</Descriptions.Item>
-                    <Descriptions.Item label="Loại đơn hàng">
-                        {orders.orderType && orders.orderType !== "Online" ? <Tag color="purple">Online</Tag> : <Tag color="volcano">Tại quầy</Tag>}
+                    <Descriptions.Item label="Tổng tiền hàng">
+                        {formatCurrency(calculateTotalAmount())}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Phí vận chuyển">{formatCurrency(-30000)}</Descriptions.Item>
+
+                    <Descriptions.Item label="Số điện thoại" >
+                        {orders.phoneNumber == null ? 'Không có' : orders.phoneNumber}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Loại đơn hàng">
+                        {orders.orderType && orders.orderType === "Online" ?
+                            <Tag color="purple">Online</Tag> :
+                            <Tag color="volcano">Tại quầy</Tag>}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Voucher">
+                        {formatCurrency(orders.voucher != null ? -orders.voucher.discountRate : 0)}
+                    </Descriptions.Item>
 
                     <Descriptions.Item label="Địa chỉ" span={2}>  {orders.ward && orders.district && orders.city && orders.addressDetail
                         ? `${orders.addressDetail} - ${orders.ward} - ${orders.district} - ${orders.city}`
                         : "Không có"}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Tổng tiền">{formatCurrency(orders.orderTotal)}</Descriptions.Item>
 
-                    <Descriptions.Item label="Phương thức thanh toán"><Tag color="green">Thanh toán khi nhận hàng</Tag></Descriptions.Item>
+                    <Descriptions.Item label="Phí vận chuyển">
+                        {formatCurrency(30000)}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Phương thức thanh toán" span={2}>
+                        <Tag color="green" >Thanh toán khi nhận hàng</Tag>
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Thành tiền">
+                        {formatCurrency(orders.orderTotal)}
+                    </Descriptions.Item>
+
                 </Descriptions>
-
 
             </div>
         </>

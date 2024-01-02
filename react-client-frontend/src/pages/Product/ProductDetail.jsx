@@ -276,7 +276,7 @@ function ProductDetail() {
                             <Col span={20} xs={24} md={19}>
                                 <Image
                                     key={images[0]?.id}
-                                    width={400}
+                                    width={430}
                                     height={430}
                                     src={images[0]?.imageLink || ""}
                                 />

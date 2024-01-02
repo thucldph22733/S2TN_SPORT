@@ -1,14 +1,11 @@
-import { CloseSquareOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Modal, Popconfirm, Radio, Space, Table, Tabs, Tag, Tooltip, notification } from 'antd';
-import TextArea from 'antd/es/input/TextArea';
+import { Button, Radio, Space, Table, Tabs, Tag, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
-import { Form, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import path_name from '~/constants/routers';
 import OrderService from '~/service/OrderService';
+import formatCurrency from '~/utils/format-currency';
 import FormatDate from '~/utils/format-date';
-
-
 
 
 function Order() {
@@ -28,15 +25,9 @@ function Order() {
             render: (text) => <a>HD{text}</a>,
         },
         {
-            title: 'Khách hàng',
-            dataIndex: 'customerName',
-            key: 'customerName',
-            width: "10%"
-        },
-        {
             title: 'Loại đơn hàng',
-            dataIndex: 'orderTypeName',
-            key: 'orderTypeName',
+            dataIndex: 'orderType',
+            key: 'orderType',
             width: "10%",
             render: (text) => (
                 text === "InStore" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
@@ -54,7 +45,7 @@ function Order() {
             dataIndex: 'voucher',
             key: 'voucher',
             width: "10%",
-            render: (text) => <span>{text} %</span>,
+            render: (text) => <span>{formatCurrency(text)}</span>,
         },
         {
             title: 'Trạng thái',
@@ -64,16 +55,19 @@ function Order() {
             render: (text) => {
                 switch (text) {
                     case 'Tạo đơn hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Tạo đơn hàng</Tag>
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Đơn hàng mới</Tag>
                         break;
                     case 'Chờ xác nhận':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
                         break;
-                    case 'Chờ lấy hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Chờ lấy hàng</Tag>
-                        break;
                     case 'Chờ giao hàng':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="purple">Chờ giao hàng</Tag>
+                        break;
+                    case 'Đang vận chuyển':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Đang vận chuyển</Tag>
+                        break;
+                    case 'Đã giao hàng':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="magenta">Đã giao hàng</Tag>
                         break;
                     case 'Hoàn thành':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="cyan">Hoàn thành</Tag>
@@ -114,18 +108,18 @@ function Order() {
             },
         },
     ];
-    //-----------------------------------------------------------------
+    //-------------------------Load dữ liệu hóa đơn----------------------------------------
     const [loading, setLoading] = useState(false);
 
     const [orders, setOrders] = useState([]);
 
     const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
-    const [orderStatusId, setOrderStatusId] = useState(null);
+    const [orderStatusName, setOrderStatusName] = useState(null);
 
     const fetchOrders = async () => {
         setLoading(true)
-        await OrderService.getAll(pagination.current - 1, pagination.pageSize, orderStatusId)
+        await OrderService.getAllOrders(pagination.current - 1, pagination.pageSize, orderStatusName)
             .then(response => {
 
                 setOrders(response.data);
@@ -133,7 +127,7 @@ function Order() {
                     ...pagination,
                     total: response.totalCount,
                 });
-                console.log(response.data)
+
                 setLoading(false)
             }).catch(error => {
                 console.error(error);
@@ -142,7 +136,7 @@ function Order() {
 
     useEffect(() => {
         fetchOrders();
-    }, [pagination.current, pagination.pageSize, orderStatusId]);
+    }, [pagination.current, pagination.pageSize, orderStatusName]);
 
     const handleTableChange = (pagination) => {
         setPagination({
@@ -150,6 +144,7 @@ function Order() {
         });
 
     };
+
 
     const tabContent = () => (
 
@@ -179,39 +174,45 @@ function Order() {
 
     const items = [
         {
-            key: '',
+            key: null,
             label: 'Tất cả',
             children: tabContent(),
         },
         {
-            key: '2',
+            key: 'Chờ xác nhận',
             label: 'Chờ xác nhận',
             children: tabContent(),
         },
         {
-            key: '3',
-            label: 'Chờ lấy hàng',
-            children: tabContent(),
-        },
-        {
-            key: '4',
+            key: 'Chờ giao hàng',
             label: 'Chờ giao hàng',
             children: tabContent(),
         },
         {
-            key: '5',
+            key: 'Đang vận chuyển',
+            label: 'Đang vận chuyển',
+            children: tabContent(),
+        },
+        {
+            key: 'Đã giao hàng',
+            label: 'Đã giao hàng',
+            children: tabContent(),
+        },
+        {
+            key: 'Hoàn thành',
             label: 'Hoàn thành',
             children: tabContent(),
         },
         {
-            key: '6',
+            key: 'Đã hủy',
             label: 'Đã hủy',
             children: tabContent(),
         },
 
     ];
+
     const handleTabChange = (key) => {
-        setOrderStatusId(key)
+        setOrderStatusName(key)
     };
 
     return (

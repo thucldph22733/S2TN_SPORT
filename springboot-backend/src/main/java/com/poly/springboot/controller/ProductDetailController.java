@@ -70,10 +70,6 @@ public class ProductDetailController {
                 .body(sizeInfoResponseDtos);
     }
 
-
-
-
-
     @PostMapping("/create")
     public ResponseEntity<?> createProductDetails(@RequestBody List<ProductDetailRequestDto> productDetailRequestDtos) {
         try {

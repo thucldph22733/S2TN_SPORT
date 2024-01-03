@@ -50,19 +50,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductUserResponseDto> getProductHomePageByProductNew(Pageable pageable) {
-        return  productRepository.findProductHomePageByProductNew(pageable);
+    public Page<ProductUserResponseDto> getProductHomePageByProducts(Pageable pageable) {
+        return  productRepository.findProductHomePageByProducts(pageable);
     }
 
-    @Override
-    public Page<ProductUserResponseDto> getProductHomePageByProductHot(Pageable pageable) {
-        return productRepository.findProductHomePageByProductHot(pageable);
-    }
-
-    @Override
-    public Page<ProductUserResponseDto> getProductHomePageByProductSale(Pageable pageable) {
-        return productRepository.findProductHomePageByProductSale(pageable);
-    }
 
 
 //    @Override
@@ -106,10 +97,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductUserResponseDto> findProductsByFilters(List<Long> categoryIds, List<Long> brandIds, List<Long> colorIds, List<Long> materialIds, List<Long> sizeIds,
-//                                                              Double minPrice, Double maxPrice,
+                                                              Double minPrice, Double maxPrice,String productName,
                                                               Pageable pageable) {
         return productRepository.findProductsByFilters(categoryIds,brandIds,colorIds,materialIds,sizeIds
-//                ,minPrice,maxPrice
+                ,minPrice,maxPrice,productName
                 ,pageable);
     }
 

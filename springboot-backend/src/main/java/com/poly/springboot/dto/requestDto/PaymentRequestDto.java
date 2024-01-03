@@ -14,4 +14,6 @@ public class PaymentRequestDto {
 
        private long amount;
 
+       private long orderId;
+
 }

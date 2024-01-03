@@ -1,4 +1,4 @@
-import { Button, Radio, Space, Table, Tabs, Tag, Tooltip } from 'antd';
+import { Badge, Button, Radio, Space, Table, Tabs, Tag, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -162,7 +162,6 @@ function Order() {
                 voucher: order.voucher ? order.voucher.discountRate : 0,
                 customerName: order.user ? order.user.usersName : "Khách lẻ",
                 orderStatusName: order.orderStatus ? order.orderStatus.statusName : "",
-                // orderTypeName: order.orderType ? order.orderType.orderTypeName : ""
 
             }))}
             onChange={handleTableChange}
@@ -190,8 +189,8 @@ function Order() {
             children: tabContent(),
         },
         {
-            key: 'Chờ giao hàng',
-            label: 'Chờ giao hàng',
+            key: 'Chờ lấy hàng',
+            label: 'Chờ lấy hàng',
             children: tabContent(),
         },
         {
@@ -200,8 +199,8 @@ function Order() {
             children: tabContent(),
         },
         {
-            key: 'Đã giao hàng',
-            label: 'Đã giao hàng',
+            key: 'Chờ giao hàng',
+            label: 'Chờ giao hàng',
             children: tabContent(),
         },
         {
@@ -214,8 +213,8 @@ function Order() {
             label: 'Đã hủy',
             children: tabContent(),
         },
-
     ];
+
 
     const handleTabChange = (key) => {
         setOrderStatusName(key)

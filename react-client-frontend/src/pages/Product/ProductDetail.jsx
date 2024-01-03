@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './Product.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Breadcrumb, Button, Col, Image, InputNumber, Modal, Rate, Row, Table, Tabs, message, notification } from 'antd';
+import { Breadcrumb, Button, Col, Image, InputNumber, Modal, Rate, Row, Table, Tabs, message } from 'antd';
 import { HomeOutlined, SendOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import imgage1 from '~/assets/images/product/product-21.jpg';
-import imgage2 from '~/assets/images/product/product-20.jpg';
 import { Link, useParams } from 'react-router-dom';
-import { MdLabelImportantOutline } from 'react-icons/md';
 import ProductDetailService from '~/service/ProductDetailService';
 import formatCurrency from '~/utils/format-currency';
 import ImageService from '~/service/ImageService';
 import CartService from '~/service/CartService';
-import CartDetailService from '~/service/CartDetailService';
 
 const columns = [
     {
@@ -252,12 +248,12 @@ function ProductDetail() {
             CartService.create(cartDetail).then(() => {
 
                 message.success('Sản phẩm đã được thêm vào giỏ hàng!');
-
             }).catch(err => {
                 message.error('Lỗi thêm sản phẩm vào giỏ hàng!');
             });
         } else {
             addToLocalStorageCart();
+
         }
 
     };

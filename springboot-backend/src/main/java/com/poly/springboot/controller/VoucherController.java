@@ -61,6 +61,14 @@ public class VoucherController {
                 .body(voucherList);
     }
 
+    @GetMapping("findByVoucherCode")
+    public ResponseEntity<Voucher> findByVoucherCode(@RequestParam String code) {
+        Voucher  voucher= voucherService.findByVoucherCode(code);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(voucher);
+    }
+
     @GetMapping("getAll")
     public ResponseEntity<?> getPagination(@RequestParam(defaultValue = "0") Integer pageNo,
                                            @RequestParam(defaultValue = "10") Integer pageSize,

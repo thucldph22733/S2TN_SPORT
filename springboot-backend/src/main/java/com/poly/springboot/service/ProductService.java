@@ -13,11 +13,7 @@ import java.util.List;
 public interface ProductService {
     Page<ProductResponseDto> getProducts(String name, List<Boolean> status, Pageable pageable);
 
-    Page<ProductUserResponseDto> getProductHomePageByProductNew(Pageable pageable);
-
-    Page<ProductUserResponseDto> getProductHomePageByProductHot(Pageable pageable);
-
-    Page<ProductUserResponseDto> getProductHomePageByProductSale(Pageable pageable);
+    Page<ProductUserResponseDto> getProductHomePageByProducts(Pageable pageable);
 
 //    Boolean deleteProduct(Long id);
 
@@ -27,13 +23,8 @@ public interface ProductService {
 
     List<Product> findAllByDeletedTrue();
 
-    Page<ProductUserResponseDto> findProductsByFilters(List<Long> categoryIds,
-                                                       List<Long> brandIds,
-                                                       List<Long> colorIds,
-                                                       List<Long> materialIds,
-                                                       List<Long> sizeIds,
-//                                                       Double minPrice,
-//                                                       Double maxPrice,
+    Page<ProductUserResponseDto> findProductsByFilters(List<Long> categoryIds, List<Long> brandIds, List<Long> colorIds, List<Long> materialIds, List<Long> sizeIds,
+                                                       Double minPrice, Double maxPrice,String productName,
                                                        Pageable pageable);
 
 }

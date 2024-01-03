@@ -196,6 +196,7 @@ function Order() {
                 total: pagination.total,
                 showSizeChanger: true,
             }}></Table >
+
     );
 
 
@@ -211,8 +212,8 @@ function Order() {
             children: tabContent(),
         },
         {
-            key: 'Chờ giao hàng',
-            label: 'Chờ giao hàng',
+            key: 'Chờ lấy hàng',
+            label: 'Chờ lấy hàng',
             children: tabContent(),
         },
         {
@@ -221,8 +222,8 @@ function Order() {
             children: tabContent(),
         },
         {
-            key: 'Đã giao hàng',
-            label: 'Đã giao hàng',
+            key: 'Chờ giao hàng',
+            label: 'Chờ giao hàng',
             children: tabContent(),
         },
         {
@@ -235,7 +236,6 @@ function Order() {
             label: 'Đã hủy',
             children: tabContent(),
         },
-
     ];
 
     const handleTabChange = (key) => {
@@ -245,11 +245,15 @@ function Order() {
     return (
         <div style={{ marginLeft: '30px' }}>
 
-            <h6>Đơn hàng của tôi</h6>
+            {orders.length === 0 ? (<Empty description="Không có đơn hàng nào" />) : (
+                <>
+                    <h6>Đơn hàng của tôi</h6>
 
-            <Tabs defaultActiveKey=""
-                items={items}
-                onChange={handleTabChange}></Tabs>
+                    <Tabs defaultActiveKey=""
+                        items={items}
+                        onChange={handleTabChange}></Tabs>
+                </>
+            )}
 
             {open.isModal && (
                 <OrderModal

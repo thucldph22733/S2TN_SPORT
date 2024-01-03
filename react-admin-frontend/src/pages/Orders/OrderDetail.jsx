@@ -58,11 +58,11 @@ export default function OrderDetail() {
             return 'green';
         } else if (status === 'Chờ xác nhận') {
             return '#40826D';
-        } else if (status === 'Chờ giao hàng') {
+        } else if (status === 'Chờ lấy hàng') {
             return '#007FFF	';
         } else if (status === 'Đang vận chuyển') {
             return '#FF6600';
-        } else if (status === 'Đã giao hàng') {
+        } else if (status === 'Chờ giao hàng') {
             return '#007BA7';
         } else if (status === 'Hoàn thành') {
             return '#7859f2';
@@ -77,12 +77,12 @@ export default function OrderDetail() {
             return FaRegFileAlt;
         } else if (status === 'Chờ xác nhận') {
             return FaRegFileAlt;
-        } else if (status === 'Chờ giao hàng') {
+        } else if (status === 'Chờ lấy hàng') {
             return FaBox;
         } else if (status === 'Đang vận chuyển') {
             return FaTruck;
-        } else if (status === 'Đã giao hàng') {
-            return FaRegCalendarCheck;
+        } else if (status === 'Chờ giao hàng') {
+            return FaTruck;
         } else if (status === 'Hoàn thành') {
             return FaCheckCircle;
         } else if (status === 'Đã hủy') {
@@ -308,18 +308,31 @@ export default function OrderDetail() {
                     <Space size="middle" style={{ marginBottom: '20px' }}>
 
                         <>
-                            {(orders.orderStatus?.statusName !== 'Hoàn thành' &&
+                            {orders.orderStatus?.statusName === 'Chờ xác nhận' &&
                                 <Button type='primary' style={{ borderRadius: '5px' }} onClick={() => showModalStatus('status')}>
-                                    {orders.orderStatus?.statusName === 'Chờ xác nhận' ? 'Xác nhận' : ''}
-                                    {orders.orderStatus?.statusName === 'Chờ giao hàng' ? 'Giao hàng' : ''}
-                                    {orders.orderStatus?.statusName === 'Đang vận chuyển' ? 'Lấy hàng' : ''}
-                                    {orders.orderStatus?.statusName === 'Đã giao hàng' ? 'Hoàn thành' : ''}
+                                    Xác nhận
                                 </Button>
-                            )}
+                            }
+                            {orders.orderStatus?.statusName === 'Chờ lấy hàng' &&
+                                <Button type='primary' style={{ borderRadius: '5px' }} onClick={() => showModalStatus('status')}>
+                                    Giao hàng
+                                </Button>
+                            }
+                            {orders.orderStatus?.statusName === 'Đang vận chuyển' &&
+                                <Button type='primary' style={{ borderRadius: '5px' }} onClick={() => showModalStatus('status')}>
+                                    Đang giao
+                                </Button>
+                            }
+                            {orders.orderStatus?.statusName === 'Chờ giao hàng' &&
+                                <Button type='primary' style={{ borderRadius: '5px' }} onClick={() => showModalStatus('status')}>
+                                    Hoàn thành
+                                </Button>
+                            }
+
                             {(orders.orderStatus?.statusName === 'Chờ xác nhận'
-                                || orders.orderStatus?.statusName === 'Chờ giao hàng'
+                                || orders.orderStatus?.statusName === 'Chờ lấy hàng'
                                 || orders.orderStatus?.statusName === 'Đang vận chuyển'
-                                // || orders.orderStatus?.statusName === 'Đã giao hàng'
+                                || orders.orderStatus?.statusName === 'Chờ giao hàng'
                             ) && (
                                     <Button type='primary' style={{ backgroundColor: 'red', borderRadius: '5px' }} onClick={() => showModalStatus('Cancel')}>
                                         Hủy đơn
@@ -463,15 +476,15 @@ const OrderStatusModal = ({ hideModal, isModal, isMode, fetchOrders, getAllTimeL
 
                 switch (orderStatusName) {
                     case "Chờ xác nhận":
-                        data.newStatusName = 'Chờ giao hàng';
+                        data.newStatusName = 'Chờ lấy hàng';
                         break;
-                    case "Chờ giao hàng":
+                    case "Chờ lấy hàng":
                         data.newStatusName = 'Đang vận chuyển';
                         break;
                     case "Đang vận chuyển":
-                        data.newStatusName = 'Đã giao hàng';
+                        data.newStatusName = 'Chờ giao hàng';
                         break;
-                    case "Đã giao hàng":
+                    case "Chờ giao hàng":
                         data.newStatusName = 'Hoàn thành';
                         break;
                     default:

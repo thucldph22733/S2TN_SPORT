@@ -17,18 +17,18 @@ import formatCurrency from '~/utils/format-currency';
 const { Meta } = Card;
 
 const Home = () => {
-    //----------------------------------Sản phẩm hot--------------------------------------------------
-    const [productHot, setProductHot] = useState([]);
-    const [paginationHot, setPaginationHot] = useState({ current: 1, pageSize: 4, total: 0 });
-    const getProductHomePageByProductHot = async (page, pageSize) => {
+    //----------------------------------Sản phẩm--------------------------------------------------
+    const [products, setProducts] = useState([]);
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 12, total: 0 });
+    const getProductHomePageByProducts = async (page, pageSize) => {
 
-        await ProductService.getProductHomePageByProductHot(page, pageSize)
+        await ProductService.getProductHomePageByProducts(page, pageSize)
             .then(response => {
 
-                setProductHot(response.data);
+                setProducts(response.data);
 
-                setPaginationHot({
-                    ...paginationHot,
+                setPagination({
+                    ...pagination,
                     current: response.pagination.currentPage,
                     pageSize: response.pagination.pageSize,
                     total: response.totalCount,
@@ -38,95 +38,26 @@ const Home = () => {
                 console.error(error);
             })
     }
-    const handlePageChangeHot = (page, pageSize) => {
-        getProductHomePageByProductHot(page - 1, pageSize);
+    const handlePageChange = (page, pageSize) => {
+        getProductHomePageByProducts(page - 1, pageSize);
     };
 
-    const handleSizeChangeHot = (current, size) => {
-        getProductHomePageByProductHot(0, size);
-    };
-
-    useEffect(() => {
-        getProductHomePageByProductHot(paginationHot.current - 1, paginationHot.pageSize);
-    }, [paginationHot.current, paginationHot.pageSize]);
-
-
-    //-----------------------Sản phẩm mới----------------------------------------------------
-    const [productNew, setProductNew] = useState([]);
-    const [paginationNew, setPaginationNew] = useState({ current: 1, pageSize: 4, total: 0 });
-    const getProductHomePageByProductNew = async (page, pageSize) => {
-
-        await ProductService.getProductHomePageByProductNew(page, pageSize)
-            .then(response => {
-
-                setProductNew(response.data);
-
-                setPaginationNew({
-                    ...paginationNew,
-                    current: response.pagination.currentPage,
-                    pageSize: response.pagination.pageSize,
-                    total: response.totalCount,
-                });
-
-            }).catch(error => {
-                console.error(error);
-            })
-    }
-    const handlePageChangeNew = (page, pageSize) => {
-        getProductHomePageByProductNew(page - 1, pageSize);
-    };
-
-    const handleSizeChangeNew = (current, size) => {
-        getProductHomePageByProductNew(0, size);
+    const handleSizeChange = (current, size) => {
+        getProductHomePageByProducts(0, size);
     };
 
     useEffect(() => {
-        getProductHomePageByProductNew(paginationNew.current - 1, paginationNew.pageSize);
-    }, [paginationNew.current, paginationNew.pageSize]);
-
-
-    // ---------------------Sản phẩm bán chạy------------------------------------------------
-    const [productSale, setProductSale] = useState([]);
-    const [paginationSale, setPaginationSale] = useState({ current: 1, pageSize: 4, total: 0 });
-    const getProductHomePageByProductSale = async (page, pageSize) => {
-
-        await ProductService.getProductHomePageByProductSale(page, pageSize)
-            .then(response => {
-
-                setProductSale(response.data);
-
-                setPaginationSale({
-                    ...paginationSale,
-                    current: response.pagination.currentPage,
-                    pageSize: response.pagination.pageSize,
-                    total: response.totalCount,
-                });
-
-            }).catch(error => {
-                console.error(error);
-            })
-    }
-    const handlePageChangeSale = (page, pageSize) => {
-        getProductHomePageByProductSale(page - 1, pageSize);
-    };
-
-    const handleSizeChangeSale = (current, size) => {
-        getProductHomePageByProductSale(0, size);
-    };
-
-    useEffect(() => {
-        getProductHomePageByProductSale(paginationSale.current - 1, paginationSale.pageSize);
-    }, [paginationSale.current, paginationSale.pageSize]);
-
+        getProductHomePageByProducts(pagination.current - 1, pagination.pageSize);
+    }, [pagination.current, pagination.pageSize]);
 
 
     return (
         <div style={{ marginBottom: '100px' }}>
-            <h4 style={{ textAlign: 'center', marginTop: '20px', fontWeight: '600' }}>DANH MỤC SẢN PHẨM</h4>
+            {/* <h4 style={{ textAlign: 'center', marginTop: '20px', fontWeight: '600' }}>DANH MỤC SẢN PHẨM</h4>
             <p style={{ textAlign: 'center', fontWeight: '400' }}>Hàng nghìn mẫu áo độc quyền theo từng phong cách khác nhau để quý khách chọn lựa!</p>
             <Row style={{ margin: '20px', borderBottom: '1px solid #cdcdcd' }}>
                 <Col span={6} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-                    <Link to={"dvg"}>
+                    <Link to={path_name.product}>
                         <Card
                             hoverable
                             style={{ width: '100%', textAlign: 'center', border: 'none' }}
@@ -170,13 +101,12 @@ const Home = () => {
                         </Card>
                     </Link>
                 </Col>
-            </Row>
+            </Row> */}
 
             <h4 style={{ textAlign: 'center', marginTop: '40px', fontWeight: '600' }}>TỔNG QUAN SẢN PHẨM</h4>
-            <h6 style={{ marginTop: '20px', textAlign: 'center', fontWeight: '600' }}>SẢN PHẨM MỚI <MdFiberNew style={{ color: 'brown', fontSize: '20px', marginBottom: '10px' }} /></h6>
-            <div className='container'>
-                <Row justify="center" gutter={[16, 16]}>
-                    {productNew && productNew.map((item) => (
+            <div className='container' style={{ marginTop: '50px' }}>
+                <Row gutter={[16, 16]}>
+                    {products.map((item) => (
                         <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
                             <Link to={`${path_name.product_detail}/${item.id}`}>
                                 <Card
@@ -194,75 +124,12 @@ const Home = () => {
                     ))}
                 </Row>
                 <Pagination
-                    onChange={handlePageChangeNew}
-                    onShowSizeChange={handleSizeChangeNew}
+                    onChange={handlePageChange}
+                    onShowSizeChange={handleSizeChange}
                     defaultCurrent={1}
-                    current={paginationNew.current}
-                    pageSize={paginationNew.pageSize}
-                    total={paginationNew.total}
-                    style={{ float: 'right', marginTop: '10px' }}
-                />
-            </div>
-            <img style={{ width: '95%', height: '300px', margin: '20px 40px', }} src={banner} alt="sd" />
-            <h6 style={{ marginTop: '20px', textAlign: 'center', fontWeight: '600' }}>SẢN PHẨM HOT <GiBurningRoundShot style={{ color: 'red', fontSize: '20px', marginBottom: '10px' }} /></h6>
-            <div className='container'>
-                <Row justify="center" gutter={[16, 16]} >
-                    {productHot && productHot.map((item) => (
-                        <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
-                            <Link to={`${path_name.product_detail}/${item.id}`}>
-                                <Card
-                                    hoverable
-                                    style={{
-                                        width: '100%',
-                                        textAlign: 'center',
-                                    }}
-                                    cover={<Image alt="example" src={item.imageUrl} />}
-                                >
-                                    <Meta title={item.productName} description={<span style={{ color: 'red', fontWeight: '550' }}>{formatCurrency(item.minPrice)}</span>} />
-                                </Card>
-                            </Link>
-                        </Col>
-                    ))}
-                </Row>
-
-                <Pagination
-                    onChange={handlePageChangeHot}
-                    onShowSizeChange={handleSizeChangeHot}
-                    defaultCurrent={1}
-                    current={paginationHot.current}
-                    pageSize={paginationHot.pageSize}
-                    total={paginationHot.total}
-                    style={{ float: 'right', marginTop: '10px' }}
-                />
-            </div>
-            <img style={{ width: '95%', margin: '20px 40px', }} src={feedback} alt="" />
-            <h6 style={{ marginTop: '20px', textAlign: 'center', fontWeight: '600' }}>SẢN PHẨM BÁN CHẠY <FaSalesforce style={{ color: 'blueviolet', fontSize: '20px', marginBottom: '10px' }} /></h6>
-            <div className='container'>
-                <Row justify="center" gutter={[16, 16]} >
-                    {productSale && productSale.map((item) => (
-                        <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
-                            <Link to={`${path_name.product_detail}/${item.id}`}>
-                                <Card
-                                    hoverable
-                                    style={{
-                                        width: '100%',
-                                        textAlign: 'center',
-                                    }}
-                                    cover={<Image alt="example" src={item.imageUrl} />}
-                                >
-                                    <Meta title={item.productName} description={<span style={{ color: 'red', fontWeight: '550' }}>{formatCurrency(item.minPrice)}</span>} />
-                                </Card>
-                            </Link>
-                        </Col>
-                    ))}
-                </Row>
-                <Pagination
-                    onChange={handlePageChangeSale}
-                    onShowSizeChange={handleSizeChangeSale}
-                    defaultCurrent={1}
-                    current={paginationSale.current}
-                    pageSize={paginationSale.pageSize}
-                    total={paginationSale.total}
+                    current={pagination.current}
+                    pageSize={pagination.pageSize}
+                    total={pagination.total}
                     style={{ float: 'right', marginTop: '10px' }}
                 />
 

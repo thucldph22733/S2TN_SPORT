@@ -3,8 +3,8 @@ import { Button, Result } from 'antd';
 import { Link, useParams } from 'react-router-dom'; // Import thư viện Link để chuyển hướng đến trang khác
 import path_name from '~/core/constants/routers';
 
-const OrderSuccessMessage = () => {
-    let { id } = useParams();
+const PaymentSuccess = () => {
+    let { vnp_TxnRef } = useParams();
     return (
         <Result
             status="success"
@@ -15,11 +15,11 @@ const OrderSuccessMessage = () => {
                     <Link to="/">Quay về trang chủ</Link>
                 </Button>,
                 <Button key="buy">
-                    <Link to={`${path_name.orderView}/${id}`}>Xem lịch sử đơn hàng</Link>
+                    <Link to={`${path_name.orderView}/${vnp_TxnRef}`}>Xem lịch sử đơn hàng</Link>
                 </Button>,
             ]}
         />
     )
 };
 
-export default OrderSuccessMessage;
+export default PaymentSuccess;

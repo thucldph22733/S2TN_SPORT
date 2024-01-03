@@ -50,12 +50,12 @@ public class ProductController {
                 , productPage);
     }
 
-    @GetMapping("getProductHomePageByProductNew")
+    @GetMapping("getProductHomePageByProducts")
     public ResponseEntity<?> getProductHomePageByProductNew(@RequestParam(defaultValue = "0") Integer pageNo,
                                                             @RequestParam(defaultValue = "10") Integer pageSize) {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<ProductUserResponseDto> productUserResponseDtoPage = productService.getProductHomePageByProductNew(pageable);
+        Page<ProductUserResponseDto> productUserResponseDtoPage = productService.getProductHomePageByProducts(pageable);
 
         List<ProductUserResponseDto> productUserResponseDtoList = productUserResponseDtoPage.getContent();
         return ResponseHandler.generateResponse(
@@ -64,57 +64,6 @@ public class ProductController {
                 , productUserResponseDtoPage);
     }
 
-    @GetMapping("getProductHomePageByProductSale")
-    public ResponseEntity<?> getProductHomePageByProductSale(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                             @RequestParam(defaultValue = "10") Integer pageSize) {
-
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<ProductUserResponseDto> productUserResponseDtoPage = productService.getProductHomePageByProductSale(pageable);
-
-        List<ProductUserResponseDto> productUserResponseDtoList = productUserResponseDtoPage.getContent();
-        return ResponseHandler.generateResponse(
-                HttpStatus.OK
-                , productUserResponseDtoList
-                , productUserResponseDtoPage);
-    }
-
-    @GetMapping("getProductHomePageByProductHot")
-    public ResponseEntity<?> getProductHomePageByProductHot(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                            @RequestParam(defaultValue = "10") Integer pageSize) {
-
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<ProductUserResponseDto> productUserResponseDtoPage = productService.getProductHomePageByProductHot(pageable);
-
-        List<ProductUserResponseDto> productUserResponseDtoList = productUserResponseDtoPage.getContent();
-        return ResponseHandler.generateResponse(
-                HttpStatus.OK
-                , productUserResponseDtoList
-                , productUserResponseDtoPage);
-    }
-
-    //    @GetMapping("findProductsByFilters")
-//    public ResponseEntity<?> findProductsByFilters(@RequestParam(defaultValue = "0") Integer pageNo,
-//                                                   @RequestParam(defaultValue = "10") Integer pageSize,
-//                                                   @RequestParam(required = false) List<Long> categoryIds,
-//                                                   @RequestParam(required = false) List<Long> brandIds,
-//                                                   @RequestParam(required = false)  List<Long> colorIds,
-//                                                   @RequestParam(required = false) List<Long> materialIds,
-//                                                   @RequestParam(required = false) List<Long> sizeIds
-////                                                  ,@RequestParam(required = false) Double minPrice,
-////                                                  @RequestParam(required = false)  Double maxPrice
-//                                                   ) {
-//        System.out.println();
-//        Pageable pageable = PageRequest.of(pageNo, pageSize);
-//        Page<ProductUserResponseDto> productFilterPage = productService.
-//        findProductsByFilters(categoryIds,brandIds,colorIds,materialIds,sizeIds
-////                ,minPrice,maxPrice
-//                , pageable);
-//        List<ProductUserResponseDto> productFilteroList = productFilterPage.getContent();
-//        return ResponseHandler.generateResponse(
-//                HttpStatus.OK
-//                , productFilteroList
-//                , productFilterPage);
-//    }
     @PostMapping("findProductsByFilters")
     public ResponseEntity<?> findProductsByFilters(
             @RequestBody ProductFilterRequestDto filter) {
@@ -124,7 +73,10 @@ public class ProductController {
                         filter.getBrandIds(),
                         filter.getColorIds(),
                         filter.getMaterialIds(),
-                        filter.getSizeIds()
+                        filter.getSizeIds(),
+                        filter.getMinPrice(),
+                        filter.getMaxPrice(),
+                        filter.getProductName()
                         ,pageable);
         List<ProductUserResponseDto> productFilteroList = productFilterPage.getContent();
         return ResponseHandler.generateResponse(

@@ -14,59 +14,39 @@ import FormatDate from '~/utils/format-date';
 
 const ShoppingCart = () => {
 
-
     //----------------Load giỏ hàng chi tiết-------------------------
     const [cartDetail, setCartDetail] = useState([]);
 
     const userString = localStorage.getItem('user2');
     const user = userString ? JSON.parse(userString) : null;
     const userId = user ? user.id : null;
-    //load data cart
-    const [carts, setCarts] = useState({});
 
-    const getCartByUserId = async () => {
-
-        await CartService.getCartByUserId(userId)
-            .then(response => {
-                setCarts(response);
-            }).catch(error => {
-                console.error(error);
-            })
-    }
-    //load data cartDeatil
+    // Load dữ liệu cartDetail và cập nhật tổng số lượng
     const findImageByProductId = async () => {
-
         await CartService.getAllCartDetailByUserId(userId)
             .then(response => {
-
                 const cartDetailMap = response.map((item, index) => ({
                     ...item,
                     key: index + 1,
                     totalPrice: item.quantity * item.price
                 }));
-                console.log(cartDetailMap)
                 setCartDetail(cartDetailMap);
-            }).catch(error => {
-                console.error(error);
             })
-    }
+            .catch(error => {
+                console.error(error);
+            });
+    };
     useEffect(() => {
-        // Check if the user is logged in
         if (userId) {
-            // User is logged in, fetch cart data from the server
             findImageByProductId();
-            getCartByUserId();
         } else {
-            // User is not logged in, fetch cart data from local storage
             const localCartString = localStorage.getItem('localCart');
             if (localCartString) {
                 const localCart = JSON.parse(localCartString);
-                // Assuming localCart is an array of items in the same format as your API response
                 const cartDetailMap = localCart.map((item, index) => ({
                     ...item,
                     key: index + 1,
                     totalPrice: item.quantity * item.price
-
                 }));
                 setCartDetail(cartDetailMap);
             }
@@ -100,11 +80,6 @@ const ShoppingCart = () => {
                 message.error('Lỗi xóa sản phẩm khỏi giỏ hàng!');
             }
         }
-    };
-
-    // Hàm thực hiện cập nhật số lượng sản phẩm trong giỏ hàng
-    const updateItemCount = () => {
-        cartDetail.reduce((total, item) => total + item.quantity, 0);
     };
 
     const [isUpdateDisabled, setIsUpdateDisabled] = useState(true);
@@ -297,17 +272,20 @@ const ShoppingCart = () => {
     return (
         <>
             {cartDetail.length === 0 ? (
-                <Result
-                    title="Giỏ hàng của bạn còn trống!"
-                    icon={<img style={{ width: 140 }} src={cart} alt="" />}
-                    extra={
-                        <Link to={path_name.product}>
-                            <Button type="primary" key="console">
-                                Mua ngay
-                            </Button>
-                        </Link>
-                    }
-                />
+                <>
+                    {localStorage.removeItem('localVoucher')} {/* Xóa voucher khỏi local storage nếu giỏ hàng trống */}
+                    <Result
+                        title="Giỏ hàng của bạn còn trống!"
+                        icon={<img style={{ width: 140 }} src={cart} alt="" />}
+                        extra={
+                            <Link to={path_name.product}>
+                                <Button type="primary" key="console">
+                                    Mua ngay
+                                </Button>
+                            </Link>
+                        }
+                    />
+                </>
             ) : (
                 <section className="shopping-cart">
                     <div className="container" style={{ height: '80px', padding: '30px 10px' }}>
@@ -407,9 +385,11 @@ const ShoppingCart = () => {
 };
 
 const ModalVoucher = ({ hideModal, isModal, voucher }) => {
-
     const [vouchers, setVouchers] = useState([]);
-    const [selectedVoucher, setSelectedVoucher] = useState(null); // Thêm state mới
+    const [selectedVoucher, setSelectedVoucher] = useState(null);
+    const [inputVoucherCode, setInputVoucherCode] = useState('');
+    const [errorText, setErrorText] = useState('');
+
     const fetchVoucher = async () => {
         await VoucherService.findAllVoucherByDeletedTrue()
             .then(response => {
@@ -422,28 +402,49 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
 
     useEffect(() => {
         fetchVoucher();
-    }, [])
-
+    }, []);
 
     useEffect(() => {
-        // Kiểm tra xem giỏ hàng đã có voucher hay không
-        const cartVoucherId = voucher ? voucher.id : null;
+        const cartVoucherId = voucher ? voucher.voucherCode : null;
         setSelectedVoucher(cartVoucherId);
     }, [voucher]);
 
-    const handleRadioChange = e => {
-        console.log('Radio changed!');
-        const voucherId = e.target.value;
-        setSelectedVoucher(selectedVoucher === voucherId ? null : voucherId);
+    const handleRadioChange = (e) => {
+        const voucherCode = e.target.value;
+        setSelectedVoucher(selectedVoucher === voucherCode ? null : voucherCode);
     };
 
+    const handleInputChange = (e) => {
+        setInputVoucherCode(e.target.value);
+    };
+
+    const handleOkInput = async () => {
+        try {
+            setErrorText(''); // Reset error text
+            if (!inputVoucherCode) {
+                hideModal();
+            } else {
+                const selectedVoucherData = vouchers.find(
+                    (voucher) => voucher.voucherCode === inputVoucherCode
+                );
+                if (selectedVoucherData) {
+                    localStorage.setItem('localVoucher', JSON.stringify(selectedVoucherData));
+                    hideModal();
+                } else {
+                    setErrorText('Không có mã giảm giá này!'); // Display error message
+                }
+            }
+        } catch (error) {
+            console.error('Error updating voucher:', error);
+        }
+    };
     // Hàm xử lý khi ấn "OK" trên Modal
     const handleOk = async () => {
         try {
             if (selectedVoucher == null) {
                 hideModal();
             } else {
-                const selectedVoucherData = vouchers.find(voucher => voucher.id === selectedVoucher);
+                const selectedVoucherData = vouchers.find(voucher => voucher.voucherCode === selectedVoucher);
                 localStorage.setItem('localVoucher', JSON.stringify(selectedVoucherData));
             }
             // Đóng modal
@@ -453,7 +454,6 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
             console.error("Error updating voucher:", error);
         }
     };
-
     return (
         <>
             <Modal
@@ -465,16 +465,22 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
             >
                 <Row style={{ marginTop: '20px', padding: '15px', backgroundColor: '#ece9e9' }}>
                     <Col span={18}>
-                        <Input placeholder="Mã giảm giá" onChange={(e) => setSelectedVoucher(e.target.value ? null : e.target.value)} />
+                        <Input
+                            placeholder="Mã giảm giá"
+                            onChange={handleInputChange}
+                        />
                     </Col>
                     <Col span={6}>
-                        <Button style={{ float: 'right' }} type='primary' onClick={handleOk}>Áp dụng</Button>
+                        <Button disabled={inputVoucherCode == '' ? true : false} style={{ float: 'right' }} type='primary' onClick={handleOkInput}>
+                            Áp dụng
+                        </Button>
                     </Col>
                 </Row>
-                <h6 style={{ marginTop: '20px' }}>Chọn 1 mã giảm giá</h6>
+                {(errorText && inputVoucherCode) && <p style={{ color: 'red', marginTop: '5px' }}>{errorText}</p>}
+                <h6 style={{ marginTop: '15px' }}>Chọn 1 mã giảm giá</h6>
                 <div style={{
                     height: '250px',
-                    overflowY: 'auto',  // Thêm thanh cuộn khi nội dung vượt quá chiều cao
+                    overflowY: 'auto',
                 }}>
                     {vouchers.map((item, index) => (
                         <Row key={index + 1} style={{ marginTop: '7px', padding: '7px', border: '1px solid #cdcdcd' }}>
@@ -489,9 +495,9 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
                             </Col>
                             <Col span={2}>
                                 <Radio
-                                    value={item.id}
+                                    value={item.voucherCode}
                                     style={{ marginTop: '35px' }}
-                                    checked={selectedVoucher === item.id}
+                                    checked={selectedVoucher === item.voucherCode}
                                     onChange={handleRadioChange}
                                 />
                             </Col>

@@ -14,8 +14,9 @@ const path_name = {
     user: '/user',
     change_password: '/change-password',
     address: '/address',
+    show_bill_check: '/show-bill-check',
     orderView: '/order-detail',
-    show_bill_check: '/show-bill-check'
+    payment: '/payment'
 };
 
 export default path_name;

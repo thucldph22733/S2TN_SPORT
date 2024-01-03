@@ -21,5 +21,8 @@ public class ProductFilterRequestDto {
     private List<Long> colorIds;
     private List<Long> materialIds;
     private List<Long> sizeIds;
+    private Double minPrice;
+    private Double maxPrice;
+    private String productName;
 
 }

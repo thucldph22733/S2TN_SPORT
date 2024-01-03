@@ -33,28 +33,8 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
                     "JOIN products p ON i.product_id = p.id " +
                     "JOIN product_details pd ON pd.product_id = p.id " +
                     "WHERE i.is_deleted = true " +
-                    "AND p.product_hot = true " +
                     "GROUP BY p.id, p.product_name, i.image_link")
-    Page<ProductUserResponseDto> findProductHomePageByProductHot(Pageable pageable);
-    @Query(nativeQuery = true, value =
-            "SELECT p.id, p.product_name AS productName, i.image_link AS imageUrl, MIN(pd.price) AS minPrice " +
-                    "FROM images i " +
-                    "JOIN products p ON i.product_id = p.id " +
-                    "JOIN product_details pd ON pd.product_id = p.id " +
-                    "WHERE i.is_deleted = true " +
-                    "AND p.product_new = true " +
-                    "GROUP BY p.id, p.product_name, i.image_link")
-    Page<ProductUserResponseDto> findProductHomePageByProductNew(Pageable pageable);
-    @Query(nativeQuery = true, value =
-            "SELECT p.id, p.product_name AS productName, i.image_link AS imageUrl, MIN(pd.price) AS minPrice " +
-                    "FROM images i " +
-                    "JOIN products p ON i.product_id = p.id " +
-                    "JOIN product_details pd ON pd.product_id = p.id " +
-                    "WHERE i.is_deleted = true " +
-                    "AND p.product_sale = true " +
-                    "GROUP BY p.id, p.product_name, i.image_link")
-    Page<ProductUserResponseDto> findProductHomePageByProductSale(Pageable pageable);
-
+    Page<ProductUserResponseDto> findProductHomePageByProducts(Pageable pageable);
 
     @Query("SELECT " +
             "p.id AS id, " +
@@ -70,16 +50,19 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             "AND (:colorIds IS NULL OR pd.color.id IN :colorIds) " +
             "AND (:materialIds IS NULL OR pd.material.id IN :materialIds) " +
             "AND (:sizeIds IS NULL OR pd.size.id IN :sizeIds) " +
-//            "AND (MIN(pd.price) BETWEEN :minPrice AND :maxPrice) IS NULL " +
-            "GROUP BY p.id, p.productName, i.imageLink")
-             Page<ProductUserResponseDto> findProductsByFilters(
+            "AND (:productName IS NULL OR p.productName LIKE %:productName%) " +
+            "GROUP BY p.id, p.productName, i.imageLink " +
+            "HAVING (:minPrice IS NULL OR :minPrice <= MIN(pd.price)) " +
+            "AND (:maxPrice IS NULL OR :maxPrice >= MIN(pd.price))")
+    Page<ProductUserResponseDto> findProductsByFilters(
             @Param("categoryIds") List<Long> categoryIds,
             @Param("brandIds") List<Long> brandIds,
             @Param("colorIds") List<Long> colorIds,
             @Param("materialIds") List<Long> materialIds,
             @Param("sizeIds") List<Long> sizeIds,
-//            @Param("minPrice") Double minPrice,
-//            @Param("maxPrice") Double maxPrice,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            @Param("productName") String productName,
             Pageable pageable);
 
 }

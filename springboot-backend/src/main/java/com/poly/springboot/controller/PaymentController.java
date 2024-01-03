@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @CrossOrigin(origins = "*")
@@ -43,15 +44,27 @@ public class PaymentController {
     private PaymentService paymentService;
 
     // get all Payment Method rest api
-    @GetMapping("getAll")
-    public ResponseEntity<List<Payment>> getPayments() {
+    @GetMapping("payment")
+    public ResponseEntity<?> getPayments(
+            @RequestParam(required = false) String vnp_Amount,
+            @RequestParam(required = false) String vnp_BankCode,
+            @RequestParam(required = false) String vnp_BankTranNo,
+            @RequestParam(required = false) String vnp_CardType,
+            @RequestParam(required = false) String vnp_OrderInfo,
+            @RequestParam(required = false) String vnp_PayDate,
+            @RequestParam(required = false) String vnp_ResponseCode,
+            @RequestParam(required = false) String vnp_TmnCode,
+            @RequestParam(required = false) String vnp_TransactionNo,
+            @RequestParam(required = false) String vnp_TransactionStatus,
+            @RequestParam(required = false) String vnp_TxnRef,
+            @RequestParam(required = false) String vnp_SecureHash
+    ) {
 
-        List<Payment> paymentList = paymentService.getPayments();
+        Payment payment = paymentService.getPayments(vnp_Amount, vnp_OrderInfo, vnp_PayDate, vnp_TxnRef);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(paymentList);
+                .body(payment);
     }
-
 
     //create Payment Method rest api
     @PostMapping("create")
@@ -59,19 +72,6 @@ public class PaymentController {
         PaymentResponseDto paymentResponse = paymentService.createPayment(paymentRequestDto);
         return new ResponseEntity<>(paymentResponse, HttpStatus.OK);
     }
-    //update Payment Method rest api
 
-    //delete Payment Method rest api
-    @DeleteMapping("delete")
-    public ResponseEntity<ResponseDto> deleteShipping(@RequestParam Long id) {
 
-        Boolean isDeleted = paymentService.deletePayment(id);
-        if (isDeleted) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.MESSAGE_500, NotificationConstants.STATUS_500));
-        }
-    }
 }

@@ -1,17 +1,19 @@
 import './Header.css';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 // import Icon
 import logo from '~/assets/images/logo.png';
 import path_name from '~/core/constants/routers';
 import { useState, useEffect } from 'react';
 import { AutoComplete, Avatar, Badge, Button, Col, Dropdown, Input, Row, Tooltip } from 'antd';
 import { ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
-import ShoppingCart from '~/pages/ShoppingCart/ShoppingCart';
+import Search from '~/components/Search';
 
-function Header() {
+function Header({ setFilterProduct }) {
 
     const navigate = useNavigate();
+    const location = useLocation();
+
     //Đăng xuất
     const handleLogout = () => {
         localStorage.removeItem("access_token2");
@@ -24,7 +26,25 @@ function Header() {
     const user = userString ? JSON.parse(userString) : null;
 
     // set heder đứng im khi kéo chuột xuống
-    const [menu, setMenu] = useState('home');
+    const getActiveMenu = () => {
+        const path = location.pathname;
+
+        if (path === path_name.home) {
+            return 'home';
+        } else if (path === path_name.product) {
+            return 'product';
+        } else if (path === path_name.about) {
+            return 'about';
+        } else if (path === path_name.blog) {
+            return 'blog';
+        } else if (path === path_name.contact) {
+            return 'contact';
+        }
+
+        // Nếu không phù hợp với bất kỳ trang nào khác
+        return 'home';
+    };
+    const activeMenu = getActiveMenu();
     const [isHeaderFixed, setIsHeaderFixed] = useState(false);
     useEffect(() => {
         const handleScroll = () => {
@@ -75,8 +95,8 @@ function Header() {
             onClick: handleLogout,
         },
 
-
     ];
+
     return (
         <header className={`header ${isHeaderFixed ? 'fixed' : ''}`}>
             <Row >
@@ -85,49 +105,22 @@ function Header() {
                         <img className='logo' src={logo} alt="" />
                     </Link>
                 </Col>
-                <Col span={13} >
+                <Col span={13}>
                     <nav className="header__menu">
                         <ul>
-                            <li
-                                onClick={() => {
-                                    setMenu();
-                                }}
-                                className={menu === 'home' ? 'active' : <></>}
-                            >
+                            <li className={activeMenu === 'home' ? 'active' : ''}>
                                 <Link to={path_name.home}>Trang chủ</Link>
                             </li>
-
-                            <li
-                                onClick={() => {
-                                    setMenu('product');
-                                }}
-                                className={menu === 'product' ? 'active' : <></>}
-                            >
+                            <li className={activeMenu === 'product' ? 'active' : ''}>
                                 <Link to={path_name.product}>Sản phẩm</Link>
-
                             </li>
-                            <li
-                                onClick={() => {
-                                    setMenu('about');
-                                }}
-                                className={menu === 'about' ? 'active' : <></>}
-                            >
+                            <li className={activeMenu === 'about' ? 'active' : ''}>
                                 <Link to={path_name.about}>Giới thiệu</Link>
                             </li>
-                            <li
-                                onClick={() => {
-                                    setMenu('blog');
-                                }}
-                                className={menu === 'blog' ? 'active' : <></>}
-                            >
+                            <li className={activeMenu === 'blog' ? 'active' : ''}>
                                 <Link to={path_name.blog}>Tin tức</Link>
                             </li>
-                            <li
-                                onClick={() => {
-                                    setMenu('contact');
-                                }}
-                                className={menu === 'contact' ? 'active' : <></>}
-                            >
+                            <li className={activeMenu === 'contact' ? 'active' : ''}>
                                 <Link to={path_name.contact}>Liên hệ</Link>
                             </li>
                         </ul>
@@ -140,16 +133,13 @@ function Header() {
                             style={{
                                 margin: '10px 0'
                             }}
-                        // options={options}
-                        // onSelect={onSelect}
-                        // onSearch={handleSearch}
-                        // size="small"
+
                         >
-                            <Input.Search style={{ width: 200 }} placeholder="Tìm tên sản phẩm..." enterButton />
+                            <Search />
                         </AutoComplete>
 
                         <Link to={path_name.shopping_cart} style={{ margin: '15px' }}>
-                            <Badge count={1} size='small' >
+                            <Badge count={0} size='small' >
                                 <ShoppingCartOutlined style={{ fontSize: '22px', color: 'black' }} />
                             </Badge>
                         </Link>

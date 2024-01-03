@@ -82,6 +82,11 @@ public class VoucherServiceImpl implements VoucherService {
         return voucher;
     }
 
+    @Override
+    public Voucher findByVoucherCode(String code) {
+        return voucherRepository.findByVoucherCode(code);
+    }
+
     private   Voucher mapToVoucherRequest(Voucher voucher, VoucherRequestDto voucherRequestDto){
 
         voucher.setVoucherCode(voucherRequestDto.getVoucherCode());

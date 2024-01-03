@@ -15,10 +15,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "payments")
+@SequenceGenerator(name = "order_sequence", sequenceName = "order_sequence", initialValue = 1000560)
 public class Payment extends BaseEntity{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_sequence")
     private Long id;
 
     @ManyToOne
@@ -26,7 +27,7 @@ public class Payment extends BaseEntity{
     private Order orders;
 
     @Column(name = "payment_date")
-    private LocalDateTime paymentDate;
+    private String paymentDate;
 
     @Column(name = "amount")
     private Double amount ;

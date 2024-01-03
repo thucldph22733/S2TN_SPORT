@@ -87,10 +87,22 @@ public class OrderServiceImpl implements OrderService {
 
         OrderStatus orderStatus = orderStatusRepository.findByStatusName(orderStatusRequestDto.getNewStatusName()).orElse(null);
 
+        // Kiểm tra nếu trạng thái mới là "Đã hủy"
+        if (orderStatusRequestDto.getNewStatusName().equals("Đã hủy")) {
+            // Thực hiện các thao tác cộng lại số lượng sản phẩm
+            List<OrderDetail> orderDetails = order.getOrderDetails();
+            for (OrderDetail orderDetail : orderDetails) {
+                ProductDetail productDetail = orderDetail.getProductDetail();
+                productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
+                productDetailRepository.save(productDetail);
+            }
+        }
+
         order.setNote(orderStatusRequestDto.getNote());
         order.setOrderStatus(orderStatus);
         orderRepository.save(order);
-        //Xét lịch sử đơn hàng
+
+        // Xét lịch sử đơn hàng
         OrderHistory orderHistory = new OrderHistory();
         orderHistory.setOrder(order);
         orderHistory.setStatus(orderStatus);
@@ -258,7 +270,11 @@ public class OrderServiceImpl implements OrderService {
             List<OrderDetailRequestDto> orderDetails = orderRequestDto.getOrderDetail();
             for (OrderDetailRequestDto detailDto : orderDetails) {
                 OrderDetail orderDetail = new OrderDetail();
+                //tìm ra sản phẩm rồi trừ đi số lượng
                 ProductDetail productDetail = productDetailRepository.findById(detailDto.getProductDetailId()).orElse(null);
+                productDetail.setQuantity(productDetail.getQuantity()-detailDto.getQuantity());
+                productDetailRepository.save(productDetail);
+
                 orderDetail.setProductDetail(productDetail);
                 orderDetail.setOrder(order);
                 orderDetail.setQuantity(detailDto.getQuantity());
@@ -285,6 +301,11 @@ public class OrderServiceImpl implements OrderService {
 
                     // Lưu hóa đơn chi tiết
                     orderDetailRepository.save(orderDetail);
+
+                    // Trừ số lượng sản phẩm trong kho (hoặc cập nhật trạng thái nếu có thêm logic cụ thể)
+                    ProductDetail productDetail = cartDetail.getProductDetail();
+                    productDetail.setQuantity(productDetail.getQuantity() - cartDetail.getQuantity());
+                    productDetailRepository.save(productDetail);
                 }
                 // Xóa giỏ hàng sau khi đã tạo đơn hàng thành công
                 cartRepository.delete(cart);

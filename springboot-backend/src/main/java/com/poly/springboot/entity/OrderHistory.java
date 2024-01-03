@@ -16,9 +16,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "order_history")
+@SequenceGenerator(name = "order_sequence", sequenceName = "order_sequence", initialValue = 1000560)
 public class OrderHistory extends BaseEntity{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_sequence")
     private Long id;
 
     @Column(name = "note")

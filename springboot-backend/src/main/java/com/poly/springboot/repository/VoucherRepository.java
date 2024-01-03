@@ -15,6 +15,7 @@ public interface VoucherRepository extends JpaRepository<Voucher,Long> {
     Page<Voucher> findByVoucherNameContaining(String name, Pageable pageable);
     Page<Voucher> findByDeletedIn(List<Boolean> status, Pageable pageable);
     Page<Voucher> findByVoucherCodeContainingAndVoucherNameContainingAndDeletedIn(String code,String name, List<Boolean> status, Pageable pageable);
-
     List<Voucher> findByDeletedTrue();
+
+    Voucher findByVoucherCode(String code);
 }

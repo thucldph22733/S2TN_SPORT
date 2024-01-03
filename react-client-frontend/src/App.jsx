@@ -23,6 +23,7 @@ import User from './pages/Profile/User';
 import Image from './pages/Product/Image';
 import OrderDetail from './pages/Order/OrderDetail';
 import OrderSuccessMessage from './pages/Message/OrderSuccessMessage';
+import PaymentSuccess from './pages/Message/PaymentSuccess';
 
 function App() {
     const router = createBrowserRouter([
@@ -60,6 +61,7 @@ function App() {
                     path: path_name.show_bill_check + '/:id',
                     element: <OrderSuccessMessage />,
                 },
+
                 {
                     path: path_name.product_detail + '/:id',
                     element: <ProductDetail />,

@@ -9,7 +9,7 @@ import banner4 from '~/assets/images/banner/banner_4.jpg'
 import { GiBurningRoundShot } from "react-icons/gi";
 import { FaSalesforce } from "react-icons/fa";
 import { MdFiberNew } from "react-icons/md";
-import { Breadcrumb, Card, Checkbox, Col, Collapse, Empty, Image, Pagination, Row } from 'antd';
+import { Breadcrumb, Card, Checkbox, Col, Collapse, Empty, Image, Pagination, Radio, Row, Space } from 'antd';
 import { ExclamationCircleOutlined, FilterOutlined, FrownOutlined, HomeOutlined } from '@ant-design/icons';
 import path_name from '~/core/constants/routers';
 import CategoryService from '~/service/CategoryService';
@@ -118,7 +118,10 @@ function Product() {
         brandIds: null,
         colorIds: null,
         materialIds: null,
-        sizeIds: null
+        sizeIds: null,
+        minPrice: null,
+        maxPrice: null,
+        productName: null,
     });
 
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
@@ -193,7 +196,49 @@ function Product() {
             pageNo: 0
         });
     };
+    //lọc theo khoảng giá
+    const [priceRange, setPriceRange] = useState(null);
 
+    const handlePriceRangeChange = (e) => {
+        const value = e.target.value;
+        setPriceRange(value);
+        setFilterProduct({
+            ...filterProduct,
+            minPrice: calculateMinPrice(value),
+            maxPrice: calculateMaxPrice(value),
+            pageNo: 0
+        });
+    };
+
+    const calculateMinPrice = (range) => {
+        switch (range) {
+            case 1:
+                return 0;
+            case 2:
+                return 200000;
+            case 3:
+                return 400000;
+            case 4:
+                return 600000;
+            default:
+                return null;
+        }
+    };
+
+    const calculateMaxPrice = (range) => {
+        switch (range) {
+            case 1:
+                return 200000;
+            case 2:
+                return 400000;
+            case 3:
+                return 600000;
+            case 4:
+                return null;
+            default:
+                return null;
+        }
+    };
 
     return (
         <>
@@ -214,7 +259,7 @@ function Product() {
             <div className='container'>
                 <h6><FilterOutlined style={{ marginRight: '7px' }} />Bộ lọc </h6>
                 <Row>
-                    <Col span={5} style={{ paddingRight: '10px' }}>
+                    <Col span={5} style={{ paddingRight: '15px' }}>
                         <Collapse
                             size="small"
                             style={{ border: 'none' }}
@@ -336,14 +381,14 @@ function Product() {
                                 {
                                     key: '1',
                                     label: 'Khoảng giá',
-                                    children: <>
-                                        <Row><Checkbox >0 đ - 200.000 đ</Checkbox></Row>
-                                        <Row><Checkbox >200.000 đ - 400.000 đ</Checkbox></Row>
-                                        <Row><Checkbox >400.000 đ - 800.000 đ</Checkbox></Row>
-                                        {/* <Row><Checkbox >Áo đội tuyển</Checkbox></Row>
-                                        <Row><Checkbox >Áo đội tuyển</Checkbox></Row> */}
-                                    </>,
-
+                                    children: <Radio.Group onChange={handlePriceRangeChange} value={priceRange}>
+                                        <Space direction="vertical">
+                                            <Radio value={1}>Dưới 200.000 đ</Radio>
+                                            <Radio value={2}>200.000 đ - 400.000 đ</Radio>
+                                            <Radio value={3}>400.000 đ - 600.000 đ</Radio>
+                                            <Radio value={4}>Trên 600.000 đ</Radio>
+                                        </Space>
+                                    </Radio.Group>
                                 },
                             ]}
                         />

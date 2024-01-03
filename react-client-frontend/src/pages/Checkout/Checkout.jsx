@@ -69,18 +69,7 @@ function Checkout() {
     const user = userString ? JSON.parse(userString) : null;
     const userId = user ? user.id : null;
 
-    //load data cart
-    const [carts, setCarts] = useState({});
 
-    const getCartByUserId = async () => {
-
-        await CartService.getCartByUserId(userId)
-            .then(response => {
-                setCarts(response);
-            }).catch(error => {
-                console.error(error);
-            })
-    }
     const [cartDetail, setCartDetail] = useState([]);
 
     //load data cartDeatil
@@ -107,7 +96,6 @@ function Checkout() {
         if (userId) {
             // User is logged in, fetch cart data from the server
             findImageByProductId();
-            getCartByUserId();
         } else {
 
             if (localCartString) {
@@ -183,13 +171,18 @@ function Checkout() {
             })
     }
     useEffect(() => {
-        findAddressesByUserIdAnDeletedTrue();
+        if (user) {
+            findAddressesByUserIdAnDeletedTrue();
+        }
     }, [])
     //------------------------Thanh toán-----------------------------------------
     const [payment, setPayment] = useState();
 
     const create = async () => {
-        const data = { amount: parseInt(calculateTotal() + 30000) }
+        const data = {
+            amount: parseInt(calculateTotal()),
+            orderId: 245435325
+        }
         await PaymentService.create(data)
             .then(response => {
                 setPayment(response);
@@ -206,7 +199,7 @@ function Checkout() {
     const handleCreate = async () => {
         try {
             const values = await form.validateFields();
-            // Sử dụng giá trị từ values thay vì form.getFieldsValue()
+
             values.userId = userId;
             values.voucherId = localVouchers == null ? null : localVouchers.id;
             values.statusName = 'Chờ xác nhận';
@@ -943,9 +936,11 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
 };
 
 const ModalVoucher = ({ hideModal, isModal, voucher }) => {
-
     const [vouchers, setVouchers] = useState([]);
-    const [selectedVoucher, setSelectedVoucher] = useState(null); // Thêm state mới
+    const [selectedVoucher, setSelectedVoucher] = useState(null);
+    const [inputVoucherCode, setInputVoucherCode] = useState('');
+    const [errorText, setErrorText] = useState('');
+
     const fetchVoucher = async () => {
         await VoucherService.findAllVoucherByDeletedTrue()
             .then(response => {
@@ -958,27 +953,50 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
 
     useEffect(() => {
         fetchVoucher();
-    }, [])
+    }, []);
 
     useEffect(() => {
-        // Kiểm tra xem giỏ hàng đã có voucher hay không
-        const cartVoucherId = voucher ? voucher.id : null;
+        const cartVoucherId = voucher ? voucher.voucherCode : null;
         setSelectedVoucher(cartVoucherId);
     }, [voucher]);
 
-    const handleRadioChange = e => {
-        console.log('Radio changed!');
-        const voucherId = e.target.value;
-        setSelectedVoucher(selectedVoucher === voucherId ? null : voucherId);
+    const handleRadioChange = (e) => {
+        const voucherCode = e.target.value;
+        setSelectedVoucher(selectedVoucher === voucherCode ? null : voucherCode);
+
     };
 
+    const handleInputChange = (e) => {
+        setInputVoucherCode(e.target.value);
+    };
+
+    const handleOkInput = async () => {
+        try {
+            setErrorText(''); // Reset error text
+            if (!inputVoucherCode) {
+                hideModal();
+            } else {
+                const selectedVoucherData = vouchers.find(
+                    (voucher) => voucher.voucherCode === inputVoucherCode
+                );
+                if (selectedVoucherData) {
+                    localStorage.setItem('localVoucher', JSON.stringify(selectedVoucherData));
+                    hideModal();
+                } else {
+                    setErrorText('Không có mã giảm giá này!'); // Display error message
+                }
+            }
+        } catch (error) {
+            console.error('Error updating voucher:', error);
+        }
+    };
     // Hàm xử lý khi ấn "OK" trên Modal
     const handleOk = async () => {
         try {
             if (selectedVoucher == null) {
                 hideModal();
             } else {
-                const selectedVoucherData = vouchers.find(voucher => voucher.id === selectedVoucher);
+                const selectedVoucherData = vouchers.find(voucher => voucher.voucherCode === selectedVoucher);
                 localStorage.setItem('localVoucher', JSON.stringify(selectedVoucherData));
             }
             // Đóng modal
@@ -988,7 +1006,6 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
             console.error("Error updating voucher:", error);
         }
     };
-
     return (
         <>
             <Modal
@@ -1000,16 +1017,22 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
             >
                 <Row style={{ marginTop: '20px', padding: '15px', backgroundColor: '#ece9e9' }}>
                     <Col span={18}>
-                        <Input placeholder="Mã giảm giá"></Input>
+                        <Input
+                            placeholder="Mã giảm giá"
+                            onChange={handleInputChange}
+                        />
                     </Col>
                     <Col span={6}>
-                        <Button style={{ float: 'right' }} type='primary'>Áp dụng</Button>
+                        <Button disabled={inputVoucherCode == '' ? true : false} style={{ float: 'right' }} type='primary' onClick={handleOkInput}>
+                            Áp dụng
+                        </Button>
                     </Col>
                 </Row>
-                <h6 style={{ marginTop: '20px' }}>Chọn 1 mã giảm giá</h6>
+                {(errorText && inputVoucherCode) && <p style={{ color: 'red', marginTop: '5px' }}>{errorText}</p>}
+                <h6 style={{ marginTop: '15px' }}>Chọn 1 mã giảm giá</h6>
                 <div style={{
                     height: '250px',
-                    overflowY: 'auto',  // Thêm thanh cuộn khi nội dung vượt quá chiều cao
+                    overflowY: 'auto',
                 }}>
                     {vouchers.map((item, index) => (
                         <Row key={index + 1} style={{ marginTop: '7px', padding: '7px', border: '1px solid #cdcdcd' }}>
@@ -1024,9 +1047,9 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
                             </Col>
                             <Col span={2}>
                                 <Radio
-                                    value={item.id}
+                                    value={item.voucherCode}
                                     style={{ marginTop: '35px' }}
-                                    checked={selectedVoucher === item.id}
+                                    checked={selectedVoucher === item.voucherCode}
                                     onChange={handleRadioChange}
                                 />
                             </Col>

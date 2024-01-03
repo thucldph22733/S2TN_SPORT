@@ -20,18 +20,24 @@ export default function OrderDetail() {
 
     const getAllTimeLineByOrderId = async () => {
         OrderHistoryService.getAllTimeLineByOrderId(id).then(response => {
-            const convertedTimeline = response.map((event) => ({
+            // Lọc các sự kiện có trạng thái là "Hoàn thành"
+            const filteredTimeline = response.filter(event => event.status.statusName !== 'Đã giao hàng');
+
+            // Chuyển đổi các sự kiện còn lại thành định dạng bạn muốn hiển thị
+            const convertedTimeline = filteredTimeline.map((event) => ({
                 title: event.status.statusName,
                 subtitle: FormatDate(event.createdAt),
                 color: getStatusColor(event.status.statusName),
                 icon: getIconByStatus(event.status.statusName),
             }));
+
+            // Cập nhật state với danh sách đã lọc
             setTimeLines(convertedTimeline);
+
             console.log('Timeline:', response); // Add this line
         }).catch((error) => {
             console.error('Error fetching timeline:', error);
-        })
-
+        });
     };
     // Logic chuyển đổi màu sắc tùy thuộc vào status
     const getStatusColor = (status) => {
@@ -40,11 +46,11 @@ export default function OrderDetail() {
             return 'green';
         } else if (status === 'Chờ xác nhận') {
             return '#40826D';
-        } else if (status === 'Chờ giao hàng') {
+        } else if (status === 'Chờ lấy hàng') {
             return '#007FFF	';
         } else if (status === 'Đang vận chuyển') {
             return '#FF6600';
-        } else if (status === 'Đã giao hàng') {
+        } else if (status === 'Chờ giao hàng') {
             return '#007BA7';
         } else if (status === 'Hoàn thành') {
             return '#7859f2';
@@ -59,12 +65,12 @@ export default function OrderDetail() {
             return FaRegFileAlt;
         } else if (status === 'Chờ xác nhận') {
             return FaRegFileAlt;
-        } else if (status === 'Chờ giao hàng') {
+        } else if (status === 'Chờ lấy hàng') {
             return FaBox;
         } else if (status === 'Đang vận chuyển') {
             return FaTruck;
-        } else if (status === 'Đã giao hàng') {
-            return FaRegCalendarCheck;
+        } else if (status === 'Chờ giao hàng') {
+            return FaTruck;
         } else if (status === 'Hoàn thành') {
             return FaCheckCircle;
         } else if (status === 'Đã hủy') {

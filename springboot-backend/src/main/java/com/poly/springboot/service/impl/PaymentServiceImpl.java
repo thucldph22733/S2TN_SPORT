@@ -3,9 +3,10 @@ package com.poly.springboot.service.impl;
 import com.poly.springboot.config.VNPayConfig;
 import com.poly.springboot.dto.requestDto.PaymentRequestDto;
 import com.poly.springboot.dto.responseDto.PaymentResponseDto;
+import com.poly.springboot.entity.Order;
 import com.poly.springboot.entity.Payment;
-import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
+import com.poly.springboot.repository.OrderRepository;
 import com.poly.springboot.repository.PaymentRepository;
 import com.poly.springboot.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -23,11 +25,24 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    @Override  //Method get all payment
-    public List<Payment> getPayments() {
+    @Autowired
+    private OrderRepository orderRepository;
 
-        List<Payment> payments = paymentRepository.findAll();
-        return payments;
+    @Override
+    public Payment getPayments(String vnp_Amount,
+                               String vnp_OrderInfo,
+                               String vnp_PayDate,
+                               String vnp_TxnRef) {
+        Payment payment = new Payment();
+        payment.setPaymentDate(vnp_PayDate);
+        payment.setAmount(Double.valueOf(vnp_TxnRef));
+        Order order = orderRepository.findById(Long.valueOf(vnp_TxnRef)).orElse(null);
+        payment.setOrders(order);
+        payment.setPaymentMethod("Thanh toán VNPay");
+        payment.setStatus("Đã thanh toán");
+        payment.setNote(vnp_OrderInfo);
+        paymentRepository.save(payment);
+        return payment;
     }
 
     @Override  //Method save payment
@@ -35,7 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         long amount = (paymentRequestDto.getAmount()) * 100;
 
-        String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
+        String vnp_TxnRef = String.valueOf(paymentRequestDto.getOrderId());
 
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", VNPayConfig.vnp_Version);
@@ -45,7 +60,7 @@ public class PaymentServiceImpl implements PaymentService {
         vnp_Params.put("vnp_CurrCode", VNPayConfig.vnp_CurrCode);
         vnp_Params.put("vnp_BankCode", VNPayConfig.vnp_bankCode);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo",  "Thanh toan don hang:" + vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", VNPayConfig.orderType);
         vnp_Params.put("vnp_Locale", VNPayConfig.vnp_Locale);
         vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
@@ -101,7 +116,7 @@ public class PaymentServiceImpl implements PaymentService {
     public Boolean updatePayment(PaymentRequestDto paymentRequestDto, Long id) {
 
         Payment payment = paymentRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id phương thức thanh toán này!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id phương thức thanh toán này!"));
 
 //        payment.setPaymentName(paymentRequestDto.getPaymentName());
 //        payment.setPaymentDescribe(paymentRequestDto.getPaymentDescribe());
@@ -111,13 +126,4 @@ public class PaymentServiceImpl implements PaymentService {
         return true;
     }
 
-    @Override  // Method delete payment by id
-    public Boolean deletePayment(Long id) {
-
-        Payment payment = paymentRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id phương thức thanh toán này!"));
-
-        paymentRepository.deleteById(payment.getId());
-        return true;
-    }
 }

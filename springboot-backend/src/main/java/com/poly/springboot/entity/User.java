@@ -17,10 +17,11 @@ import java.util.*;
 @Entity
 @Builder
 @Table(name = "users")
+@SequenceGenerator(name = "order_sequence", sequenceName = "order_sequence", initialValue = 1000560)
 public class User extends BaseEntity implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_sequence")
     private Long id;
 
     @Column(name = "user_name")

@@ -1,10 +1,16 @@
+
+
 import React from 'react';
 import { Button, Result } from 'antd';
-import { Link, useParams } from 'react-router-dom'; // Import thư viện Link để chuyển hướng đến trang khác
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import path_name from '~/core/constants/routers';
 
 const PaymentSuccess = () => {
-    let { vnp_TxnRef } = useParams();
+    const { vnp_TxnRef } = useParams();
+    const userString = localStorage.getItem('user2');
+    const user = userString ? JSON.parse(userString) : null;
+    const navigate = useNavigate(); // Sử dụng hook useNavigate
+
     return (
         <Result
             status="success"
@@ -14,12 +20,14 @@ const PaymentSuccess = () => {
                 <Button type="primary" key="console">
                     <Link to="/">Quay về trang chủ</Link>
                 </Button>,
-                <Button key="buy">
-                    <Link to={`${path_name.orderView}/${vnp_TxnRef}`}>Xem lịch sử đơn hàng</Link>
-                </Button>,
+                user && (
+                    <Button key="buy" onClick={() => navigate(`${path_name.orderView}/${vnp_TxnRef}`)}>
+                        Xem lịch sử đơn hàng
+                    </Button>
+                ),
             ]}
         />
-    )
+    );
 };
 
 export default PaymentSuccess;

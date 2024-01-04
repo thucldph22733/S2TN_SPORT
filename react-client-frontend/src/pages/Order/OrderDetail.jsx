@@ -10,6 +10,7 @@ import { DoubleLeftOutlined } from '@ant-design/icons';
 import path_name from '~/core/constants/routers';
 import OrderDetailService from '~/service/OrderDetailService';
 import formatCurrency from '~/utils/format-currency';
+import PaymentService from '~/service/PaymentService';
 
 
 export default function OrderDetail() {
@@ -119,11 +120,21 @@ export default function OrderDetail() {
         });
 
     };
+    const [payment, setPaymet] = useState([]);
+    const fetchPayment = async () => {
+        await PaymentService.getAllPaymentByOrdersId(id)
+            .then(response => {
+                setPaymet(response);
+            }).catch(error => {
+                console.error(error);
+            })
+    };
     //-------------------------Load dữ liệu---------------------------------------------
     useEffect(() => {
         fetchOrder();
         fetchOrderDetail();
         getAllTimeLineByOrderId();
+        fetchPayment();
     }, []);
 
     //-------------------------------Colum table--------------------------------------------------
@@ -183,32 +194,38 @@ export default function OrderDetail() {
 
     const columnPaymentHistory = [
         {
-            title: '#',
-            dataIndex: 'index',
-            width: '5%',
-            render: (index) => index + 1, // Hiển thị STT bắt đầu từ 1
+            title: 'Ngày thanh toán',
+            dataIndex: 'paymentDate',
+            key: 'paymentDate',
+            width: '17%',
+            render: (text) => <span>{FormatDate(text)}</span>
         },
         {
-            title: 'Số tiền thanh toán',
-            dataIndex: '',
+            title: 'Số tiền',
+            dataIndex: 'amount',
+            key: 'amount',
             width: '15%',
-            // render: () => <span style={{ color: 'red' }}>{formatCurrency(order.orderTotal)}</span>,
-        },
-        {
-            title: 'Thời gian',
-            dataIndex: 'createdAt',
-            width: '20%',
+            render: (text) => <span style={{ color: 'red' }}>{formatCurrency(text)}</span>,
         },
         {
             title: 'Phương thức thanh toán',
-            dataIndex: '',
-            width: '30%',
-            // render: () => order.payment.paymentName
+            dataIndex: 'paymentMethod',
+            key: 'paymentMethod',
+            width: '20%',
+            render: (text) => <Tag color="green" >{text}</Tag>
         },
         {
             title: 'Ghi chú',
             dataIndex: 'note',
-            width: '20%',
+            key: 'note',
+            width: '25%',
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            key: 'status',
+            width: '15%',
+            render: (text) => <span style={{ color: 'red', fontWeight: '600' }}>{text}</span>
         },
     ];
     //----------------------------------- Hàm  tính tổng tiền hàng-------------------------------------------
@@ -279,8 +296,15 @@ export default function OrderDetail() {
                         showSizeChanger: true,
                     }} />
 
+                <div style={{ borderBottom: '2px solid black', margin: '10px 0' }}>
+                    <h6>LỊCH SỬ THANH TOÁN</h6>
+                </div>
+                <Table
+                    columns={columnPaymentHistory}
+                    dataSource={payment}
+                    pagination={false} />
 
-                <div style={{ borderBottom: '2px solid black', marginBottom: '10px' }}>
+                <div style={{ borderBottom: '2px solid black', margin: '20px 0 10px 0' }}>
                     <h6>THÔNG TIN ĐƠN HÀNG: <span style={{ color: 'red' }}>HD{orders.id}</span></h6>
                 </div>
                 <Descriptions
@@ -323,8 +347,8 @@ export default function OrderDetail() {
                         {formatCurrency(orders.transportFee)}
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="Phương thức thanh toán" span={2}>
-                        <Tag color="green" >Thanh toán khi nhận hàng</Tag>
+                    <Descriptions.Item label="Ghi chú đơn hàng" span={2}>
+                        {orders.note}
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Thành tiền">

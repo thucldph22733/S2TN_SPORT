@@ -16,7 +16,7 @@ const path_name = {
     address: '/address',
     show_bill_check: '/show-bill-check',
     orderView: '/order-detail',
-    payment: '/payment'
+    show_payment: '/show-payment'
 };
 
 export default path_name;

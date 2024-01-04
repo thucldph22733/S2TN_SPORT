@@ -4,7 +4,7 @@ import { Breadcrumb, Button, Checkbox, Col, Collapse, Form, Input, Modal, Popcon
 import TextArea from 'antd/es/input/TextArea';
 import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
 import { DeleteOutlined, FormOutlined, HomeOutlined, PlusOutlined, TagsOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import CartService from '~/service/CartService';
 import formatCurrency from '~/utils/format-currency';
 import AddressService from '~/service/AddressService';
@@ -73,7 +73,7 @@ function Checkout() {
     const [cartDetail, setCartDetail] = useState([]);
 
     //load data cartDeatil
-    const findImageByProductId = async () => {
+    const getAllCartDetailByUserId = async () => {
 
         await CartService.getAllCartDetailByUserId(userId)
             .then(response => {
@@ -95,7 +95,7 @@ function Checkout() {
         // Check if the user is logged in
         if (userId) {
             // User is logged in, fetch cart data from the server
-            findImageByProductId();
+            getAllCartDetailByUserId();
         } else {
 
             if (localCartString) {
@@ -177,24 +177,30 @@ function Checkout() {
     }, [])
     //------------------------Thanh toán-----------------------------------------
     const [payment, setPayment] = useState();
+    const [orderId, setOrderId] = useState(null);
+    const [amount, setAmount] = useState(null);
+    const navigate = useNavigate();
 
-    const create = async () => {
-        const data = {
-            amount: parseInt(calculateTotal()),
-            orderId: 245435325
-        }
-        await PaymentService.create(data)
-            .then(response => {
-                setPayment(response);
-                console.log(response)
+    // const createPayment = async () => {
+    //     const data = {
+    //         amount: parseInt(amount),
+    //         orderId: orderId
+    //     }
 
-            }).catch(error => {
-                console.error(error);
-            })
-    }
-    useEffect(() => {
-        create();
-    }, [])
+    //     try {
+    //         const response = await PaymentService.create(data);
+    //         setPayment(response);
+    //         console.log(response);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     if (orderId && amount) {
+    //         createPayment();
+    //     }
+    // }, [orderId, amount]);
 
     const handleCreate = async () => {
         try {
@@ -219,27 +225,54 @@ function Checkout() {
                 values.ward = wards.find(ward => ward.code === Number(values.ward))?.name ?? ''
             }
 
-            await OrderService.create(values)
-                .then((response) => {
-                    navigate(`${path_name.show_bill_check}/${response.id}`)
-                    notification.success({
-                        message: 'Thông báo',
-                        description: 'Đặt hàng thành công!',
-                    });
-                    localStorage.removeItem("localCart");
-                    localStorage.removeItem("localVoucher");
-                })
-                .catch(error => {
-                    notification.error({
-                        message: 'Thông báo',
-                        description: 'Đặt hàng thất bại!',
-                    });
-                    console.error(error);
+            const response = await OrderService.create(values);
+
+            if (selectedMethod === 'cashOnDelivery') {
+                navigate(`${path_name.show_bill_check}/${response.id}`);
+                notification.success({
+                    message: 'Thông báo',
+                    description: 'Đặt hàng thành công!',
                 });
+                localStorage.removeItem("localCart");
+                localStorage.removeItem("localVoucher");
+            } else {
+                const dataPayment = {
+                    orderId: response.id,
+                    paymentDate: new Date(),
+                    amount: response.orderTotal,
+                    paymentMethod: "Chuyển khoản",
+                    note: `Thanh toán đơn hàng ngày ${FormatDate(new Date())}`,
+                    status: "Đã thanh toán"
+                };
+                await PaymentService.create(dataPayment);
+                const data = {
+                    amount: parseInt(response.orderTotal),
+                    orderId: response.id
+                };
+                const result = await PaymentService.payment(data);
+                if (result && result.data) {
+                    var a = document.createElement("a");
+                    a.href = result.data;
+                    a.click();
+                }
+            }
         } catch (error) {
             console.error(error);
         }
     };
+
+    const handlePlaceOrder = async () => {
+        if (selectedMethod === "vnpay") {
+            await handleCreate();
+        } else if (selectedMethod === "cashOnDelivery") {
+            await handleCreate();
+        } else {
+            notification.error({
+                message: 'Thông báo',
+                description: 'Vui lòng chọn phương thức thanh toán!',
+            });
+        }
+    }
 
     //-------------------------------------
     const [selectedMethod, setSelectedMethod] = useState("cashOnDelivery");
@@ -253,25 +286,10 @@ function Checkout() {
             setSelectedMethod(method);
         }
     };
-    const navigate = useNavigate();
-    // const navigate = useNavigate();
-    const handlePlaceOrder = () => {
-
-        if (selectedMethod === "vnpay") {
-            var a = document.createElement("a");
-            a.href = payment.data;
-            a.click();
-        } else if (selectedMethod === "cashOnDelivery") {
-            handleCreate();
-        } else {
-            notification.error({
-                message: 'Thông báo',
-                description: 'Vui lòng chọn phương thức thanh toán!',
-            });
-        }
 
 
-    }
+
+
     //Mở modal hiển thị address
     const [addressModal, setAddressModal] = useState({ isModal: false, reacord: null });
 

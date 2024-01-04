@@ -66,14 +66,14 @@ function Order() {
                     case 'Chờ xác nhận':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
                         break;
-                    case 'Chờ giao hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="purple">Chờ giao hàng</Tag>
+                    case 'Chờ lấy hàng':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="purple">Chờ lấy hàng</Tag>
                         break;
                     case 'Đang vận chuyển':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Đang vận chuyển</Tag>
                         break;
-                    case 'Đã giao hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="magenta">Đã giao hàng</Tag>
+                    case 'Chờ giao hàng':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="magenta">Chờ giao hàng</Tag>
                         break;
                     case 'Hoàn thành':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="cyan">Hoàn thành</Tag>

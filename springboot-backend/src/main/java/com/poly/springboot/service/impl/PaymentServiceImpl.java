@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.config.VNPayConfig;
 import com.poly.springboot.dto.requestDto.PaymentRequestDto;
+import com.poly.springboot.dto.requestDto.PaymentVNPayRequestDto;
 import com.poly.springboot.dto.responseDto.PaymentResponseDto;
 import com.poly.springboot.entity.Order;
 import com.poly.springboot.entity.Payment;
@@ -28,25 +29,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private OrderRepository orderRepository;
 
-    @Override
-    public Payment getPayments(String vnp_Amount,
-                               String vnp_OrderInfo,
-                               String vnp_PayDate,
-                               String vnp_TxnRef) {
-        Payment payment = new Payment();
-        payment.setPaymentDate(vnp_PayDate);
-        payment.setAmount(Double.valueOf(vnp_TxnRef));
-        Order order = orderRepository.findById(Long.valueOf(vnp_TxnRef)).orElse(null);
-        payment.setOrders(order);
-        payment.setPaymentMethod("Thanh toán VNPay");
-        payment.setStatus("Đã thanh toán");
-        payment.setNote(vnp_OrderInfo);
-        paymentRepository.save(payment);
-        return payment;
-    }
 
     @Override  //Method save payment
-    public PaymentResponseDto createPayment(PaymentRequestDto paymentRequestDto) throws UnsupportedEncodingException {
+    public PaymentResponseDto createPaymentLink(PaymentVNPayRequestDto paymentRequestDto) throws UnsupportedEncodingException {
 
         long amount = (paymentRequestDto.getAmount()) * 100;
 
@@ -112,18 +97,27 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentResponse;
     }
 
-    @Override  //Method update payment
-    public Boolean updatePayment(PaymentRequestDto paymentRequestDto, Long id) {
 
-        Payment payment = paymentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id phương thức thanh toán này!"));
+    @Override
+    public Boolean createPayment(PaymentRequestDto paymentRequestDto) {
 
-//        payment.setPaymentName(paymentRequestDto.getPaymentName());
-//        payment.setPaymentDescribe(paymentRequestDto.getPaymentDescribe());
-
+        Order order = orderRepository.findById(paymentRequestDto.getOrderId()).orElse(null);
+        Payment payment = new Payment();
+        payment.setOrders(order);
+        payment.setPaymentMethod(paymentRequestDto.getPaymentMethod());
+        payment.setPaymentDate(paymentRequestDto.getPaymentDate());
+        payment.setAmount(paymentRequestDto.getAmount());
+        payment.setNote(paymentRequestDto.getNote());
+        payment.setStatus(paymentRequestDto.getStatus());
         paymentRepository.save(payment);
 
         return true;
     }
+
+    @Override
+    public List<Payment> findByOrdersId(Long orderId) {
+        return paymentRepository.findByOrdersId(orderId);
+    }
+
 
 }

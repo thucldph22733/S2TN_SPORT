@@ -27,7 +27,7 @@ public class Payment extends BaseEntity{
     private Order orders;
 
     @Column(name = "payment_date")
-    private String paymentDate;
+    private LocalDateTime paymentDate;
 
     @Column(name = "amount")
     private Double amount ;

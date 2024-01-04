@@ -22,7 +22,7 @@ const ShoppingCart = () => {
     const userId = user ? user.id : null;
 
     // Load dữ liệu cartDetail và cập nhật tổng số lượng
-    const findImageByProductId = async () => {
+    const getAllCartDetailByUserId = async () => {
         await CartService.getAllCartDetailByUserId(userId)
             .then(response => {
                 const cartDetailMap = response.map((item, index) => ({
@@ -38,7 +38,7 @@ const ShoppingCart = () => {
     };
     useEffect(() => {
         if (userId) {
-            findImageByProductId();
+            getAllCartDetailByUserId();
         } else {
             const localCartString = localStorage.getItem('localCart');
             if (localCartString) {
@@ -58,7 +58,7 @@ const ShoppingCart = () => {
         if (user) {
             await CartService.delete(id).then(() => {
                 message.success('Xóa sản phẩm khỏi giỏ hàng thành công!');
-                findImageByProductId(); // Reload data from the server cart
+                getAllCartDetailByUserId(); // Reload data from the server cart
             }).catch(() => {
                 message.error('Lỗi xóa sản phẩm khỏi giỏ hàng!');
             });
@@ -124,7 +124,7 @@ const ShoppingCart = () => {
             await Promise.all(updatePromises);
             message.success('Cập nhật giỏ hàng thành công!');
             // Sau khi tất cả cập nhật hoàn thành, cập nhật lại trạng thái cartDetail
-            findImageByProductId();
+            getAllCartDetailByUserId();
         } catch (error) {
             console.error("Error updating cart details:", error);
             message.success('Lỗi cập nhật giỏ hàng!');

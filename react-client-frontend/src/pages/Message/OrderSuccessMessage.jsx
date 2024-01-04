@@ -5,6 +5,8 @@ import path_name from '~/core/constants/routers';
 
 const OrderSuccessMessage = () => {
     let { id } = useParams();
+    const userString = localStorage.getItem('user2');
+    const user = userString ? JSON.parse(userString) : null;
     return (
         <Result
             status="success"
@@ -14,9 +16,11 @@ const OrderSuccessMessage = () => {
                 <Button type="primary" key="console">
                     <Link to="/">Quay về trang chủ</Link>
                 </Button>,
-                <Button key="buy">
-                    <Link to={`${path_name.orderView}/${id}`}>Xem lịch sử đơn hàng</Link>
-                </Button>,
+                user && (
+                    <Button key="buy">
+                        <Link to={`${path_name.orderView}/${id}`}>Xem lịch sử đơn hàng</Link>
+                    </Button>
+                ),
             ]}
         />
     )

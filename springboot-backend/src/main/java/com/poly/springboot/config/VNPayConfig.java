@@ -13,7 +13,6 @@ import java.util.*;
 public class VNPayConfig {
 
     public static String vnp_Version = "2.1.0";
-
     public static String vnp_bankCode = "NCB";
     public static String vnp_Command = "pay";
     public static String orderType = "200000";
@@ -21,7 +20,7 @@ public class VNPayConfig {
     public static String vnp_CurrCode = "VND";
     public  static  String vnp_IpAddr = "0:0:0:0:0:0:0:1";
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "http://localhost:3001/show-bill-check/12";
+    public static String vnp_ReturnUrl = "http://localhost:3001/show-payment";
     public static String vnp_TmnCode = "W1C5UUUQ";
     public static String secretKey = "YYKLIGYOSNCIEHRCJUJDCVTSQLTKINKX";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";

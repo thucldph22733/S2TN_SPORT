@@ -1,10 +1,12 @@
 package com.poly.springboot.dto.requestDto;
 
-import jakarta.validation.constraints.NotBlank;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -12,8 +14,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PaymentRequestDto {
 
-       private long amount;
+    private Long orderId;
 
-       private long orderId;
+    private LocalDateTime paymentDate;
 
+    private Double amount ;
+
+    private String paymentMethod;
+
+    private String note;
+
+    private String status;
 }

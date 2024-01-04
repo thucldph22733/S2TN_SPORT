@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Image, Tag, Button, Descriptions, Space, notification, Modal, Form } from 'antd';
+import { Table, Image, Tag, Button, Descriptions, Space, notification, Modal, Form, Col, Row, Radio, Input } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import { Timeline, TimelineEvent } from '@mailtop/horizontal-timeline';
 import { FaBox, FaMinus, FaRegCalendarCheck, FaRegFileAlt, FaTruck, FaCheckCircle } from 'react-icons/fa';
@@ -11,6 +11,7 @@ import path_name from '~/constants/routers';
 import OrderDetailService from '~/service/OrderDetailService';
 import formatCurrency from '~/utils/format-currency';
 import TextArea from 'antd/es/input/TextArea';
+import PaymentService from '~/service/PaymentService';
 
 export default function OrderDetail() {
 
@@ -132,52 +133,68 @@ export default function OrderDetail() {
         });
 
     }
-
+    //---------------Thanh toán----------------------------------
+    const [payment, setPaymet] = useState([]);
+    const fetchPayment = async () => {
+        await PaymentService.getAllPaymentByOrdersId(id)
+            .then(response => {
+                setPaymet(response);
+            }).catch(error => {
+                console.error(error);
+            })
+    };
     //------------------Load dữ liệu------------------------------------------
 
     useEffect(() => {
         fetchOrder();
         fetchOrderDetail();
         getAllTimeLineByOrderId();
-
+        fetchPayment();
     }, []);
 
     //----------------------------Định nghĩa tên cột load dữ liệu cho bảng-------------------------------------------
-    // const columnCart = [
-    //     {
-    //         title: '#',
-    //         dataIndex: 'index',
-    //         width: 50,
-    //         render: (index) => index + 1, // Hiển thị STT bắt đầu từ 1
-    //     },
-    //     {
-    //         title: 'Số tiền',
-    //         dataIndex: '',
-    //         width: 60,
-    //         render: () => <span style={{ color: 'red' }}>{formatCurrency(order.orderTotal)}</span>,
-    //     },
-    //     {
-    //         title: 'Thời gian',
-    //         dataIndex: 'createdAt',
-    //         width: 100,
-    //     },
-    //     {
-    //         title: 'Phương thức thanh toán',
-    //         dataIndex: '',
-    //         width: 60,
-    //         render: () => order.payment.paymentName
-    //     },
-    //     {
-    //         title: 'Nhân viên xác nhận',
-    //         dataIndex: 'createdBy',
-    //         width: 60,
-    //     },
-    //     {
-    //         title: 'Ghi chú',
-    //         dataIndex: 'note',
-    //         width: 60,
-    //     },
-    // ];
+    const columnPaymentHistory = [
+        {
+            title: 'Ngày thanh toán',
+            dataIndex: 'paymentDate',
+            key: 'paymentDate',
+            width: '17%',
+            render: (text) => <span>{FormatDate(text)}</span>
+        },
+        {
+            title: 'Số tiền',
+            dataIndex: 'amount',
+            key: 'amount',
+            width: '10%',
+            render: (text) => <span style={{ color: 'red' }}>{formatCurrency(text)}</span>,
+        },
+        {
+            title: 'PT thanh toán',
+            dataIndex: 'paymentMethod',
+            key: 'paymentMethod',
+            width: '10%',
+            render: (text) => <Tag color="green" >{text}</Tag>
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            key: 'status',
+            width: '15%',
+            render: (text) => <span style={{ color: 'red', fontWeight: '600' }}>{text}</span>
+        },
+        {
+            title: 'Ghi chú',
+            dataIndex: 'note',
+            key: 'note',
+            width: '15%',
+        },
+        {
+            title: 'Nhân viên xác nhận',
+            dataIndex: 'createdBy',
+            key: 'createdBy',
+            width: '20%',
+        },
+    ];
     const columnOrderDetail = [
         {
             title: '#',
@@ -230,7 +247,6 @@ export default function OrderDetail() {
                 </span>
             ),
         },
-
     ];
 
 
@@ -375,7 +391,22 @@ export default function OrderDetail() {
                         showSizeChanger: true,
                     }} />
 
+                <div style={{ borderBottom: '2px solid black', margin: '10px 0', paddingBottom: '5px' }}>
+                    <Row>
+                        <Col span={12}>
+                            <h6 style={{ fontSize: '15px', fontWeight: '550' }}>LỊCH SỬ THANH TOÁN</h6>
+                        </Col>
+                        <Col span={12}>
+                            <Button type='primary' style={{ float: 'right', backgroundColor: '#5a76f3', borderRadius: '5px' }}>Thanh toán</Button>
+                        </Col>
+                    </Row>
 
+
+                </div>
+                <Table
+                    columns={columnPaymentHistory}
+                    dataSource={payment}
+                    pagination={false} />
 
                 <div style={{ borderBottom: '2px solid black', marginTop: '30px' }}>
                     <h6 style={{ fontSize: '15px', fontWeight: '550' }}>THÔNG TIN ĐƠN HÀNG: <span style={{ color: 'red' }}>HD{orders.id}</span></h6>
@@ -431,7 +462,7 @@ export default function OrderDetail() {
                     </Descriptions.Item>
 
                 </Descriptions>
-            </div>
+            </div >
 
             {
                 openStatus.isModal && <OrderStatusModal
@@ -596,6 +627,80 @@ const OrderHistoryModal = ({ isModal, hideModal, orderHistories }) => {
                 <Table dataSource={orderHistories} columns={columns} pagination={false} />
             </Modal>
         </>
+    );
+};
+
+
+const PaymentModal = ({ isModal, hideModal }) => {
+    const [form] = Form.useForm();
+
+    const handleCreate = () => {
+        form.validateFields().then(async () => {
+
+            const data = form.getFieldsValue();
+
+            await PaymentService.create(data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Thanh toán thành công!',
+                    });
+                    // fetchColors();
+                    // Đóng modal
+                    hideModal();
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thất bại!',
+                    });
+                    console.error(error);
+                });
+
+        }).catch(error => {
+            console.error(error);
+        })
+
+    }
+
+    return (
+
+        <Modal
+            title="Xác nhận thanh toán"
+            open={isModal}
+            onOk={handleCreate}
+            onCancel={hideModal}
+            okText={"Lưu"}
+            cancelText="Hủy bỏ"
+        >
+            <Form
+                name="wrap"
+                labelCol={{ flex: '100px' }}
+                labelAlign="left"
+                labelWrap
+                wrapperCol={{ flex: 1 }}
+                colon={false}
+                style={{ maxWidth: 600, marginTop: '25px' }}
+                form={form}
+            // initialValues={{ ...reacord }}
+            >
+                <Form.Item label="Tên:" name="colorName" rules={[{ required: true, message: 'Vui lòng nhập tên màu sắc!' }]}>
+                    <Input placeholder="Nhập tên màu sắc..." />
+                </Form.Item>
+
+                <Form.Item label="Ghi chú:" name="colorDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                    <TextArea rows={4} placeholder="Nhập ghi chú..." />
+                </Form.Item>
+
+                <Form.Item label="Phương thức:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn tạng thái!' }]}>
+                    <Radio.Group name="radiogroup" style={{ float: 'left' }}>
+                        <Radio value={true}>Chuyển khoản</Radio>
+                        <Radio value={false}>Tiền mặt</Radio>
+                    </Radio.Group>
+                </Form.Item>
+
+            </Form>
+        </Modal>
     );
 };
 

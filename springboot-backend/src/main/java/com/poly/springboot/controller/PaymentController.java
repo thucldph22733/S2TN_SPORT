@@ -4,14 +4,21 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.poly.springboot.config.VNPayConfig;
 import com.poly.springboot.constants.NotificationConstants;
+import com.poly.springboot.dto.requestDto.BrandRequestDto;
 import com.poly.springboot.dto.requestDto.PaymentRequestDto;
+import com.poly.springboot.dto.requestDto.PaymentVNPayRequestDto;
 import com.poly.springboot.dto.responseDto.PaymentResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
+import com.poly.springboot.dto.responseDto.ResponseHandler;
+import com.poly.springboot.entity.Category;
 import com.poly.springboot.entity.Payment;
 import com.poly.springboot.service.PaymentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -37,41 +44,33 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/v1/payments/")
 @Tag(name = "Payments", description = "( Rest API Hiển thị, thêm, sửa, xóa phương thức thanh toán )")
-@Validated
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
-    // get all Payment Method rest api
-    @GetMapping("payment")
-    public ResponseEntity<?> getPayments(
-            @RequestParam(required = false) String vnp_Amount,
-            @RequestParam(required = false) String vnp_BankCode,
-            @RequestParam(required = false) String vnp_BankTranNo,
-            @RequestParam(required = false) String vnp_CardType,
-            @RequestParam(required = false) String vnp_OrderInfo,
-            @RequestParam(required = false) String vnp_PayDate,
-            @RequestParam(required = false) String vnp_ResponseCode,
-            @RequestParam(required = false) String vnp_TmnCode,
-            @RequestParam(required = false) String vnp_TransactionNo,
-            @RequestParam(required = false) String vnp_TransactionStatus,
-            @RequestParam(required = false) String vnp_TxnRef,
-            @RequestParam(required = false) String vnp_SecureHash
-    ) {
-
-        Payment payment = paymentService.getPayments(vnp_Amount, vnp_OrderInfo, vnp_PayDate, vnp_TxnRef);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(payment);
-    }
-
     //create Payment Method rest api
-    @PostMapping("create")
-    public ResponseEntity<?> createPayment(@RequestBody PaymentRequestDto paymentRequestDto) throws UnsupportedEncodingException {
-        PaymentResponseDto paymentResponse = paymentService.createPayment(paymentRequestDto);
+    @PostMapping("payment")
+    public ResponseEntity<?> createPayment(@RequestBody PaymentVNPayRequestDto paymentRequestDto) throws UnsupportedEncodingException {
+        PaymentResponseDto paymentResponse = paymentService.createPaymentLink(paymentRequestDto);
         return new ResponseEntity<>(paymentResponse, HttpStatus.OK);
     }
+    @PostMapping("create")
+    public ResponseEntity<ResponseDto> createPayment( @RequestBody PaymentRequestDto paymentRequestDto) {
+        Boolean isCreated = paymentService.createPayment(paymentRequestDto);
+        if (isCreated) {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
+        }
+    }
 
+    @GetMapping("getAllPaymentByOrdersId")
+    public ResponseEntity< List<Payment>> getAllPaymentByOrdersId(@RequestParam(required = false) Long orderId) {
 
+        List<Payment> paymentList = paymentService.findByOrdersId(orderId);
+        return ResponseEntity.status(HttpStatus.OK).body(paymentList);
+    }
 }

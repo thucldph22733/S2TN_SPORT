@@ -307,6 +307,9 @@ public class OrderServiceImpl implements OrderService {
                     productDetail.setQuantity(productDetail.getQuantity() - cartDetail.getQuantity());
                     productDetailRepository.save(productDetail);
                 }
+
+                // Lưu chi tiết đơn hàng trước khi xóa giỏ hàng
+                orderDetailRepository.flush();
                 // Xóa giỏ hàng sau khi đã tạo đơn hàng thành công
                 cartRepository.delete(cart);
             }

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,6 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
     private OrderStatusRepository orderStatusRepository;
-    private DeliveryRepository shippingMethodRepository;
     private UserRepository userRepository;
     private VoucherRepository voucherRepository;
     private OrderDetailRepository orderDetailRepository;
@@ -46,8 +46,7 @@ public class OrderServiceImpl implements OrderService {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.orderStatusRepository = orderStatusRepository;
-        this.shippingMethodRepository = shippingMethodRepository;
-        this.userRepository = userRepository;
+       this.userRepository = userRepository;
         this.productDetailRepository = productDetailRepository;
         this.voucherRepository = voucherRepository;
         this.orderHistoryRepository = orderHistoryRepository;
@@ -167,9 +166,8 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Page<Order> getAllOrders(String orderStatusName, Pageable pageable) {
-
-        return orderRepository.findAllByStatusNameAndDeletedIsTrue(orderStatusName,pageable);
+    public Page<Order> getAllOrders(String orderStatusName, String keyword, String orderType, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        return orderRepository.findAllByStatusNameAndDeletedIsTrue(orderStatusName, keyword, orderType, startDate, endDate, pageable);
     }
 
     @Override

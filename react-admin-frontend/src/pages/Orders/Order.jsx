@@ -1,4 +1,6 @@
-import { Badge, Button, Radio, Space, Table, Tabs, Tag, Tooltip } from 'antd';
+import { FileDoneOutlined, FilterOutlined, RedoOutlined } from '@ant-design/icons';
+import { Button, Col, DatePicker, Input, Row, Select, Space, Table, Tabs, Tag, Tooltip, Card } from 'antd';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -22,7 +24,7 @@ function Order() {
             dataIndex: 'id',
             key: 'id',
             width: "10%",
-            render: (text) => <a>HD{text}</a>,
+            render: (text) => <span style={{ color: 'red' }}>HD{text}</span>,
         },
         {
             title: 'Khách hàng',
@@ -36,7 +38,7 @@ function Order() {
             key: 'orderType',
             width: "15%",
             render: (text) => (
-                text === "InStore" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
+                text === "Tại quầy" ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Tại quầy</Tag>
                     : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="warning">Online</Tag>
             )
         },
@@ -71,9 +73,6 @@ function Order() {
                         break;
                     case 'Đang vận chuyển':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Đang vận chuyển</Tag>
-                        break;
-                    case 'Chờ giao hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="magenta">Chờ giao hàng</Tag>
                         break;
                     case 'Hoàn thành':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="cyan">Hoàn thành</Tag>
@@ -120,12 +119,23 @@ function Order() {
     const [orders, setOrders] = useState([]);
 
     const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
+    const [searchKeyword, setSearchKeyword] = useState(null);
+    const [selectedOrderType, setSelectedOrderType] = useState(null);
+    const [selectedStartDate, setSelectedStartDate] = useState(null);
+    const [selectedEndDate, setSelectedEndDate] = useState(null);
+    const [filterOrder, setFilterOrder] = useState({
+        pageNo: 0,
+        pageSize: 5,
+        orderStatusName: null,
+        keyword: null,
+        orderType: null,
+        startDate: null,
+        endDate: null,
+    });
 
-    const [orderStatusName, setOrderStatusName] = useState(null);
-
-    const fetchOrders = async () => {
+    const getAllOrdersAndFilter = async () => {
         setLoading(true)
-        await OrderService.getAllOrders(pagination.current - 1, pagination.pageSize, orderStatusName)
+        await OrderService.getAllOrdersAndFilter(filterOrder)
             .then(response => {
 
                 setOrders(response.data);
@@ -141,16 +151,39 @@ function Order() {
     }
 
     useEffect(() => {
-        fetchOrders();
-    }, [pagination.current, pagination.pageSize, orderStatusName]);
+        getAllOrdersAndFilter();
+    }, [filterOrder]);
 
     const handleTableChange = (pagination) => {
         setPagination({
             ...pagination,
         });
-
+        setFilterOrder({
+            ...filterOrder,
+            pageNo: pagination.current - 1,
+            pageSize: pagination.pageSize,
+        });
     };
-
+    const handleReset = () => {
+        setSearchKeyword(null);
+        setSelectedOrderType(null);
+        setSelectedStartDate(null);
+        setSelectedEndDate(null);
+        setFilterOrder({
+            pageNo: 0,
+            pageSize: 5,
+            orderStatusName: null,
+            keyword: null,
+            orderType: null,
+            startDate: null,
+            endDate: null,
+        });
+        setPagination({
+            ...pagination,
+            current: 1,
+            pageSize: 5,
+        });
+    };
 
     const tabContent = () => (
 
@@ -199,11 +232,6 @@ function Order() {
             children: tabContent(),
         },
         {
-            key: 'Chờ giao hàng',
-            label: 'Chờ giao hàng',
-            children: tabContent(),
-        },
-        {
             key: 'Hoàn thành',
             label: 'Hoàn thành',
             children: tabContent(),
@@ -217,14 +245,136 @@ function Order() {
 
 
     const handleTabChange = (key) => {
-        setOrderStatusName(key)
+        setFilterOrder({
+            ...filterOrder,
+            orderStatusName: key
+        })
     };
-
+    const handleSearch = () => {
+        const adjustedStartDate = selectedStartDate && dayjs(selectedStartDate).add(7, 'hour');
+        const adjustedEndDate = selectedEndDate && dayjs(selectedEndDate).add(7, 'hour');
+        setFilterOrder({
+            ...filterOrder,
+            pageNo: 0,
+            keyword: searchKeyword,
+            orderType: selectedOrderType,
+            startDate: adjustedStartDate,
+            endDate: adjustedEndDate,
+        });
+    };
     return (
         <>
-            <Tabs defaultActiveKey=""
-                items={items}
-                onChange={handleTabChange}></Tabs>
+            <Card
+                title={<span style={{ color: '#5a76f3' }}><FilterOutlined /> Lọc</span>}
+                style={{ borderRadius: '10px' }}
+            >
+                <Row>
+                    <Col span={12} style={{ padding: '0 50px' }}>
+                        <Input
+                            style={{
+                                width: '100%',
+                                height: '35px',
+                                borderRadius: '5px',
+                            }}
+                            placeholder="Nhập mã hóa đơn, tên khách..."
+                            value={searchKeyword}
+                            onChange={(e) => setSearchKeyword(e.target.value)}
+
+                        />
+                    </Col>
+                    <Col span={12} style={{ padding: '0 50px' }}>
+                        <Select
+                            style={{
+                                width: '100%',
+                                height: '35px',
+                            }}
+                            allowClear
+                            placeholder="Loại đơn hàng"
+                            value={selectedOrderType}
+                            onChange={(value) => setSelectedOrderType(value)}
+                            options={[
+                                {
+                                    value: 'Tại quầy',
+                                    label: 'Tại quầy',
+                                },
+                                {
+                                    value: 'Online',
+                                    label: 'Online',
+                                },
+                            ]}
+                        />
+                    </Col>
+                </Row>
+                <Row style={{ marginTop: '20px' }}>
+                    <Col span={12} style={{ padding: '0 50px' }}>
+                        <DatePicker
+                            format="HH:mm:ss - DD/MM/YYYY"
+                            style={{
+                                width: '100%',
+                                height: '35px',
+                                borderRadius: '5px',
+                            }}
+                            showTime
+                            // ={{
+                            //     defaultValue: dayjs('00:00:00', 'HH:mm:ss'),
+                            // }}
+                            placeholder="Ngày bắt đầu"
+                            value={selectedStartDate}
+                            onChange={(date) => setSelectedStartDate(date)}
+                        />
+                    </Col>
+                    <Col span={12} style={{ padding: '0 50px' }}>
+                        <DatePicker
+                            format="HH:mm:ss - DD/MM/YYYY"
+                            style={{
+                                width: '100%',
+                                height: '35px',
+                                borderRadius: '5px',
+                            }}
+                            showTime={{
+                                defaultValue: dayjs('00:00:00', 'HH:mm:ss'),
+                            }}
+                            placeholder="Ngày kết thúc"
+                            value={selectedEndDate}
+                            onChange={(date) => setSelectedEndDate(date)}
+                        />
+                    </Col>
+                </Row>
+                <Button
+                    type="primary"
+                    style={{
+                        marginBottom: '16px',
+                        float: 'right',
+                        borderRadius: '4px',
+                        margin: '15px 50px 0 6px',
+                        backgroundColor: '#5a76f3',
+                    }}
+                    onClick={handleSearch}
+                >
+                    Tìm kiếm
+                </Button>
+                <Button
+                    type="primary"
+                    icon={<RedoOutlined style={{ fontSize: '18px' }} />}
+                    style={{
+                        marginBottom: '16px',
+                        float: 'right',
+                        marginTop: '15px',
+                        borderRadius: '4px',
+                        backgroundColor: '#5a76f3',
+                    }}
+                    onClick={handleReset}
+                />
+            </Card>
+            <Card
+                title={<span style={{ color: '#5a76f3' }}><FileDoneOutlined />  Danh sách đơn hàng</span>}
+                style={{ marginTop: '40px', borderRadius: '10px' }}
+            >
+                <Tabs defaultActiveKey=""
+                    items={items}
+                    onChange={handleTabChange}></Tabs>
+            </Card>
+
 
         </>
     );

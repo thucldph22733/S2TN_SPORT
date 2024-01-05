@@ -72,25 +72,16 @@ function Order() {
                 switch (text) {
                     case 'Tạo đơn hàng':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Đơn hàng mới</Tag>
-                        break;
                     case 'Chờ xác nhận':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
-                        break;
-                    case 'Chờ giao hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="purple">Chờ giao hàng</Tag>
-                        break;
+                    case 'Chờ lấy hàng':
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="purple">Chờ lấy hàng</Tag>
                     case 'Đang vận chuyển':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Đang vận chuyển</Tag>
-                        break;
-                    case 'Đã giao hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="magenta">Đã giao hàng</Tag>
-                        break;
                     case 'Hoàn thành':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="cyan">Hoàn thành</Tag>
-                        break;
                     case 'Đã hủy':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="red">Đã hủy</Tag>
-                        break;
                     default:
                         break;
                 }
@@ -221,11 +212,7 @@ function Order() {
             label: 'Đang vận chuyển',
             children: tabContent(),
         },
-        {
-            key: 'Chờ giao hàng',
-            label: 'Chờ giao hàng',
-            children: tabContent(),
-        },
+
         {
             key: 'Hoàn thành',
             label: 'Hoàn thành',

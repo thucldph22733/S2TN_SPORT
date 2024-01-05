@@ -51,8 +51,6 @@ export default function OrderDetail() {
             return '#007FFF	';
         } else if (status === 'Đang vận chuyển') {
             return '#FF6600';
-        } else if (status === 'Chờ giao hàng') {
-            return '#007BA7';
         } else if (status === 'Hoàn thành') {
             return '#7859f2';
         } else if (status === 'Đã hủy') {
@@ -69,8 +67,6 @@ export default function OrderDetail() {
         } else if (status === 'Chờ lấy hàng') {
             return FaBox;
         } else if (status === 'Đang vận chuyển') {
-            return FaTruck;
-        } else if (status === 'Chờ giao hàng') {
             return FaTruck;
         } else if (status === 'Hoàn thành') {
             return FaCheckCircle;
@@ -192,42 +188,6 @@ export default function OrderDetail() {
         },
     ];
 
-    const columnPaymentHistory = [
-        {
-            title: 'Ngày thanh toán',
-            dataIndex: 'paymentDate',
-            key: 'paymentDate',
-            width: '17%',
-            render: (text) => <span>{FormatDate(text)}</span>
-        },
-        {
-            title: 'Số tiền',
-            dataIndex: 'amount',
-            key: 'amount',
-            width: '15%',
-            render: (text) => <span style={{ color: 'red' }}>{formatCurrency(text)}</span>,
-        },
-        {
-            title: 'Phương thức thanh toán',
-            dataIndex: 'paymentMethod',
-            key: 'paymentMethod',
-            width: '20%',
-            render: (text) => <Tag color="green" >{text}</Tag>
-        },
-        {
-            title: 'Ghi chú',
-            dataIndex: 'note',
-            key: 'note',
-            width: '25%',
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            key: 'status',
-            width: '15%',
-            render: (text) => <span style={{ color: 'red', fontWeight: '600' }}>{text}</span>
-        },
-    ];
     //----------------------------------- Hàm  tính tổng tiền hàng-------------------------------------------
     const calculateTotalAmount = () => {
         let totalAmount = 0;
@@ -296,14 +256,6 @@ export default function OrderDetail() {
                         showSizeChanger: true,
                     }} />
 
-                <div style={{ borderBottom: '2px solid black', margin: '10px 0' }}>
-                    <h6>LỊCH SỬ THANH TOÁN</h6>
-                </div>
-                <Table
-                    columns={columnPaymentHistory}
-                    dataSource={payment}
-                    pagination={false} />
-
                 <div style={{ borderBottom: '2px solid black', margin: '20px 0 10px 0' }}>
                     <h6>THÔNG TIN ĐƠN HÀNG: <span style={{ color: 'red' }}>HD{orders.id}</span></h6>
                 </div>
@@ -347,14 +299,13 @@ export default function OrderDetail() {
                         {formatCurrency(orders.transportFee)}
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="Ghi chú đơn hàng" span={2}>
-                        {orders.note}
+                    <Descriptions.Item label="Phương thức thanh toán:" span={2}>
+                        <Tag color="volcano">{payment.paymentMethod == "Chuyển khoản" ? "Thanh toán VNPay" : "Thanh toán khi nhận hàng"}</Tag>
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Thành tiền">
                         {formatCurrency(orders.orderTotal)}
                     </Descriptions.Item>
-
                 </Descriptions>
 
             </div>

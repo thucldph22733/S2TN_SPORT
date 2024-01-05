@@ -11,14 +11,15 @@ import com.poly.springboot.entity.Voucher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 public interface OrderService {
 
 //    List<OrderResponseDto> getAllOrdersCompleted();
-    Page<Order> getAllOrders(String orderStatusName, Pageable pageable);
-    List<Map<String, Object>>getRevenueByMonthForCurrentYear();
+Page<Order> getAllOrders(String orderStatusName, String keyword, String orderType, LocalDateTime startDate, LocalDateTime endDat, Pageable pageable);
+List<Map<String, Object>>getRevenueByMonthForCurrentYear();
     List<Map<String, Object>> getTotalOrdersByStatus();
     Page<Order> findAllOrderByStatusId(Pageable pageable);
 //    Boolean createOrder(OrderRequestDto orderRequestDto);

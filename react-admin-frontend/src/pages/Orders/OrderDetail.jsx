@@ -63,8 +63,6 @@ export default function OrderDetail() {
             return '#007FFF	';
         } else if (status === 'Đang vận chuyển') {
             return '#FF6600';
-        } else if (status === 'Chờ giao hàng') {
-            return '#007BA7';
         } else if (status === 'Hoàn thành') {
             return '#7859f2';
         } else if (status === 'Đã hủy') {
@@ -81,8 +79,6 @@ export default function OrderDetail() {
         } else if (status === 'Chờ lấy hàng') {
             return FaBox;
         } else if (status === 'Đang vận chuyển') {
-            return FaTruck;
-        } else if (status === 'Chờ giao hàng') {
             return FaTruck;
         } else if (status === 'Hoàn thành') {
             return FaCheckCircle;
@@ -262,7 +258,18 @@ export default function OrderDetail() {
     const handleStatusCancel = () => {
         setOpenStatus({ isModal: false });
     };
+    // ------------------------Mở modal thanh toan----------------------------------------------
 
+    const [openPayment, setOpenPayment] = useState(false);
+
+    const showModalPayment = () => {
+        setOpenPayment(true);
+
+    };
+
+    const handlePaymentCansel = () => {
+        setOpenPayment(false);
+    };
     //----------------Mở modal lịch sử đơn hàng-------------------------
     const [openOrderHistory, setOrderHistory] = useState(false);
 
@@ -320,7 +327,6 @@ export default function OrderDetail() {
                         </Timeline>
                     </div>
 
-
                     <Space size="middle" style={{ marginBottom: '20px' }}>
 
                         <>
@@ -335,11 +341,6 @@ export default function OrderDetail() {
                                 </Button>
                             }
                             {orders.orderStatus?.statusName === 'Đang vận chuyển' &&
-                                <Button type='primary' style={{ borderRadius: '5px' }} onClick={() => showModalStatus('status')}>
-                                    Đang giao
-                                </Button>
-                            }
-                            {orders.orderStatus?.statusName === 'Chờ giao hàng' &&
                                 <Button type='primary' style={{ borderRadius: '5px' }} onClick={() => showModalStatus('status')}>
                                     Hoàn thành
                                 </Button>
@@ -363,13 +364,7 @@ export default function OrderDetail() {
                         onClick={() => showModalOrderHistory()}>
                         Lịch sử
                     </Button>
-
-
                 </div>
-
-
-
-
                 <div style={{ borderBottom: '2px solid black', marginTop: '30px' }}>
                     <h6 style={{ fontSize: '15px', fontWeight: '550' }}>SẢN PHẨM</h6>
                 </div>
@@ -397,10 +392,11 @@ export default function OrderDetail() {
                             <h6 style={{ fontSize: '15px', fontWeight: '550' }}>LỊCH SỬ THANH TOÁN</h6>
                         </Col>
                         <Col span={12}>
-                            <Button type='primary' style={{ float: 'right', backgroundColor: '#5a76f3', borderRadius: '5px' }}>Thanh toán</Button>
+                            {payment.length == 0 && <Button type='primary'
+                                style={{ float: 'right', backgroundColor: '#5a76f3', borderRadius: '5px' }}
+                                onClick={() => showModalPayment()}>Xác nhận thanh toán</Button>}
                         </Col>
                     </Row>
-
 
                 </div>
                 <Table
@@ -453,8 +449,8 @@ export default function OrderDetail() {
                         {formatCurrency(orders.transportFee)}
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="Phương thức thanh toán" span={2}>
-                        <Tag color="green" >Thanh toán khi nhận hàng</Tag>
+                    <Descriptions.Item label="Ghi chú đơn hàng" span={2}>
+                        {orders.note ? orders.note : "Không có"}
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Thành tiền">
@@ -472,9 +468,9 @@ export default function OrderDetail() {
                     orders={orders}
                     getAllTimeLineByOrderId={getAllTimeLineByOrderId}
                     fetchOrders={fetchOrder}
+                    payment={payment}
                 />
             }
-
             {
                 openOrderHistory && <OrderHistoryModal
                     isModal={openOrderHistory}
@@ -482,12 +478,19 @@ export default function OrderDetail() {
                     orderHistories={orderHistories}
                 />
             }
-
+            {
+                openPayment && <PaymentModal
+                    isModal={openPayment}
+                    hideModal={handlePaymentCansel}
+                    orders={orders}
+                    fetchPayment={fetchPayment}
+                />
+            }
         </>
     );
 }
 
-const OrderStatusModal = ({ hideModal, isModal, isMode, fetchOrders, getAllTimeLineByOrderId, orders }) => {
+const OrderStatusModal = ({ hideModal, isModal, isMode, fetchOrders, getAllTimeLineByOrderId, orders, payment }) => {
 
     const [form] = Form.useForm();
 
@@ -513,9 +516,6 @@ const OrderStatusModal = ({ hideModal, isModal, isMode, fetchOrders, getAllTimeL
                         data.newStatusName = 'Đang vận chuyển';
                         break;
                     case "Đang vận chuyển":
-                        data.newStatusName = 'Chờ giao hàng';
-                        break;
-                    case "Chờ giao hàng":
                         data.newStatusName = 'Hoàn thành';
                         break;
                     default:
@@ -523,7 +523,14 @@ const OrderStatusModal = ({ hideModal, isModal, isMode, fetchOrders, getAllTimeL
                         break;
                 }
             }
-
+            if (payment.length === 0 && orders.orderStatus?.statusName == "Đang vận chuyển") {
+                notification.error({
+                    message: 'Thông báo',
+                    description: 'Vui lòng xác nhận thanh toán!',
+                });
+                hideModal();
+                return;
+            }
             data.orderId = orders.id
 
             await OrderService.updateOrderStatus(data)
@@ -631,23 +638,24 @@ const OrderHistoryModal = ({ isModal, hideModal, orderHistories }) => {
 };
 
 
-const PaymentModal = ({ isModal, hideModal }) => {
+const PaymentModal = ({ isModal, hideModal, orders, fetchPayment }) => {
     const [form] = Form.useForm();
+    const [change, setChange] = useState(0); // State to store the calculated change
 
     const handleCreate = () => {
         form.validateFields().then(async () => {
-
             const data = form.getFieldsValue();
-
+            data.status = 'Đã thanh toán'
+            data.orderId = orders.id
+            data.paymentDate = new Date();
             await PaymentService.create(data)
                 .then(() => {
                     notification.success({
                         message: 'Thông báo',
                         description: 'Thanh toán thành công!',
                     });
-                    // fetchColors();
-                    // Đóng modal
                     hideModal();
+                    fetchPayment();
                 })
                 .catch(error => {
                     notification.error({
@@ -656,15 +664,22 @@ const PaymentModal = ({ isModal, hideModal }) => {
                     });
                     console.error(error);
                 });
-
         }).catch(error => {
             console.error(error);
         })
-
     }
 
-    return (
+    const handleAmountChange = (value) => {
+        if (value === undefined || value === null || value.trim() === '') {
+            setChange(0);
+        } else {
+            const enteredAmount = parseFloat(value);
+            const remainingAmount = enteredAmount - orders.orderTotal;
+            setChange(remainingAmount);
+        }
+    };
 
+    return (
         <Modal
             title="Xác nhận thanh toán"
             open={isModal}
@@ -672,33 +687,78 @@ const PaymentModal = ({ isModal, hideModal }) => {
             onCancel={hideModal}
             okText={"Lưu"}
             cancelText="Hủy bỏ"
+            width={500}
         >
             <Form
-                name="wrap"
-                labelCol={{ flex: '100px' }}
-                labelAlign="left"
-                labelWrap
-                wrapperCol={{ flex: 1 }}
-                colon={false}
-                style={{ maxWidth: 600, marginTop: '25px' }}
+                name="validateOnly"
+                layout="vertical"
+                autoComplete="off"
                 form={form}
-            // initialValues={{ ...reacord }}
+                onValuesChange={(changedValues, allValues) => {
+                    // Check if the 'amount' field changed and handle the change
+                    if ('amount' in changedValues) {
+                        handleAmountChange(changedValues['amount']);
+                    }
+                }}
             >
-                <Form.Item label="Tên:" name="colorName" rules={[{ required: true, message: 'Vui lòng nhập tên màu sắc!' }]}>
-                    <Input placeholder="Nhập tên màu sắc..." />
-                </Form.Item>
+                <p style={{ fontSize: '20px' }}>Số tiền cần thanh toán: <span style={{ color: 'red' }}>{formatCurrency(orders.orderTotal)}</span></p>
 
-                <Form.Item label="Ghi chú:" name="colorDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                <Col>
+                    <Form.Item
+                        label="Tiền khách đưa:"
+                        name="amount"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập số tiền!',
+                            },
+                            {
+                                validator(_, value) {
+                                    if (!value) {
+                                        return Promise.reject();
+                                    }
+
+                                    const enteredAmount = parseFloat(value);
+
+                                    if (isNaN(enteredAmount)) {
+                                        return Promise.reject(
+                                            new Error('Vui lòng nhập đúng định dạng số!')
+                                        );
+                                    }
+
+                                    if (enteredAmount < orders.orderTotal) {
+                                        return Promise.reject(
+                                            new Error(`Số tiền không được nhỏ hơn ${formatCurrency(orders.orderTotal)}`)
+                                        );
+                                    }
+
+                                    handleAmountChange(value);
+                                    return Promise.resolve();
+                                },
+                            },
+                        ]}
+                    >
+                        <Input placeholder="Nhập số tiền..." />
+                    </Form.Item>
+                </Col>
+
+                <Form.Item label="Ghi chú:" name="note" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
                     <TextArea rows={4} placeholder="Nhập ghi chú..." />
                 </Form.Item>
 
-                <Form.Item label="Phương thức:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn tạng thái!' }]}>
-                    <Radio.Group name="radiogroup" style={{ float: 'left' }}>
-                        <Radio value={true}>Chuyển khoản</Radio>
-                        <Radio value={false}>Tiền mặt</Radio>
-                    </Radio.Group>
-                </Form.Item>
-
+                <Row>
+                    <Col span={15}>
+                        <Form.Item label="Phương thức thanh toán:" name="paymentMethod" rules={[{ required: true, message: 'Vui lòng chọn phương thức thanh toán!' }]}>
+                            <Radio.Group name="radiogroup" style={{ float: 'left' }}>
+                                <Radio value='Tiền mặt'>Tiền mặt</Radio>
+                                <Radio value='Chuyển khoản'>Chuyển khoản</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+                    </Col>
+                    <Col span={9} style={{ paddingLeft: '10px' }}>
+                        <p>Tiền thừa: <span style={{ color: 'red' }}>{formatCurrency(change)}</span></p>
+                    </Col>
+                </Row>
             </Form>
         </Modal>
     );

@@ -1,6 +1,7 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
+import com.poly.springboot.dto.requestDto.FilterOrderRequestDto;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.requestDto.OrderCancelRequestDto;
 import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
@@ -37,13 +38,17 @@ public class OrderController {
     private OrderService orderService;
 
     // get all order rest api
-    @GetMapping("getAllOrders")
-    public ResponseEntity<?> getOrders(@RequestParam(defaultValue = "0") Integer pageNo,
-                                       @RequestParam(defaultValue = "10") Integer pageSize,
-                                       @RequestParam(required = false) String statusName) {
+    @PostMapping("getAllOrdersAndFilter")
+    public ResponseEntity<?> getOrders(@RequestBody FilterOrderRequestDto orderRequestDto) {
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Order> orderPage = orderService.getAllOrders(statusName, pageable);
+            Pageable pageable = PageRequest.of(orderRequestDto.getPageNo(), orderRequestDto.getPageSize());
+        Page<Order> orderPage = orderService.getAllOrders(
+                orderRequestDto.getOrderStatusName(),
+                orderRequestDto.getKeyword(),
+                orderRequestDto.getOrderType(),
+                orderRequestDto.getStartDate(),
+                orderRequestDto.getEndDate(),
+                pageable);
         List<Order> orderList = orderPage.getContent();
         return ResponseHandler
                 .generateResponse(

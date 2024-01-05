@@ -37,8 +37,22 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.orderStatus.id = 1 AND o.deleted = true")
     Page<Order> findAllOrderByStatusId(Pageable pageable);
 
-    @Query("SELECT o FROM Order o WHERE o.deleted = true AND (:orderStatusName IS NULL OR o.orderStatus.statusName = :orderStatusName)")
-    Page<Order> findAllByStatusNameAndDeletedIsTrue(@Param("orderStatusName") String orderStatusName, Pageable pageable);
+
+
+    @Query("SELECT o FROM Order o WHERE o.deleted = true " +
+            "AND (:orderStatusName IS NULL OR o.orderStatus.statusName = :orderStatusName) " +
+            "AND (:keyword IS NULL OR CAST(o.id AS STRING) = :keyword OR o.user.usersName LIKE %:keyword%) " +
+            "AND (:orderType IS NULL OR o.orderType = :orderType) " +
+            "AND (:startDate IS NULL OR o.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR o.createdAt <= :endDate) " +
+            "ORDER BY o.createdAt DESC")
+    Page<Order> findAllByStatusNameAndDeletedIsTrue(
+            @Param("orderStatusName") String orderStatusName,
+            @Param("keyword") String keyword,
+            @Param("orderType") String orderType,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            Pageable pageable);
 
 
     @Modifying
@@ -67,7 +81,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "FROM Order o " +
             "GROUP BY o.orderStatus.statusName")
     List< Object[]> getTotalOrdersByStatus();
-    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.deleted = true AND (:orderStatusName IS NULL OR o.orderStatus.statusName = :orderStatusName)")
+    @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND o.deleted = true AND (:orderStatusName IS NULL OR o.orderStatus.statusName = :orderStatusName ) ORDER BY o.createdAt DESC")
     Page<Order> findAllOrdersByUserId(@Param("userId") Long userId,@Param("orderStatusName") String orderStatusName,Pageable pageable);
 
 }

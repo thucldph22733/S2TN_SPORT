@@ -25,7 +25,7 @@ public class OrderRequestDto {
 
     private String note;
 
-    private OrderType orderType;
+    private String orderType;
 
     private Integer transportFee;
 

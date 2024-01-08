@@ -21,8 +21,6 @@ public interface OrderDetailService {
 
     Boolean updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto, Long id);
 
-    List<OrderDetailResponseDto> getOrderDetailsByOrderId(Long orderId);
-
     Optional<OrderDetail> findByOrderIdAndProductDetailId(Long orderId, Long productDetailId);
 
     Boolean deleteOrderDetail(Long id);

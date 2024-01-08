@@ -339,22 +339,7 @@ export default User;
 const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
 
     const [form] = Form.useForm();
-    // const [roles, setRoles] = useState([]);
 
-    // useEffect(() => {
-    //     fetchRoles()
-    // }, []);
-    // const fetchRoles = async () => {
-
-    //     await RoleService.findAllByDeletedTrue()
-    //         .then(response => {
-
-    //             setRoles(response.data)
-
-    //         }).catch(error => {
-    //             console.error(error);
-    //         })
-    // }
     const handleCreate = () => {
         form.validateFields().then(async () => {
 

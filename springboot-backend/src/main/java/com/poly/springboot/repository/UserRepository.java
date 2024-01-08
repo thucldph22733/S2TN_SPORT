@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Boolean existsByPhoneNumber(String phoneNumber);
 
+    @Query("SELECT u FROM User u WHERE " +
+            "(:keyword IS NULL OR u.usersName LIKE %:keyword% OR CAST(u.id AS STRING) = :keyword OR " +
+            "u.phoneNumber LIKE %:keyword% OR u.email LIKE %:keyword%) AND " +
+            "(:birthOfDay IS NULL OR u.birthOfDay = :birthOfDay) AND " +
+            "(:gender IS NULL OR u.gender = :gender) AND " +
+            "(:status IS NULL OR u.deleted = :status)")
+    Page<User> getUsersByFilter(
+            @Param("keyword") String keyword,
+            @Param("birthOfDay") Date birthOfDay,
+            @Param("gender") Boolean gender,
+            @Param("status") Boolean status,
+            Pageable pageable
+    );
     Page<User> findByUsersNameContaining(String userName, Pageable pageable);
     Page<User> findByPhoneNumberContaining(String phoneNumber,Pageable pageable);
     Page<User> findByEmailContaining(String email,Pageable pageable);

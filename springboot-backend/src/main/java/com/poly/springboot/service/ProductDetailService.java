@@ -1,5 +1,6 @@
 package com.poly.springboot.service;
 
+import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.*;
 import com.poly.springboot.entity.ProductDetail;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductDetailService {
-    Page<ProductDetailResponseDto> getProductDetails(Pageable pageable);
+    Page<ProductDetailResponseDto> getProductDetails(ProductDetailFilterRequestDto requestDto);
 
     Boolean deleteProductDetail(Long id);
 

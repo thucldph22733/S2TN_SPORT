@@ -146,25 +146,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
 
-    @Override
-    public List<OrderDetailResponseDto> getOrderDetailsByOrderId(Long orderId) {
-//        return orderDetailRepository.findByOrderId(orderId).stream().map(
-//                orderDetail -> new OrderDetailResponseDto(
-//                        orderDetail.getId(),
-//                        orderDetail.getOrder().getId(),
-//                        orderDetail.getProductDetail().getId(),
-////                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getAvatar() : " ",
-//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getColor().getColorName() :" ",
-//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getSize().getSizeName(): " ",
-//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getProduct().getProductName(): " ",
-//                        orderDetail.getQuantity(),
-//                        orderDetail.getPrice(),
-//                        orderDetail.getProductDetail() != null ? orderDetail.getProductDetail().getPrice(): 0,
-//                        orderDetail.getOrder().getOrderTotal(),
-//                        orderDetail.getNote())
-//        ).collect(Collectors.toList());
-        return null;
-    }
+
 
     @Override
     public Optional<OrderDetail> findByOrderIdAndProductDetailId(Long orderId, Long productDetailId) {
@@ -173,31 +155,16 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     public Boolean deleteOrderDetail(Long id) {
-        try {
+
             OrderDetail orderDetail = orderDetailRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Không tìm tháy hóa đơn chi tiết"));
-
-            Order order = orderDetail.getOrder();
 
             // Xóa OrderDetail
             orderDetailRepository.delete(orderDetail);
 
-            // Cập nhật discountMoney và orderTotal của Order
-            double orderTotal = orderDetailRepository.calculateOrderTotal(order.getId());
-            double discountMoney = calculateDiscountMoney(order); // Thêm hàm tính discountMoney
-
-//            order.setOrderTotalInitial(orderTotal);
-//            order.setDiscountMoney(discountMoney);
-            order.setOrderTotal(orderTotal - discountMoney); // Cập nhật orderTotal sau khi giảm giá
-
-            orderRepository.save(order);
 
             return true;
-        } catch (Exception e) {
-            // Xử lý ngoại lệ và log lỗi nếu cần
-            e.printStackTrace();
-            return false;
-        }
+
     }
 
     private double calculateDiscountMoney(Order order) {

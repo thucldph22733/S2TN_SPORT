@@ -47,14 +47,30 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail,Lon
             @Param("sizeId") Long sizeId
     );
     @Query("SELECT new com.poly.springboot.dto.responseDto.ProductDetailResponseDto(" +
-            "pd.id,p.productName,i.imageLink, c.colorName, s.sizeName, m.materialName, pd.quantity,pd.price,pd.deleted) " +
+            "pd.id, p.productName, i.imageLink, c.colorName, s.sizeName, m.materialName, pd.quantity, pd.price, pd.deleted) " +
             "FROM ProductDetail pd " +
             "JOIN pd.product p " +
             "JOIN pd.color c " +
             "JOIN pd.size s " +
-            "JOIN pd.material m "+
-            "JOIN Image i ON i.product.id = p.id  " +
-            "WHERE pd.deleted = true AND i.color.id = c.id ")
-//            "GROUP BY pd.id,p.productName,i.imageLink, c.colorName, s.sizeName, m.materialName, pd.quantity,pd.price,pd.deleted ")
-    Page<ProductDetailResponseDto> getProducts(Pageable pageable);
+            "JOIN pd.material m " +
+            "JOIN Image i ON i.product.id = p.id AND i.color.id = c.id " +
+            "WHERE (:colorId IS NULL OR pd.color.id = :colorId) " +
+            "AND (:sizeId IS NULL OR pd.size.id = :sizeId) " +
+            "AND (:materialId IS NULL OR pd.material.id = :materialId) " +
+            "AND (:brandId IS NULL OR p.brand.id = :brandId) " +
+            "AND (:priceMin IS NULL OR pd.price >= :priceMin) " +
+            "AND (:priceMax IS NULL OR pd.price <= :priceMax) " +
+            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
+            "AND ((:keyword IS NULL) OR (p.productName LIKE %:keyword%) OR CAST(p.id AS STRING) = :keyword) " +
+            "AND pd.deleted = true")
+    Page<ProductDetailResponseDto> getProductDetails(
+            @Param("colorId") Long colorId,
+            @Param("sizeId") Long sizeId,
+            @Param("materialId") Long materialId,
+            @Param("brandId") Long brandId,
+            @Param("priceMin") Double priceMin,
+            @Param("priceMax") Double priceMax,
+            @Param("categoryId") Long categoryId,
+            @Param("keyword") String keyword,
+            Pageable pageable);
 }

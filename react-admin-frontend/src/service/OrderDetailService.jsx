@@ -21,7 +21,14 @@ const OrderDetailService = {
                 throw error;
             });
     },
-
+    delete: (id) => {
+        return HttpClient.delete(`${API_URL}delete?id=${id}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
 };
 
 export default OrderDetailService;

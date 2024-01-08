@@ -229,7 +229,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Boolean deleteOrder(Long id) {
+        // Tìm hóa đơn theo id
         Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));
+
+        // Lấy danh sách chi tiết hóa đơn của hóa đơn
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(id);
+
+        // Xóa từng chi tiết hóa đơn
+        for (OrderDetail orderDetail : orderDetails) {
+            orderDetailRepository.delete(orderDetail);
+        }
+
+        // Xóa hóa đơn
         orderRepository.delete(order);
 
         return true;

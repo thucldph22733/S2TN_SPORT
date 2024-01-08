@@ -1,5 +1,6 @@
 package com.poly.springboot.service.impl;
 
+import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.*;
 import com.poly.springboot.entity.ProductDetail;
@@ -8,6 +9,7 @@ import com.poly.springboot.repository.*;
 import com.poly.springboot.service.ProductDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +43,20 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
 
     @Override
-    public Page<ProductDetailResponseDto> getProductDetails(Pageable pageable) {
+    public Page<ProductDetailResponseDto> getProductDetails(ProductDetailFilterRequestDto requestDto) {
 
-        return productDetailRepository.getProducts(pageable);
+        Pageable pageable = PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize());
+
+        return productDetailRepository
+                .getProductDetails(requestDto.getColorId(),
+                        requestDto.getSizeId(),
+                        requestDto.getMaterialId(),
+                        requestDto.getBrandId(),
+                        requestDto.getPriceMin(),
+                        requestDto.getPriceMax(),
+                        requestDto.getCategoryId(),
+                        requestDto.getKeyword(),
+                        pageable);
     }
 
 

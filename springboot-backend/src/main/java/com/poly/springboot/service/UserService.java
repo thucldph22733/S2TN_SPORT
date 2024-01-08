@@ -1,6 +1,7 @@
 package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.ChangePasswordRequestDto;
+import com.poly.springboot.dto.requestDto.UserFilterRequestDto;
 import com.poly.springboot.dto.requestDto.UserRequestDto;
 import com.poly.springboot.dto.responseDto.UserResponseDto;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ public interface UserService {
 
     Page<UserResponseDto> getUsers(String userName, String phoneNumber, String email, List<Boolean> status,Pageable pageable);
 
+    Page<UserResponseDto> getUsersByFilter(UserFilterRequestDto requestDto);
     Page<UserResponseDto> getUsersByRole(String userName, String phoneNumber, String email, List<Boolean> status,Pageable pageable);
 
     Boolean createUser(UserRequestDto requestDto);

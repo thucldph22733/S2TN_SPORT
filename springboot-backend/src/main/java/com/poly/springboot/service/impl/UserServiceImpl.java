@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 
 import com.poly.springboot.dto.requestDto.ChangePasswordRequestDto;
+import com.poly.springboot.dto.requestDto.UserFilterRequestDto;
 import com.poly.springboot.dto.requestDto.UserRequestDto;
 import com.poly.springboot.dto.responseDto.UserResponseDto;
 import com.poly.springboot.entity.User;
@@ -12,6 +13,7 @@ import com.poly.springboot.repository.UserRepository;
 import com.poly.springboot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,6 +57,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<UserResponseDto> getUsersByFilter(UserFilterRequestDto requestDto) {
+        Pageable pageable = PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize());
+        Page<User> userPage = userRepository
+                .getUsersByFilter(
+                        requestDto.getKeyword(),
+                        requestDto.getBirthOfDay(),
+                        requestDto.getGender(),
+                        requestDto.getStatus(),
+                        pageable);
+        return userPage.map(this::mapUserToDto);
+    }
+
+    @Override
     public Page<UserResponseDto> getUsersByRole(String userName, String phoneNumber, String email, List<Boolean> status, Pageable pageable) {
         Page<User> userPage;
         if (userName == null && phoneNumber == null && email == null && status == null) {
@@ -82,10 +97,12 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setUsersName(requestDto.getUserName());
         user.setPhoneNumber(requestDto.getPhoneNumber());
-        user.setEmail(requestDto.getEmail());
+            user.setEmail(requestDto.getEmail());
         user.setGender(requestDto.getGender());
         user.setBirthOfDay(requestDto.getBirthOfDay());
-        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        if (requestDto.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        }
         user.setDeleted(requestDto.getDeleted());
         user.setRole(requestDto.getRole());
 
@@ -165,7 +182,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer countDeletedUsersInDateRange() {
-            return userRepository.countDeletedUsersInDateRange();
+        return userRepository.countDeletedUsersInDateRange();
     }
 
 }

@@ -110,6 +110,7 @@ function Checkout() {
             }
         }
     }, [userId]);
+    
     //Tổng tiền
     const calculateTotal = () => {
         const total = calculateTotalAmount() + calculateTransportFee() - discountRate

@@ -1,6 +1,7 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
+import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.*;
 import com.poly.springboot.entity.ProductDetail;
@@ -29,12 +30,10 @@ public class ProductDetailController {
    @Autowired
    private ProductDetailService productDetailService;
 
-    @GetMapping("getAllProductDetails")
-    public ResponseEntity<?> getProductDetails(@RequestParam(defaultValue = "0") Integer pageNo,
-                                               @RequestParam(defaultValue = "10") Integer pageSize) {
+    @PostMapping("getAllProductDetailsFilter")
+    public ResponseEntity<?> getProductDetails(@RequestBody ProductDetailFilterRequestDto requestDto) {
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<ProductDetailResponseDto> productPage = productDetailService.getProductDetails( pageable);
+        Page<ProductDetailResponseDto> productPage = productDetailService.getProductDetails( requestDto);
 
         List<ProductDetailResponseDto> productResponseDtoList = productPage.getContent();
         return ResponseHandler.generateResponse(

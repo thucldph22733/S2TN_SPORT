@@ -3,6 +3,7 @@ package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.ChangePasswordRequestDto;
+import com.poly.springboot.dto.requestDto.UserFilterRequestDto;
 import com.poly.springboot.dto.requestDto.UserRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseHandler;
@@ -52,6 +53,18 @@ public class UserController {
 
         return ResponseHandler.generateResponse(HttpStatus.OK,userResponseDtoList,userResponseDtoPage);
     }
+    @PostMapping("getAllUserByFilter")
+//    @PreAuthorize("hasAuthority('admin:read')")
+    public ResponseEntity<?> getUsers(@RequestBody UserFilterRequestDto requestDto){
+
+
+        Page<UserResponseDto>  userResponseDtoPage = userService.getUsersByFilter(requestDto);
+
+        List<UserResponseDto> userResponseDtoList = userResponseDtoPage.getContent();
+
+        return ResponseHandler.generateResponse(HttpStatus.OK,userResponseDtoList,userResponseDtoPage);
+    }
+
 
     @GetMapping("getUserByRole")
 //    @PreAuthorize("hasAuthority('admin:read')")

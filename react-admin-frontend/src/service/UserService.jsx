@@ -3,16 +3,15 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'users/';
 
 const UserService = {
-    getAll: (pageNo, pageSize, name, phoneNumber, email, deleted) => {
-        return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, phoneNumber, email, deleted }
-        })
+    getAllUserByFilter: (data) => {
+        return HttpClient.post(`${API_URL}getAllUserByFilter`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);
                 throw error;
             });
     },
+
     getAllUserByRole: (pageNo, pageSize, name, phoneNumber, email, deleted) => {
         return HttpClient.get(`${API_URL}getUserByRole`, {
             params: { pageNo, pageSize, name, phoneNumber, email, deleted }

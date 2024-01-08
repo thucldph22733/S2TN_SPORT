@@ -35,4 +35,8 @@ public class Supplier extends BaseEntity{
     @Column(name = "supplier_describe")
     private String supplierDescribe;
 
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
+
+
 }

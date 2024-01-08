@@ -44,7 +44,7 @@ public class VoucherRequestDto {
     @NotNull(message = "Tỉ lệ chiết khấu không được để trống!")
     private Integer discountRate;
 
-    private String note;
+    private Integer status;
 
     private Boolean deleted;
 

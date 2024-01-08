@@ -25,4 +25,6 @@ public class Material extends BaseEntity{
     @Column(name = "material_describe")
     private String materialDescribe;
 
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
 }

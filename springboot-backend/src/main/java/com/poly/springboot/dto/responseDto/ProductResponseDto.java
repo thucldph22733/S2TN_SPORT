@@ -33,10 +33,5 @@ public class ProductResponseDto {
 
     private String productDescribe;
 
-    private Boolean productNew;
-
-    private Boolean productHot;
-
-    private Boolean productSale;
 
 }

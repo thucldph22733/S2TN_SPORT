@@ -2,6 +2,7 @@ package com.poly.springboot.controller;
 
 
 import com.poly.springboot.constants.NotificationConstants;
+import com.poly.springboot.dto.requestDto.OrderDetailInStoreRequestDto;
 import com.poly.springboot.dto.requestDto.OrderDetailRequestDto;
 import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
@@ -41,7 +42,7 @@ public class OrderDetailController {
     }
     // create order detail rest api
     @PostMapping("create")
-    public ResponseEntity<ResponseDto> createOrderDetail(@Valid  @RequestBody OrderDetailRequestDto orderDetailRequestDto) throws Exception {
+    public ResponseEntity<ResponseDto> createOrderDetail(@RequestBody OrderDetailInStoreRequestDto orderDetailRequestDto) throws Exception {
         Boolean isCreated = orderDetailService.createOrderDetail(orderDetailRequestDto);
         if (isCreated){
             return ResponseEntity.status(HttpStatus.CREATED)

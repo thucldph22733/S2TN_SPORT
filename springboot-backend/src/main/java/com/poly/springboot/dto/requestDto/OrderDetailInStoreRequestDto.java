@@ -5,14 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class OrderCancelRequestDto {
+@NoArgsConstructor
+public class OrderDetailInStoreRequestDto {
 
-    private Long statusId;
+    private Long productDetailId;
 
-    private String note;
+    private Long orderId;
+
+    private Integer quantity;
+
+    private Double price;
 }

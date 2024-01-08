@@ -24,7 +24,7 @@ const OrderService = {
     },
 
     create: (data) => {
-        return HttpClient.post(`${API_URL}create`, data)
+        return HttpClient.post(`${API_URL}createOrderOnline`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in create:', error);

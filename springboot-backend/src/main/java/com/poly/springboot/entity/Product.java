@@ -35,17 +35,9 @@ public class Product extends BaseEntity{
     @Column(name = "product_name")
     private String productName;
 
-    @Column(name = "product_hot")
-    private Boolean productHot;
-
-    @Column(name = "product_sale")
-    private Boolean productSale;
-
-    @Column(name = "product_new")
-    private Boolean productNew;
-
     @Column(name = "product_describe")
     private String productDescribe;
 
-
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
 }

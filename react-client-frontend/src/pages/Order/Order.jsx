@@ -71,7 +71,7 @@ function Order() {
             render: (text) => {
                 switch (text) {
                     case 'Tạo đơn hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Đơn hàng mới</Tag>
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Tạo đơn hàng</Tag>
                     case 'Chờ xác nhận':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
                     case 'Chờ lấy hàng':
@@ -232,15 +232,11 @@ function Order() {
     return (
         <div style={{ marginLeft: '30px' }}>
 
-            {orders.length === 0 ? (<Empty description="Không có đơn hàng nào" />) : (
-                <>
-                    <h6>Đơn hàng của tôi</h6>
+            <h6>Đơn hàng của tôi</h6>
 
-                    <Tabs defaultActiveKey=""
-                        items={items}
-                        onChange={handleTabChange}></Tabs>
-                </>
-            )}
+            <Tabs defaultActiveKey=""
+                items={items}
+                onChange={handleTabChange}></Tabs>
 
             {open.isModal && (
                 <OrderModal

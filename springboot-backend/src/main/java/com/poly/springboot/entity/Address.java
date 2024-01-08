@@ -41,4 +41,6 @@ public class Address extends BaseEntity{
     @JoinColumn(name = "address_id")
     private User user;
 
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
 }

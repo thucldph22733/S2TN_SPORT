@@ -115,10 +115,7 @@ public class ProductServiceImpl implements ProductService {
                 product.getDeleted(),
                 product.getCreatedAt(),
                 product.getCreatedBy(),
-                product.getProductDescribe(),
-                product.getProductNew(),
-                product.getProductHot(),
-                product.getProductSale());
+                product.getProductDescribe());
     }
 
     private Product mapToProductRequest(ProductRequestDto productRequestDto, Product product) {
@@ -127,9 +124,6 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(categoryRepository.findByCategoryName(productRequestDto.getCategoryName()));
         product.setBrand(brandRepository.findByBrandName(productRequestDto.getBrandName()));
         product.setSupplier(supplierRepository.findBySupplierName(productRequestDto.getSupplierName()));
-        product.setProductHot(productRequestDto.getProductHot());
-        product.setProductNew(productRequestDto.getProductNew());
-        product.setProductSale(productRequestDto.getProductSale());
         product.setDeleted(productRequestDto.getDeleted());
         product.setProductDescribe(productRequestDto.getProductDescribe());
 

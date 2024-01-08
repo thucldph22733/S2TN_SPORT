@@ -26,4 +26,6 @@ public class Category extends BaseEntity{
     @Column(name = "category_describe")
     private String categoryDescribe;
 
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
 }

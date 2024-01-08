@@ -1,5 +1,6 @@
 package com.poly.springboot.service;
 
+import com.poly.springboot.dto.requestDto.OrderDetailInStoreRequestDto;
 import com.poly.springboot.dto.requestDto.OrderDetailRequestDto;
 import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
 import com.poly.springboot.entity.OrderDetail;
@@ -16,7 +17,7 @@ public interface OrderDetailService {
 
     Page<OrderDetailResponseDto> getOrderDetailByOrderId(Long orderId, Pageable pageable);
 
-    Boolean createOrderDetail(OrderDetailRequestDto orderDetailRequestDto) throws Exception;
+    Boolean createOrderDetail(OrderDetailInStoreRequestDto orderDetailRequestDto);
 
     Boolean updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto, Long id);
 

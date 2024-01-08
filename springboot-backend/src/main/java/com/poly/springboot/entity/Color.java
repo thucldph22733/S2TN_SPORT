@@ -26,4 +26,6 @@ public class Color extends BaseEntity{
     @Column(name = "color_describe")
     private String colorDescribe;
 
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
 }

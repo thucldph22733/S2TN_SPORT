@@ -63,7 +63,7 @@ function Order() {
             render: (text) => {
                 switch (text) {
                     case 'Tạo đơn hàng':
-                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Đơn hàng mới</Tag>
+                        return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Tạo đơn hàng</Tag>
                         break;
                     case 'Chờ xác nhận':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
@@ -127,7 +127,7 @@ function Order() {
         pageNo: 0,
         pageSize: 5,
         orderStatusName: null,
-        keyword: null,
+        orderId: null,
         orderType: null,
         startDate: null,
         endDate: null,
@@ -276,7 +276,7 @@ function Order() {
                                 height: '35px',
                                 borderRadius: '5px',
                             }}
-                            placeholder="Nhập mã hóa đơn, tên khách..."
+                            placeholder="Nhập mã hóa đơn..."
                             value={searchKeyword}
                             onChange={(e) => setSearchKeyword(e.target.value)}
 

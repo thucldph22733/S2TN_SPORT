@@ -33,7 +33,4 @@ public class OrderHistory extends BaseEntity{
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @UpdateTimestamp
-    @Column(name = "update_time")
-    private LocalDateTime updateTime;
 }

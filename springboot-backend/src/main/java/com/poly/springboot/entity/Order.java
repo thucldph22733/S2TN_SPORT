@@ -28,10 +28,6 @@ public class Order extends BaseEntity {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "delivery_id")
-    private Delivery delivery;
-
-    @ManyToOne
     @JoinColumn(name = "voucher_id")
     private Voucher voucher;
 

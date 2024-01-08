@@ -26,4 +26,7 @@ public class Brand extends BaseEntity{
     @Column(name = "brand_describe")
     private String brandDescribe;
 
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
+
 }

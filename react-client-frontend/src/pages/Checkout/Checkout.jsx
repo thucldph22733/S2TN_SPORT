@@ -289,7 +289,6 @@ function Checkout() {
 
 
 
-
     //Mở modal hiển thị address
     const [addressModal, setAddressModal] = useState({ isModal: false, reacord: null });
 
@@ -566,18 +565,18 @@ function Checkout() {
                                     </Row>
                                     <Row>
                                         <Col span={10}>
-                                            <p>Giảm giá:</p>
-                                        </Col>
-                                        <Col span={14} >
-                                            <span style={{ float: 'right' }}>{formatCurrency(-discountRate)}</span>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col span={10}>
                                             <p>Phí giao hàng:</p>
                                         </Col>
                                         <Col span={14} >
                                             <span style={{ float: 'right' }}>{formatCurrency(calculateTransportFee())}</span>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col span={10}>
+                                            <p>Giảm giá:</p>
+                                        </Col>
+                                        <Col span={14} >
+                                            <span style={{ float: 'right' }}>{formatCurrency(-discountRate)}</span>
                                         </Col>
                                     </Row>
                                     <Row >

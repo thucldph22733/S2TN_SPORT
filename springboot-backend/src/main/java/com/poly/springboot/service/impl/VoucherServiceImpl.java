@@ -97,7 +97,7 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setMaxReduce(voucherRequestDto.getMaxReduce());
         voucher.setOrderMinimum(voucherRequestDto.getOrderMinimum());
         voucher.setDiscountRate(voucherRequestDto.getDiscountRate());
-        voucher.setNote(voucherRequestDto.getNote());
+        voucher.setStatus(voucherRequestDto.getStatus());
         voucher.setDeleted(voucherRequestDto.getDeleted());
 
         return voucher;

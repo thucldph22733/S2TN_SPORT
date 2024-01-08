@@ -1,6 +1,5 @@
 package com.poly.springboot.dto.requestDto;
 
-import com.poly.springboot.entity.OrderType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,8 +23,6 @@ public class OrderRequestDto {
     private Double orderTotal;
 
     private String note;
-
-    private String orderType;
 
     private Integer transportFee;
 

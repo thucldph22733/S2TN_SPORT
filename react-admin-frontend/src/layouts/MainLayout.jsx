@@ -109,11 +109,7 @@ const MainLayout = () => {
                                     key: path_name.brand,
                                     label: 'Thương hiệu',
                                 },
-                                {
-                                    icon: <SlackOutlined style={{ fontSize: "10px" }} />,
-                                    key: path_name.club,
-                                    label: 'Câu lạc bộ',
-                                },
+
                                 {
                                     icon: <SlackOutlined style={{ fontSize: "10px" }} />,
                                     key: path_name.supplier,

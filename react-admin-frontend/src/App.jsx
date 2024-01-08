@@ -14,7 +14,6 @@ import Error500 from './pages/Error/Error500';
 import Category from './pages/Products/Category';
 import Size from './pages/Products/Size';
 import Material from './pages/Products/Material';
-import Club from './pages/Products/Club';
 import Supplier from './pages/Products/Supplier';
 import Dashboard from './pages/Dashboard/Dashboard';
 import User from './pages/User/User';
@@ -71,10 +70,6 @@ function App() {
                 {
                     path: path_name.category,
                     element: <Category />,
-                },
-                {
-                    path: path_name.club,
-                    element: <Club />,
                 },
                 {
                     path: path_name.supplier,

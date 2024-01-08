@@ -22,19 +22,8 @@ const OrderService = {
             });
     },
 
-    orderCancel: (id, data) => {
-        return HttpClient.patch(`${API_URL}orderCancel?id=${id}`, data)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in update:', error);
-                throw error;
-            });
-    },
-
-    getAllOrderByStatusId: (pageNo, pageSize) => {
-        return HttpClient.get(`${API_URL}getAllOrderByStatusId`, {
-            params: { pageNo, pageSize }
-        })
+    getAllOrderByStatusName: () => {
+        return HttpClient.get(`${API_URL}getAllOrderByStatusName`)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);
@@ -42,8 +31,8 @@ const OrderService = {
             });
     },
 
-    create: (data) => {
-        return HttpClient.post(`${API_URL}create`, data)
+    create: () => {
+        return HttpClient.post(`${API_URL}createOrderInStore`)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in create:', error);
@@ -51,36 +40,8 @@ const OrderService = {
             });
     },
 
-    // updateOrderStatus: (id, data) => {
-    //     return HttpClient.put(`${API_URL}updateOrderStatus?id=${id}`, data)
-    //         .then(response => response.data)
-    //         .catch(error => {
-    //             console.error('Error in update:', error);
-    //             throw error;
-    //         });
-    // },
-
-
     updateOrderStatus: (data) => {
         return HttpClient.patch(`${API_URL}updateOrderStatus`, data)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in update:', error);
-                throw error;
-            });
-    },
-
-    updateTimeLine: (id, data) => {
-        return HttpClient.put(`${API_URL}updateTimeLine?id=${id}`, data)
-            .then(response => response.data)
-            .catch(error => {
-                console.error('Error in update:', error);
-                throw error;
-            });
-    },
-
-    updateTimeLine2: (id, data) => {
-        return HttpClient.put(`${API_URL}updateTimeLine2?id=${id}`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in update:', error);

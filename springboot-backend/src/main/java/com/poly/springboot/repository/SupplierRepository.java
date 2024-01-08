@@ -1,6 +1,5 @@
 package com.poly.springboot.repository;
 
-import com.poly.springboot.entity.Club;
 import com.poly.springboot.entity.Supplier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

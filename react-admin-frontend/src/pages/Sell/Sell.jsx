@@ -815,7 +815,8 @@ export default function Sell() {
         console.error(err);
     };
 
-    const processQRData = async (data) => {
+
+    const handleScan = async (data) => {
         if (data && !scannedOnce && scanningEnabled) {
             setScannedOnce(true);
             setScanningEnabled(false); // Tắt quét QR để tránh thêm sản phẩm liên tục
@@ -824,10 +825,6 @@ export default function Sell() {
             // Đóng modal tự động khi quét xong lần đầu
             closeScanner();
         }
-    };
-
-    const handleScan = async (data) => {
-        processQRData(data);
     };
 
     const handleResult = (result) => {

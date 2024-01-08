@@ -1,13 +1,8 @@
 package com.poly.springboot.service;
 
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
-import com.poly.springboot.dto.requestDto.OrderCancelRequestDto;
 import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
-import com.poly.springboot.dto.responseDto.OrderResponseDto;
-import com.poly.springboot.dto.responseDto.SecondOrderResponseDto;
 import com.poly.springboot.entity.Order;
-import com.poly.springboot.entity.User;
-import com.poly.springboot.entity.Voucher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,40 +13,20 @@ import java.util.Map;
 public interface OrderService {
 
 //    List<OrderResponseDto> getAllOrdersCompleted();
-Page<Order> getAllOrders(String orderStatusName, String keyword, String orderType, LocalDateTime startDate, LocalDateTime endDat, Pageable pageable);
+Page<Order> getAllOrders(String orderStatusName, String orderId, String orderType, LocalDateTime startDate, LocalDateTime endDat, Pageable pageable);
 List<Map<String, Object>>getRevenueByMonthForCurrentYear();
     List<Map<String, Object>> getTotalOrdersByStatus();
-    Page<Order> findAllOrderByStatusId(Pageable pageable);
-//    Boolean createOrder(OrderRequestDto orderRequestDto);
-    Order createOrder(OrderRequestDto orderRequestDto);
+    List<Order> findAllOrderByStatusName();
+    Order createOrderOnline(OrderRequestDto orderRequestDto);
+    Order createOrderInStore();
     Boolean deleteOrder(Long id);
     Double monthlyRevenue();
     Double revenueToday();
     Page<Order> findAllOrdersByUserId(Long userId,String orderStatusName, Pageable pageable);
-    Boolean orderCancel (Long id,OrderCancelRequestDto orderCancelRequestDto);
-    List<OrderResponseDto> getAllOrders();
+//    Boolean orderCancel (Long id,OrderCancelRequestDto orderCancelRequestDto);
 
     Boolean updateOrderStatus(OrderStatusRequestDto orderStatusRequestDto);
 
     Order findOrderById(Long id);
-
-
-    Boolean updateOrder(OrderRequestDto orderRequestDto, Long id);
-
-    Boolean updateOrders(OrderRequestDto orderRequestDto, Long id);
-
-    Boolean updateOrdersOnline(OrderRequestDto orderRequestDto, Long id);
-
-//    List<OrderResponseDto> searchOrder(Integer pageNo, String keyword);
-
-    List<SecondOrderResponseDto> getAllOrde();
-
-    User findUserByOrderId(Long orderId);
-
-    Voucher findVoucherByOrderId(Long orderId);
-
-    Boolean updateOrderStatus(Long orderId, OrderCancelRequestDto orderUpdateRequestDto);
-
-    Boolean updateOrderStatusCancle(Long orderId, OrderCancelRequestDto orderUpdateRequestDto);
 
 }

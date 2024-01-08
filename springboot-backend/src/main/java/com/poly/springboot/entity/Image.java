@@ -37,5 +37,6 @@ public class Image extends BaseEntity{
     @Column(name = "image_type")
     private String imageType;
 
-
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
 }

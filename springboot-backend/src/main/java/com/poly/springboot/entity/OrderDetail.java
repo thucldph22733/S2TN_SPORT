@@ -33,7 +33,4 @@ public class OrderDetail extends BaseEntity{
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "note")
-    private String note;
-
 }

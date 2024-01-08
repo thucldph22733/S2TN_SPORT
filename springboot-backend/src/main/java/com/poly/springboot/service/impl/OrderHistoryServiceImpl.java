@@ -33,7 +33,7 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 
     @Override
     public OrderHistory findByOrderAndStatusId(Order order, Long status) {
-        return orderHistoryRepository.findByOrderAndStatusIdAndDeletedTrue(order,status);
+        return orderHistoryRepository.findByOrderAndStatusId(order,status);
     }
 
     @Override
@@ -52,7 +52,6 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
         timeLine.setNote(orderHistoryRequestDto.getNote());
         timeLine.setStatus(orderStatus);
         timeLine.setOrder(order);
-        timeLine.setDeleted(true);
         orderHistoryRepository.save(timeLine);
         return true;
     }

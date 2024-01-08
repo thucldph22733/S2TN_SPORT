@@ -14,8 +14,6 @@ public class OrderDetailRequestDto {
 
     private Long productDetailId;
 
-//    private Long orderId;
-
     private Integer quantity;
 
     private Double price;

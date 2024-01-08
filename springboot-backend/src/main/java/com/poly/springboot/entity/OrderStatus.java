@@ -33,10 +33,6 @@ public class OrderStatus {
     @Column(name = "status_describe")
     private String statusDescribe;
 
-
-    public OrderStatus(Long id) {
-        this.id = id;
-        // Các dòng code khác để khởi tạo trạng thái dựa trên id
-    }
-
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
 }

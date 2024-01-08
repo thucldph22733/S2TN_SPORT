@@ -21,9 +21,6 @@ import java.time.LocalDateTime;
 @Setter
 public class BaseEntity {
 
-    @Column(name = "is_deleted")
-    private Boolean deleted = false;   // xóa mềm (trạng thái)
-
     @CreatedDate
     @Column(name = "create_date", updatable = false)
     private LocalDateTime createdAt;

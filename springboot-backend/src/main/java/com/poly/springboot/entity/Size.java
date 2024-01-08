@@ -26,4 +26,6 @@ public class Size extends BaseEntity{
     @Column(name = "size_describe")
     private String sizeDescribe;
 
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
 }

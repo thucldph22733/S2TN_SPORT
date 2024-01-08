@@ -15,7 +15,7 @@ public class FilterOrderRequestDto {
     private Integer pageNo;
     private Integer pageSize;
     private String orderStatusName;
-    private  String keyword;
+    private  String orderId;
     private  String orderType;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

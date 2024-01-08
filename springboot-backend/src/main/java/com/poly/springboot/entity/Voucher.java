@@ -52,8 +52,11 @@ public class Voucher extends BaseEntity{
     @Column(name = "discount_rate")  // ty le chiet khau
     private Integer discountRate;
 
-    @Column(name = "note")
-    private String note;
+    @Column(name = "status")
+    private Integer status;
+
+    @Column(name = "is_deleted")
+    private Boolean deleted = false;   // xóa mềm (trạng thái)
 
     public Voucher(VoucherRequestDto req) {
         BeanUtils.copyProperties(req, this);

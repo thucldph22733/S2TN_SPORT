@@ -23,6 +23,17 @@ const UserService = {
             });
     },
 
+    getUserById: (id) => {
+        return HttpClient.get(`${API_URL}getUserById`, {
+            params: { id }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
+
     create: (data) => {
         return HttpClient.post(`${API_URL}create`, data)
             .then(response => response.data)

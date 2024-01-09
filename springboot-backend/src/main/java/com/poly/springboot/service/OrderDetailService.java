@@ -19,7 +19,7 @@ public interface OrderDetailService {
 
     Boolean createOrderDetail(OrderDetailInStoreRequestDto orderDetailRequestDto);
 
-    Boolean updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto, Long id);
+    Boolean updateQuantityOrderDetail(Integer quantity, Long id);
 
     Optional<OrderDetail> findByOrderIdAndProductDetailId(Long orderId, Long productDetailId);
 

@@ -75,6 +75,18 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(order);
     }
+    @PatchMapping("updateOrderVoucher")
+    public ResponseEntity<Order> updateOrderVoucher(@RequestParam(required = false) Long orderId,@RequestParam(required = false) String voucherCode) {
+        Order  order = orderService.updateOrderVoucher(orderId,voucherCode);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(order);
+    }
+    @PatchMapping("updateOrderUser")
+    public ResponseEntity<Order> updateOrderUser(@RequestParam(required = false) Long orderId,@RequestParam(required = false) Long userId) {
+        Order  order = orderService.updateOrderUser(orderId,userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(order);
+    }
 
     @GetMapping("getAllOrderByStatusName")
     public ResponseEntity<List<Order>> getAllOrderByStatusName() {
@@ -96,17 +108,7 @@ public class OrderController {
                         orderList,
                         orderPage);
     }
-//    @PatchMapping("orderCancel")
-//    public ResponseEntity<ResponseDto> orderCancel(@RequestBody OrderCancelRequestDto orderCancelRequestDto, @RequestParam Long id) {
-//        Boolean isCancel = orderService.orderCancel(id,orderCancelRequestDto);
-//        if (isCancel) {
-//            return ResponseEntity.status(HttpStatus.OK)
-//                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
-//        } else {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
-//        }
-//    }
+
     @DeleteMapping("delete")
     public ResponseEntity<ResponseDto> deleteOrder(@RequestParam Long id) {
         Boolean isDelete = orderService.deleteOrder(id);

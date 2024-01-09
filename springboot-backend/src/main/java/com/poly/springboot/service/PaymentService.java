@@ -16,6 +16,7 @@ public interface PaymentService {
     PaymentResponseDto createPaymentLink(PaymentVNPayRequestDto methodRequestDto) throws UnsupportedEncodingException;
 
     Boolean createPayment(PaymentRequestDto paymentRequestDto);
+    Boolean deletePayment(Long id);
 
     List<Payment> findByOrdersId(Long orderId);
 }

@@ -115,36 +115,13 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         }
     }
 
-
-
     @Override
-    public Boolean updateOrderDetail(OrderDetailRequestDto orderDetailRequestDto, Long id) {
-        // Log giá trị id để kiểm tra
-//        System.out.println("Received id: " + id);
-//
-//        //find productDetail by id
-//        ProductDetail productDetail = productDetailRepository.findById(orderDetailRequestDto.getProductDetailId()).orElse(null);
-//        //find orderRepository by id
-////        Order order = orderRepository.findById(orderDetailRequestDto.getOrderId()).orElse(null);
-//
-//        OrderDetail orderDetail = orderDetailRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn chi tiết"));
-//
-//        orderDetail.setOrder(order);
-//        orderDetail.setProductDetail(productDetail);
-//        orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
-//        orderDetail.setPrice(productDetail.getPrice());
-////        orderDetail.setNote(orderDetailRequestDto.getNote());
-//
-//        orderDetailRepository.save(orderDetail);
-//
-//        double orderTotal = orderDetailRepository.calculateOrderTotal(order.getId());
-////        order.setOrderTotalInitial(orderTotal);
-//        orderRepository.save(order);
-
+    public Boolean updateQuantityOrderDetail(Integer quantity, Long id) {
+        OrderDetail orderDetail = orderDetailRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id hóa đươn chi tiết này!"));
+        orderDetail.setQuantity(quantity);
+        orderDetailRepository.save(orderDetail);
         return true;
     }
-
 
 
 

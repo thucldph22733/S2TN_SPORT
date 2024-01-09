@@ -73,4 +73,16 @@ public class PaymentController {
         List<Payment> paymentList = paymentService.findByOrdersId(orderId);
         return ResponseEntity.status(HttpStatus.OK).body(paymentList);
     }
+
+    @DeleteMapping("delete")
+    public ResponseEntity<ResponseDto> deletePayment(@RequestParam Long id){
+        Boolean isDeleted = paymentService.deletePayment(id);
+        if (isDeleted){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
+    }
 }

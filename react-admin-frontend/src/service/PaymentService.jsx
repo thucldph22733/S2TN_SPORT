@@ -30,6 +30,14 @@ const PaymentService = {
                 throw error;
             });
     },
+    delete: (id) => {
+        return HttpClient.delete(`${API_URL}delete?id=${id}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in delete:', error);
+                throw error;
+            });
+    },
 };
 
 export default PaymentService;

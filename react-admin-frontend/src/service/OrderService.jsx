@@ -21,7 +21,6 @@ const OrderService = {
                 throw error;
             });
     },
-
     getAllOrderByStatusName: () => {
         return HttpClient.get(`${API_URL}getAllOrderByStatusName`)
             .then(response => response.data)
@@ -30,7 +29,6 @@ const OrderService = {
                 throw error;
             });
     },
-
     create: () => {
         return HttpClient.post(`${API_URL}createOrderInStore`)
             .then(response => response.data)
@@ -42,6 +40,22 @@ const OrderService = {
 
     updateOrderStatus: (data) => {
         return HttpClient.patch(`${API_URL}updateOrderStatus`, data)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in update:', error);
+                throw error;
+            });
+    },
+    updateOrderVoucher: (orderId, voucherCode) => {
+        return HttpClient.patch(`${API_URL}updateOrderVoucher?orderId=${orderId}&voucherCode=${voucherCode}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in update:', error);
+                throw error;
+            });
+    },
+    updateOrderUser: (orderId, userId) => {
+        return HttpClient.patch(`${API_URL}updateOrderUser?orderId=${orderId}&userId=${userId}`,)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in update:', error);

@@ -21,6 +21,14 @@ const OrderDetailService = {
                 throw error;
             });
     },
+    updateQuantityOrderDetail: (quantity, id) => {
+        return HttpClient.patch(`${API_URL}updateQuantityOrderDetail?quantity=${quantity}&id=${id}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
     delete: (id) => {
         return HttpClient.delete(`${API_URL}delete?id=${id}`)
             .then(response => response.data)

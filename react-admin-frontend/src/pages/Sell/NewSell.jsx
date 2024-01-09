@@ -1,4 +1,4 @@
-import { DeleteOutlined, ExclamationCircleOutlined, FileDoneOutlined, FilterOutlined, FormOutlined, PlusOutlined, QrcodeOutlined, RedoOutlined, TagsOutlined, UserAddOutlined } from '@ant-design/icons';
+import { CloseOutlined, DeleteOutlined, ExclamationCircleOutlined, FileDoneOutlined, FilterOutlined, FormOutlined, PlusOutlined, QrcodeOutlined, RedoOutlined, TagsOutlined, UserAddOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Col, DatePicker, Empty, Form, Image, Input, InputNumber, Modal, Popconfirm, Radio, Row, Select, Space, Spin, Switch, Table, Tabs, Tag, message, notification } from 'antd';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
@@ -24,11 +24,31 @@ import dayjs from 'dayjs';
 import { FaMapMarkedAlt } from 'react-icons/fa';
 import VoucherService from '~/service/VoucherService';
 import voucher_icon from '~/assets/images/voucher_logo.png';
+import { keyboard } from '@testing-library/user-event/dist/keyboard';
+import PaymentService from '~/service/PaymentService';
 
 export default function NewSell() {
 
     //bật địa chỉ giao hàng
-    const [isSwitchOn, setIsSwitchOn] = useState(false);
+    const [tabStates, setTabStates] = useState({});
+    const handleSwitchChange = (tabKey, checked) => {
+        setTabStates((prevStates) => ({
+            ...prevStates,
+            [tabKey]: checked,
+        }));
+    };
+    // ------------------------Mở modal thanh toan----------------------------------------------
+
+    const [openPayment, setOpenPayment] = useState(false);
+
+    const showModalPayment = () => {
+        setOpenPayment(true);
+
+    };
+
+    const handlePaymentCansel = () => {
+        setOpenPayment(false);
+    };
 
     //Mở modal hiển thị voucher
     const [voucherModal, setVoucherModal] = useState(false);
@@ -40,12 +60,7 @@ export default function NewSell() {
     const hideVoucherModal = () => {
         setVoucherModal(false);
     };
-    // Lấy danh sách giảm giá từ local storage (nếu có)
-    const localVouchersString = localStorage.getItem('localVoucher');
 
-    const localVouchers = localVouchersString ? JSON.parse(localVouchersString) : [];
-    // Giảm giá
-    const discountRate = localVouchers.length != 0 ? localVouchers.discountRate : 0;
 
     //Moddal modal sản phẩm
     const [openProduct, setOpenProduct] = useState(false);
@@ -190,6 +205,10 @@ export default function NewSell() {
 
     }, []);
 
+    const handleQuantityChange = async (key, value) => {
+        await OrderDetailService.updateQuantityOrderDetail(value, key);
+        fetchOrderDetail();
+    };
     const columnOrderDetail = [
 
         {
@@ -226,10 +245,10 @@ export default function NewSell() {
             width: '10%',
             render: (text, record) => (
                 <InputNumber
-                    disabled={!disabledRows[record.key]}
                     min={1}
-                    value={quantityValues[record.key] || text} // Use quantityValues state
-                    onChange={(value) => handleQuantityChange(value, record.key)}
+                    value={text}
+                    onChange={(value) => handleQuantityChange(record.id, value)}
+
                 />
             ),
         },
@@ -284,6 +303,25 @@ export default function NewSell() {
         });
     }
 
+    const [order, setOder] = useState({});
+    const findOrderById = async () => {
+        await OrderService.findOrderById(orderId)
+            .then(response => {
+                setOder(response);
+                console.log(response)
+            })
+            .catch(error => {
+                console.error(error);
+            })
+    }
+
+    useEffect(() => {
+        if (orderId) {
+            findOrderById()
+        }
+    }, [orderId])
+
+    const discountRate = order.voucher == null ? 0 : order.voucher.discountRate;
     //Tổng tiền
     const calculateTotal = () => {
 
@@ -303,7 +341,7 @@ export default function NewSell() {
     };
     // Tính phí ship
     const calculateTransportFee = () => {
-        if (isSwitchOn == true) {
+        if (tabStates[orderId] == true) {
             if (calculateTotalAmount() >= 500000) {
                 return 0;
             } else {
@@ -313,35 +351,28 @@ export default function NewSell() {
             return 0;
         }
     };
-    const [quantityValues, setQuantityValues] = useState({});
-    const handleQuantityChange = (value, key) => {
-        setQuantityValues((prevValues) => ({
-            ...prevValues,
-            [key]: value,
-        }));
-    };
-    const [disabledRows, setDisabledRows] = useState({});
 
-    const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-            const newDisabledRows = {};
-            selectedRows.forEach(row => {
-                newDisabledRows[row.key] = true;
-            });
-            setDisabledRows(newDisabledRows);
-        },
-        getCheckboxProps: (record) => ({
-            name: record.key,
-        }),
+    const [paymentData, setPaymentData] = useState([]);
+    const getAllPaymentByOrdersId = async () => {
+        await PaymentService.getAllPaymentByOrdersId(orderId)
+            .then(response => {
+                setPaymentData(response);
+
+            }).catch(error => {
+                console.error(error);
+            })
     };
-    // const [selectionType, setSelectionType] = useState('checkbox');
-    const tabContent = () => (
+    useEffect(() => {
+        if (orderId) {
+            getAllPaymentByOrdersId()
+        }
+    }, [orderId])
+    const tabContent = (tabKey) => (
         <>
             <div style={{ borderBottom: '1px solid #cdcdcd', margin: '10px 0', paddingBottom: '10px' }}>
                 <Row>
                     <Col span={12}>
-                        <h6 style={{ fontSize: '15px', fontWeight: '550' }}>GIỎ HÀNG</h6>
+                        <h6 style={{ fontSize: '15px', fontWeight: '550' }}>ĐƠN HÀNG</h6>
                     </Col>
                     <Col span={12}>
                         <Button type='primary'
@@ -369,12 +400,9 @@ export default function NewSell() {
                 </Modal>
             </div>
 
-            {orderDetails.length == 0 ? (<Empty style={{ marginTop: '40px', fontSize: '18px' }} description="Không có sản phẩm nào trong giỏ hàng!" />) : (<Table
+            {orderDetails.length == 0 ? (<Empty style={{ marginTop: '40px', fontSize: '18px' }} description="Đơn hàng của bạn chưa có sản phẩm nào!" />) : (<Table
                 // onChange={handleTableChange}
-                rowSelection={{
-                    type: 'checkbox',
-                    ...rowSelection,
-                }}
+
                 style={{ marginTop: '20px' }}
                 columns={columnOrderDetail}
                 dataSource={orderDetails.map((orderDetail, index) => ({
@@ -401,6 +429,11 @@ export default function NewSell() {
                             style={{ float: 'right', backgroundColor: '#5a76f3', borderRadius: '5px' }}
                             onClick={() => showUserModal()}
                         >Chọn khách hàng</Button>
+                        {order.user !== null && <Button type='primary'
+                            icon={<CloseOutlined />}
+                            style={{ float: 'right', backgroundColor: '#5a76f3', borderRadius: '5px', marginRight: '5px' }}
+                            onClick={handleDeleteUser}
+                        ></Button>}
                     </Col>
                 </Row>
             </div>
@@ -410,18 +443,17 @@ export default function NewSell() {
                     <Col span={14}>
                         <Row style={{ margin: '10px 0', paddingRight: '10px', color: '#5a76f3' }}>
                             <Col span={12}>
-                                <h5 style={{ fontSize: '20px' }}>Khách hàng:<span style={{ marginLeft: '15px' }}>Lê Đăng Thành</span></h5>
+                                <h5 style={{ fontSize: '20px' }}>Khách hàng:<span style={{ marginLeft: '15px' }}>{order.user == null ? "Khách lẻ" : order.user?.usersName + " - " + order.user?.phoneNumber}</span></h5>
                             </Col>
-                            <Col span={12}>
+                            {order.user !== null && <Col span={12}>
                                 <Button icon={<MdOutlineMapsUgc />} type='primary'
                                     onClick={() => showAddressModal()}
-                                    style={{ float: 'right', backgroundColor: '#5a76f3', borderRadius: '5px', display: isSwitchOn ? 'block' : 'none' }}
+                                    style={{ float: 'right', backgroundColor: '#5a76f3', borderRadius: '5px', display: tabStates[tabKey] ? 'block' : 'none' }}
                                 >Chọn địa chỉ</Button>
-                            </Col>
+                            </Col>}
 
                         </Row>
-                        <div style={{ display: isSwitchOn ? 'block' : 'none' }} key={address.id} >
-
+                        <div style={{ display: tabStates[tabKey] ? 'block' : 'none' }} key={address.id} >
                             <Row>
                                 <Col span={12} lg={12} style={{ paddingRight: '15px' }}>
                                     <Form.Item
@@ -437,7 +469,7 @@ export default function NewSell() {
                                     >
                                         <Input
                                             placeholder="Nhập họ và tên..."
-                                            disabled={orders.user ? true : false}
+                                            disabled={order.user ? true : false}
                                             style={{ height: '40px', borderRadius: '5px' }} />
                                     </Form.Item>
                                 </Col>
@@ -456,7 +488,7 @@ export default function NewSell() {
                                         <Input
                                             className='checkout__input'
                                             placeholder="Nhập số điện thoại..."
-                                            disabled={orders.user ? true : false}
+                                            disabled={order.user ? true : false}
                                             style={{ height: '40px', borderRadius: '5px' }} />
                                     </Form.Item>
                                 </Col>
@@ -482,7 +514,7 @@ export default function NewSell() {
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                             }
                                             options={cities.map(city => ({ value: city.code, label: city.name }))}
-                                            disabled={orders.user ? true : false}
+                                            disabled={order.user ? true : false}
                                         />
 
                                     </Form.Item>
@@ -543,7 +575,7 @@ export default function NewSell() {
                                         rules={[{ required: true, message: 'Vui lòng nhập địa chỉ cụ thể!' }]}>
                                         <Input
                                             placeholder="Địa chỉ cụ thể..."
-                                            disabled={orders.user ? true : false}
+                                            disabled={order.user ? true : false}
                                             style={{ height: '40px', borderRadius: '5px' }} />
 
                                     </Form.Item>
@@ -563,20 +595,22 @@ export default function NewSell() {
                             <Col span={8}>
                                 <span style={{ marginTop: '5px', fontSize: '16px', fontWeight: '600' }}>Giao hàng  </span>
                                 <Switch
-                                    onChange={(checked) => setIsSwitchOn(checked)}
+                                    onChange={(checked) => handleSwitchChange(tabKey, checked)}
+                                    checked={tabStates[tabKey] || false}
                                 />
                             </Col>
                             <Col span={16}>
                                 <p style={{ fontWeight: '600', color: 'red', float: 'right', marginRight: '15px' }}>Miễn phí vân chuyển cho đơn hàng trên 500k</p>
                             </Col>
                         </Row>
-                        <Row style={{ marginTop: '10px' }}>
+                        <Row style={{ marginTop: '10px' }} >
                             <Col span={12}>
-                                <span style={{ fontWeight: '600' }}>Voucher</span>
+                                <span style={{ fontWeight: '600' }}>Voucher</span> {order.voucher !== null && <Button disabled={paymentData.length !== 0 ? true : false} onClick={handleDeleteVoucher} type='text' icon={<CloseOutlined />}></Button>}
                             </Col>
                             <Col span={12}>
                                 <Button type='link' icon={<TagsOutlined />} style={{ float: 'right' }}
                                     onClick={() => showVoucherModal()}
+                                    disabled={paymentData.length !== 0 ? true : false}
                                 >Chọn mã giảm giá</Button>
                             </Col>
                         </Row>
@@ -590,7 +624,7 @@ export default function NewSell() {
                                 </span>
                             </Col>
                         </Row>
-                        <Row style={{ marginTop: '10px' }}>
+                        {tabStates[tabKey] == true && <Row style={{ marginTop: '10px' }}>
                             <Col span={10}>
                                 <p style={{ fontWeight: '600' }}>Phí vận chuyển:</p>
                             </Col>
@@ -599,7 +633,7 @@ export default function NewSell() {
                                     {formatCurrency(calculateTransportFee())}
                                 </span>
                             </Col>
-                        </Row>
+                        </Row>}
                         <Row style={{ marginTop: '10px' }}>
                             <Col span={10}>
                                 <p style={{ fontWeight: '600' }}>Giảm giá:</p>
@@ -623,13 +657,13 @@ export default function NewSell() {
                         </Row>
                         <Row style={{ marginTop: '10px' }}>
                             <Col span={14}>
-                                <p style={{ fontWeight: '600' }}>Khách thanh toán: <Button type='dashed' style={{ width: '50px', marginLeft: '30px' }} icon={<MdPayments style={{ fontSize: '20px' }} />} /></p>
+                                <p style={{ fontWeight: '600' }}>Khách thanh toán: <Button onClick={() => showModalPayment()} type='dashed' style={{ width: '50px', marginLeft: '30px' }} icon={<MdPayments style={{ fontSize: '20px' }} />} /></p>
 
                             </Col>
                             <Col span={10}>
                                 <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
-                                    {/* {formatCurrency(calculateTotalAmount())} */}
-                                    100.000 đ
+                                    {formatCurrency(paymentData.length === 0 ? 0 : paymentData[0]?.amount)}
+
                                 </span>
                             </Col>
                         </Row>
@@ -692,24 +726,34 @@ export default function NewSell() {
     };
     // //----------------------------load địa chỉ mặc định------------------------
     const [form] = Form.useForm();
+    const handleDeleteUser = async () => {
+        await OrderService.updateOrderUser(orderId, 22062002);
+        findOrderById();
+    };
+    const handleDeleteVoucher = async () => {
+        await OrderService.updateOrderVoucher(orderId, 22062002);
+        findOrderById();
+    }
     const [address, setAddress] = useState({});
-    console.log(address)
+
     useEffect(() => {
         if (address) {
             // Use form.setFieldsValue to set values for multiple fields
             form.setFieldsValue({
-                'recipientName': address.recipientName,
-                'phoneNumber': address.phoneNumber,
-                'city': address.city,
-                'district': address.district,
-                'ward': address.ward,
-                'addressDetail': address.addressDetail,
+                recipientName: address.recipientName,
+                phoneNumber: address.phoneNumber,
+                city: address.city,
+                district: address.district,
+                ward: address.ward,
+                addressDetail: address.addressDetail,
             });
+        } else {
+            setAddress({})
         }
-    }, [address, form]);
+    }, [address, form, order.user]);
 
     const findAddressesByUserIdAnDeletedTrue = async () => {
-        await AddressService.findAddressesByUserIdAnDeletedTrue(1)
+        await AddressService.findAddressesByUserIdAnDeletedTrue(order.user.id)
             .then(response => {
                 setAddress(response);
                 console.log(response)
@@ -718,16 +762,16 @@ export default function NewSell() {
             })
     }
     useEffect(() => {
-        // if (orders.user) {
-        findAddressesByUserIdAnDeletedTrue();
-        // }
-    }, [])
+        if (order.user) {
+            findAddressesByUserIdAnDeletedTrue();
+        }
+    }, [order.user])
     //load mã hóa đơn lên tabs
     const items = [
-        ...orders.map(order => ({
+        ...orders.map((order, index) => ({
             key: order.id,
-            label: `HD${order.id}`,
-            children: tabContent(),
+            label: `Đơn ${index + 1}`,
+            children: tabContent(order.id),
         })),
     ];
 
@@ -743,7 +787,9 @@ export default function NewSell() {
         }
     }, [orderId, items]);
     useEffect(() => {
-        fetchOrderDetail();
+        if (orderId) {
+            fetchOrderDetail();
+        }
     }, [orderId]);
 
     return (
@@ -781,21 +827,31 @@ export default function NewSell() {
                 openUser && <UserModal
                     isModal={openUser}
                     hideModal={closeUser}
-                // orderId={orderId}
-                // fetchOrderDetail={fetchOrderDetail}
+                    orderId={orderId}
+                    findOrderById={findOrderById}
                 />
             }
             {addressModal.isModal && <ShowAddressModal
-                reacord={addressModal.reacord}
+                reacord={order.user}
                 hideModal={hideAddressModal}
                 isModal={addressModal.isModal}
+                findAddressesByUserIdAnDeletedTrue={findAddressesByUserIdAnDeletedTrue}
+
             />}
             {voucherModal && <ModalVoucher
                 hideModal={hideVoucherModal}
                 isModal={voucherModal}
-                voucher={localVouchers}
-
+                order={order}
+                findOrderById={findOrderById}
             />}
+            {
+                openPayment && <PaymentModal
+                    isModal={openPayment}
+                    hideModal={handlePaymentCansel}
+                    order={order}
+                    orderTotal={calculateTotal()}
+                />
+            }
         </>
     );
 }
@@ -1028,12 +1084,12 @@ const ProductModal = ({ isModal, hideModal, orderId, fetchOrderDetail }) => {
 
         try {
             await OrderDetailService.create(data);
-            message.success("Thêm sản phẩm vào giỏ hàng thành công !");
+            message.success("Thêm sản phẩm vào đơn hàng thành công !");
 
             fetchOrderDetail();
             handleQuantityCancel();
         } catch (error) {
-            message.error("Thêm sản phẩm vào giỏ hàng thất bại !");
+            message.error("Thêm sản phẩm vào đơn hàng thất bại !");
             console.error(error);
         }
     };
@@ -1349,7 +1405,7 @@ const ProductModal = ({ isModal, hideModal, orderId, fetchOrderDetail }) => {
     );
 };
 
-const UserModal = ({ isModal, hideModal }) => {
+const UserModal = ({ isModal, hideModal, orderId, findOrderById }) => {
 
     // const [loading, setLoading] = useState(false);
 
@@ -1413,7 +1469,11 @@ const UserModal = ({ isModal, hideModal }) => {
             pageNo: 0,
         });
     };
-
+    const handleSelectButtonClick = async (recordId) => {
+        await OrderService.updateOrderUser(orderId, recordId);
+        findOrderById();
+        hideModal();
+    };
     const [searchKeywordUser, setSearchKeywordUser] = useState(null)
     const handleSearchUser = () => {
         setFilterUser({
@@ -1486,7 +1546,7 @@ const UserModal = ({ isModal, hideModal }) => {
             render: (record) => {
                 return <Space size="middle">
 
-                    <Button type="primary" style={{ borderRadius: '5px', backgroundColor: '#5a76f3' }} >Chọn</Button>
+                    <Button type="primary" style={{ borderRadius: '5px', backgroundColor: '#5a76f3' }} onClick={() => handleSelectButtonClick(record.id)}>Chọn</Button>
 
                 </Space>
             },
@@ -1645,6 +1705,7 @@ const UserCreateModal = ({ isModal, hideModal, fetchUsers }) => {
 
             const data = await form.getFieldsValue();
             data.deleted = true;
+            data.role = "USER";
             await UserService.create(data)
                 .then(() => {
                     notification.success({
@@ -1711,7 +1772,7 @@ const UserCreateModal = ({ isModal, hideModal, fetchUsers }) => {
     );
 };
 
-const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
+const ShowAddressModal = ({ reacord, hideModal, isModal, findAddressesByUserIdAnDeletedTrue }) => {
 
 
     //Mở modal thêm sử address
@@ -1732,6 +1793,7 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
     const [address, setAddress] = useState([]);
 
     const fetchAddress = async () => {
+        findAddressesByUserIdAnDeletedTrue();
         await AddressService.getAddressesByUserId(reacord.id)
             .then(response => {
                 setAddress(response);
@@ -2041,10 +2103,10 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
     );
 };
 
-const ModalVoucher = ({ hideModal, isModal, voucher }) => {
+const ModalVoucher = ({ hideModal, isModal, order, findOrderById }) => {
     const [vouchers, setVouchers] = useState([]);
     const [selectedVoucher, setSelectedVoucher] = useState(null);
-    const [inputVoucherCode, setInputVoucherCode] = useState('');
+    const [inputVoucherCode, setInputVoucherCode] = useState(null);
     const [errorText, setErrorText] = useState('');
 
     const fetchVoucher = async () => {
@@ -2056,61 +2118,63 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
                 console.error(error);
             })
     }
-
     useEffect(() => {
         fetchVoucher();
     }, []);
 
     useEffect(() => {
-        const cartVoucherId = voucher ? voucher.voucherCode : null;
+        const cartVoucherId = order.voucher ? order.voucher.voucherCode : null;
         setSelectedVoucher(cartVoucherId);
-    }, [voucher]);
-
-    const handleRadioChange = (e) => {
-        const voucherCode = e.target.value;
-        setSelectedVoucher(selectedVoucher === voucherCode ? null : voucherCode);
-
-    };
-
-    const handleInputChange = (e) => {
-        setInputVoucherCode(e.target.value);
-    };
+    }, [order]);
 
     const handleOkInput = async () => {
-        try {
-            setErrorText(''); // Reset error text
-            if (!inputVoucherCode) {
+        setErrorText(''); // Reset error text
+        const selectedVoucherData = vouchers.find(
+            (voucher) => voucher.voucherCode === inputVoucherCode
+        );
+        if (selectedVoucherData) {
+            await OrderService.updateOrderVoucher(order.id, inputVoucherCode).then(() => {
+                findOrderById()
+                notification.success({
+                    message: 'Thông báo',
+                    description: 'Áp dụng mã giảm giá thành công!',
+                });
                 hideModal();
-            } else {
-                const selectedVoucherData = vouchers.find(
-                    (voucher) => voucher.voucherCode === inputVoucherCode
-                );
-                if (selectedVoucherData) {
-                    localStorage.setItem('localVoucher', JSON.stringify(selectedVoucherData));
-                    hideModal();
-                } else {
-                    setErrorText('Không có mã giảm giá này!'); // Display error message
-                }
-            }
-        } catch (error) {
-            console.error('Error updating voucher:', error);
+            }).catch(err => {
+                console.log(err)
+                notification.error({
+                    message: 'Thông báo',
+                    description: 'Áp dụng mã giảm giá Thất bại!',
+                });
+            })
+        } else {
+            setErrorText('Không có mã giảm giá này!'); // Display error message
         }
-    };
+    }
+
+
     // Hàm xử lý khi ấn "OK" trên Modal
     const handleOk = async () => {
-        try {
-            if (selectedVoucher == null) {
-                hideModal();
-            } else {
-                const selectedVoucherData = vouchers.find(voucher => voucher.voucherCode === selectedVoucher);
-                localStorage.setItem('localVoucher', JSON.stringify(selectedVoucherData));
-            }
-            // Đóng modal
-            hideModal();
 
-        } catch (error) {
-            console.error("Error updating voucher:", error);
-        }
+        await OrderService.updateOrderVoucher(order.id, selectedVoucher).then(() => {
+            findOrderById()
+            notification.success({
+                message: 'Thông báo',
+                description: 'Áp dụng mã giảm giá thành công!',
+            });
+            hideModal();
+        }).catch(err => {
+            console.log(err)
+            notification.error({
+                message: 'Thông báo',
+                description: 'Áp dụng mã giảm giá Thất bại!',
+            });
+        })
+
+    };
+    const handleRadioChange = (value) => {
+        // Nếu <Radio> đã được chọn thì bỏ chọn, ngược lại chọn
+        setSelectedVoucher((prevValue) => (prevValue === value ? null : value));
     };
     return (
         <>
@@ -2125,7 +2189,7 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
                     <Col span={18}>
                         <Input
                             placeholder="Mã giảm giá"
-                            onChange={handleInputChange}
+                            onChange={(e) => setInputVoucherCode(e.target.value)}
                         />
                     </Col>
                     <Col span={6}>
@@ -2156,7 +2220,7 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
                                     value={item.voucherCode}
                                     style={{ marginTop: '35px' }}
                                     checked={selectedVoucher === item.voucherCode}
-                                    onChange={handleRadioChange}
+                                    onChange={() => handleRadioChange(item.voucherCode)}
                                 />
                             </Col>
                         </Row>
@@ -2167,128 +2231,187 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
     );
 };
 
-// const PaymentModal = ({ isModal, hideModal, orders, fetchPayment }) => {
-//     const [form] = Form.useForm();
-//     const [change, setChange] = useState(0); // State to store the calculated change
+const PaymentModal = ({ isModal, hideModal, order, orderTotal }) => {
 
-//     const handleCreate = () => {
-//         form.validateFields().then(async () => {
-//             const data = form.getFieldsValue();
-//             data.status = 'Đã thanh toán'
-//             data.orderId = orders.id
-//             data.paymentDate = new Date();
-//             await PaymentService.create(data)
-//                 .then(() => {
-//                     notification.success({
-//                         message: 'Thông báo',
-//                         description: 'Thanh toán thành công!',
-//                     });
-//                     hideModal();
-//                     fetchPayment();
-//                 })
-//                 .catch(error => {
-//                     notification.error({
-//                         message: 'Thông báo',
-//                         description: 'Thêm mới thất bại!',
-//                     });
-//                     console.error(error);
-//                 });
-//         }).catch(error => {
-//             console.error(error);
-//         })
-//     }
+    const [form] = Form.useForm();
+    const [change, setChange] = useState(0); // State to store the calculated change
 
-//     const handleAmountChange = (value) => {
-//         if (value === undefined || value === null || value.trim() === '') {
-//             setChange(0);
-//         } else {
-//             const enteredAmount = parseFloat(value);
-//             const remainingAmount = enteredAmount - orders.orderTotal;
-//             setChange(remainingAmount);
-//         }
-//     };
+    const handleCreate = () => {
+        form.validateFields().then(async () => {
+            const data = form.getFieldsValue();
+            data.status = 'Đã thanh toán'
+            data.orderId = order.id
+            data.paymentDate = new Date();
+            await PaymentService.create(data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Thanh toán thành công!',
+                    });
 
-//     return (
-//         <Modal
-//             title="Xác nhận thanh toán"
-//             open={isModal}
-//             onOk={handleCreate}
-//             onCancel={hideModal}
-//             okText={"Lưu"}
-//             cancelText="Hủy bỏ"
-//             width={500}
-//         >
-//             <Form
-//                 name="validateOnly"
-//                 layout="vertical"
-//                 autoComplete="off"
-//                 form={form}
-//                 onValuesChange={(changedValues, allValues) => {
-//                     // Check if the 'amount' field changed and handle the change
-//                     if ('amount' in changedValues) {
-//                         handleAmountChange(changedValues['amount']);
-//                     }
-//                 }}
-//             >
-//                 <p style={{ fontSize: '20px' }}>Số tiền cần thanh toán: <span style={{ color: 'red' }}>{formatCurrency(orders.orderTotal)}</span></p>
+                    fetchPayment();
 
-//                 <Col>
-//                     <Form.Item
-//                         label="Tiền khách đưa:"
-//                         name="amount"
-//                         rules={[
-//                             {
-//                                 required: true,
-//                                 message: 'Vui lòng nhập số tiền!',
-//                             },
-//                             {
-//                                 validator(_, value) {
-//                                     if (!value) {
-//                                         return Promise.reject();
-//                                     }
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Thêm mới thất bại!',
+                    });
+                    console.error(error);
+                });
+        }).catch(error => {
+            console.error(error);
+        })
+    }
 
-//                                     const enteredAmount = parseFloat(value);
+    const handleAmountChange = (value) => {
+        if (value === undefined || value === null || value.trim() === '') {
+            setChange(0);
+        } else {
+            const enteredAmount = parseFloat(value);
+            const remainingAmount = enteredAmount - orderTotal;
+            setChange(remainingAmount);
+        }
+    };
+    const handleDelete = async (id) => {
+        await PaymentService.delete(id);
+        fetchPayment();
+    }
+    const columnPaymentHistory = [
+        {
+            title: '#',
+            dataIndex: 'key',
+            key: 'key',
+            width: '5%',
+            render: (record, text, index) => <span>{index + 1}</span>
+        },
+        {
+            title: 'Ngày',
+            dataIndex: 'paymentDate',
+            key: 'paymentDate',
+            width: '30%',
+            render: (text) => <span>{FormatDate(text)}</span>
+        },
+        {
+            title: 'Số tiền',
+            dataIndex: 'amount',
+            key: 'amount',
+            width: '20%',
+            render: (text) => <span style={{ color: 'red' }}>{formatCurrency(text)}</span>,
+        },
+        {
+            title: 'PT thanh toán',
+            dataIndex: 'paymentMethod',
+            key: 'paymentMethod',
+            width: '25%',
+            render: (text) => <Tag color="green" >{text}</Tag>
+        },
+        {
+            title: 'Thao tác',
+            width: '15%',
+            render: (record) => (
+                <Space size="middle" >
+                    <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }}
+                        onClick={() => handleDelete(record.id)}
+                    />
+                </Space>
+            ),
+        },
+    ];
+    //---------------Thanh toán----------------------------------
+    const [payment, setPaymet] = useState([]);
+    const fetchPayment = async () => {
+        await PaymentService.getAllPaymentByOrdersId(order.id)
+            .then(response => {
+                setPaymet(response);
+            }).catch(error => {
+                console.error(error);
+            })
+    };
+    useEffect(() => {
+        fetchPayment();
+    }, []);
 
-//                                     if (isNaN(enteredAmount)) {
-//                                         return Promise.reject(
-//                                             new Error('Vui lòng nhập đúng định dạng số!')
-//                                         );
-//                                     }
+    return (
+        <Modal
+            title="Xác nhận thanh toán"
+            open={isModal}
+            onOk={handleCreate}
+            onCancel={hideModal}
+            okText={"Xác nhận"}
+            cancelText="Hủy bỏ"
+            width={600}
+        >
+            <Form
+                name="validateOnly"
+                layout="vertical"
+                autoComplete="off"
+                form={form}
+                onValuesChange={(changedValues, allValues) => {
+                    // Check if the 'amount' field changed and handle the change
+                    if ('amount' in changedValues) {
+                        handleAmountChange(changedValues['amount']);
+                    }
+                }}
+            >
+                <p style={{ fontSize: '20px' }}>Số tiền cần thanh toán: <span style={{ color: 'red' }}>{formatCurrency(orderTotal)}</span></p>
 
-//                                     if (enteredAmount < orders.orderTotal) {
-//                                         return Promise.reject(
-//                                             new Error(`Số tiền không được nhỏ hơn ${formatCurrency(orders.orderTotal)}`)
-//                                         );
-//                                     }
+                <Col>
+                    <Form.Item
+                        label="Tiền khách đưa:"
+                        name="amount"
 
-//                                     handleAmountChange(value);
-//                                     return Promise.resolve();
-//                                 },
-//                             },
-//                         ]}
-//                     >
-//                         <Input placeholder="Nhập số tiền..." />
-//                     </Form.Item>
-//                 </Col>
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập số tiền!',
+                            },
+                            {
+                                validator(_, value) {
+                                    if (!value) {
+                                        return Promise.reject();
+                                    }
 
-//                 <Form.Item label="Ghi chú:" name="note" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
-//                     <TextArea rows={4} placeholder="Nhập ghi chú..." />
-//                 </Form.Item>
+                                    const enteredAmount = parseFloat(value);
 
-//                 <Row>
-//                     <Col span={15}>
-//                         <Form.Item label="Phương thức thanh toán:" name="paymentMethod" rules={[{ required: true, message: 'Vui lòng chọn phương thức thanh toán!' }]}>
-//                             <Radio.Group name="radiogroup" style={{ float: 'left' }}>
-//                                 <Radio value='Tiền mặt'>Tiền mặt</Radio>
-//                                 <Radio value='Chuyển khoản'>Chuyển khoản</Radio>
-//                             </Radio.Group>
-//                         </Form.Item>
-//                     </Col>
-//                     <Col span={9} style={{ paddingLeft: '10px' }}>
-//                         <p>Tiền thừa: <span style={{ color: 'red' }}>{formatCurrency(change)}</span></p>
-//                     </Col>
-//                 </Row>
-//             </Form>
-//         </Modal>
-//     );
-// };
+                                    if (isNaN(enteredAmount)) {
+                                        return Promise.reject(
+                                            new Error('Vui lòng nhập đúng định dạng số!')
+                                        );
+                                    }
+
+                                    if (enteredAmount < orderTotal) {
+                                        return Promise.reject(
+                                            new Error(`Số tiền không được nhỏ hơn ${formatCurrency(orderTotal)}`)
+                                        );
+                                    }
+
+                                    handleAmountChange(value);
+                                    return Promise.resolve();
+                                },
+                            },
+                        ]}
+                    >
+                        <Input placeholder="Nhập số tiền..." disabled={payment.length !== 0 ? true : false} />
+                    </Form.Item>
+                </Col>
+
+
+                <Form.Item label="Phương thức thanh toán:" name="paymentMethod" rules={[{ required: true, message: 'Vui lòng chọn phương thức thanh toán!' }]}>
+                    <Radio.Group name="radiogroup" style={{ float: 'left' }}>
+                        <Radio disabled={payment.length !== 0 ? true : false} value='Tiền mặt'>Tiền mặt</Radio>
+                        <Radio disabled={payment.length !== 0 ? true : false} value='Chuyển khoản'>Chuyển khoản</Radio>
+                    </Radio.Group>
+                </Form.Item>
+
+                <Table
+                    columns={columnPaymentHistory}
+                    dataSource={payment}
+                    pagination={false} />
+
+                <p style={{ marginTop: '10px' }}>Tiền thừa: <span style={{ color: 'red' }}>{formatCurrency(payment.length === 0 ? change : payment[0]?.amount - orderTotal)}</span></p>
+
+            </Form>
+        </Modal>
+    );
+};

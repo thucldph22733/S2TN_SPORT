@@ -115,6 +115,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public Boolean deletePayment(Long id) {
+        Payment  payment = paymentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id thanh toán này!"));
+
+        paymentRepository.delete(payment);
+        return true;
+    }
+
+    @Override
     public List<Payment> findByOrdersId(Long orderId) {
         return paymentRepository.findByOrdersId(orderId);
     }

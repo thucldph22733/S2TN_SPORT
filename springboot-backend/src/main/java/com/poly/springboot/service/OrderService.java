@@ -18,15 +18,16 @@ List<Map<String, Object>>getRevenueByMonthForCurrentYear();
     List<Map<String, Object>> getTotalOrdersByStatus();
     List<Order> findAllOrderByStatusName();
     Order createOrderOnline(OrderRequestDto orderRequestDto);
+
+    Order updateOrderVoucher(Long orderId,String voucherCode);
+
+    Order updateOrderUser(Long orderId,Long userId);
     Order createOrderInStore();
     Boolean deleteOrder(Long id);
     Double monthlyRevenue();
     Double revenueToday();
     Page<Order> findAllOrdersByUserId(Long userId,String orderStatusName, Pageable pageable);
-//    Boolean orderCancel (Long id,OrderCancelRequestDto orderCancelRequestDto);
-
     Boolean updateOrderStatus(OrderStatusRequestDto orderStatusRequestDto);
-
     Order findOrderById(Long id);
 
 }

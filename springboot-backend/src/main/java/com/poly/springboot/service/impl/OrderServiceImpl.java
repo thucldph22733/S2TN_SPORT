@@ -218,6 +218,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Order updateOrderVoucher(Long orderId, String voucherCode) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));
+
+        Voucher voucher = (voucherCode != null) ? voucherRepository.findByVoucherCode(voucherCode) : null;
+
+        order.setVoucher(voucher);
+        orderRepository.save(order);
+        return order;
+    }
+
+    @Override
+    public Order updateOrderUser(Long orderId, Long userId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));
+
+        User user = (userId != null) ? userRepository.findById(userId).orElse(null) : null;
+        order.setUser(user);
+        orderRepository.save(order);
+        return order;
+    }
+
+    @Override
     public Order createOrderInStore() {
         OrderStatus orderStatus = orderStatusRepository.findByStatusName("Tạo đơn hàng").orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy trạng thái hóa đơn này!"));
         Order order = new Order();
@@ -262,27 +283,6 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAllOrdersByUserId(userId, orderStatusName, pageable);
     }
 
-//    @Override
-//    public Boolean orderCancel(Long id, OrderCancelRequestDto orderCancelRequestDto) {
-//
-//        Order order = orderRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng này!"));
-//
-//        OrderStatus orderStatus = orderStatusRepository.findById(orderCancelRequestDto.getStatusId()).orElse(null);
-//
-//        order.setNote(orderCancelRequestDto.getNote());
-//        order.setOrderStatus(orderStatus);
-//        orderRepository.save(order);
-//        //Xét lịch sử đơn hàng
-//        OrderHistory orderHistory = new OrderHistory();
-//        orderHistory.setOrder(order);
-//        orderHistory.setStatus(orderStatus);
-//        orderHistory.setNote(orderCancelRequestDto.getNote());
-//        orderHistory.setDeleted(true);
-//        orderHistoryRepository.save(orderHistory);
-//
-//        return true;
-//    }
 
 
 }

@@ -53,9 +53,9 @@ public class OrderDetailController {
         }
     }
     //update order detail rest api
-    @PutMapping ("update")
-    public ResponseEntity<ResponseDto> updateOrderDetail(@Valid @RequestBody OrderDetailRequestDto orderDetailRequestDto, @RequestParam Long id){
-        Boolean isUpdated = orderDetailService.updateOrderDetail(orderDetailRequestDto,id);
+    @PatchMapping ("updateQuantityOrderDetail")
+    public ResponseEntity<ResponseDto> updateOrderDetail(@RequestParam Integer quantity, @RequestParam Long id){
+        Boolean isUpdated = orderDetailService.updateQuantityOrderDetail(quantity,id);
         if (isUpdated){
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));

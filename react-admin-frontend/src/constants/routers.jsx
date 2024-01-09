@@ -12,7 +12,7 @@ const path_name = {
     supplier: '/nha-cung-cap',
     size: '/kich-thuoc',
     club: '/cau-lac-bo',
-    newSell: '/hoa-don',
+    newSell: '/ban-hang',
     order: '/don-hang',
     sell: '/chi-tiet-don-hang',
     order_detail: '/order-detail',

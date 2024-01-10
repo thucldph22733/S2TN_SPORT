@@ -20,11 +20,11 @@ function Order() {
             width: "5%",
         },
         {
-            title: 'Mã',
+            title: 'Mã HD',
             dataIndex: 'id',
             key: 'id',
             width: "10%",
-            render: (text) => <span style={{ color: 'red' }}>HD{text}</span>,
+            render: (text) => <span style={{ color: 'red' }}>{text}</span>,
         },
         {
             title: 'Khách hàng',
@@ -64,22 +64,16 @@ function Order() {
                 switch (text) {
                     case 'Tạo đơn hàng':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="green">Tạo đơn hàng</Tag>
-                        break;
                     case 'Chờ xác nhận':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="processing">Chờ xác nhận</Tag>
-                        break;
                     case 'Chờ lấy hàng':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="purple">Chờ lấy hàng</Tag>
-                        break;
                     case 'Đang vận chuyển':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="volcano">Đang vận chuyển</Tag>
-                        break;
                     case 'Hoàn thành':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="cyan">Hoàn thành</Tag>
-                        break;
                     case 'Đã hủy':
                         return <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="red">Đã hủy</Tag>
-                        break;
                     default:
                         break;
                 }
@@ -173,7 +167,7 @@ function Order() {
             pageNo: 0,
             pageSize: 5,
             orderStatusName: null,
-            keyword: null,
+            orderId: null,
             orderType: null,
             startDate: null,
             endDate: null,
@@ -207,6 +201,7 @@ function Order() {
                 pageSizeOptions: ['5', '10', '15'],
                 total: pagination.total,
                 showSizeChanger: true,
+
             }}></Table >
     );
 
@@ -256,7 +251,7 @@ function Order() {
         setFilterOrder({
             ...filterOrder,
             pageNo: 0,
-            keyword: searchKeyword,
+            orderId: searchKeyword,
             orderType: selectedOrderType,
             startDate: adjustedStartDate,
             endDate: adjustedEndDate,
@@ -368,7 +363,7 @@ function Order() {
             </Card>
             <Card
                 title={<span style={{ color: '#5a76f3' }}><FileDoneOutlined />  Danh sách đơn hàng</span>}
-                style={{ marginTop: '40px', borderRadius: '10px' }}
+                style={{ marginTop: '25px', borderRadius: '10px' }}
             >
                 <Tabs defaultActiveKey=""
                     items={items}

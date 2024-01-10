@@ -1,12 +1,10 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
+import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductRequestDto;
-import com.poly.springboot.dto.responseDto.ProductResponseDto;
-import com.poly.springboot.dto.responseDto.ProductUserResponseDto;
-import com.poly.springboot.dto.responseDto.ResponseDto;
-import com.poly.springboot.dto.responseDto.ResponseHandler;
+import com.poly.springboot.dto.responseDto.*;
 import com.poly.springboot.entity.Product;
 import com.poly.springboot.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,16 +32,13 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("getAll")
-    public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") Integer pageNo,
-                                         @RequestParam(defaultValue = "10") Integer pageSize,
-                                         @RequestParam(required = false) String name,
-                                         @RequestParam(required = false) List<Boolean> status) {
+    @PostMapping("getAllProducts")
+    public ResponseEntity<?> getProducts(@RequestBody ProductDetailFilterRequestDto requestDto) {
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<ProductResponseDto> productPage = productService.getProducts(name, status, pageable);
 
-        List<ProductResponseDto> productResponseDtoList = productPage.getContent();
+        Page<ProductFilterResponseDto> productPage = productService.findProductsAdminByFilters(requestDto);
+
+        List<ProductFilterResponseDto> productResponseDtoList = productPage.getContent();
         return ResponseHandler.generateResponse(
                 HttpStatus.OK
                 , productResponseDtoList

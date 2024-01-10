@@ -33,6 +33,4 @@ public class OrderStatus {
     @Column(name = "status_describe")
     private String statusDescribe;
 
-    @Column(name = "is_deleted")
-    private Boolean deleted = false;   // xóa mềm (trạng thái)
 }

@@ -1,6 +1,7 @@
 package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.OrderDetailRequestDto;
+import com.poly.springboot.dto.requestDto.OrderInStoreRequestDto;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
 import com.poly.springboot.entity.*;
@@ -213,6 +214,35 @@ public class OrderServiceImpl implements OrderService {
         OrderHistory timeLine = new OrderHistory();
         timeLine.setOrder(order);
         timeLine.setStatus(orderStatus);
+        timeLine.setNote(orderRequestDto.getNote());
+        orderHistoryRepository.save(timeLine);
+        return order;
+    }
+
+    @Override
+    public Order updateOrder(OrderInStoreRequestDto requestDto) {
+        Order order = orderRepository.findById(requestDto.getOrderId()).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này!"));
+
+        OrderStatus orderStatus = (requestDto.getStatusName() != null) ? orderStatusRepository.findByStatusName(requestDto.getStatusName()).orElse(null) : null;
+
+        order.setOrderStatus(orderStatus);
+        order.setOrderTotal(requestDto.getOrderTotal());
+        order.setNote(requestDto.getNote());
+        order.setTransportFee(requestDto.getTransportFee());
+        //dịa chỉ giao
+        order.setRecipientName(requestDto.getRecipientName());
+        order.setPhoneNumber(requestDto.getPhoneNumber());
+        order.setAddressDetail(requestDto.getAddressDetail());
+        order.setWard(requestDto.getWard());
+        order.setDistrict(requestDto.getDistrict());
+        order.setCity(requestDto.getCity());
+        // Lưu vào cơ sở dữ liệu
+        orderRepository.save(order);
+
+        OrderHistory timeLine = new OrderHistory();
+        timeLine.setOrder(order);
+        timeLine.setNote(requestDto.getNote());
+        timeLine.setStatus(orderStatus);
         orderHistoryRepository.save(timeLine);
         return order;
     }
@@ -245,6 +275,11 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(orderStatus);
         order.setOrderType("Tại quầy");
         orderRepository.save(order);
+        OrderHistory timeLine = new OrderHistory();
+        timeLine.setOrder(order);
+        timeLine.setStatus(orderStatus);
+        orderHistoryRepository.save(timeLine);
+
         return order;
     }
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag, Switch } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -64,18 +64,14 @@ function Size() {
 
     const handleDelete = async (id) => {
 
-        await SizeService.delete(id).then(response => {
-            console.log(response.data);
-            notification.success({
-                message: 'Thông báo',
-                description: 'Xóa thành công!',
-            });
+        await SizeService.delete(id).then(() => {
+
             fetchSizes();
         }).catch(error => {
             console.error(error);
             notification.error({
                 message: 'Thông báo',
-                description: 'Xóa thất bại!',
+                description: 'Đã có lỗi xảy ra!',
             });
         });
 
@@ -199,16 +195,11 @@ function Size() {
                     <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModal("edit", record)} />
-                    {record.deleted && <Popconfirm
-                        title="Xóa kích thước"
-                        description="Bạn có chắc chắn xóa kích thước này không?"
-                        placement="leftTop"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Đồng ý"
-                        cancelText="Hủy bỏ"
-                    >
-                        <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                    </Popconfirm>}
+                    <Switch
+                        size="small"
+                        defaultChecked={record.deleted}
+                        onClick={() => handleDelete(record.id)}
+                    />
 
                 </Space>
             }
@@ -234,9 +225,9 @@ function Size() {
             />
 
             <Table
-                dataSource={sizes.map((size) => ({
+                dataSource={sizes.map((size, index) => ({
                     ...size,
-                    key: size.id,
+                    key: index + 1,
                     createdAt: FormatDate(size.createdAt)
                 }))}
 
@@ -351,11 +342,11 @@ const SizeModal = ({ isMode, reacord, hideModal, isModal, fetchSizes }) => {
                     <Input placeholder="Nhập tên kích thước..." />
                 </Form.Item>
 
-                <Form.Item label="Ghi chú:" name="sizeDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                <Form.Item label="Ghi chú:" name="sizeDescribe" >
                     <TextArea rows={4} placeholder="Nhập ghi chú..." />
                 </Form.Item>
 
-                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn tạng thái!' }]}>
+                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} >
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Đang hoạt động</Radio>
                         <Radio value={false}>Ngừng hoạt động</Radio>

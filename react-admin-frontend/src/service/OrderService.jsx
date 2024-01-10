@@ -37,7 +37,14 @@ const OrderService = {
                 throw error;
             });
     },
-
+    updateOrder: (data) => {
+        return HttpClient.put(`${API_URL}updateOrder`, data)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in create:', error);
+                throw error;
+            });
+    },
     updateOrderStatus: (data) => {
         return HttpClient.patch(`${API_URL}updateOrderStatus`, data)
             .then(response => response.data)

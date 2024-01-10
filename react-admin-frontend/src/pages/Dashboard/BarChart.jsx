@@ -37,7 +37,7 @@ function BarChart() {
             // Kiểm tra xem response có tồn tại và có thuộc tính map không
             if (response && response.map) {
                 const formattedData = {
-                    labels: response.map((item) => item.month),
+                    labels: response.map((item) => "Tháng " + item.month),
                     datasets: [
                         {
                             label: "Tổng doanh thu",
@@ -55,7 +55,6 @@ function BarChart() {
                     ],
                 };
                 setData(formattedData);
-                console.log(response);
             } else {
                 console.error("Invalid response format:", response);
             }

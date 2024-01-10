@@ -48,7 +48,7 @@ const ChangePassword = () => {
                             },
                         ]}
                     >
-                        <Input.Password />
+                        <Input.Password style={{ height: '40px', width: '100%', borderRadius: '5px' }} />
                     </Form.Item>
                     <Form.Item
                         label="Mật khẩu mới:"
@@ -60,7 +60,7 @@ const ChangePassword = () => {
                             },
                         ]}
                     >
-                        <Input.Password />
+                        <Input.Password style={{ height: '40px', width: '100%', borderRadius: '5px' }} />
                     </Form.Item>
                     <Form.Item
                         label="Xác nhận mật khẩu:"
@@ -72,10 +72,10 @@ const ChangePassword = () => {
                             },
                         ]}
                     >
-                        <Input.Password />
+                        <Input.Password style={{ height: '40px', width: '100%', borderRadius: '5px' }} />
                     </Form.Item>
-                    <Form.Item style={{ float: 'right' }}>
-                        <Button type="primary" htmlType="submit">
+                    <Form.Item >
+                        <Button style={{ height: '40px', width: '100%', borderRadius: '5px' }} type="primary" htmlType="submit">
                             Đổi mật khẩu
                         </Button>
                     </Form.Item>

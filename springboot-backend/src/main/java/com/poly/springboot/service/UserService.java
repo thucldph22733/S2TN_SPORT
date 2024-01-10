@@ -13,10 +13,7 @@ import java.util.List;
 
 public interface UserService {
 
-    Page<UserResponseDto> getUsers(String userName, String phoneNumber, String email, List<Boolean> status,Pageable pageable);
-
     Page<UserResponseDto> getUsersByFilter(UserFilterRequestDto requestDto);
-    Page<UserResponseDto> getUsersByRole(String userName, String phoneNumber, String email, List<Boolean> status,Pageable pageable);
 
     Boolean createUser(UserRequestDto requestDto);
 

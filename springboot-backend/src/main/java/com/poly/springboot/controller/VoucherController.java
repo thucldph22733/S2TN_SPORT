@@ -1,6 +1,7 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
+import com.poly.springboot.dto.requestDto.VoucherFilterRequestDto;
 import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
 import com.poly.springboot.dto.responseDto.ResponseHandler;
@@ -69,15 +70,11 @@ public class VoucherController {
                 .body(voucher);
     }
 
-    @GetMapping("getAll")
-    public ResponseEntity<?> getPagination(@RequestParam(defaultValue = "0") Integer pageNo,
-                                           @RequestParam(defaultValue = "10") Integer pageSize,
-                                           @RequestParam(required = false) String code,
-                                           @RequestParam(required = false) String name,
-                                           @RequestParam(required = false) List<Boolean> deleted) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+    @PostMapping("getVoucherByFilter")
+    public ResponseEntity<?> getVoucherByFilter(@RequestBody VoucherFilterRequestDto requestDto) {
 
-        Page<Voucher> voucherPage = voucherService.getVouchers(code,name,deleted,pageable);
+
+        Page<Voucher> voucherPage = voucherService.getVoucherByFilter(requestDto);
 
         List<VoucherResponseDto> voucherResponseDtoList = voucherPage.getContent().stream().map(VoucherResponseDto::new).collect(Collectors.toList());
 

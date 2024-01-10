@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, DatePicker, Row, Col, Select, Tag } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, DatePicker, Row, Col, Select, Tag, Card } from 'antd';
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { PiLockKeyOpenFill, PiLockKeyFill } from "react-icons/pi";
 import {
@@ -7,6 +7,8 @@ import {
     RedoOutlined,
     FormOutlined,
     SearchOutlined,
+    FileDoneOutlined,
+    FilterOutlined,
 } from '@ant-design/icons';
 import UserService from '~/service/UserService';
 import FormatDate from '~/utils/format-date';
@@ -48,41 +50,6 @@ function User() {
         setOpen({ isModal: false });
     };
 
-    const [users, setUsers] = useState([]);
-
-    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
-
-    const [deleted, setDeleted] = useState(null);
-
-    const [searchName, setSearchName] = useState(null);
-
-    const [searchPhone, setSearchPhone] = useState(null);
-
-    const [searchEmail, setSearchEmail] = useState(null);
-
-    const fetchUsers = async () => {
-        setLoading(true);
-
-        await UserService.getAll(pagination.current - 1, pagination.pageSize, searchName, searchPhone, searchEmail, deleted)
-            .then(response => {
-
-                setUsers(response.data);
-                console.log(response.data)
-                setPagination({
-                    ...pagination,
-                    total: response.totalCount,
-                });
-                setLoading(false);
-
-            }).catch(error => {
-                console.error(error);
-            })
-    }
-
-    useEffect(() => {
-        fetchUsers();
-    }, [pagination.current, pagination.pageSize, searchName, searchPhone, searchEmail, deleted]);
-
     const handleDelete = async (id) => {
 
         await UserService.delete(id).then(response => {
@@ -102,75 +69,81 @@ function User() {
 
     };
 
-    const handleReset = () => {
 
-        setSearchEmail(null);
-        setSearchName(null);
-        setSearchPhone(null);
-        setDeleted(null);
+    const [users, setUsers] = useState([]);
 
+    const [filterUser, setFilterUser] = useState({
+        keyword: null,
+        birthOfDay: null,
+        gender: null,
+        status: null,
+        pageNo: 0,
+        pageSize: 5
+    });
+
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
+
+    const fetchUsers = async () => {
+        setLoading(true);
+        await UserService.getAllUserByFilter(filterUser)
+            .then(response => {
+
+                setUsers(response.data);
+
+                setPagination({
+                    ...pagination,
+                    total: response.totalCount,
+                });
+                setLoading(false)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+    useEffect(() => {
+        fetchUsers();
+    }, [filterUser]);
+    const handleTableChange = (pagination) => {
+        setPagination({
+            ...pagination,
+        });
+        setFilterUser({
+            ...filterUser,
+            pageNo: pagination.current - 1,
+            pageSize: pagination.pageSize,
+        });
+    };
+    const handleFilterUserChange = (property, value) => {
+        setFilterUser({
+            ...filterUser,
+            [property]: value,
+            pageNo: 0,
+        });
+    };
+    const [searchKeywordUser, setSearchKeywordUser] = useState(null);
+    const handleSearchUser = () => {
+        setFilterUser({
+            ...filterUser,
+            keyword: searchKeywordUser,
+            pageNo: 0,
+        });
+    };
+    const handleResetUser = () => {
+        setSearchKeywordUser(null)
+        setFilterUser({
+            keyword: null,
+            birthOfDay: null,
+            gender: null,
+            status: null,
+            pageNo: 0,
+            pageSize: 5
+        });
         setPagination({
             ...pagination,
             current: 1,
+            pageSize: 5,
         });
-        handleTableChange(pagination, null)
     };
-
-    const handleTableChange = (pagination, filters) => {
-        console.log(filters)
-        setPagination({
-            ...pagination,
-        });
-
-        const searchNameFilter = filters?.userName;
-        if (searchNameFilter) {
-            setSearchName(searchNameFilter[0]);
-        } else {
-            setSearchName(null)
-        }
-
-        const searchPhoneFilter = filters?.phoneNumber;
-        if (searchPhoneFilter) {
-            setSearchPhone(searchPhoneFilter[0]);
-        } else {
-            setSearchPhone(null)
-        }
-
-        const searchEmailFilter = filters?.email;
-        if (searchEmailFilter) {
-            setSearchEmail(searchEmailFilter[0]);
-        } else {
-            setSearchEmail(null)
-        }
-
-        const statusFilter = filters?.deleted;
-        const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
-
-        if (!isNoStatusFilter) {
-            const isBothStatus = statusFilter.length === 2;
-
-            setDeleted(isBothStatus ? null : statusFilter[0]);
-        } else {
-            setDeleted(null);
-        }
-    };
-
-    const getColumnSearchProps = (dataIndex) => ({
-        filteredValue: dataIndex === 'userName' ? [searchName] : dataIndex === 'phoneNumber' ? [searchPhone] : [searchEmail],
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-            <Input.Search
-                placeholder={`Nhập từ khóa...`}
-                value={selectedKeys[0]}
-                onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                onSearch={(value) => {
-                    setSelectedKeys(value ? [value.trim()] : []);
-                    confirm();
-                }}
-                style={{ display: 'block' }}
-            />
-        ),
-    });
-
     const columns = [
         {
             title: '#',
@@ -183,24 +156,18 @@ function User() {
             dataIndex: 'userName',
             key: 'userName',
             width: '20%',
-            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
-            ...getColumnSearchProps('userName')
         },
         {
             title: 'Số điện thoại',
             dataIndex: 'phoneNumber',
             key: 'phoneNumber',
             width: '15%',
-            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
-            ...getColumnSearchProps('phoneNumber')
         },
         {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
             width: '15%',
-            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
-            ...getColumnSearchProps('email')
         },
         {
             title: 'Giới tính',
@@ -229,17 +196,6 @@ function User() {
             key: 'deleted',
             dataIndex: 'deleted',
             width: '10%',
-            filters: [
-                {
-                    text: 'Hoạt động',
-                    value: true,
-                },
-                {
-                    text: 'Tạm khóa',
-                    value: false,
-                },
-            ],
-            onFilter: (value, record) => record.deleted === value,
             render: (text) => (
                 text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Hoạt động</Tag>
                     : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Tạm khóa</Tag>
@@ -277,43 +233,120 @@ function User() {
             }
         },
     ];
-
     return (
         <>
-            <h3 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách tài khoản</h3>
+            <Card
+                title={<span style={{ color: '#5a76f3' }}><FilterOutlined /> Lọc</span>}
+                style={{ borderRadius: '10px' }}
+            >
+                <Row>
+                    <Col span={12} style={{ padding: '0 100px' }}>
+                        <DatePicker
+                            format="DD/MM/YYYY"
+                            style={{
+                                width: '100%',
+                                borderRadius: '5px',
+                            }}
 
-            <Button type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => showModal("add")}
-                style={{ marginBottom: '16px', float: 'right', borderRadius: '2px' }} >
-                Thêm mới
-            </Button>
+                            placeholder="Ngày sinh"
+                            value={filterUser.birthOfDay}
+                            onChange={(value) => handleFilterUserChange('birthOfDay', value)}
+                        />
+                    </Col>
+                    <Col span={12} style={{ padding: '0 100px' }}>
+                        <Select
+                            style={{
+                                width: '100%',
+                            }}
+                            allowClear
+                            placeholder="Giới tính"
+                            value={filterUser.gender}
+                            onChange={(value) => handleFilterUserChange('gender', value)}
+                            options={[
+                                {
+                                    value: true,
+                                    label: 'Nam',
+                                },
+                                {
+                                    value: false,
+                                    label: 'Nữ',
+                                },
+                            ]}
+                        />
+                    </Col>
+                </Row>
 
-            <Button type="primary"
-                icon={<RedoOutlined style={{ fontSize: '18px' }} />}
-                style={{ marginBottom: '16px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
-                onClick={handleReset}
-            />
+                <Row style={{ marginTop: '20px' }}>
+                    <Col span={12} style={{ padding: '0 100px' }}>
+                        <Select
+                            style={{
+                                width: '100%',
+                            }}
+                            allowClear
+                            placeholder="Trạng thái"
+                            value={filterUser.status}
+                            onChange={(value) => handleFilterUserChange('status', value)}
+                            options={[
+                                {
+                                    value: true,
+                                    label: 'Hoạt động',
+                                },
+                                {
+                                    value: false,
+                                    label: 'Tạm khóa',
+                                },
+                            ]}
+                        />
+                    </Col>
+                    <Col span={12} style={{ padding: '0 100px' }}>
+                        <Input.Search
 
-            <Table
-                dataSource={users.map((user, index) => ({
-                    ...user,
-                    key: index + 1,
-                    createdAt: FormatDate(user.createdAt),
-                    birthOfDay: user.birthOfDay ? dayjs(user.birthOfDay).format("DD/MM/YYYY") : '',
-                }))}
+                            placeholder="Nhập mã, tên, sdt, email..."
+                            value={searchKeywordUser}
+                            onChange={(e) => setSearchKeywordUser(e.target.value)}
+                            onSearch={handleSearchUser}
+                        />
+                    </Col>
+                </Row>
 
-                onChange={handleTableChange}
-                loading={loading}
-                columns={columns}
-                pagination={{
-                    current: pagination.current,
-                    pageSize: pagination.pageSize,
-                    defaultPageSize: 5,
-                    pageSizeOptions: ['5', '10', '15'],
-                    total: pagination.total,
-                    showSizeChanger: true,
-                }}></Table >
+            </Card>
+            <Card
+                title={<span style={{ color: '#5a76f3' }}><FileDoneOutlined />  Danh sách người dùng</span>}
+                style={{ marginTop: '25px', borderRadius: '10px' }}
+            >
+                <Button type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => showModal("add")}
+                    style={{ marginBottom: '5px', float: 'right', borderRadius: '2px' }} >
+                    Thêm mới
+                </Button>
+
+                <Button type="primary"
+                    icon={<RedoOutlined style={{ fontSize: '18px' }} />}
+                    style={{ marginBottom: '5px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
+                    onClick={handleResetUser}
+                />
+
+                <Table
+                    dataSource={users.map((user, index) => ({
+                        ...user,
+                        key: index + 1,
+                        createdAt: FormatDate(user.createdAt),
+                        birthOfDay: user.birthOfDay ? dayjs(user.birthOfDay).format("DD/MM/YYYY") : '',
+                    }))}
+
+                    onChange={handleTableChange}
+                    loading={loading}
+                    columns={columns}
+                    pagination={{
+                        current: pagination.current,
+                        pageSize: pagination.pageSize,
+                        defaultPageSize: 5,
+                        pageSizeOptions: ['5', '10', '15'],
+                        total: pagination.total,
+                        showSizeChanger: true,
+                    }}></Table >
+            </Card>
 
             {open.isModal && <UserModal
                 isMode={open.isMode}
@@ -431,19 +464,19 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                     <Input placeholder="Nhập email..." />
                 </Form.Item>
 
-                <Form.Item label="Số điện thoại:" name="phoneNumber" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                <Form.Item label="Số điện thoại:" name="phoneNumber" >
                     <Input placeholder="Nhập số điện thoại..." />
                 </Form.Item>
                 <Row>
                     <Col span={12}>
-                        <Form.Item label="Ngày sinh:" name="birthOfDay" rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}>
+                        <Form.Item label="Ngày sinh:" name="birthOfDay">
                             <DatePicker placeholder="Chọn ngày sinh" style={{ width: '100%' }} format="DD/MM/YYYY" />
                         </Form.Item>
                     </Col>
                     <Col span={1}>
                     </Col>
                     <Col span={11}>
-                        <Form.Item label="Giới tính:" name="gender" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
+                        <Form.Item label="Giới tính:" name="gender" initialValue={true} >
                             <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                                 <Radio value={true}>Nam</Radio>
                                 <Radio value={false}>Nữ</Radio>
@@ -451,7 +484,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                         </Form.Item>
                     </Col>
                 </Row>
-                {isMode === "add" && <Form.Item label="Mật khẩu:" name="password" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}>
+                {isMode === "add" && <Form.Item label="Mật khẩu:" name="password">
                     <Input type="password" placeholder="Nhập tên mật khẩu..." />
                 </Form.Item>}
                 <Form.Item label="Vai trò:" name="role" rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}>

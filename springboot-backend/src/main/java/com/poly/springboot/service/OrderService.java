@@ -1,5 +1,6 @@
 package com.poly.springboot.service;
 
+import com.poly.springboot.dto.requestDto.OrderInStoreRequestDto;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
 import com.poly.springboot.entity.Order;
@@ -19,8 +20,8 @@ List<Map<String, Object>>getRevenueByMonthForCurrentYear();
     List<Order> findAllOrderByStatusName();
     Order createOrderOnline(OrderRequestDto orderRequestDto);
 
+    Order updateOrder(OrderInStoreRequestDto requestDto);
     Order updateOrderVoucher(Long orderId,String voucherCode);
-
     Order updateOrderUser(Long orderId,Long userId);
     Order createOrderInStore();
     Boolean deleteOrder(Long id);

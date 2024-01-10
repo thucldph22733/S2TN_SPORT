@@ -26,6 +26,7 @@ import VoucherService from '~/service/VoucherService';
 import voucher_icon from '~/assets/images/voucher_logo.png';
 import { keyboard } from '@testing-library/user-event/dist/keyboard';
 import PaymentService from '~/service/PaymentService';
+import { useNavigate } from 'react-router-dom';
 
 export default function NewSell() {
 
@@ -352,21 +353,116 @@ export default function NewSell() {
         }
     };
 
-    const [paymentData, setPaymentData] = useState([]);
-    const getAllPaymentByOrdersId = async () => {
-        await PaymentService.getAllPaymentByOrdersId(orderId)
-            .then(response => {
-                setPaymentData(response);
+    //-------------------------------------
+    const [selectedMethod, setSelectedMethod] = useState("");
 
-            }).catch(error => {
-                console.error(error);
-            })
-    };
-    useEffect(() => {
-        if (orderId) {
-            getAllPaymentByOrdersId()
+    const handlePaymentMethodClick = (method) => {
+        // Nếu phương thức đã được chọn, bỏ chọn nó
+        if (selectedMethod === method) {
+            setSelectedMethod(null);
+        } else {
+            // Nếu phương thức chưa được chọn, chọn nó
+            setSelectedMethod(method);
         }
-    }, [orderId])
+    };
+    const [change, setChange] = useState(0);
+    const handleAmountChange = (value) => {
+        if (value === undefined || value === null || value.trim() === '' || value <= calculateTotal()) {
+            setChange(0);
+        } else {
+            const enteredAmount = parseFloat(value);
+            const remainingAmount = enteredAmount - calculateTotal();
+            setChange(remainingAmount);
+        }
+    };
+    /// ----------------Đặt hàng 0-----------------------------
+    const navigate = useNavigate();
+    const handleUpdateOrder = async (values) => {
+        try {
+            await OrderService.updateOrder(values).then(() => {
+                notification.success({
+                    message: 'Thông báo',
+                    description: tabStates[orderId] ? 'Đặt hàng thành công!' : 'Thanh toán thành công!',
+                });
+                navigate(`${path_name.order_detail}/${orderId}`)
+            }).catch(() => {
+                notification.error({
+                    message: 'Thông báo',
+                    description: 'Đặt hàng thất bại!',
+                });
+            })
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const confirmPlaceOrder = () => {
+        modal.confirm({
+            title: 'Thông báo!',
+            icon: <ExclamationCircleOutlined />,
+            content: !tabStates[orderId] ? "Bạn có chắc muốn thanh toán đơn hàng?" : "Bạn có chắc muốn đặt đơn hàng này?",
+            onOk: () => { handlePlaceOrder(); },
+            okText: 'Đồng ý',
+            cancelText: 'Hủy bỏ',
+        });
+    };
+    const handlePlaceOrder = async () => {
+        try {
+            if (orderDetails.length === 0) {
+                notification.error({
+                    message: 'Thông báo',
+                    description: 'Đơn hàng của bạn chưa có sản phẩm nào!',
+                });
+            } else {
+                if (tabStates[orderId]) {
+                    const values = await form.validateFields();
+
+                    // Do something with the form values
+                    values.orderId = orderId;
+                    values.statusName = 'Chờ xác nhận';
+                    values.orderTotal = calculateTotal();
+                    values.transportFee = calculateTransportFee();
+                    if (!order.user) {
+                        values.city = cities.find(city => city.code === Number(values.city))?.name ?? '';
+                        values.district = districts.find(district => district.code === Number(values.district))?.name ?? '';
+                        values.ward = wards.find(ward => ward.code === Number(values.ward))?.name ?? '';
+                    }
+                    handleUpdateOrder(values);
+                } else {
+                    if (selectedMethod === "") {
+                        notification.error({
+                            message: 'Thông báo',
+                            description: 'Vui lòng chọn phương thức thanh toán!',
+                        });
+                    } else {
+                        const dataPayment = {
+                            orderId: orderId,
+                            status: 'Đã thanh toán',
+                            paymentDate: new Date(),
+                            amount: calculateTotal(),
+                            paymentMethod: selectedMethod,
+                            note: 'Không có'
+                        }
+                        await PaymentService.create(dataPayment);
+
+                        const data = await formPayment.validateFields();
+                        data.orderId = orderId;
+                        data.statusName = 'Hoàn thành';
+                        data.orderTotal = calculateTotal();
+                        data.transportFee = 0;
+
+                        // Perform the update
+                        handleUpdateOrder(data);
+
+                    }
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+
     const tabContent = (tabKey) => (
         <>
             <div style={{ borderBottom: '1px solid #cdcdcd', margin: '10px 0', paddingBottom: '10px' }}>
@@ -437,10 +533,12 @@ export default function NewSell() {
                     </Col>
                 </Row>
             </div>
-            <Form name="validateOnly" layout="vertical" autoComplete="off" form={form}>
 
-                <Row>
-                    <Col span={14}>
+
+            <Row>
+                <Col span={14}>
+                    <Form name="validateOnly" layout="vertical" autoComplete="off" form={form}
+                    >
                         <Row style={{ margin: '10px 0', paddingRight: '10px', color: '#5a76f3' }}>
                             <Col span={12}>
                                 <h5 style={{ fontSize: '20px' }}>Khách hàng:<span style={{ marginLeft: '15px' }}>{order.user == null ? "Khách lẻ" : order.user?.usersName + " - " + order.user?.phoneNumber}</span></h5>
@@ -588,94 +686,176 @@ export default function NewSell() {
                             </Row>
 
                         </div>
+                    </Form>
+                </Col>
+                <Col span={10} style={{ marginTop: '10px', paddingLeft: '10px' }}>
+                    <Row>
+                        <Col span={8}>
+                            <span style={{ marginTop: '5px', fontSize: '16px', fontWeight: '600' }}>Giao hàng  </span>
+                            <Switch
+                                onChange={(checked) => handleSwitchChange(tabKey, checked)}
+                                checked={tabStates[tabKey] || false}
+                            />
+                        </Col>
+                        <Col span={16}>
+                            <p style={{ fontWeight: '600', color: 'red', float: 'right', marginRight: '15px' }}>Miễn phí vân chuyển cho đơn hàng trên 500k</p>
+                        </Col>
+                    </Row>
+                    <Row style={{ marginTop: '10px' }} >
+                        <Col span={12}>
+                            <span style={{ fontWeight: '600' }}>Voucher: {order.voucher?.voucherName}</span> {order.voucher !== null && <Button onClick={handleDeleteVoucher} type='text' icon={<CloseOutlined />}></Button>}
+                        </Col>
+                        <Col span={12}>
+                            <Button type='link' icon={<TagsOutlined />} style={{ float: 'right' }}
+                                onClick={() => showVoucherModal()}
 
-                    </Col>
-                    <Col span={10} style={{ marginTop: '10px', paddingLeft: '10px' }}>
-                        <Row>
-                            <Col span={8}>
-                                <span style={{ marginTop: '5px', fontSize: '16px', fontWeight: '600' }}>Giao hàng  </span>
-                                <Switch
-                                    onChange={(checked) => handleSwitchChange(tabKey, checked)}
-                                    checked={tabStates[tabKey] || false}
-                                />
-                            </Col>
-                            <Col span={16}>
-                                <p style={{ fontWeight: '600', color: 'red', float: 'right', marginRight: '15px' }}>Miễn phí vân chuyển cho đơn hàng trên 500k</p>
-                            </Col>
-                        </Row>
-                        <Row style={{ marginTop: '10px' }} >
-                            <Col span={12}>
-                                <span style={{ fontWeight: '600' }}>Voucher</span> {order.voucher !== null && <Button disabled={paymentData.length !== 0 ? true : false} onClick={handleDeleteVoucher} type='text' icon={<CloseOutlined />}></Button>}
-                            </Col>
-                            <Col span={12}>
-                                <Button type='link' icon={<TagsOutlined />} style={{ float: 'right' }}
-                                    onClick={() => showVoucherModal()}
-                                    disabled={paymentData.length !== 0 ? true : false}
-                                >Chọn mã giảm giá</Button>
-                            </Col>
-                        </Row>
-                        <Row style={{ marginTop: '10px' }}>
-                            <Col span={10}>
-                                <p style={{ fontWeight: '600' }}>Tiền hàng:</p>
-                            </Col>
-                            <Col span={14}>
-                                <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
-                                    {formatCurrency(calculateTotalAmount())}
-                                </span>
-                            </Col>
-                        </Row>
-                        {tabStates[tabKey] == true && <Row style={{ marginTop: '10px' }}>
-                            <Col span={10}>
-                                <p style={{ fontWeight: '600' }}>Phí vận chuyển:</p>
-                            </Col>
-                            <Col span={14}>
-                                <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
-                                    {formatCurrency(calculateTransportFee())}
-                                </span>
-                            </Col>
-                        </Row>}
-                        <Row style={{ marginTop: '10px' }}>
-                            <Col span={10}>
-                                <p style={{ fontWeight: '600' }}>Giảm giá:</p>
-                            </Col>
-                            <Col span={14}>
-                                <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
-                                    {formatCurrency(-discountRate)}
-                                </span>
-                            </Col>
-                        </Row>
-                        <Row style={{ marginTop: '10px' }}>
-                            <Col span={10}>
-                                <p style={{ fontWeight: '600' }}>Tổng tiền:</p>
-                            </Col>
-                            <Col span={14}>
-                                <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
-                                    {formatCurrency(calculateTotal())}
+                            >Chọn mã giảm giá</Button>
+                        </Col>
+                    </Row>
+                    <Row style={{ marginTop: '10px' }}>
+                        <Col span={10}>
+                            <p style={{ fontWeight: '600' }}>Tiền hàng:</p>
+                        </Col>
+                        <Col span={14}>
+                            <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
+                                {formatCurrency(calculateTotalAmount())}
+                            </span>
+                        </Col>
+                    </Row>
+                    {tabStates[tabKey] && <Row style={{ marginTop: '10px' }}>
+                        <Col span={10}>
+                            <p style={{ fontWeight: '600' }}>Phí vận chuyển:</p>
+                        </Col>
+                        <Col span={14}>
+                            <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
+                                {formatCurrency(calculateTransportFee())}
+                            </span>
+                        </Col>
+                    </Row>}
+                    <Row style={{ marginTop: '10px' }}>
+                        <Col span={10}>
+                            <p style={{ fontWeight: '600' }}>Giảm giá:</p>
+                        </Col>
+                        <Col span={14}>
+                            <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
+                                {formatCurrency(-discountRate)}
+                            </span>
+                        </Col>
+                    </Row>
+                    <Row style={{ marginTop: '10px' }}>
+                        <Col span={10}>
+                            <p style={{ fontWeight: '600' }}>Tổng tiền:</p>
+                        </Col>
+                        <Col span={14}>
+                            <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
+                                {formatCurrency(calculateTotal())}
 
-                                </span>
-                            </Col>
-                        </Row>
-                        <Row style={{ marginTop: '10px' }}>
-                            <Col span={14}>
-                                <p style={{ fontWeight: '600' }}>Khách thanh toán: <Button onClick={() => showModalPayment()} type='dashed' style={{ width: '50px', marginLeft: '30px' }} icon={<MdPayments style={{ fontSize: '20px' }} />} /></p>
+                            </span>
+                        </Col>
+                    </Row>
+                    {!tabStates[tabKey] && <Row>
+                        <Col span={12}>
+                            <div
+                                style={{
+                                    border: `1px solid ${selectedMethod === 'Tiền mặt' ? '#2123bf' : '#cdcdcd'}`,
+                                    borderRadius: '8px',
+                                    margin: '10px 0',
+                                    cursor: 'pointer',
+                                    color: selectedMethod === 'Tiền mặt' ? '#2123bf' : 'black',
+                                    backgroundColor: '#ffffff'
+                                }}
+                                onClick={() => handlePaymentMethodClick('Tiền mặt')}
+                            >
+                                <p style={{ textAlign: 'center', margin: '10px 0', fontWeight: '550' }}>Tiền mặt</p>
+                            </div>
+                        </Col>
+                        <Col span={12}>
+                            <div
+                                style={{
+                                    border: `1px solid ${selectedMethod === 'Chuyển khoản' ? '#2123bf' : '#cdcdcd'}`,
+                                    borderRadius: '8px',
+                                    margin: '10px',
+                                    cursor: 'pointer',
+                                    color: selectedMethod === 'Chuyển khoản' ? '#2123bf' : 'black',
+                                    backgroundColor: '#ffffff'
+                                }}
+                                onClick={() => handlePaymentMethodClick('Chuyển khoản')}
+                            >
+                                <p style={{ textAlign: 'center', margin: '10px 0', fontWeight: '550' }}>Chuyển khoản</p>
+                            </div>
+                        </Col>
+                    </Row>}
+                    {!tabStates[tabKey] && <Row style={{ marginTop: '10px' }}>
+                        <Col span={12}>
 
-                            </Col>
-                            <Col span={10}>
-                                <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
-                                    {formatCurrency(paymentData.length === 0 ? 0 : paymentData[0]?.amount)}
+                            <p style={{ fontWeight: '600', marginTop: '10px' }}>Tiền khách đưa:</p>
+                        </Col>
+                        <Col span={12}>
+                            <Form name="validateOnly" layout="vertical" autoComplete="off" form={formPayment} onValuesChange={(changedValues, allValues) => {
+                                // Check if the 'amount' field changed and handle the change
+                                if ('amount' in changedValues) {
+                                    handleAmountChange(changedValues['amount']);
+                                }
+                            }}>
+                                <Form.Item
+                                    name="amount"
+                                    style={{ marginRight: '15px' }}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập số tiền!',
+                                        },
+                                        {
+                                            validator(_, value) {
+                                                if (!value) {
+                                                    return Promise.reject();
+                                                }
 
-                                </span>
-                            </Col>
-                        </Row>
-                        <Button
-                            // onClick={handlePlaceOrder}
-                            type='primary' style={{ width: '100%', height: '45px', marginTop: '20px', fontSize: '17px', fontWeight: '600', borderRadius: '5px' }}>
-                            ĐẶT HÀNG
-                        </Button>
+                                                const enteredAmount = parseFloat(value);
 
-                    </Col>
-                </Row>
-            </Form>
+                                                if (isNaN(enteredAmount)) {
+                                                    return Promise.reject(
+                                                        new Error('Vui lòng nhập đúng định dạng số!')
+                                                    );
+                                                }
+
+                                                if (enteredAmount < calculateTotal()) {
+                                                    return Promise.reject(
+                                                        new Error(`Số tiền không được nhỏ hơn ${formatCurrency(calculateTotal())}`)
+                                                    );
+                                                }
+
+                                                handleAmountChange(value);
+                                                return Promise.resolve();
+                                            },
+                                        },
+                                    ]}
+                                >
+                                    <Input placeholder="Nhập số tiền..." />
+                                </Form.Item>
+                            </Form>
+                        </Col>
+                    </Row>}
+                    {!tabStates[tabKey] && <Row style={{ marginTop: '10px' }}>
+                        <Col span={10}>
+                            <p style={{ fontWeight: '600' }}>Tiền thừa:</p>
+                        </Col>
+                        <Col span={14}>
+                            <span style={{ float: 'right', marginRight: '15px', fontWeight: '600', color: 'red' }}>
+                                {formatCurrency(change)}
+                            </span>
+                        </Col>
+                    </Row>}
+
+                    <Button
+                        onClick={confirmPlaceOrder}
+                        type='primary' style={{ width: '100%', height: '45px', marginTop: '20px', fontSize: '17px', fontWeight: '600', borderRadius: '5px' }}>
+                        {!tabStates[tabKey] ? "XÁC NHẬN THANH TOÁN" : "XÁC NHẬN ĐẶT HÀNG"}
+                    </Button>
+
+                </Col>
+            </Row>
+
         </>
     );
 
@@ -726,9 +906,12 @@ export default function NewSell() {
     };
     // //----------------------------load địa chỉ mặc định------------------------
     const [form] = Form.useForm();
+    const [formPayment] = Form.useForm();
+
     const handleDeleteUser = async () => {
         await OrderService.updateOrderUser(orderId, 22062002);
         findOrderById();
+        setAddress({});
     };
     const handleDeleteVoucher = async () => {
         await OrderService.updateOrderVoucher(orderId, 22062002);
@@ -770,7 +953,7 @@ export default function NewSell() {
     const items = [
         ...orders.map((order, index) => ({
             key: order.id,
-            label: `Đơn ${index + 1}`,
+            label: `HD ${order.id}`,
             children: tabContent(order.id),
         })),
     ];
@@ -844,14 +1027,7 @@ export default function NewSell() {
                 order={order}
                 findOrderById={findOrderById}
             />}
-            {
-                openPayment && <PaymentModal
-                    isModal={openPayment}
-                    hideModal={handlePaymentCansel}
-                    order={order}
-                    orderTotal={calculateTotal()}
-                />
-            }
+
         </>
     );
 }
@@ -1425,7 +1601,7 @@ const UserModal = ({ isModal, hideModal, orderId, findOrderById }) => {
         keyword: null,
         birthOfDay: null,
         gender: null,
-        status: null,
+        status: true,
         pageNo: 0,
         pageSize: 5
     });
@@ -1673,7 +1849,7 @@ const UserModal = ({ isModal, hideModal, orderId, findOrderById }) => {
                             }))}
 
                             onChange={handleTableChange}
-                            // loading={loading}
+
                             columns={columnsUser}
                             pagination={{
                                 current: paginationUser.current,
@@ -2228,190 +2404,5 @@ const ModalVoucher = ({ hideModal, isModal, order, findOrderById }) => {
                 </div>
             </Modal >
         </>
-    );
-};
-
-const PaymentModal = ({ isModal, hideModal, order, orderTotal }) => {
-
-    const [form] = Form.useForm();
-    const [change, setChange] = useState(0); // State to store the calculated change
-
-    const handleCreate = () => {
-        form.validateFields().then(async () => {
-            const data = form.getFieldsValue();
-            data.status = 'Đã thanh toán'
-            data.orderId = order.id
-            data.paymentDate = new Date();
-            await PaymentService.create(data)
-                .then(() => {
-                    notification.success({
-                        message: 'Thông báo',
-                        description: 'Thanh toán thành công!',
-                    });
-
-                    fetchPayment();
-
-                })
-                .catch(error => {
-                    notification.error({
-                        message: 'Thông báo',
-                        description: 'Thêm mới thất bại!',
-                    });
-                    console.error(error);
-                });
-        }).catch(error => {
-            console.error(error);
-        })
-    }
-
-    const handleAmountChange = (value) => {
-        if (value === undefined || value === null || value.trim() === '') {
-            setChange(0);
-        } else {
-            const enteredAmount = parseFloat(value);
-            const remainingAmount = enteredAmount - orderTotal;
-            setChange(remainingAmount);
-        }
-    };
-    const handleDelete = async (id) => {
-        await PaymentService.delete(id);
-        fetchPayment();
-    }
-    const columnPaymentHistory = [
-        {
-            title: '#',
-            dataIndex: 'key',
-            key: 'key',
-            width: '5%',
-            render: (record, text, index) => <span>{index + 1}</span>
-        },
-        {
-            title: 'Ngày',
-            dataIndex: 'paymentDate',
-            key: 'paymentDate',
-            width: '30%',
-            render: (text) => <span>{FormatDate(text)}</span>
-        },
-        {
-            title: 'Số tiền',
-            dataIndex: 'amount',
-            key: 'amount',
-            width: '20%',
-            render: (text) => <span style={{ color: 'red' }}>{formatCurrency(text)}</span>,
-        },
-        {
-            title: 'PT thanh toán',
-            dataIndex: 'paymentMethod',
-            key: 'paymentMethod',
-            width: '25%',
-            render: (text) => <Tag color="green" >{text}</Tag>
-        },
-        {
-            title: 'Thao tác',
-            width: '15%',
-            render: (record) => (
-                <Space size="middle" >
-                    <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }}
-                        onClick={() => handleDelete(record.id)}
-                    />
-                </Space>
-            ),
-        },
-    ];
-    //---------------Thanh toán----------------------------------
-    const [payment, setPaymet] = useState([]);
-    const fetchPayment = async () => {
-        await PaymentService.getAllPaymentByOrdersId(order.id)
-            .then(response => {
-                setPaymet(response);
-            }).catch(error => {
-                console.error(error);
-            })
-    };
-    useEffect(() => {
-        fetchPayment();
-    }, []);
-
-    return (
-        <Modal
-            title="Xác nhận thanh toán"
-            open={isModal}
-            onOk={handleCreate}
-            onCancel={hideModal}
-            okText={"Xác nhận"}
-            cancelText="Hủy bỏ"
-            width={600}
-        >
-            <Form
-                name="validateOnly"
-                layout="vertical"
-                autoComplete="off"
-                form={form}
-                onValuesChange={(changedValues, allValues) => {
-                    // Check if the 'amount' field changed and handle the change
-                    if ('amount' in changedValues) {
-                        handleAmountChange(changedValues['amount']);
-                    }
-                }}
-            >
-                <p style={{ fontSize: '20px' }}>Số tiền cần thanh toán: <span style={{ color: 'red' }}>{formatCurrency(orderTotal)}</span></p>
-
-                <Col>
-                    <Form.Item
-                        label="Tiền khách đưa:"
-                        name="amount"
-
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập số tiền!',
-                            },
-                            {
-                                validator(_, value) {
-                                    if (!value) {
-                                        return Promise.reject();
-                                    }
-
-                                    const enteredAmount = parseFloat(value);
-
-                                    if (isNaN(enteredAmount)) {
-                                        return Promise.reject(
-                                            new Error('Vui lòng nhập đúng định dạng số!')
-                                        );
-                                    }
-
-                                    if (enteredAmount < orderTotal) {
-                                        return Promise.reject(
-                                            new Error(`Số tiền không được nhỏ hơn ${formatCurrency(orderTotal)}`)
-                                        );
-                                    }
-
-                                    handleAmountChange(value);
-                                    return Promise.resolve();
-                                },
-                            },
-                        ]}
-                    >
-                        <Input placeholder="Nhập số tiền..." disabled={payment.length !== 0 ? true : false} />
-                    </Form.Item>
-                </Col>
-
-
-                <Form.Item label="Phương thức thanh toán:" name="paymentMethod" rules={[{ required: true, message: 'Vui lòng chọn phương thức thanh toán!' }]}>
-                    <Radio.Group name="radiogroup" style={{ float: 'left' }}>
-                        <Radio disabled={payment.length !== 0 ? true : false} value='Tiền mặt'>Tiền mặt</Radio>
-                        <Radio disabled={payment.length !== 0 ? true : false} value='Chuyển khoản'>Chuyển khoản</Radio>
-                    </Radio.Group>
-                </Form.Item>
-
-                <Table
-                    columns={columnPaymentHistory}
-                    dataSource={payment}
-                    pagination={false} />
-
-                <p style={{ marginTop: '10px' }}>Tiền thừa: <span style={{ color: 'red' }}>{formatCurrency(payment.length === 0 ? change : payment[0]?.amount - orderTotal)}</span></p>
-
-            </Form>
-        </Modal>
     );
 };

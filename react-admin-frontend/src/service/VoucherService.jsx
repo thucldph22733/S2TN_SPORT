@@ -3,10 +3,8 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'vouchers/';
 
 const VoucherService = {
-    getAll: (pageNo, pageSize, code, name, deleted) => {
-        return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, code, name, deleted }
-        })
+    getVoucherByFilter: (data) => {
+        return HttpClient.post(`${API_URL}getVoucherByFilter`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);

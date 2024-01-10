@@ -2,6 +2,7 @@ package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
 import com.poly.springboot.dto.requestDto.FilterOrderRequestDto;
+import com.poly.springboot.dto.requestDto.OrderInStoreRequestDto;
 import com.poly.springboot.dto.requestDto.OrderRequestDto;
 import com.poly.springboot.dto.requestDto.OrderStatusRequestDto;
 import com.poly.springboot.dto.responseDto.ResponseDto;
@@ -78,6 +79,12 @@ public class OrderController {
     @PatchMapping("updateOrderVoucher")
     public ResponseEntity<Order> updateOrderVoucher(@RequestParam(required = false) Long orderId,@RequestParam(required = false) String voucherCode) {
         Order  order = orderService.updateOrderVoucher(orderId,voucherCode);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(order);
+    }
+    @PutMapping("updateOrder")
+    public ResponseEntity<Order> updateOrder(@RequestBody OrderInStoreRequestDto requestDto) {
+        Order  order = orderService.updateOrder(requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(order);
     }

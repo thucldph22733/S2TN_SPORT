@@ -25,6 +25,7 @@ import ChangePassword from './pages/Auth/ChangePassword';
 import ProductDetail from './pages/Products/ProductDetail';
 import Sell from './pages/Sell/Sell';
 import OrderDetail from './pages/Orders/OrderDetail';
+import Product from './pages/Products/Product';
 function App() {
 
     const router = createBrowserRouter([
@@ -57,7 +58,7 @@ function App() {
                 },
                 {
                     path: path_name.product,
-                    element: <ProductDetail />,
+                    element: <Product />,
                 },
                 {
                     path: path_name.brand,

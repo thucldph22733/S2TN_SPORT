@@ -405,7 +405,7 @@ export default function OrderDetail() {
                     pagination={false} />
 
                 <div style={{ borderBottom: '2px solid black', marginTop: '30px' }}>
-                    <h6 style={{ fontSize: '15px', fontWeight: '550' }}>THÔNG TIN ĐƠN HÀNG: <span style={{ color: 'red' }}>HD{orders.id}</span></h6>
+                    <h6 style={{ fontSize: '15px', fontWeight: '550' }}>THÔNG TIN ĐƠN HÀNG: <span style={{ color: 'red' }}>{orders.id}</span></h6>
                 </div>
                 <Descriptions
                     size='default'
@@ -605,7 +605,8 @@ const OrderHistoryModal = ({ isModal, hideModal, orderHistories }) => {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
-            width: '15%'
+            width: '15%',
+
         },
         {
             title: 'Người xác nhận',
@@ -617,7 +618,12 @@ const OrderHistoryModal = ({ isModal, hideModal, orderHistories }) => {
             title: 'Ghi chú',
             dataIndex: 'note',
             key: 'note',
-            width: '40%'
+            width: '40%',
+            render: (text) => (
+                <span>
+                    {text !== null ? text : "Không có"}
+                </span>
+            ),
         },
     ];
 
@@ -660,7 +666,7 @@ const PaymentModal = ({ isModal, hideModal, orders, fetchPayment }) => {
                 .catch(error => {
                     notification.error({
                         message: 'Thông báo',
-                        description: 'Thêm mới thất bại!',
+                        description: 'Thanh toán thất bại!',
                     });
                     console.error(error);
                 });
@@ -670,7 +676,7 @@ const PaymentModal = ({ isModal, hideModal, orders, fetchPayment }) => {
     }
 
     const handleAmountChange = (value) => {
-        if (value === undefined || value === null || value.trim() === '') {
+        if (value === undefined || value === null || value.trim() === '' || value <= orders.orderTotal) {
             setChange(0);
         } else {
             const enteredAmount = parseFloat(value);

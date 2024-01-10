@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag, Switch } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -66,18 +66,14 @@ function Color() {
 
     const handleDelete = async (id) => {
 
-        await ColorService.delete(id).then(response => {
-            console.log(response.data);
-            notification.success({
-                message: 'Thông báo',
-                description: 'Xóa thành công!',
-            });
+        await ColorService.delete(id).then(() => {
+
             fetchColors();
         }).catch(error => {
             console.error(error);
             notification.error({
                 message: 'Thông báo',
-                description: 'Xóa thất bại!',
+                description: 'Đã có lỗi xảy ra!',
             });
         });
 
@@ -201,17 +197,11 @@ function Color() {
                     <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModal("edit", record)} />
-                    {record.deleted && <Popconfirm
-                        title="Xóa màu sắc"
-                        description="Bạn có chắc chắn xóa màu sắc này không?"
-                        placement="leftTop"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Đồng ý"
-                        cancelText="Hủy bỏ"
-                    >
-                        <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                    </Popconfirm>}
-
+                    <Switch
+                        size="small"
+                        defaultChecked={record.deleted}
+                        onClick={() => handleDelete(record.id)}
+                    />
                 </Space>
             }
 
@@ -351,11 +341,11 @@ const ColorModal = ({ isMode, reacord, hideModal, isModal, fetchColors }) => {
                     <Input placeholder="Nhập tên màu sắc..." />
                 </Form.Item>
 
-                <Form.Item label="Ghi chú:" name="colorDescribe" rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]}>
+                <Form.Item label="Ghi chú:" name="colorDescribe">
                     <TextArea rows={4} placeholder="Nhập ghi chú..." />
                 </Form.Item>
 
-                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng chọn tạng thái!' }]}>
+                <Form.Item label="Trạng thái:" name="deleted" initialValue={true}>
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Đang hoạt động</Radio>
                         <Radio value={false}>Ngừng hoạt động</Radio>

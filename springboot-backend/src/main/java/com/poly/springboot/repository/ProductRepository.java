@@ -2,6 +2,7 @@ package com.poly.springboot.repository;
 
 import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
 import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
+import com.poly.springboot.dto.responseDto.ProductFilterResponseDto;
 import com.poly.springboot.dto.responseDto.ProductUserResponseDto;
 import com.poly.springboot.entity.Product;
 import com.poly.springboot.entity.Size;
@@ -19,28 +20,49 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     Boolean existsByProductName(String productName);
 
-    Page<Product> findByProductNameContaining(String name, Pageable pageable);
-    Page<Product> findByDeletedIn(List<Boolean> status, Pageable pageable);
-    Page<Product> findByProductNameContainingAndDeletedIn(String name, List<Boolean> status, Pageable pageable);
+    @Query("SELECT new com.poly.springboot.dto.responseDto.ProductFilterResponseDto( " +
+            "p.id, p.productName, c.categoryName, b.brandName, s.supplierName, p.productDescribe, COUNT(pd.quantity), p.deleted, p.createdAt, p.createdBy) " +
+            "FROM Product p " +
+            "JOIN ProductDetail pd ON pd.product.id = p.id " +
+            "JOIN Brand b ON b.id = p.brand.id " +
+            "JOIN Category c ON c.id = p.category.id " +
+            "JOIN Supplier s ON s.id = p.supplier.id " + // Fixed the join condition
+            "WHERE (:colorId IS NULL OR pd.color.id = :colorId) " +
+            "AND (:sizeId IS NULL OR pd.size.id = :sizeId) " +
+            "AND (:materialId IS NULL OR pd.material.id = :materialId) " +
+            "AND (:brandId IS NULL OR b.id = :brandId) " +
+            "AND (:priceMin IS NULL OR pd.price >= :priceMin) " +
+            "AND (:priceMax IS NULL OR pd.price <= :priceMax) " +
+            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
+            "AND ((:keyword IS NULL) OR (p.productName LIKE %:keyword%) OR CAST(p.id AS STRING) = :keyword) " +
+            "GROUP BY p.id, p.productName, c.categoryName, b.brandName, s.supplierName, p.productDescribe, p.deleted, p.createdAt, p.createdBy")
+    Page<ProductFilterResponseDto> findProductsAdminByFilters(
+            @Param("colorId") Long colorId,
+            @Param("sizeId") Long sizeId,
+            @Param("materialId") Long materialId,
+            @Param("brandId") Long brandId,
+            @Param("priceMin") Double priceMin,
+            @Param("priceMax") Double priceMax,
+            @Param("categoryId") Long categoryId,
+            @Param("keyword") String keyword,
+            Pageable pageable);
 
-    List<Product> findAllByDeletedTrue();
 
 
-
-    @Query(nativeQuery = true, value =
-            "SELECT p.id, p.product_name AS productName, i.image_link AS imageUrl, MIN(pd.price) AS minPrice " +
-                    "FROM images i " +
-                    "JOIN products p ON i.product_id = p.id " +
-                    "JOIN product_details pd ON pd.product_id = p.id " +
-                    "WHERE i.is_deleted = true " +
-                    "GROUP BY p.id, p.product_name, i.image_link")
+    @Query("SELECT new com.poly.springboot.dto.responseDto.ProductUserResponseDto(" +
+            "p.id, p.productName, i.imageLink, MIN(pd.price)) " +
+            "FROM Image i " +
+            "JOIN Product p ON i.product.id = p.id " +
+            "JOIN ProductDetail pd ON pd.product.id = p.id " +
+            "WHERE i.deleted = true " +
+            "GROUP BY p.id, p.productName, i.imageLink")
     Page<ProductUserResponseDto> findProductHomePageByProducts(Pageable pageable);
 
-    @Query("SELECT " +
-            "p.id AS id, " +
-            "p.productName AS productName, " +
-            "i.imageLink AS imageUrl, " +
-            "MIN(pd.price) AS minPrice " +
+    @Query("SELECT new com.poly.springboot.dto.responseDto.ProductUserResponseDto( "+
+            "p.id , " +
+            "p.productName, " +
+            "i.imageLink, " +
+            "MIN(pd.price) ) " +
             "FROM Image i " +
             "JOIN Product p ON i.product.id = p.id " +
             "JOIN ProductDetail pd ON pd.product.id = p.id " +
@@ -65,4 +87,5 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             @Param("productName") String productName,
             Pageable pageable);
 
+    List<Product> findAllByDeletedTrue();
 }

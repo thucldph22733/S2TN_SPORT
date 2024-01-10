@@ -1,6 +1,8 @@
 package com.poly.springboot.service;
 
+import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductRequestDto;
+import com.poly.springboot.dto.responseDto.ProductFilterResponseDto;
 import com.poly.springboot.dto.responseDto.ProductResponseDto;
 import com.poly.springboot.dto.responseDto.ProductUserResponseDto;
 import com.poly.springboot.entity.Product;
@@ -11,8 +13,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductService {
-    Page<ProductResponseDto> getProducts(String name, List<Boolean> status, Pageable pageable);
 
+    Page<ProductFilterResponseDto> findProductsAdminByFilters(ProductDetailFilterRequestDto requestDto);
     Page<ProductUserResponseDto> getProductHomePageByProducts(Pageable pageable);
 
 //    Boolean deleteProduct(Long id);

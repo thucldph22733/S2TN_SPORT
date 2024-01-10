@@ -1,5 +1,6 @@
 package com.poly.springboot.service.impl;
 
+import com.poly.springboot.dto.requestDto.VoucherFilterRequestDto;
 import com.poly.springboot.dto.requestDto.VoucherRequestDto;
 
 import com.poly.springboot.entity.Voucher;
@@ -9,9 +10,11 @@ import com.poly.springboot.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,22 +29,19 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Page<Voucher> getVouchers(String code, String name, List<Boolean> status, Pageable pageable) {
-        Page<Voucher> rolePage;
+    public Page<Voucher> getVoucherByFilter(VoucherFilterRequestDto requestDto) {
 
-        if (name == null && status == null && code == null) {
-            rolePage = voucherRepository.findAll(pageable);
-        } else if (name == null && code == null) {
-            rolePage = voucherRepository.findByDeletedIn(status, pageable);
-        } else if (status == null && code == null) {
-            rolePage = voucherRepository.findByVoucherNameContaining(name, pageable);
-        } else if (status == null && name == null) {
-            rolePage = voucherRepository.findByVoucherCodeContaining(code, pageable);
-        } else {
-            rolePage = voucherRepository.findByVoucherCodeContainingAndVoucherNameContainingAndDeletedIn(code, name,status, pageable);
-        }
-        return rolePage;
+        Pageable pageable = PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize());
+
+        return voucherRepository
+                .getVoucherByFilter(
+                        requestDto.getKeyword(),
+                        requestDto.getCreatedAtStart(),
+                        requestDto.getCreatedAtEnd(),
+                        requestDto.getStatus(),
+                        pageable);
     }
+
 
     @Override
     public Boolean createVoucher(VoucherRequestDto voucherRequestDto) {

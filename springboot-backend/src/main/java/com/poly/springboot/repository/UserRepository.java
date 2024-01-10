@@ -29,7 +29,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.phoneNumber LIKE %:keyword% OR u.email LIKE %:keyword%) AND " +
             "(:birthOfDay IS NULL OR u.birthOfDay = :birthOfDay) AND " +
             "(:gender IS NULL OR u.gender = :gender) AND " +
-            "(:status IS NULL OR u.deleted = :status)")
+            "(:status IS NULL OR u.deleted = :status)" +
+            "ORDER BY u.createdAt DESC")
     Page<User> getUsersByFilter(
             @Param("keyword") String keyword,
             @Param("birthOfDay") Date birthOfDay,
@@ -37,10 +38,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("status") Boolean status,
             Pageable pageable
     );
-    Page<User> findByUsersNameContaining(String userName, Pageable pageable);
-    Page<User> findByPhoneNumberContaining(String phoneNumber,Pageable pageable);
-    Page<User> findByEmailContaining(String email,Pageable pageable);
-    Page<User> findByDeletedIn(List<Boolean> status, Pageable pageable);
     @Query("SELECT u FROM User u WHERE " +
             "(LOWER(u.usersName) LIKE LOWER(CONCAT('%', :name, '%')) AND " +
             "LOWER(u.email) LIKE LOWER(CONCAT('%', :phoneNumber, '%')) AND " +

@@ -1,6 +1,8 @@
 package com.poly.springboot.service.impl;
 
+import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductRequestDto;
+import com.poly.springboot.dto.responseDto.ProductFilterResponseDto;
 import com.poly.springboot.dto.responseDto.ProductResponseDto;
 import com.poly.springboot.dto.responseDto.ProductUserResponseDto;
 import com.poly.springboot.entity.Product;
@@ -10,6 +12,7 @@ import com.poly.springboot.repository.*;
 import com.poly.springboot.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -33,20 +36,20 @@ public class ProductServiceImpl implements ProductService {
         this.brandRepository = brandRepository;
         this.supplierRepository = supplierRepository;
     }
-    @Override
-    public Page<ProductResponseDto> getProducts(String name, List<Boolean> status, Pageable pageable) {
-        Page<Product> productPage;
 
-        if (name == null && status == null) {
-            productPage = productRepository.findAll(pageable);
-        } else if (name == null) {
-            productPage = productRepository.findByDeletedIn(status, pageable);
-        } else if (status == null) {
-            productPage = productRepository.findByProductNameContaining(name, pageable);
-        } else {
-            productPage = productRepository.findByProductNameContainingAndDeletedIn(name, status, pageable);
-        }
-        return productPage.map(this::mapProductToDto);
+
+    @Override
+    public Page<ProductFilterResponseDto> findProductsAdminByFilters(ProductDetailFilterRequestDto requestDto) {
+        Pageable pageable = PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize());
+        return productRepository.findProductsAdminByFilters(requestDto.getColorId(),
+                requestDto.getSizeId(),
+                requestDto.getMaterialId(),
+                requestDto.getBrandId(),
+                requestDto.getPriceMin(),
+                requestDto.getPriceMax(),
+                requestDto.getCategoryId(),
+                requestDto.getKeyword(),
+                pageable);
     }
 
     @Override

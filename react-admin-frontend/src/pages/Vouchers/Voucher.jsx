@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col, Tag, Popconfirm } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col, Tag, Popconfirm, Card, Switch } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
     FormOutlined,
     DeleteOutlined,
     SearchOutlined,
+    FileDoneOutlined,
+    FilterOutlined,
 } from '@ant-design/icons';
 import './Voucher.css'
 import VoucherService from '~/service/VoucherService';
 import FormatDate from '~/utils/format-date';
 import dayjs from 'dayjs';
+import formatCurrency from '~/utils/format-currency';
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -36,16 +39,18 @@ function Voucher() {
 
     const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
 
-    const [deleted, setDeleted] = useState(null);
-
-    const [searchName, setSearchName] = useState(null);
-
-    const [searchCode, setSearchCode] = useState(null);
-
+    const [filterVoucher, setFilterVoucher] = useState({
+        keyword: null,
+        createdAtStart: null,
+        createdAtEnd: null,
+        status: null,
+        pageNo: 0,
+        pageSize: 10
+    });
     const fetchVouchers = async () => {
         setLoading(true);
 
-        await VoucherService.getAll(pagination.current - 1, pagination.pageSize, searchCode, searchName, deleted)
+        await VoucherService.getVoucherByFilter(filterVoucher)
             .then(response => {
 
                 const formattedData = response.data.map((voucher, index) => ({
@@ -70,89 +75,63 @@ function Voucher() {
 
     useEffect(() => {
         fetchVouchers();
-    }, [pagination.current, pagination.pageSize, searchCode, searchName, deleted]);
+    }, [filterVoucher]);
 
-
+    const handleTableChange = (pagination) => {
+        setPagination({
+            ...pagination,
+        });
+        setFilterVoucher({
+            ...filterVoucher,
+            pageNo: pagination.current - 1,
+            pageSize: pagination.pageSize,
+        });
+    };
+    const handleFilterVoucherChange = (property, value) => {
+        setFilterVoucher({
+            ...filterVoucher,
+            [property]: value,
+            pageNo: 0,
+        });
+    };
+    const [searchKeywordVoucher, setSearchKeywordVoucher] = useState(null);
+    const handleSearchVoucher = () => {
+        setFilterVoucher({
+            ...filterVoucher,
+            keyword: searchKeywordVoucher,
+            pageNo: 0,
+        });
+    };
+    const handleResetVoucher = () => {
+        setSearchKeywordVoucher(null)
+        setFilterVoucher({
+            keyword: null,
+            createdAtStart: null,
+            createdAtEnd: null,
+            status: null,
+            pageNo: 0,
+            pageSize: 10
+        });
+        setPagination({
+            ...pagination,
+            current: 1,
+            pageSize: 5,
+        });
+    };
     const handleDelete = async (id) => {
 
-        await VoucherService.delete(id).then(response => {
-            console.log(response.data);
-            notification.success({
-                message: 'Thông báo',
-                description: 'Xóa thành công!',
-            });
+        await VoucherService.delete(id).then(() => {
             fetchVouchers();
         }).catch(error => {
             console.error(error);
             notification.error({
                 message: 'Thông báo',
-                description: 'Xóa thất bại!',
+                description: 'Đã có lỗi xảy ra!',
             });
         });
 
     };
 
-    const handleReset = () => {
-
-        setSearchName(null);
-        setSearchCode(null);
-        setDeleted(null);
-
-        setPagination({
-            ...pagination,
-            current: 1,
-        });
-        handleTableChange(pagination, null)
-    };
-
-
-    const handleTableChange = (pagination, filters) => {
-
-        setPagination({
-            ...pagination,
-        });
-        const statusFilter = filters?.deleted;
-        const searchCodeFilter = filters?.voucherCode;
-        const searchNameFilter = filters?.voucherName;
-
-        // Kiểm tra nếu statusFilter không tồn tại hoặc là mảng rỗng
-        const isNoStatusFilter = !statusFilter || statusFilter.length === 0;
-
-        if (searchCodeFilter) {
-            setSearchCode(searchCodeFilter[0]);
-        } else {
-            setSearchCode(null)
-        }
-        if (searchNameFilter) {
-            setSearchName(searchNameFilter[0]);
-        } else {
-            setSearchName(null)
-        }
-        // Kiểm tra nếu có lựa chọn bộ lọc và không phải là trường hợp không chọn
-        if (!isNoStatusFilter) {
-            const isBothStatus = statusFilter.length === 2;
-
-            // Sử dụng biểu thức điều kiện để xác định trạng thái để lọc
-            setDeleted(isBothStatus ? null : statusFilter[0]);
-        } else {
-            // Nếu không có lựa chọn bộ lọc, đặt trạng thái deleted về null hoặc giá trị mặc định
-            setDeleted(null);
-        }
-    };
-    const getColumnSearchProps = (dataIndex) => ({
-        filteredValue: dataIndex === 'voucherName' ? [searchName] : dataIndex === 'voucherCode' ? [searchCode] : null, filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
-            <Input.Search
-                placeholder={`Nhập tên...`}
-                value={selectedKeys[0]}
-                onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                onSearch={(value) => {
-                    setSelectedKeys(value ? [value.trim()] : []);
-                    confirm();
-                }}
-                style={{ display: 'block' }}
-            />
-        ),
-    });
     const columns = [
         {
             title: '#',
@@ -165,16 +144,14 @@ function Voucher() {
             dataIndex: 'voucherCode',
             key: 'voucherCode',
             width: '7%',
-            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
-            ...getColumnSearchProps('voucherCode')
+
         },
         {
             title: 'Tên',
             dataIndex: 'voucherName',
             key: 'voucherName',
             width: '10%',
-            filterIcon: <SearchOutlined style={{ fontSize: '14px', color: 'rgb(158, 154, 154)' }} />,
-            ...getColumnSearchProps('voucherName')
+
         },
 
         {
@@ -183,7 +160,7 @@ function Voucher() {
             key: 'discountRate',
             width: '8%',
             sorter: (a, b) => a.discountRate - b.discountRate,
-            render: (text) => <span>{text} VND</span>,
+            render: (text) => <span>{formatCurrency(text)}</span>,
         },
         {
             title: 'Ngày bắt đầu',
@@ -210,6 +187,7 @@ function Voucher() {
             key: 'orderMinimum',
             width: '9%',
             sorter: (a, b) => a.orderMinimum - b.orderMinimum,
+            render: (text) => <span>{formatCurrency(text)}</span>,
         },
         {
             title: 'Giảm tối đa',
@@ -217,7 +195,7 @@ function Voucher() {
             key: 'maxReduce',
             width: '9%',
             sorter: (a, b) => a.maxReduce - b.maxReduce,
-
+            render: (text) => <span>{formatCurrency(text)}</span>,
         },
 
         {
@@ -225,17 +203,6 @@ function Voucher() {
             key: 'deleted',
             dataIndex: 'deleted',
             width: '10%',
-            filters: [
-                {
-                    text: 'Hoạt động',
-                    value: true,
-                },
-                {
-                    text: 'Hết hạn',
-                    value: false,
-                },
-            ],
-            onFilter: (value, record) => record.deleted === value,
             render: (text) => (
                 text ? <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#108ee9">Hoạt động</Tag>
                     : <Tag style={{ borderRadius: '4px', fontWeight: '450', padding: '0 4px ' }} color="#f50">Hết hạn</Tag>
@@ -251,17 +218,11 @@ function Voucher() {
                     <Button type="text"
                         icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
                         onClick={() => showModal("edit", record)} />
-                    {record.deleted && <Popconfirm
-                        title="Xóa giảm giá"
-                        description="Bạn có chắc chắn xóa giảm giá này không?"
-                        placement="leftTop"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Đồng ý"
-                        cancelText="Hủy bỏ"
-                    >
-                        <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} />
-                    </Popconfirm>}
-
+                    <Switch
+                        size="small"
+                        defaultChecked={record.deleted}
+                        onClick={() => handleDelete(record.id)}
+                    />
                 </Space>
             }
 
@@ -270,36 +231,108 @@ function Voucher() {
 
     return (
         <>
-            <h3 style={{ marginBottom: '16px', float: 'left', color: '#2123bf' }}>Danh sách giảm giá</h3>
 
-            <Button type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => showModal("add")}
-                style={{ marginBottom: '16px', float: 'right', borderRadius: '2px' }} >
-                Thêm mới
-            </Button>
+            <Card
+                title={<span style={{ color: '#5a76f3' }}><FilterOutlined /> Lọc</span>}
+                style={{ borderRadius: '10px' }}
+            >
+                <Row>
+                    <Col span={12} style={{ padding: '0 100px' }}>
+                        <DatePicker
+                            format="HH:mm:ss - DD/MM/YYYY"
+                            style={{
+                                width: '100%',
+                                height: '35px',
+                                borderRadius: '5px',
+                            }}
+                            showTime
 
-            <Button type="primary"
-                icon={<RedoOutlined style={{ fontSize: '18px' }} />}
-                style={{ marginBottom: '16px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
-                onClick={handleReset}
-            />
+                            placeholder="Từ ngày"
+                            value={filterVoucher.createdAtStart}
+                            onChange={(value) => handleFilterVoucherChange('createdAtStart', value && dayjs(value).add(7, 'hour'))}
+                        />
+                    </Col>
+                    <Col span={12} style={{ padding: '0 100px' }}>
+                        <DatePicker
+                            format="HH:mm:ss - DD/MM/YYYY"
+                            style={{
+                                width: '100%',
+                                height: '35px',
+                                borderRadius: '5px',
+                            }}
+                            showTime
+                            placeholder="Đến ngày"
+                            value={filterVoucher.createdAtEnd}
+                            onChange={(value) => handleFilterVoucherChange('createdAtEnd', value && dayjs(value).add(7, 'hour'))}
+                        />
+                    </Col>
+                </Row>
 
-            <Table
-                dataSource={vouchers}
-                onChange={handleTableChange}
+                <Row style={{ marginTop: '20px' }}>
+                    <Col span={12} style={{ padding: '0 100px' }}>
+                        <Select
+                            style={{
+                                width: '100%',
+                            }}
+                            allowClear
+                            placeholder="Trạng thái"
+                            value={filterVoucher.status}
+                            onChange={(value) => handleFilterVoucherChange('status', value)}
+                            options={[
+                                {
+                                    value: true,
+                                    label: 'Hoạt động',
+                                },
+                                {
+                                    value: false,
+                                    label: 'Hết hạn',
+                                },
+                            ]}
+                        />
+                    </Col>
+                    <Col span={12} style={{ padding: '0 100px' }}>
+                        <Input.Search
 
-                loading={loading}
-                columns={columns}
-                pagination={{
-                    current: pagination.current,
-                    pageSize: pagination.pageSize,
-                    defaultPageSize: 5,
-                    pageSizeOptions: ['5', '10', '15'],
-                    total: pagination.total,
-                    showSizeChanger: true,
-                }}></Table >
+                            placeholder="Nhập mã, tên, mức giảm giá..."
+                            value={searchKeywordVoucher}
+                            onChange={(e) => setSearchKeywordVoucher(e.target.value)}
+                            onSearch={handleSearchVoucher}
+                        />
+                    </Col>
+                </Row>
 
+            </Card>
+            <Card
+                title={<span style={{ color: '#5a76f3' }}><FileDoneOutlined />  Danh sách giảm giá</span>}
+                style={{ marginTop: '25px', borderRadius: '10px' }}
+            >
+                <Button type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => showModal("add")}
+                    style={{ marginBottom: '5px', float: 'right', borderRadius: '2px' }} >
+                    Thêm mới
+                </Button>
+
+                <Button type="primary"
+                    icon={<RedoOutlined style={{ fontSize: '18px' }} />}
+                    style={{ marginBottom: '5px', float: 'right', marginRight: '6px', borderRadius: '4px', }}
+                    onClick={handleResetVoucher}
+                />
+                <Table
+                    dataSource={vouchers}
+                    onChange={handleTableChange}
+
+                    loading={loading}
+                    columns={columns}
+                    pagination={{
+                        current: pagination.current,
+                        pageSize: pagination.pageSize,
+                        defaultPageSize: 5,
+                        pageSizeOptions: ['5', '10', '15'],
+                        total: pagination.total,
+                        showSizeChanger: true,
+                    }}></Table >
+            </Card>
             {open.isModal && <VoucherModal
                 isMode={open.isMode}
                 reacord={open.reacord}
@@ -375,12 +408,12 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
     }
     const selectAfter = (
         <Select
-            defaultValue="%"
+            defaultValue="VND"
             style={{
                 width: 90,
             }}
         >
-            <Option value="USD">%</Option>
+            <Option value="VND">VND</Option>
         </Select>
     );
 
@@ -425,8 +458,6 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                             </Col>
                         </Row>
 
-
-
                         <Row >
                             <Col span={11}>
                                 <Form.Item label="Giảm giá:" name="discountRate" rules={[
@@ -434,6 +465,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                                         required: true,
                                         type: 'number',
                                         min: 0,
+                                        message: 'Vui lòng nhập múc giảm!'
                                     }]}>
                                     <InputNumber style={{ width: '100%' }} addonAfter={selectAfter} />
                                 </Form.Item>
@@ -470,25 +502,13 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
 
                         <Row>
                             <Col span={11}>
-                                <Form.Item label="Tối thiểu:" name="orderMinimum" rules={[
-                                    {
-                                        required: true,
-                                        type: 'number',
-                                        min: 0,
-                                    },
-                                ]} >
+                                <Form.Item label="Tối thiểu:" name="orderMinimum" >
                                     <InputNumber style={{ width: '100%' }} />
                                 </Form.Item>
                             </Col>
                             <Col span={1}></Col>
                             <Col span={12}>
-                                <Form.Item label="Giảm max:" name="maxReduce" rules={[
-                                    {
-                                        required: true,
-                                        type: 'number',
-                                        min: 0,
-                                    },
-                                ]} >
+                                <Form.Item label="Giảm max:" name="maxReduce" >
                                     <InputNumber style={{ width: '100%' }} />
                                 </Form.Item>
                             </Col>

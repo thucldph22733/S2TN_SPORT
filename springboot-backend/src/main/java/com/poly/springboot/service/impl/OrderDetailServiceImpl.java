@@ -70,7 +70,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
-    public Boolean createOrderDetail(OrderDetailInStoreRequestDto orderDetailRequestDto){
+    public Boolean createOrderDetail(OrderDetailInStoreRequestDto orderDetailRequestDto) {
         // Tìm ProductDetail theo ID
         ProductDetail productDetail = productDetailRepository.findById(orderDetailRequestDto.getProductDetailId()).orElse(null);
 
@@ -93,6 +93,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     // Tính tổng giá trị (số lượng * giá) và cập nhật vào OrderDetail
                     orderDetail.setPrice(productDetail.getPrice());
 
+                    // Giảm số lượng trong ProductDetail
+                    productDetail.setQuantity(productDetail.getQuantity() - requestedQuantity);
+                    // Lưu cập nhật ProductDetail
+                    productDetailRepository.save(productDetail);
+
                     // Lưu cập nhật OrderDetail
                     orderDetailRepository.save(orderDetail);
                 } else {
@@ -106,6 +111,12 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 orderDetail.setProductDetail(productDetail);
                 orderDetail.setQuantity(orderDetailRequestDto.getQuantity());
                 orderDetail.setPrice(orderDetailRequestDto.getPrice());
+
+                // Giảm số lượng trong ProductDetail
+                productDetail.setQuantity(productDetail.getQuantity() - orderDetailRequestDto.getQuantity());
+                // Lưu cập nhật ProductDetail
+                productDetailRepository.save(productDetail);
+
                 // Lưu OrderDetail
                 orderDetailRepository.save(orderDetail);
             }
@@ -117,11 +128,30 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     public Boolean updateQuantityOrderDetail(Integer quantity, Long id) {
-        OrderDetail orderDetail = orderDetailRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy id hóa đươn chi tiết này!"));
+        OrderDetail orderDetail = orderDetailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn chi tiết này!"));
+
+        // Get the associated ProductDetail
+        ProductDetail productDetail = orderDetail.getProductDetail();
+
+        // Calculate the difference in quantity
+        int quantityDifference = quantity - orderDetail.getQuantity();
+
+        // Update the quantity in OrderDetail
         orderDetail.setQuantity(quantity);
         orderDetailRepository.save(orderDetail);
+
+        // Check if ProductDetail is not null (just to be safe)
+        if (productDetail != null) {
+            // Update the quantity in ProductDetail
+            productDetail.setQuantity(productDetail.getQuantity() - quantityDifference);
+            // Save the updated ProductDetail
+            productDetailRepository.save(productDetail);
+        }
+
         return true;
     }
+
 
 
 
@@ -132,16 +162,21 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     public Boolean deleteOrderDetail(Long id) {
+        OrderDetail orderDetail = orderDetailRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy hóa đơn chi tiết"));
 
-            OrderDetail orderDetail = orderDetailRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm tháy hóa đơn chi tiết"));
+        // Get the associated ProductDetail
+        ProductDetail productDetail = orderDetail.getProductDetail();
 
-            // Xóa OrderDetail
-            orderDetailRepository.delete(orderDetail);
+        // Xóa OrderDetail
+        orderDetailRepository.delete(orderDetail);
 
+        if (productDetail != null) {
+            productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
+            productDetailRepository.save(productDetail);
+        }
 
-            return true;
-
+        return true;
     }
 
     private double calculateDiscountMoney(Order order) {

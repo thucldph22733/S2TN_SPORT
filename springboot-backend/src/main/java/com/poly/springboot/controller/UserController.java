@@ -37,22 +37,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("getAll")
-//    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<?> getUsers(@RequestParam(defaultValue = "0") Integer pageNo,
-                                       @RequestParam(defaultValue = "10") Integer pageSize,
-                                       @RequestParam(required = false) String name,
-                                       @RequestParam(required = false) String phoneNumber,
-                                       @RequestParam(required = false) String email,
-                                       @RequestParam(required = false) List<Boolean> deleted){
-        Pageable pageable = PageRequest.of(pageNo,pageSize);
-
-        Page<UserResponseDto>  userResponseDtoPage = userService.getUsers(name,phoneNumber,email,deleted,pageable);
-
-        List<UserResponseDto> userResponseDtoList = userResponseDtoPage.getContent();
-
-        return ResponseHandler.generateResponse(HttpStatus.OK,userResponseDtoList,userResponseDtoPage);
-    }
     @PostMapping("getAllUserByFilter")
 //    @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<?> getUsers(@RequestBody UserFilterRequestDto requestDto){
@@ -65,23 +49,6 @@ public class UserController {
         return ResponseHandler.generateResponse(HttpStatus.OK,userResponseDtoList,userResponseDtoPage);
     }
 
-
-    @GetMapping("getUserByRole")
-//    @PreAuthorize("hasAuthority('admin:read')")
-    public ResponseEntity<?> getUserByRole(@RequestParam(defaultValue = "0") Integer pageNo,
-                                       @RequestParam(defaultValue = "10") Integer pageSize,
-                                       @RequestParam(required = false) String name,
-                                       @RequestParam(required = false) String phoneNumber,
-                                       @RequestParam(required = false) String email,
-                                       @RequestParam(required = false) List<Boolean> deleted){
-        Pageable pageable = PageRequest.of(pageNo,pageSize);
-
-        Page<UserResponseDto>  userResponseDtoPage = userService.getUsersByRole(name,phoneNumber,email,deleted,pageable);
-
-        List<UserResponseDto> userResponseDtoList = userResponseDtoPage.getContent();
-
-        return ResponseHandler.generateResponse(HttpStatus.OK,userResponseDtoList,userResponseDtoPage);
-    }
 
 
     @PatchMapping("changePassword")

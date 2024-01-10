@@ -31,30 +31,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-
     private final PasswordEncoder passwordEncoder;
 
-
-    @Override
-    public Page<UserResponseDto> getUsers(String name, String phoneNumber, String email, List<Boolean> status, Pageable pageable) {
-        Page<User> userPage;
-        if (name == null && phoneNumber == null && email == null && status == null) {
-            userPage = userRepository.findAll(pageable);
-        } else if (name == null && phoneNumber == null && email == null) {
-            userPage = userRepository.findByDeletedIn(status, pageable);
-        } else if (phoneNumber == null && email == null && status == null) {
-            userPage = userRepository.findByUsersNameContaining(name, pageable);
-        } else if (email == null && status == null && name == null) {
-            userPage = userRepository.findByPhoneNumberContaining(phoneNumber, pageable);
-        } else if (status == null && name == null && phoneNumber == null) {
-            userPage = userRepository.findByEmailContaining(email, pageable);
-        } else {
-            userPage = userRepository.findByKeyword(name, phoneNumber, email, status, pageable);
-        }
-        // Sử dụng map để chuyển đổi từ Page<User> sang Page<UserResponseDto>
-        return userPage.map(this::mapUserToDto);
-
-    }
 
     @Override
     public Page<UserResponseDto> getUsersByFilter(UserFilterRequestDto requestDto) {
@@ -66,26 +44,6 @@ public class UserServiceImpl implements UserService {
                         requestDto.getGender(),
                         requestDto.getStatus(),
                         pageable);
-        return userPage.map(this::mapUserToDto);
-    }
-
-    @Override
-    public Page<UserResponseDto> getUsersByRole(String userName, String phoneNumber, String email, List<Boolean> status, Pageable pageable) {
-        Page<User> userPage;
-        if (userName == null && phoneNumber == null && email == null && status == null) {
-            userPage = userRepository.findAllUserByRoleUser(pageable);
-        } else if (userName == null && phoneNumber == null && email == null) {
-            userPage = userRepository.findByDeletedIn(status, pageable);
-        } else if (phoneNumber == null && email == null && status == null) {
-            userPage = userRepository.findByUsersNameContaining(userName, pageable);
-        } else if (email == null && status == null && userName == null) {
-            userPage = userRepository.findByPhoneNumberContaining(phoneNumber, pageable);
-        } else if (status == null && userName == null && phoneNumber == null) {
-            userPage = userRepository.findByEmailContaining(email, pageable);
-        } else {
-            userPage = userRepository.findAllUserByRoleUser(userName, phoneNumber, email, status, pageable);
-        }
-        // Sử dụng map để chuyển đổi từ Page<User> sang Page<UserResponseDto>
         return userPage.map(this::mapUserToDto);
     }
 

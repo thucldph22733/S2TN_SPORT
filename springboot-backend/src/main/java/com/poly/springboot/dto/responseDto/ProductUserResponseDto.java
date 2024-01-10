@@ -6,9 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-public interface ProductUserResponseDto {
-    Long getId();
-    String getProductName();
-    String getImageUrl();
-    Double getMinPrice();
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProductUserResponseDto {
+    private Long id;
+    private String productName;
+    private String imageUrl;
+    private Double minPrice;
 }

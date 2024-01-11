@@ -73,7 +73,7 @@ public class ImageController {
 
     //create Image rest api
     @PostMapping("create")
-    public ResponseEntity<ResponseDto> creatImage(@Valid @RequestBody ImageRequestDto imageRequestDto) {
+    public ResponseEntity<ResponseDto> creatImage( @RequestBody ImageRequestDto imageRequestDto) {
 
         Boolean isCreated = imageService.createImage(imageRequestDto);
 

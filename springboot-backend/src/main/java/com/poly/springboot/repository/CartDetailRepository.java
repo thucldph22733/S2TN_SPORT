@@ -22,7 +22,8 @@ public interface CartDetailRepository extends JpaRepository<CartDetail,Long> {
             "JOIN pd.color c " +
             "JOIN pd.size s " +
             "LEFT JOIN Image i ON i.product.id = p.id AND i.color.id = c.id " +
-            "WHERE cd.carts.id = :cartId ")
+            "WHERE cd.carts.id = :cartId " +
+            "ORDER BY cd.createdAt DESC")
     List<CartDetailResponseDto> getCartDetailInfo(@Param("cartId") Long cartId);
 
     Optional<CartDetail> findByProductDetailIdAndCartsId(Long productDetailId, Long cartId);

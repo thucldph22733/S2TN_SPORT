@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface BrandRepository extends JpaRepository<Brand,Long> {
+    @Query("SELECT b FROM Brand b WHERE b.deleted = true ORDER BY b.createdAt DESC")
     List<Brand> findAllByDeletedTrue();
 
     Brand findByBrandName(String name);

@@ -24,16 +24,16 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/productDetails/")
-@Tag(name = "ProductDetails",description = "( Rest API Hiển thị, thêm, sửa, xóa sản, phân trang, tìm kiếm sản phẩm chi tiết)")
+@Tag(name = "ProductDetails", description = "( Rest API Hiển thị, thêm, sửa, xóa sản, phân trang, tìm kiếm sản phẩm chi tiết)")
 public class ProductDetailController {
 
-   @Autowired
-   private ProductDetailService productDetailService;
+    @Autowired
+    private ProductDetailService productDetailService;
 
     @PostMapping("getAllProductDetailsFilter")
     public ResponseEntity<?> getProductDetails(@RequestBody ProductDetailFilterRequestDto requestDto) {
 
-        Page<ProductDetailResponseDto> productPage = productDetailService.getProductDetails( requestDto);
+        Page<ProductDetailResponseDto> productPage = productDetailService.getProductDetails(requestDto);
 
         List<ProductDetailResponseDto> productResponseDtoList = productPage.getContent();
         return ResponseHandler.generateResponse(
@@ -48,15 +48,16 @@ public class ProductDetailController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productDetailInfoResponseDtos);
     }
+
     @GetMapping("findQuantityAndPriceUpdateByProductDetail")
-    public ResponseEntity<PDUpdateResponseDto> findQuantityAndPriceUpdateByProductDetail(@RequestParam Long productId,@RequestParam Long colorId,@RequestParam Long sizeId) {
-        PDUpdateResponseDto pdUpdateResponseDto = productDetailService.findQuantityAndPriceByProductIdAndColorIdAndSizeId(productId,colorId,sizeId);
+    public ResponseEntity<PDUpdateResponseDto> findQuantityAndPriceUpdateByProductDetail(@RequestParam Long productId, @RequestParam Long colorId, @RequestParam Long sizeId) {
+        PDUpdateResponseDto pdUpdateResponseDto = productDetailService.findQuantityAndPriceByProductIdAndColorIdAndSizeId(productId, colorId, sizeId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pdUpdateResponseDto);
     }
 
     @GetMapping("findColorNamesByProductId")
-    public ResponseEntity< List<ColorInfoResponseDto>> findColorNamesByProductId(@RequestParam Long productId) {
+    public ResponseEntity<List<ColorInfoResponseDto>> findColorNamesByProductId(@RequestParam Long productId) {
         List<ColorInfoResponseDto> colorInfoResponseDtos = productDetailService.getColorNamesByProductId(productId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(colorInfoResponseDtos);
@@ -64,7 +65,7 @@ public class ProductDetailController {
 
     @GetMapping("findSizeNamesByProductId")
     public ResponseEntity<List<SizeInfoResponseDto>> findSizeNamesByProductId(@RequestParam Long productId) {
-        List<SizeInfoResponseDto>  sizeInfoResponseDtos = productDetailService.getSizeNamesByProductId(productId);
+        List<SizeInfoResponseDto> sizeInfoResponseDtos = productDetailService.getSizeNamesByProductId(productId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(sizeInfoResponseDtos);
     }
@@ -87,34 +88,40 @@ public class ProductDetailController {
 
 
     @PutMapping("update")
-    public ResponseEntity<ResponseDto> updateProductDetail(@RequestBody ProductDetailRequestDto productRequestDto, @RequestParam Long id){
-        Boolean isUpdated = productDetailService.updateProductDetail(productRequestDto,id);
-        if (isUpdated){
+    public ResponseEntity<ResponseDto> updateProductDetail(@RequestBody ProductDetailRequestDto productRequestDto, @RequestParam Long id) {
+        Boolean isUpdated = productDetailService.updateProductDetail(productRequestDto, id);
+        if (isUpdated) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<ResponseDto> deleteProductDetail(@RequestParam Long id){
+    public ResponseEntity<ResponseDto> deleteProductDetail(@RequestParam Long id) {
         Boolean isDeleted = productDetailService.deleteProductDetail(id);
-        if (isDeleted){
+        if (isDeleted) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseDto(NotificationConstants.STATUS_200,NotificationConstants.MESSAGE_200));
-        }else {
+                    .body(new ResponseDto(NotificationConstants.STATUS_200, NotificationConstants.MESSAGE_200));
+        } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
         }
     }
 
-    @GetMapping("findProductDetailById")
-    public ResponseEntity<ProductDetail> findProductDetailById(@RequestParam Long id){
-        ProductDetail productDetail = productDetailService.findByIdProductDetailsId(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(productDetail);
+    @GetMapping("getAllByProductId")
+    public ResponseEntity<?> findAllByProductId(@RequestParam Long productId,
+                                                @RequestParam(defaultValue = "0") Integer pageNo,
+                                                @RequestParam(defaultValue = "10") Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        Page<ProductDetailResponseDto> responseDtoPage = productDetailService.findAllByProductId(productId, pageable);
+        List<ProductDetailResponseDto> detailResponseDtoList = responseDtoPage.getContent();
+        return ResponseHandler.generateResponse(
+                HttpStatus.OK
+                , detailResponseDtoList
+                , responseDtoPage);
     }
 }

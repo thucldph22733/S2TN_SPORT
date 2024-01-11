@@ -45,7 +45,7 @@ function Voucher() {
         createdAtEnd: null,
         status: null,
         pageNo: 0,
-        pageSize: 10
+        pageSize: 5
     });
     const fetchVouchers = async () => {
         setLoading(true);
@@ -430,11 +430,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                     cancelText="Hủy bỏ"
                 >
                     <Form
-                        name="wrap"
-                        labelCol={{ flex: '100px' }}
-                        labelAlign="left"
-                        // labelWrap
-                        colon={false}
+                        name="validateOnly" layout="vertical" autoComplete="off"
                         form={form}
                         initialValues={{
                             ...reacord,

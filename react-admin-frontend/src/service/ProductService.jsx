@@ -3,10 +3,8 @@ import HttpClient from '~/utils/http-client';
 const API_URL = 'products/';
 
 const ProductService = {
-    getAll: (pageNo, pageSize, name, status) => {
-        return HttpClient.get(`${API_URL}getAll`, {
-            params: { pageNo, pageSize, name, status }
-        })
+    getAllProducts: (data) => {
+        return HttpClient.post(`${API_URL}getAllProducts`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);

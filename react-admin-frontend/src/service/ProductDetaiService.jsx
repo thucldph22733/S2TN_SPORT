@@ -14,6 +14,27 @@ const ProductDetailService = {
             });
     },
 
+    getAllByProductId: (productId, pageNo, pageSize) => {
+        return HttpClient.get(`${API_URL}getAllByProductId`, {
+            params: {
+                productId, pageNo, pageSize
+            }
+        })
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
+    delete: (id) => {
+        return HttpClient.delete(`${API_URL}delete?id=${id}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in delete:', error);
+                throw error;
+            });
+    },
+
 };
 
 export default ProductDetailService;

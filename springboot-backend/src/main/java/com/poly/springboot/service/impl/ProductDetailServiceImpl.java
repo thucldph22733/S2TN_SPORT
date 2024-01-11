@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductDetailServiceImpl implements ProductDetailService {
@@ -72,12 +71,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public ProductDetail findByIdProductDetailsId(Long id) {
-        ProductDetail productDetail = productDetailRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy hóa đơn chi tiết này!"));
-        return productDetail;
+    public Page<ProductDetailResponseDto> findAllByProductId(Long id,Pageable pageable) {
+        return productDetailRepository.findAllByProductId(id,pageable);
     }
-
 
     @Override
     public Boolean createProductDetails(List<ProductDetailRequestDto> productDetailRequestDtos) {

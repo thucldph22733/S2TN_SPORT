@@ -59,16 +59,16 @@ public class ProductServiceImpl implements ProductService {
 
 
 
-//    @Override
-//    public Boolean deleteProduct(Long id) {
-//
-//        Product product = productRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
-//
-//        product.setDeleted(!product.getDeleted());
-//        productRepository.save(product);
-//        return true;
-//    }
+    @Override
+    public Boolean deleteProduct(Long id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm này!"));
+
+        product.setDeleted(!product.getDeleted());
+        productRepository.save(product);
+        return true;
+    }
 
     @Override
     public Boolean createProduct(ProductRequestDto productRequestDto) {

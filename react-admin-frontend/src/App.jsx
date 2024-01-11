@@ -22,10 +22,10 @@ import NewSell from './pages/Sell/NewSell';
 import Error404 from './pages/Error/Error404';
 import Error403 from './pages/Error/Error403';
 import ChangePassword from './pages/Auth/ChangePassword';
-import ProductDetail from './pages/Products/ProductDetail';
 import Sell from './pages/Sell/Sell';
 import OrderDetail from './pages/Orders/OrderDetail';
 import Product from './pages/Products/Product';
+import ProductAdd from './pages/Products/ProductAdd';
 function App() {
 
     const router = createBrowserRouter([
@@ -117,8 +117,8 @@ function App() {
                     element: <ChangePassword />,
                 },
                 {
-                    path: 'p',
-                    element: <ProductDetail />,
+                    path: path_name.add_product,
+                    element: <ProductAdd />,
                 },
             ],
 

@@ -5,6 +5,7 @@ const path_name = {
     login: '/',
     change_password: '/doi-mat-khau',
     product: '/san-pham',
+    add_product: '/them-san-pham',
     brand: '/thuong-hieu',
     color: '/mau-sac',
     category: '/loai-san-pham',

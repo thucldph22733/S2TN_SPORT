@@ -38,7 +38,7 @@ public class ImageServiceImpl implements ImageService {
         image.setImageName(imageRequestDto.getImageName());
         image.setImageLink(imageRequestDto.getImageLink());
         image.setImageType(imageRequestDto.getImageType());
-
+        image.setDeleted(imageRequestDto.getDeleted());
         imageRepository.save(image);
         return true;
     }

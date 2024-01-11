@@ -17,7 +17,7 @@ public interface ProductService {
     Page<ProductFilterResponseDto> findProductsAdminByFilters(ProductDetailFilterRequestDto requestDto);
     Page<ProductUserResponseDto> getProductHomePageByProducts(Pageable pageable);
 
-//    Boolean deleteProduct(Long id);
+    Boolean deleteProduct(Long id);
 
     Boolean createProduct(ProductRequestDto productRequestDto);
 

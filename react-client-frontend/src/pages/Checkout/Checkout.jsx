@@ -110,7 +110,7 @@ function Checkout() {
             }
         }
     }, [userId]);
-    
+
     //Tổng tiền
     const calculateTotal = () => {
         const total = calculateTotalAmount() + calculateTransportFee() - discountRate
@@ -588,7 +588,6 @@ function Checkout() {
                                             <span style={{ float: 'right' }}>{formatCurrency(calculateTotal())}</span>
                                         </Col>
                                     </Row>
-
                                 </div>
 
                                 <Button onClick={handlePlaceOrder} type='primary' style={{ width: '100%', height: '45px', marginTop: '20px', fontSize: '17px', fontWeight: '600', borderRadius: '5px' }}>

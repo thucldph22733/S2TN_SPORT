@@ -37,7 +37,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail,Lon
             "JOIN p.category c " +
             "JOIN p.brand b " +
             "WHERE p.id = :productId " +
-            "GROUP BY p.productName, p.productDescribe, c.categoryName, b.brandName")
+            "GROUP BY p.productName, p.productDescribe, c.categoryName, b.brandName " +
+            "ORDER BY pd.createdAt DESC")
    ProductDetailInfoResponseDto getProductDetailsByProductId(@Param("productId") Long productId);
 
     @Query("SELECT new com.poly.springboot.dto.responseDto.PDUpdateResponseDto(pd.id,pd.quantity, pd.price) FROM ProductDetail pd WHERE pd.product.id = :productId AND pd.color.id = :colorId AND pd.size.id = :sizeId")
@@ -62,7 +63,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail,Lon
             "AND (:priceMax IS NULL OR pd.price <= :priceMax) " +
             "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
             "AND ((:keyword IS NULL) OR (p.productName LIKE %:keyword%) OR CAST(p.id AS STRING) = :keyword) " +
-            "AND pd.deleted = true")
+            "AND pd.deleted = true " +
+            "ORDER BY pd.createdAt DESC")
     Page<ProductDetailResponseDto> getProductDetails(
             @Param("colorId") Long colorId,
             @Param("sizeId") Long sizeId,
@@ -73,4 +75,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail,Lon
             @Param("categoryId") Long categoryId,
             @Param("keyword") String keyword,
             Pageable pageable);
+
+    @Query("SELECT new com.poly.springboot.dto.responseDto.ProductDetailResponseDto(  pd.id, p.productName,i.imageLink, c.colorName,s.sizeName,m.materialName,pd.quantity,pd.price, pd.deleted )from ProductDetail pd join Product p on pd.product.id = p.id join Image i on i.product.id = p.id " +
+            "join Color c on i.color.id = c.id join Size s on pd.size.id = s.id join Material m on pd.material.id = m.id where pd.product.id = :productId and i.color.id = pd.color.id and i.deleted = true group by pd.id, i.imageLink, p.productName, c.colorName, m.materialName,s.sizeName,pd.quantity,pd.price, pd.deleted")
+    Page<ProductDetailResponseDto> findAllByProductId(@Param("productId") Long productId,Pageable pageable);
 }

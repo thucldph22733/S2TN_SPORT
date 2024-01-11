@@ -14,6 +14,8 @@ import java.util.List;
 public interface SupplierRepository extends JpaRepository<Supplier,Long> {
 
     Supplier findBySupplierName(String name);
+    @Query("SELECT s FROM Supplier s WHERE s.deleted = true ORDER BY s.createdAt DESC")
+
     List<Supplier> findAllByDeletedTrue();
     Boolean existsBySupplierName(String SupplierName);
     Page<Supplier> findBySupplierNameContaining(String supplierName,Pageable pageable);

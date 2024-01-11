@@ -37,8 +37,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail,Lon
             "JOIN p.category c " +
             "JOIN p.brand b " +
             "WHERE p.id = :productId " +
-            "GROUP BY p.productName, p.productDescribe, c.categoryName, b.brandName " +
-            "ORDER BY pd.createdAt DESC")
+            "GROUP BY p.productName, p.productDescribe, c.categoryName, b.brandName " )
    ProductDetailInfoResponseDto getProductDetailsByProductId(@Param("productId") Long productId);
 
     @Query("SELECT new com.poly.springboot.dto.responseDto.PDUpdateResponseDto(pd.id,pd.quantity, pd.price) FROM ProductDetail pd WHERE pd.product.id = :productId AND pd.color.id = :colorId AND pd.size.id = :sizeId")

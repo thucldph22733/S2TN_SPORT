@@ -70,19 +70,15 @@ public class ProductDetailController {
                 .body(sizeInfoResponseDtos);
     }
 
-    @PostMapping("/create")
+    @PostMapping("create")
     public ResponseEntity<?> createProductDetails(@RequestBody List<ProductDetailRequestDto> productDetailRequestDtos) {
-        try {
-            Boolean result = productDetailService.createProductDetails(productDetailRequestDtos);
-            if (result) {
-                return new ResponseEntity<>("Product details created successfully", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("Failed to create product details", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } catch (Exception e) {
-            // In ra log để xem thông điệp lỗi chi tiết
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        Boolean isCreated = productDetailService.createProductDetails(productDetailRequestDtos);
+        if (isCreated){
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
         }
     }
 

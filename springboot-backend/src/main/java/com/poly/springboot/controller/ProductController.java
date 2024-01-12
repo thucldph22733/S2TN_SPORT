@@ -89,15 +89,11 @@ public class ProductController {
     }
 
     @PostMapping("create")
-    public ResponseEntity<ResponseDto> create(@Valid @RequestBody ProductRequestDto productRequestDto) {
-        Boolean isCreated = productService.createProduct(productRequestDto);
-        if (isCreated) {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ResponseDto(NotificationConstants.STATUS_201, NotificationConstants.MESSAGE_201));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(NotificationConstants.STATUS_500, NotificationConstants.MESSAGE_500));
-        }
+    public ResponseEntity<Product> create(@Valid @RequestBody ProductRequestDto productRequestDto) {
+        Product  product = productService.createProduct(productRequestDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(product);
     }
 
     @PutMapping("update")

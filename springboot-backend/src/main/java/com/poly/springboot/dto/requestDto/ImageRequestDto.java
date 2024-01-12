@@ -16,7 +16,7 @@ public class ImageRequestDto {
 
     private Long productId;
 
-    private Long colorId;
+//    private Long colorId;
 
     private String imageName;
 

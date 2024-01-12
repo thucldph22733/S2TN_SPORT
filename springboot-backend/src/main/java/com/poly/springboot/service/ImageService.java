@@ -9,7 +9,7 @@ public interface ImageService {
 
     List<Image> getImages();
 
-    Boolean createImage(ImageRequestDto imageRequestDto);
+    Boolean createImages(List<ImageRequestDto> imageRequestDtos);
 
     Boolean updateImage(ImageRequestDto imageRequestDto,Long id);
 

@@ -20,7 +20,7 @@ const App = () => {
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
     const [fileList, setFileList] = useState([]);
-
+    console.log(fileList)
     const handleCancel = () => setPreviewOpen(false);
 
     const handlePreview = async (file) => {
@@ -48,7 +48,6 @@ const App = () => {
                     url: url,
                 },
             ]);
-
             // Trả về false để ngăn chặn Ant Design Upload tiếp tục xử lý
             return false;
         } catch (error) {
@@ -74,7 +73,6 @@ const App = () => {
                 console.error('Error fetching images:', error);
             }
         };
-
         fetchData();
     }, []);
 

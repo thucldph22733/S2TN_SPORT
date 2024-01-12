@@ -20,17 +20,8 @@ public class ProductDetailRequestDto {
 
     private Long materialId;
 
-    @NotEmpty(message = "Số lượng không được để trống!")
     private Integer quantity;
 
-    @NotEmpty(message = "Tên giá không được để trống!")
     private Double price;
 
-    private Double promotionPrice;
-
-    private Boolean status;
-
-    private String createBy;
-
-    private String updateBy;
 }

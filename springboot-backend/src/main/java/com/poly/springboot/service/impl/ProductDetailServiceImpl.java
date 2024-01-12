@@ -92,7 +92,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             productDetail.setQuantity(productDetailRequestDto.getQuantity());
             productDetail.setPrice(productDetailRequestDto.getPrice());
             // productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
-            productDetail.setDeleted(productDetailRequestDto.getStatus());
+            productDetail.setDeleted(true);
 
             productDetails.add(productDetail);
         }
@@ -123,7 +123,7 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
 //        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
-        productDetail.setDeleted(productDetailRequestDto.getStatus());
+//        productDetail.setDeleted(productDetailRequestDto.getStatus());
 
         productDetailRepository.save(productDetail);
         return true;

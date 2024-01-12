@@ -1160,6 +1160,7 @@ const ProductModal = ({ isModal, hideModal, orderId, fetchOrderDetail }) => {
             pageSize: pagination.pageSize,
         });
     };
+
     useEffect(() => {
         fetchProductDetails();
     }, [filterProduct])

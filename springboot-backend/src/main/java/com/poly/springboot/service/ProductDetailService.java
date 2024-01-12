@@ -25,7 +25,6 @@ public interface ProductDetailService {
 
     List<ColorInfoResponseDto> getColorNamesByProductId(Long productId);
 
-
     Page<ProductDetailResponseDto> findAllByProductId(Long id, Pageable pageable);
 
     Boolean createProductDetails(List<ProductDetailRequestDto> productDetailRequestDtos);

@@ -19,7 +19,7 @@ public interface ProductService {
 
     Boolean deleteProduct(Long id);
 
-    Boolean createProduct(ProductRequestDto productRequestDto);
+    Product createProduct(ProductRequestDto productRequestDto);
 
     Boolean updateProduct(ProductRequestDto productRequestDto, Long id);
 

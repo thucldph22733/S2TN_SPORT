@@ -71,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Boolean createProduct(ProductRequestDto productRequestDto) {
+    public Product createProduct(ProductRequestDto productRequestDto) {
         if (productRepository.existsByProductName(productRequestDto.getProductName())) {
             throw new AlreadyExistsException("Tên sản phẩm đã tồn tại!");
         }
@@ -79,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
         mapToProductRequest(productRequestDto,product);
 
         productRepository.save(product);
-        return true;
+        return product;
     }
 
     @Override

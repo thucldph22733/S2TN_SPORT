@@ -6,6 +6,7 @@ import com.poly.springboot.dto.requestDto.PDUpdateRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.*;
+import com.poly.springboot.entity.ProductDetail;
 import com.poly.springboot.service.ProductDetailService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;

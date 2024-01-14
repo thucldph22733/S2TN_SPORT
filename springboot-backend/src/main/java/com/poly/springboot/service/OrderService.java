@@ -13,7 +13,6 @@ import java.util.Map;
 
 public interface OrderService {
 
-//    List<OrderResponseDto> getAllOrdersCompleted();
 Page<Order> getAllOrders(String orderStatusName, String orderId, String orderType, LocalDateTime startDate, LocalDateTime endDat, Pageable pageable);
 List<Map<String, Object>>getRevenueByMonthForCurrentYear();
     List<Map<String, Object>> getTotalOrdersByStatus();

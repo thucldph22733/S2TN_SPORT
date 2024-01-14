@@ -296,6 +296,8 @@ public class OrderServiceImpl implements OrderService {
             orderDetailRepository.delete(orderDetail);
         }
 
+        OrderHistory orderHistory = orderHistoryRepository.findByOrderId(order.getId());
+        orderHistoryRepository.delete(orderHistory);
         // Xóa hóa đơn
         orderRepository.delete(order);
 

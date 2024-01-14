@@ -5,6 +5,7 @@ import com.poly.springboot.dto.requestDto.PDUpdateRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.*;
+import com.poly.springboot.entity.ProductDetail;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

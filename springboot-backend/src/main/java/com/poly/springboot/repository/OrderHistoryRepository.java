@@ -14,6 +14,8 @@ public interface OrderHistoryRepository extends JpaRepository<OrderHistory, Long
     @Query("SELECT o FROM OrderHistory o WHERE o.order.id = :orderId")
     List<OrderHistory> findAllByStatusId(@Param("orderId") Long orderId);
 
+    OrderHistory findByOrderId(Long id);
+
 //    OrderHistory findByOrderAndStatusIdAndDeletedTrue(Order order, Long status);
 
     @Query("SELECT t FROM OrderHistory t join Order o on t.order.id = o.id WHERE t.order.id = :orderId AND t.status.id = 5")

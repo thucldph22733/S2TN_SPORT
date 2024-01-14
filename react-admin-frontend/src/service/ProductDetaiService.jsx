@@ -14,8 +14,26 @@ const ProductDetailService = {
             });
     },
 
-    create: (data) => {
+    createProductDetail: (data) => {
         return HttpClient.post(`${API_URL}create`, data)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
+
+    create: (data) => {
+        return HttpClient.post(`${API_URL}createList`, data)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
+
+    update: (data, id) => {
+        return HttpClient.put(`${API_URL}update?id=${id}`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);

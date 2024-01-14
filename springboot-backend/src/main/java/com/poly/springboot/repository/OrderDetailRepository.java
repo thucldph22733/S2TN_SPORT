@@ -28,7 +28,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "JOIN pd.product p " +
             "JOIN pd.color c " +
             "JOIN pd.size s " +
-            "JOIN Image i ON i.product.id = p.id AND i.color.id = c.id " +
+            "JOIN Image i ON i.product.id = p.id AND i.deleted = true " +
             "WHERE od.order.id = :orderId " +
             "ORDER BY od.createdAt DESC ")
     Page<OrderDetailResponseDto> findOrderDetailByOrderId(@Param("orderId") Long orderId, Pageable pageable);

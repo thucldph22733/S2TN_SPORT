@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag, Select, Row, Col, Checkbox, Card, Switch } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag, Select, Row, Col, Checkbox, Card, Switch, Image } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -20,7 +20,7 @@ import MaterialService from '~/service/MaterialService';
 import ColorService from '~/service/ColorService';
 import SizeService from '~/service/SizeService';
 import path_name from '~/constants/routers';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ShowProductDetailModal from './ProductDetail';
 
 const { TextArea } = Input;
@@ -294,11 +294,20 @@ function Product() {
             width: '5%',
         },
         {
+            title: 'Ảnh',
+            dataIndex: 'productImage',
+            key: 'productImage',
+            width: '5%',
+            render: (text) => (
+                <Image width={50} src={text} />
+            )
+
+        },
+        {
             title: 'Tên sản phẩm',
             dataIndex: 'productName',
             key: 'productName',
-            width: '20%',
-
+            width: '30%',
         },
         {
             title: 'Danh mục',
@@ -313,7 +322,7 @@ function Product() {
             width: '10%',
         },
         {
-            title: 'Số lượng tồn',
+            title: 'Số lượng',
             dataIndex: 'quantityTotal',
             key: 'quantityTotal',
             width: '10%',
@@ -327,12 +336,6 @@ function Product() {
             width: '10%',
         },
         {
-            title: 'Người tạo',
-            dataIndex: 'createdBy',
-            key: 'createdBy',
-            width: '10%',
-        },
-        {
             title: 'Trạng thái',
             key: 'deleted',
             dataIndex: 'deleted',
@@ -343,26 +346,27 @@ function Product() {
             )
         },
         {
-            title: 'Hành động',
+            title: 'Thao tác',
             key: 'action',
             width: '10%',
             render: (record) => {
 
                 return <Space size="middle">
-                    <Button type="text"
-                        icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
-                        onClick={() => showProductModal(record)}
-                    />
+                    <Link to={path_name.edit_product + `/${record.id}`}>
+                        <Button type="link"
+                            icon={<FormOutlined style={{ color: 'rgb(214, 103, 12)' }} />}
+                        />
+                    </Link>
                     <Switch
                         size="small"
                         defaultChecked={record.deleted}
                         onClick={() => handleDelete(record.id)}
                     />
-                    <Button type="text"
+                    {/* <Button type="text"
                         icon={<EyeOutlined />}
                         style={{ color: '#5a76f3', fontSize: '16px' }}
                         onClick={() => showProductDetalModal(record)}
-                    />
+                    /> */}
                 </Space>
             }
 

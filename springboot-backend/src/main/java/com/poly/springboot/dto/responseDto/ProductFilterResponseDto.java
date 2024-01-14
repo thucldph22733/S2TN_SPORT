@@ -16,6 +16,8 @@ public class ProductFilterResponseDto {
 
     private Long id;
 
+    private  String productImage;
+
     private String productName;
 
     private String categoryName;

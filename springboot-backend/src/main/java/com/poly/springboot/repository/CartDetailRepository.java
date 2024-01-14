@@ -15,13 +15,14 @@ import java.util.Optional;
 public interface CartDetailRepository extends JpaRepository<CartDetail,Long> {
 
     @Query("SELECT new com.poly.springboot.dto.responseDto.CartDetailResponseDto(" +
-            "cd.id, i.imageLink, c.colorName, s.sizeName, p.productName, cd.quantity, pd.price) " +
+            "cd.id, i.imageLink, c.colorName, s.sizeName,m.materialName, p.productName, cd.quantity, pd.price) " +
             "FROM CartDetail cd " +
             "JOIN cd.productDetail pd " +
             "JOIN pd.product p " +
             "JOIN pd.color c " +
             "JOIN pd.size s " +
-            "LEFT JOIN Image i ON i.product.id = p.id AND i.color.id = c.id " +
+            "JOIN pd.material m " +
+            "JOIN Image i ON i.product.id = p.id  AND i.deleted = true " +
             "WHERE cd.carts.id = :cartId " +
             "ORDER BY cd.createdAt DESC")
     List<CartDetailResponseDto> getCartDetailInfo(@Param("cartId") Long cartId);

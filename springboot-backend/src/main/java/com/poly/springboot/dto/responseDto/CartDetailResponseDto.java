@@ -19,6 +19,8 @@ public class CartDetailResponseDto {
 
     private String sizeName;
 
+    private  String materialName;
+
     private String productName;
 
     private Integer quantity;

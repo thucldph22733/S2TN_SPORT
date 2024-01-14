@@ -26,6 +26,17 @@ const ProductDetailService = {
                 throw error;
             });
     },
+    findMaterialNamesByProductId: (productId) => {
+        return HttpClient.get(`${API_URL}findMaterialNamesByProductId`, {
+            params: {
+                productId
+            }
+        }).then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
     findSizeNamesByProductId: (productId) => {
         return HttpClient.get(`${API_URL}findSizeNamesByProductId`,
             {
@@ -39,13 +50,8 @@ const ProductDetailService = {
                 throw error;
             });
     },
-    findQuantityAndPriceUpdateByProductDetail: (productId, colorId, sizeId) => {
-        return HttpClient.get(`${API_URL}findQuantityAndPriceUpdateByProductDetail`,
-            {
-                params: {
-                    productId, colorId, sizeId
-                }
-            })
+    findQuantityAndPrice: (data) => {
+        return HttpClient.post(`${API_URL}findQuantityAndPrice`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);

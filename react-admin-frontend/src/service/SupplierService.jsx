@@ -2,7 +2,7 @@ import HttpClient from '~/utils/http-client';
 
 const API_URL = 'suppliers/';
 
-const SuppplierService = {
+const SupplierService = {
     getAll: (pageNo, pageSize, supplierName, phoneNumber, email, deleted) => {
         return HttpClient.get(`${API_URL}getAll`, {
             params: { pageNo, pageSize, supplierName, phoneNumber, email, deleted }
@@ -60,4 +60,4 @@ const SuppplierService = {
     },
 };
 
-export default SuppplierService;
+export default SupplierService;

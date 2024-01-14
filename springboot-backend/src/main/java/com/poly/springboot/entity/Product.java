@@ -14,7 +14,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "products")
 @SequenceGenerator(name = "order_sequence", sequenceName = "order_sequence", initialValue = 1000560)
-public class Product extends BaseEntity{
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_sequence")
@@ -35,7 +35,8 @@ public class Product extends BaseEntity{
     @Column(name = "product_name")
     private String productName;
 
-    @Column(name = "product_describe")
+    @Lob
+    @Column(name = "product_describe", columnDefinition = "TEXT")
     private String productDescribe;
 
     @Column(name = "is_deleted")

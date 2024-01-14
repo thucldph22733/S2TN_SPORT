@@ -189,7 +189,7 @@ const ShoppingCart = () => {
                     </Col>
                     <Col span={17}>
                         <h6>{record.productName}</h6>
-                        <p>[ {record.colorName} - {record.sizeName} ]</p>
+                        <p>[ {record.colorName} - {record.sizeName}  - {record.materialName}]</p>
                     </Col>
                 </Row>
             ),
@@ -278,7 +278,7 @@ const ShoppingCart = () => {
                         title="Giỏ hàng của bạn còn trống!"
                         icon={<img style={{ width: 140 }} src={cart} alt="" />}
                         extra={
-                            <Link to={path_name.product}>
+                            <Link to={path_name.home}>
                                 <Button type="primary" key="console">
                                     Mua ngay
                                 </Button>
@@ -293,7 +293,7 @@ const ShoppingCart = () => {
                             style={{ fontSize: '15px' }}
                             items={[
                                 {
-                                    title: <Link to=""><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
+                                    title: <Link to={path_name.home}><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
                                 },
                                 {
                                     title: <Link to="">Giỏ hàng</Link>,

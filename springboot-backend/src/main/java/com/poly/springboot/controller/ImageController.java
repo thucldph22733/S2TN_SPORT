@@ -53,15 +53,6 @@ public class ImageController {
                 .body(imageList);
     }
 
-    @GetMapping("findImageByColorId")
-    public ResponseEntity<List<Image>> findImageByColorId(@RequestParam Long id) {
-
-        List<Image> imageList = imageService.findByColorId(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(imageList);
-    }
-
     @GetMapping("findImageByImageLink")
     public ResponseEntity<List<Image>> findImageByImageLink(@RequestParam String imageLink) {
 

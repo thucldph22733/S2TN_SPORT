@@ -18,7 +18,7 @@ import Supplier from './pages/Products/Supplier';
 import Dashboard from './pages/Dashboard/Dashboard';
 import User from './pages/User/User';
 import Role from './pages/Role/Role';
-import NewSell from './pages/Sell/NewSell';
+import NewSell from './pages/Sell/Sell';
 import Error404 from './pages/Error/Error404';
 import Error403 from './pages/Error/Error403';
 import ChangePassword from './pages/Auth/ChangePassword';
@@ -26,6 +26,7 @@ import Sell from './pages/Sell/Sell';
 import OrderDetail from './pages/Orders/OrderDetail';
 import Product from './pages/Products/Product';
 import ProductAdd from './pages/Products/ProductAdd';
+import ProductEdit from './pages/Products/ProductEdit';
 function App() {
 
     const router = createBrowserRouter([
@@ -86,7 +87,7 @@ function App() {
                 },
                 {
                     path: path_name.newSell,
-                    element: <NewSell />,
+                    element: <Sell />,
                 },
                 {
                     path: path_name.order,
@@ -119,6 +120,10 @@ function App() {
                 {
                     path: path_name.add_product,
                     element: <ProductAdd />,
+                },
+                {
+                    path: path_name.edit_product + '/:id',
+                    element: <ProductEdit />,
                 },
             ],
 

@@ -1,5 +1,7 @@
 package com.poly.springboot.service.impl;
 
+import com.poly.springboot.dto.responseDto.MaterialInfoResponseDto;
+import com.poly.springboot.dto.requestDto.PDUpdateRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.*;
@@ -79,6 +81,22 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
+    public Boolean createProductDetail(ProductDetailRequestDto requestDto) {
+        ProductDetail productDetail = new ProductDetail();
+
+        productDetail.setProduct(productRepository.findById(requestDto.getProductId()).orElse(null));
+        productDetail.setColor(colorRepository.findById(requestDto.getColorId()).orElse(null));
+        productDetail.setSize(sizeRepository.findById(requestDto.getSizeId()).orElse(null));
+        productDetail.setMaterial(materialRepository.findById(requestDto.getMaterialId()).orElse(null));
+        productDetail.setQuantity(requestDto.getQuantity());
+        productDetail.setPrice(requestDto.getPrice());
+        productDetail.setDeleted(true);
+
+        productDetailRepository.save(productDetail);
+        return true;
+    }
+
+    @Override
     public Boolean createProductDetails(List<ProductDetailRequestDto> productDetailRequestDtos) {
         List<ProductDetail> productDetails = new ArrayList<>();
 
@@ -91,7 +109,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             productDetail.setMaterial(materialRepository.findById(productDetailRequestDto.getMaterialId()).orElse(null));
             productDetail.setQuantity(productDetailRequestDto.getQuantity());
             productDetail.setPrice(productDetailRequestDto.getPrice());
-            // productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
             productDetail.setDeleted(true);
 
             productDetails.add(productDetail);
@@ -107,8 +124,12 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public PDUpdateResponseDto findQuantityAndPriceByProductIdAndColorIdAndSizeId(Long productId, Long colorId, Long sizeId) {
-        return productDetailRepository.findQuantityAndPriceByProductIdAndColorIdAndSizeId(productId,colorId,sizeId);
+    public PDUpdateResponseDto findQuantityAndPriceByProductIdAndColorIdAndSizeId(PDUpdateRequestDto  pdUpdateRequestDto) {
+        return productDetailRepository.findProductDetail(
+                pdUpdateRequestDto.getProductId(),
+                pdUpdateRequestDto.getColorId(),
+                pdUpdateRequestDto.getMaterialId(),
+                pdUpdateRequestDto.getSizeId());
     }
 
 
@@ -120,10 +141,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
         productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
         productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
+        productDetail.setMaterial(materialRepository.findById(productDetailRequestDto.getMaterialId()).orElse(null));
         productDetail.setQuantity(productDetailRequestDto.getQuantity());
         productDetail.setPrice(productDetailRequestDto.getPrice());
-//        productDetail.setPromotionPrice(productDetailRequestDto.getPromotionPrice());
-//        productDetail.setDeleted(productDetailRequestDto.getStatus());
 
         productDetailRepository.save(productDetail);
         return true;
@@ -162,6 +182,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     @Override
     public List<SizeInfoResponseDto> getSizeNamesByProductId(Long productId) {
         return productDetailRepository.findSizeNamesByProductId(productId);    }
+
+    @Override
+    public List<MaterialInfoResponseDto> getMaterialNamesByProductId(Long productId) {
+        return productDetailRepository.findMaterialNamesByProductId(productId);
+    }
 
     @Override
     public List<ColorInfoResponseDto> getColorNamesByProductId(Long productId) {

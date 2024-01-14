@@ -94,10 +94,6 @@ public class ImageServiceImpl implements ImageService {
         return imageList;
     }
 
-    @Override
-    public List<Image> findByColorId(Long colorId) {
-        return imageRepository.findByColorId(colorId);
-    }
 
     @Override
     public List<Image> findByImageLink(String imageLink) {

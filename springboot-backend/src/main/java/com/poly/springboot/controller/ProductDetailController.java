@@ -1,25 +1,22 @@
 package com.poly.springboot.controller;
 
 import com.poly.springboot.constants.NotificationConstants;
+import com.poly.springboot.dto.responseDto.MaterialInfoResponseDto;
+import com.poly.springboot.dto.requestDto.PDUpdateRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailFilterRequestDto;
 import com.poly.springboot.dto.requestDto.ProductDetailRequestDto;
 import com.poly.springboot.dto.responseDto.*;
-import com.poly.springboot.entity.ProductDetail;
-import com.poly.springboot.entity.Voucher;
 import com.poly.springboot.service.ProductDetailService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -49,9 +46,9 @@ public class ProductDetailController {
                 .body(productDetailInfoResponseDtos);
     }
 
-    @GetMapping("findQuantityAndPriceUpdateByProductDetail")
-    public ResponseEntity<PDUpdateResponseDto> findQuantityAndPriceUpdateByProductDetail(@RequestParam Long productId, @RequestParam Long colorId, @RequestParam Long sizeId) {
-        PDUpdateResponseDto pdUpdateResponseDto = productDetailService.findQuantityAndPriceByProductIdAndColorIdAndSizeId(productId, colorId, sizeId);
+    @PostMapping("findQuantityAndPrice")
+    public ResponseEntity<PDUpdateResponseDto> findQuantityAndPriceUpdateByProductDetail(@RequestBody PDUpdateRequestDto pdUpdateRequestDto) {
+        PDUpdateResponseDto pdUpdateResponseDto = productDetailService.findQuantityAndPriceByProductIdAndColorIdAndSizeId(pdUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pdUpdateResponseDto);
     }
@@ -63,6 +60,12 @@ public class ProductDetailController {
                 .body(colorInfoResponseDtos);
     }
 
+    @GetMapping("findMaterialNamesByProductId")
+    public ResponseEntity<List<MaterialInfoResponseDto>> findMaterialNamesByProductId(@RequestParam Long productId) {
+        List<MaterialInfoResponseDto> colorInfoResponseDtos = productDetailService.getMaterialNamesByProductId(productId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(colorInfoResponseDtos);
+    }
     @GetMapping("findSizeNamesByProductId")
     public ResponseEntity<List<SizeInfoResponseDto>> findSizeNamesByProductId(@RequestParam Long productId) {
         List<SizeInfoResponseDto> sizeInfoResponseDtos = productDetailService.getSizeNamesByProductId(productId);
@@ -70,9 +73,21 @@ public class ProductDetailController {
                 .body(sizeInfoResponseDtos);
     }
 
-    @PostMapping("create")
+    @PostMapping("createList")
     public ResponseEntity<?> createProductDetails(@RequestBody List<ProductDetailRequestDto> productDetailRequestDtos) {
         Boolean isCreated = productDetailService.createProductDetails(productDetailRequestDtos);
+        if (isCreated){
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(NotificationConstants.STATUS_500,NotificationConstants.MESSAGE_500));
+        }
+    }
+
+    @PostMapping("create")
+    public ResponseEntity<?> createProductDetail(@RequestBody ProductDetailRequestDto requestDto) {
+        Boolean isCreated = productDetailService.createProductDetail(requestDto);
         if (isCreated){
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ResponseDto(NotificationConstants.STATUS_201,NotificationConstants.MESSAGE_201));

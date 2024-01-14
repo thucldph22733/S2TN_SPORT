@@ -17,7 +17,5 @@ public interface ImageService {
 
     List<Image> findImageByProductId(Long productId);
 
-    List<Image> findByColorId(Long colorId);
-
     List<Image> findByImageLink(String imageLink);
 }

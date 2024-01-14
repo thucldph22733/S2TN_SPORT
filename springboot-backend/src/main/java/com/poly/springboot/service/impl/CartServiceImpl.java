@@ -23,20 +23,16 @@ public class CartServiceImpl implements CartService {
 
     private UserRepository userRepository;
 
-    private VoucherRepository voucherRepository;
 
     @Autowired
     public CartServiceImpl(CartDetailRepository cartDetailRepository,
                                  ProductDetailRepository productDetailRepository,
                                  CartRepository cartRepository,
-                                 UserRepository userRepository,
-                           VoucherRepository voucherRepository) {
+                                 UserRepository userRepository){
         this.cartDetailRepository = cartDetailRepository;
         this.productDetailRepository = productDetailRepository;
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
-        this.voucherRepository = voucherRepository;
-
     }
 
     @Override

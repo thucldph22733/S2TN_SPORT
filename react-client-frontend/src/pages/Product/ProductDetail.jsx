@@ -8,6 +8,7 @@ import ProductDetailService from '~/service/ProductDetailService';
 import formatCurrency from '~/utils/format-currency';
 import ImageService from '~/service/ImageService';
 import CartService from '~/service/CartService';
+import path_name from '~/core/constants/routers';
 
 const columns = [
     {
@@ -103,6 +104,25 @@ function ProductDetail() {
     useEffect(() => {
         findSizeNamesByProductId();
     }, []);
+    //----------------Load--Chất liệu------------------------------------
+
+    const [materials, setMaterial] = useState([]);
+
+    const findMaterialNamesByProductId = async () => {
+        await ProductDetailService.findMaterialNamesByProductId(id)
+            .then(response => {
+
+                setMaterial(response);
+
+                // console.log(response)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+
+    useEffect(() => {
+        findMaterialNamesByProductId();
+    }, []);
 
     //---------------------Load sản phẩm -----------------------------------
     const [productDetail, setProductDetail] = useState([]);
@@ -142,14 +162,22 @@ function ProductDetail() {
     //-----------------------------------------------------------
     const [selectedColorId, setSelectedColorId] = useState(null);
     const [selectedSizeId, setSelectedSizeId] = useState(null);
+    const [selectedMaterialId, setSelectedMaterialId] = useState(null);
+
     const [error, setError] = useState(null)
 
     const [quantity, setQuantity] = useState(productDetail.quantityTotal);
     const [price, setSetPrice] = useState(productDetail.minPrice);
 
     const [productId, setProductId] = useState(null);
-    const findQuantityAndPriceUpdateByProductDetail = async (colorId, sizeId) => {
-        await ProductDetailService.findQuantityAndPriceUpdateByProductDetail(id, colorId, sizeId)
+    const findQuantityAndPrice = async (colorId, sizeId, materialId) => {
+        const data = {
+            productId: parseInt(id),
+            colorId: colorId,
+            sizeId: sizeId,
+            materialId: materialId
+        }
+        await ProductDetailService.findQuantityAndPrice(data)
             .then(response => {
 
                 setQuantity(response.quantity);
@@ -166,17 +194,19 @@ function ProductDetail() {
     };
 
     useEffect(() => {
-        if (selectedColorId !== null && selectedSizeId !== null) {
-            findQuantityAndPriceUpdateByProductDetail(selectedColorId, selectedSizeId);
+        if (selectedColorId !== null && selectedSizeId !== null && selectedMaterialId !== null) {
+            findQuantityAndPrice(selectedColorId, selectedSizeId, selectedMaterialId);
             setError(null);
         } else {
             resetQuantityAndPrice();
         }
-    }, [selectedColorId, selectedSizeId, productDetail]);
+    }, [selectedColorId, selectedSizeId, selectedMaterialId, productDetail]);
 
     //-----------------------------------------------
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
+    const [selectedMaterial, setSelectedMaterial] = useState(null);
+
 
 
     const handleItemClick = (item, type) => {
@@ -189,9 +219,13 @@ function ProductDetail() {
             setSelectedSizeId(selectedSize === item ? null : item.id);
             setSelectedSize(selectedSize === item ? null : item);
 
+        } else if (type === 'material') {
+            setSelectedMaterialId(selectedMaterial === item ? null : item.id);
+            setSelectedMaterial(selectedMaterial === item ? null : item);
+
         } else {
-            if (selectedColorId !== null && selectedSizeId !== null) {
-                findQuantityAndPriceUpdateByProductDetail(id, selectedColorId, selectedSizeId);
+            if (selectedColorId !== null && selectedSizeId !== null && selectedMaterialId !== null) {
+                findQuantityAndPrice(selectedColorId, selectedSizeId, selectedMaterialId);
                 setError(null);
             } else {
                 resetQuantityAndPrice(); // Gọi hàm reset khi không có màu và kích thước được chọn
@@ -226,6 +260,7 @@ function ProductDetail() {
                 productName: productDetail.productName,
                 colorName: selectedColor?.colorName || '',
                 sizeName: selectedSize?.sizeName || '',
+                materialName: selectedMaterial?.materialName || '',
                 quantity: cartDetail.quantity,
                 price: price,
                 totalPrice: price * cartDetail.quantity,
@@ -240,7 +275,7 @@ function ProductDetail() {
     };
 
     const handleAddCart = async () => {
-        if (selectedColor === null || selectedSize === null) {
+        if (selectedColor === null || selectedSize === null || selectedMaterial === null) {
             setError("Vui lòng chọn phân loại hàng!!!")
             return
         }
@@ -262,12 +297,17 @@ function ProductDetail() {
         {
             key: '1',
             label: 'Mô tả',
-            children: 'Content odẻhsthnstrrtnjrtnfgnf Tab Pane 1',
-        },
-        {
-            key: '2',
-            label: 'Đánh giá',
-            children: 'Content of fgnrntrrtnrtnrtTab Pane 2',
+            children: <>
+                <Row style={{ marginTop: '10px' }}>
+                    <span>Danh mục: {productDetail.categoryName}</span>
+                </Row>
+                <Row style={{ marginTop: '10px' }}>
+                    <span>Thương hiệu: {productDetail.brandName}</span>
+                </Row>
+                <Row style={{ marginTop: '10px' }}>
+                    <span>Mô tả: {productDetail.productDescribe}</span>
+                </Row>
+            </>,
         },
 
     ];
@@ -279,13 +319,13 @@ function ProductDetail() {
 
                     items={[
                         {
-                            title: <Link to=""><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
+                            title: <Link to={path_name.home}><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
                         },
                         {
-                            title: <Link to="">Sản phẩm</Link>,
+                            title: <Link to={path_name.product}>Sản phẩm</Link>,
                         },
                         {
-                            title: <Link to="">Chi tiết sản phẩm</Link>,
+                            title: <Link>Chi tiết sản phẩm</Link>,
                         },
                     ]}
                 />
@@ -296,11 +336,13 @@ function ProductDetail() {
                         <Row>
                             {images.length !== 1 && (
                                 <Col span={4} xs={24} md={5}>
-                                    {images.map((image) => (
-                                        <Row key={image.id} style={{ marginBottom: '10px' }}>
-                                            <Image width={100} src={image.imageLink} alt={image} />
-                                        </Row>
-                                    ))}
+                                    {images
+                                        .filter(image => !image.deleted)
+                                        .map((image) => (
+                                            <Row key={image.id} style={{ marginBottom: '10px' }}>
+                                                <Image width={100} src={image.imageLink} alt={image} />
+                                            </Row>
+                                        ))}
                                 </Col>
                             )}
                             <Col span={20} xs={24} md={19}>
@@ -320,22 +362,13 @@ function ProductDetail() {
                                 {productDetail.productName}
                             </h1>
                         </Row>
-                        <Row style={{ marginTop: '5px' }}>
-                            <Rate style={{ fontSize: '16px', marginTop: '3px', marginRight: '5px' }} />
-                            <span>( Đánh giá )</span>
-                            <span style={{ marginLeft: '15px' }}>| 10 Đánh giá</span>
-                            <span style={{ marginLeft: '10px' }}>| 10 Đã bán</span>
-                        </Row>
-                        <Row style={{ marginTop: '15px' }}>
+                        <Row style={{ marginTop: '10px' }}>
                             <label
                                 style={{ fontWeight: 'bolder', color: 'red' }}
                             >
                                 {formatCurrency(price)}
                             </label>
                         </Row>
-                        {/* <Row style={{ marginTop: '10px' }}>
-                            {productDetail.productDescribe}
-                        </Row> */}
                         <Row style={{ marginTop: '15px' }}>
                             <div className="productdisplay-right-size">
                                 <h1 style={{ color: '#656565', fontSize: '15px' }}>Màu sắc:</h1>
@@ -375,6 +408,25 @@ function ProductDetail() {
                             </div>
                         </Row>
                         <Row style={{ marginTop: '15px' }}>
+                            <div className="productdisplay-right-size">
+                                <h1 style={{ color: '#656565', fontSize: '15px' }}>Chất liệu:</h1>
+                                <Row className='productdisplay-right-sizes'>
+                                    {materials.map((material) => (
+                                        <label
+                                            key={material.id}
+                                            onClick={() => handleItemClick(material, 'material')}
+                                            style={{
+                                                border: `1px solid ${selectedMaterial === material ? '#2123bf' : '#cdcdcd'}`,
+                                                color: selectedMaterial === material ? '#2123bf' : '#656565',
+                                            }}
+                                        >
+                                            {material.materialName}
+                                        </label>
+                                    ))}
+                                </Row>
+                            </div>
+                        </Row>
+                        <Row style={{ marginTop: '15px' }}>
                             <Col span={5}>
                                 <InputNumber
                                     onChange={(value) => {
@@ -403,15 +455,11 @@ function ProductDetail() {
                         <Row style={{ margin: '10px 0' }}>
                             {error && <span style={{ color: 'red' }}>{error}</span>}
                         </Row>
-                        {/* <Row style={{ marginTop: '10px' }}>
-                            <span>Danh mục: {productDetail.categoryName}</span>
-                        </Row>
-                        <Row style={{ marginTop: '10px' }}>
-                            <span>Thương hiệu: {productDetail.brandName}</span>
-                        </Row> */}
+
                         <Row >
                             <Button type='primary' onClick={showModal} icon={<SendOutlined />} >Bảng hướng dẫn chọn size</Button>
                         </Row>
+
                     </Col>
                 </Row >
 

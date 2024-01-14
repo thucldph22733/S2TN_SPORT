@@ -21,21 +21,23 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     Boolean existsByProductName(String productName);
 
     @Query("SELECT new com.poly.springboot.dto.responseDto.ProductFilterResponseDto( " +
-            "p.id, p.productName, c.categoryName, b.brandName, s.supplierName, p.productDescribe, SUM(pd.quantity), p.deleted, p.createdAt, p.createdBy) " +
+            "p.id,i.imageLink, p.productName, c.categoryName, b.brandName, s.supplierName, p.productDescribe, SUM(pd.quantity), p.deleted, p.createdAt, p.createdBy) " +
             "FROM Product p " +
+            "JOIN Image  i ON i.product.id = p.id " +
             "JOIN ProductDetail pd ON pd.product.id = p.id " +
             "JOIN Brand b ON b.id = p.brand.id " +
             "JOIN Category c ON c.id = p.category.id " +
             "JOIN Supplier s ON s.id = p.supplier.id " + // Fixed the join condition
             "WHERE (:colorId IS NULL OR pd.color.id = :colorId) " +
             "AND (:sizeId IS NULL OR pd.size.id = :sizeId) " +
+            "AND i.deleted = true " +
             "AND (:materialId IS NULL OR pd.material.id = :materialId) " +
             "AND (:brandId IS NULL OR b.id = :brandId) " +
             "AND (:priceMin IS NULL OR pd.price >= :priceMin) " +
             "AND (:priceMax IS NULL OR pd.price <= :priceMax) " +
             "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
             "AND ((:keyword IS NULL) OR (p.productName LIKE %:keyword%) OR CAST(p.id AS STRING) = :keyword) " +
-            "GROUP BY p.id, p.productName, c.categoryName, b.brandName, s.supplierName, p.productDescribe, p.deleted, p.createdAt, p.createdBy " +
+            "GROUP BY p.id,i.imageLink, p.productName, c.categoryName, b.brandName, s.supplierName, p.productDescribe, p.deleted, p.createdAt, p.createdBy " +
             "ORDER BY p.createdAt DESC ")
     Page<ProductFilterResponseDto> findProductsAdminByFilters(
             @Param("colorId") Long colorId,

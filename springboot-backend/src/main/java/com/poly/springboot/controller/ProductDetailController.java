@@ -136,5 +136,12 @@ public class ProductDetailController {
                 , responseDtoPage);
     }
 
+    @GetMapping("findProductDetailById")
+    public ResponseEntity<?> findProductDetailById(@RequestParam Long id) {
+        ProductDetail productDetail = productDetailService.findProductDetailById(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(productDetail);
+    }
+
 
 }

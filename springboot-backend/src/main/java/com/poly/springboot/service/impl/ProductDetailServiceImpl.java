@@ -132,6 +132,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
                 pdUpdateRequestDto.getSizeId());
     }
 
+    @Override
+    public ProductDetail findProductDetailById(Long productId) {
+        return productDetailRepository.findProductDetailById(productId);
+    }
+
 
     @Override
     public Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto, Long id) {

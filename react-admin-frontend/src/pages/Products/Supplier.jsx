@@ -277,9 +277,10 @@ function Supplier() {
 
             {open.isModal && <SupplierModal
                 isMode={open.isMode}
-                reacord={open.reacord}
+                reacord={open.reacord || {}}
                 hideModal={hideModal}
                 isModal={open.isModal}
+                suppliers={suppliers}
                 fetchSuppliers={fetchSuppliers} />}
         </>
     )
@@ -287,7 +288,7 @@ function Supplier() {
 export default Supplier;
 
 
-const SupplierModal = ({ isMode, reacord, hideModal, isModal, fetchSuppliers }) => {
+const SupplierModal = ({ isMode, reacord, hideModal, isModal, fetchSuppliers, suppliers }) => {
 
     const [form] = Form.useForm();
 
@@ -295,7 +296,8 @@ const SupplierModal = ({ isMode, reacord, hideModal, isModal, fetchSuppliers }) 
         form.validateFields().then(async () => {
 
             const data = form.getFieldsValue();
-
+            console.log('Data to be created:', data);
+            console.log('Record:', reacord);
             await SupplierService.create(data)
                 .then(() => {
                     notification.success({
@@ -323,7 +325,8 @@ const SupplierModal = ({ isMode, reacord, hideModal, isModal, fetchSuppliers }) 
         form.validateFields().then(async () => {
 
             const data = form.getFieldsValue();
-
+            console.log('Data to be updated:', data);
+            console.log('Record:', reacord);
             await SupplierService.update(reacord.id, data)
                 .then(() => {
                     notification.success({
@@ -369,20 +372,84 @@ const SupplierModal = ({ isMode, reacord, hideModal, isModal, fetchSuppliers }) 
                 form={form}
                 initialValues={{ ...reacord }}
             >
-                <Form.Item label="Tên:" name="supplierName" rules={[{ required: true, message: 'Vui lòng nhập tên nhà cung cấp!' }]}>
+                <Form.Item
+                    label="Tên:"
+                    name="supplierName"
+                    rules={[
+                        { required: true, message: 'Vui lòng nhập tên nhà cung cấp!' }
+                        ,
+                        {
+
+                            validator: (_, value) => {
+                                if (!value) {
+                                    return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                                }
+                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                const isDuplicate = suppliers.some(
+                                    (supplier) => supplier.supplierName.trim().toLowerCase() === lowercaseValue && supplier.id !== reacord.id
+                                );
+                                if (isDuplicate) {
+                                    return Promise.reject('Tên nhà cung cấp đã tồn tại!');
+                                }
+                                // Kiểm tra dấu cách ở đầu và cuối
+                                if (/^\s|\s$/.test(value)) {
+                                    return Promise.reject('Tên nhà cung cấp không được chứa dấu cách ở đầu và cuối!');
+                                }
+                                return Promise.resolve();
+                            },
+                        },
+                    ]}
+                >
                     <Input placeholder="Nhập tên..." />
                 </Form.Item>
 
-                <Form.Item label="Email:" name="email" >
+
+                <Form.Item
+                    label="Email:"
+                    name="email"
+                    rules={[
+                        { type: 'email', message: 'Email không hợp lệ' },
+                        { max: 320, message: 'Email không được dài quá 320 ký tự' },
+                    ]}
+                >
                     <Input placeholder="Nhập email..." />
                 </Form.Item>
 
-                <Form.Item label="Sdt:" name="phoneNumber" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                <Form.Item
+                    label="SĐT:"
+                    name="phoneNumber"
+                    rules={[
+                        { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                        { pattern: /^[0-9]+$/, message: 'Số điện thoại chỉ được chứa chữ số' },
+                        { min: 10, message: 'Số điện thoại phải 10 chữ số' },
+                        { max: 10, message: 'Số điện thoại phải 10 chữ số' },
+                    ]}
+                >
                     <Input placeholder="Nhập số điện thoại..." />
                 </Form.Item>
 
-                <Form.Item label="Địa chỉ:" name="address" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}>
-                    <Input placeholder="Nhập dịa chỉ..." />
+                <Form.Item label="Địa chỉ:" name="address" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }
+                    ,
+                {
+                    validator: (_, value) => {
+                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const isDuplicate = suppliers.some(
+                            (supplier) => supplier.address.trim().toLowerCase() === lowercaseValue && supplier.id !== reacord.id
+                        );
+                        // if (isDuplicate) {
+                        //     return Promise.reject('Tên nhà cung cấp đã tồn tại!');
+                        // }
+                        // Kiểm tra dấu cách ở đầu và cuối
+                        if (/^\s|\s$/.test(value)) {
+                            return Promise.reject('Địa chỉ không được chứa dấu cách ở đầu và cuối!');
+                        }
+                        return Promise.resolve();
+                    },
+                },
+                ]}>
+                    <Input placeholder="Nhập địa chỉ..." />
                 </Form.Item>
 
                 <Form.Item label="Ghi chú:" name="supplierDescribe">

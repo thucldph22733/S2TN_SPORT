@@ -70,7 +70,7 @@ public class SupplierController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<ResponseDto> updateSupplier(@Valid @RequestParam SupplierRequestDto supplierRequestDto, @RequestParam Long id) {
+    public ResponseEntity<ResponseDto> updateSupplier(@Valid @RequestBody SupplierRequestDto supplierRequestDto, @RequestParam Long id) {
 
         Boolean isUpdated = supplierService.updateSupplier(supplierRequestDto, id);
 

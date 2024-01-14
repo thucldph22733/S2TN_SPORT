@@ -246,9 +246,10 @@ function Brand() {
 
             {open.isModal && <BrandModal
                 isMode={open.isMode}
-                reacord={open.reacord}
+                reacord={open.reacord || {}}
                 hideModal={hideModal}
                 isModal={open.isModal}
+                brands={brands}
                 fetchBrands={fetchBrands} />}
         </>
     )
@@ -256,7 +257,7 @@ function Brand() {
 export default Brand;
 
 
-const BrandModal = ({ isMode, reacord, hideModal, isModal, fetchBrands }) => {
+const BrandModal = ({ isMode, reacord, hideModal, isModal, fetchBrands, brands }) => {
 
     const [form] = Form.useForm();
 
@@ -338,7 +339,31 @@ const BrandModal = ({ isMode, reacord, hideModal, isModal, fetchBrands }) => {
                 form={form}
                 initialValues={{ ...reacord }}
             >
-                <Form.Item label="Tên:" name="brandName" rules={[{ required: true, message: 'Vui lòng nhập tên thương hiệu!' }]}>
+                <Form.Item label="Tên:" name="brandName"
+                    rules={[{ required: true, message: 'Vui lòng nhập tên thương hiệu!' }
+                        ,
+                    {
+                        validator: (_, value) => {
+                            if (!value) {
+                                return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                            }
+                            const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                            const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                            const isDuplicate = brands.some(
+                                (brand) => brand.brandName.trim().toLowerCase() === lowercaseValue && brand.id !== reacord.id
+                            );
+                            if (isDuplicate) {
+                                return Promise.reject('Tên thương hiệu đã tồn tại!');
+                            }
+                            // Kiểm tra dấu cách ở đầu và cuối
+                            if (/^\s|\s$/.test(value)) {
+                                return Promise.reject('Tên thương hiệu không được chứa dấu cách ở đầu và cuối!');
+                            }
+                            return Promise.resolve();
+                        },
+                    },
+                    ]}
+                >
                     <Input placeholder="Nhập tên thương hiệu..." />
                 </Form.Item>
 

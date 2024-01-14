@@ -245,9 +245,10 @@ function Color() {
 
             {open.isModal && <ColorModal
                 isMode={open.isMode}
-                reacord={open.reacord}
+                reacord={open.reacord || {}}
                 hideModal={hideModal}
                 isModal={open.isModal}
+                colors={colors}
                 fetchColors={fetchColors} />}
         </>
     )
@@ -255,7 +256,7 @@ function Color() {
 export default Color;
 
 
-const ColorModal = ({ isMode, reacord, hideModal, isModal, fetchColors }) => {
+const ColorModal = ({ isMode, reacord, hideModal, isModal, fetchColors, colors }) => {
 
     const [form] = Form.useForm();
 
@@ -337,7 +338,30 @@ const ColorModal = ({ isMode, reacord, hideModal, isModal, fetchColors }) => {
                 form={form}
                 initialValues={{ ...reacord }}
             >
-                <Form.Item label="Tên:" name="colorName" rules={[{ required: true, message: 'Vui lòng nhập tên màu sắc!' }]}>
+                <Form.Item label="Tên:" name="colorName"
+                    rules={[
+                        { required: true, message: 'Vui lòng nhập tên màu sắc!' },
+                        {
+                            validator: (_, value) => {
+                                if (!value) {
+                                    return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                                }
+                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                const isDuplicate = colors.some(
+                                    (color) => color.colorName.trim().toLowerCase() === lowercaseValue && color.id !== reacord.id
+                                );
+                                if (isDuplicate) {
+                                    return Promise.reject('Tên màu sắc đã tồn tại!');
+                                }
+                                // Kiểm tra dấu cách ở đầu và cuối
+                                if (/^\s|\s$/.test(value)) {
+                                    return Promise.reject('Tên màu sắc không được chứa dấu cách ở đầu và cuối!');
+                                }
+                                return Promise.resolve();
+                            },
+                        },
+                    ]}>
                     <Input placeholder="Nhập tên màu sắc..." />
                 </Form.Item>
 

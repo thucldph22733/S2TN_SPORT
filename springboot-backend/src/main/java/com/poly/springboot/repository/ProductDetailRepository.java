@@ -103,4 +103,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail,Lon
             "group by pd.id, i.imageLink, p.productName, c.colorName, m.materialName,s.sizeName,pd.quantity,pd.price, pd.deleted "+
             "ORDER BY pd.createdAt DESC")
     Page<ProductDetailResponseDto> findAllByProductId(@Param("productId") Long productId,Pageable pageable);
+
+    ProductDetail findProductDetailById (Long productId);
 }

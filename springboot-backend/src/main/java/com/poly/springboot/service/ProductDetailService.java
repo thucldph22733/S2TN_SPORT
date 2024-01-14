@@ -37,4 +37,6 @@ public interface ProductDetailService {
     ProductDetailInfoResponseDto getProductDetailsByProductId(Long productId);
     PDUpdateResponseDto findQuantityAndPriceByProductIdAndColorIdAndSizeId(PDUpdateRequestDto pdUpdateRequestDto);
 
+    ProductDetail findProductDetailById (Long productId);
+
 }

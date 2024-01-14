@@ -99,35 +99,75 @@ export default function Sell() {
 
     //Mở modal qrcode
     const [showScanner, setShowScanner] = useState(false);
-    const [qrData, setQrData] = useState(null);
-    const [scannedOnce, setScannedOnce] = useState(false);
+    const [scannedData, setScannedData] = useState(null);
     const [scanningEnabled, setScanningEnabled] = useState(true);
+
+    useEffect(() => {
+        if (scannedData && scanningEnabled) {
+            handleAddToProductDetailFromQR(scannedData);
+            setScanningEnabled(false); // Disable further scanning until the modal is closed
+            closeScanner();
+        }
+    }, [scannedData, scanningEnabled]);
+
     const openScanner = () => {
+        setScanningEnabled(true); // Enable scanning when the modal is opened
         setShowScanner(true);
-        setScannedOnce(false);
-        setScanningEnabled(true); // Cho phép quét QR khi mở modal
     };
 
     const closeScanner = () => {
         setShowScanner(false);
+        setScannedData(null); // Reset scanned data when the modal is closed
+        setScanningEnabled(false); // Disable scanning when the modal is closed
     };
-    const handleScan = async (data) => {
-        if (data && !scannedOnce && scanningEnabled) {
-            setScannedOnce(true);
-            setScanningEnabled(false); // Tắt quét QR để tránh thêm sản phẩm liên tục
-            // Thực hiện thêm sản phẩm vào đơn hàng từ QR code
-            // await handleAddToProductDetailFromQR(data);
-            // Đóng modal tự động khi quét xong lần đầu
-            closeScanner();
+
+    const handleScan = (data) => {
+        if (data && scanningEnabled) {
+            setScannedData(data);
+            // Do not close the scanner here to allow reopening for additional scans
         }
     };
+
     const handleResult = (result) => {
-        if (result && showScanner && !scannedOnce && scanningEnabled) {
-            setQrData(result.text);
-            // handleAddToProductDetailFromQR(result);
-            closeScanner();
+        if (result && showScanner) {
+            setScannedData(result);
         }
     };
+
+    const handleAddToProductDetailFromQR = async (productId) => {
+        try {
+            // Fetch product details using the product ID
+            const productDetails = await ProductDetailService.findProductDetailById(productId);
+
+            // Extract relevant information from the fetched product details
+            const { id: productDetailId, price } = productDetails;
+
+            // Create a new order detail using the extracted information
+            const orderDetailData = {
+                productDetailId,
+                orderId,
+                quantity: 1,
+                price,
+            };
+
+            // Add the product detail to the order
+            await OrderDetailService.create(orderDetailData);
+
+            // Display success message
+            message.success("Thêm sản phẩm vào đơn hàng thành công!");
+
+            // Fetch updated order details
+            fetchOrderDetail(); // Make sure fetchOrderDetail function is defined
+            closeScanner(); // Close
+        } catch (error) {
+            // Handle errors
+            message.error("Thêm sản phẩm vào đơn hàng thất bại!");
+            console.error("Error handling QR code data:", error);
+        }
+    };
+
+
+
     const [modal, contextHolder] = Modal.useModal();
     const confirm = () => {
         modal.confirm({
@@ -487,7 +527,7 @@ export default function Sell() {
                 <Modal open={showScanner} onCancel={closeScanner} footer={null} width={350} centered>
                     {showScanner && (
                         <QrReader
-                            delay={4000}
+                            delay={6000}
                             onScan={handleScan}
                             onResult={handleResult}
                             style={{ width: '100%' }}

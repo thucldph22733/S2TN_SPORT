@@ -247,9 +247,10 @@ function Category() {
 
             {open.isModal && <CategoryModal
                 isMode={open.isMode}
-                reacord={open.reacord}
+                reacord={open.reacord || {}}
                 hideModal={hideModal}
                 isModal={open.isModal}
+                categories={categories}
                 fetchCategorys={fetchCategorys} />}
         </>
     )
@@ -257,7 +258,7 @@ function Category() {
 export default Category;
 
 
-const CategoryModal = ({ isMode, reacord, hideModal, isModal, fetchCategorys }) => {
+const CategoryModal = ({ isMode, reacord, hideModal, isModal, fetchCategorys, categories }) => {
 
     const [form] = Form.useForm();
 
@@ -339,9 +340,36 @@ const CategoryModal = ({ isMode, reacord, hideModal, isModal, fetchCategorys }) 
                 form={form}
                 initialValues={{ ...reacord }}
             >
-                <Form.Item label="Tên:" name="categoryName" rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}>
+                <Form.Item
+                    label="Tên:"
+                    name="categoryName"
+                    rules={[
+                        { required: true, message: 'Vui lòng nhập tên danh mục!' },
+                        {
+                            validator: (_, value) => {
+                                if (!value) {
+                                    return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                                }
+                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                const isDuplicate = categories.some(
+                                    (category) => category.categoryName.trim().toLowerCase() === lowercaseValue && category.id !== reacord.id
+                                );
+                                if (isDuplicate) {
+                                    return Promise.reject('Tên danh mục đã tồn tại!');
+                                }
+                                // Kiểm tra dấu cách ở đầu và cuối
+                                if (/^\s|\s$/.test(value)) {
+                                    return Promise.reject('Tên danh mục không được chứa dấu cách ở đầu và cuối!');
+                                }
+                                return Promise.resolve();
+                            },
+                        },
+                    ]}
+                >
                     <Input placeholder="Nhập tên loại sản phẩm..." />
                 </Form.Item>
+
 
                 <Form.Item label="Ghi chú:" name="categoryDescribe" >
                     <TextArea rows={4} placeholder="Nhập ghi chú..." rules={[{ required: true, message: 'Vui lòng nhập ghi chú!' }]} />

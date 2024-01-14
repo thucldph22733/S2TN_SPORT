@@ -350,8 +350,9 @@ function User() {
 
             {open.isModal && <UserModal
                 isMode={open.isMode}
-                reacord={open.reacord}
+                reacord={open.reacord || {}}
                 hideModal={hideModal}
+                users={users}
                 isModal={open.isModal}
                 fetchUsers={fetchUsers} />}
 
@@ -369,7 +370,7 @@ function User() {
 export default User;
 
 
-const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
+const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) => {
 
     const [form] = Form.useForm();
 
@@ -456,22 +457,95 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                     ...(reacord?.birthOfDay && { birthOfDay: dayjs(reacord.birthOfDay, "DD/MM/YYYY") }),
                 }}
             >
-                <Form.Item label="Tên:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
+                <Form.Item label="Tên:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }
+                    ,
+                {
+                    validator: (_, value) => {
+                        if (!value) {
+                            return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                        }
+                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const isDuplicate = users.some(
+                            (user) => user.userName.trim().toLowerCase() === lowercaseValue && user.id !== reacord.id
+                        );
+                        if (isDuplicate) {
+                            return Promise.reject('Tên người dùng đã tồn tại!');
+                        }
+                        // Kiểm tra dấu cách ở đầu và cuối
+                        if (/^\s|\s$/.test(value)) {
+                            return Promise.reject('Tên người dùng không được chứa dấu cách ở đầu và cuối!');
+                        }
+                        return Promise.resolve();
+                    },
+                },
+                ]}>
                     <Input placeholder="Nhập tên người dùng..." />
                 </Form.Item>
 
-                <Form.Item label="Email:" name="email" rules={[{ required: true, message: 'Vui lòng nhập email!' }]}>
+                <Form.Item label="Email:" name="email"
+                    rules={[
+                        { type: 'email', message: 'Email không hợp lệ' },
+                        { max: 320, message: 'Email không được dài quá 320 ký tự' },
+                    ]}>
                     <Input placeholder="Nhập email..." />
                 </Form.Item>
+                <Form.Item
+                    label="Số điện thoại:"
+                    name="phoneNumber"
+                    rules={[
+                        { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                        { pattern: /^[0-9]+$/, message: 'Số điện thoại chỉ được chứa chữ số' },
+                        { min: 10, message: 'Số điện thoại phải 10 chữ số' },
+                        { max: 10, message: 'Số điện thoại phải 10 chữ số' },
+                        {
+                            validator: async (_, value) => {
+                                // Kiểm tra giá trị có tồn tại không
+                                if (!value) {
+                                    return Promise.resolve(); // Bỏ qua kiểm tra nếu giá trị không tồn tại
+                                }
 
-                <Form.Item label="Số điện thoại:" name="phoneNumber" >
+                                // Kiểm tra số đầu tiên là số 0
+                                if (value.charAt(0) !== '0') {
+                                    throw new Error('Số điện thoại phải bắt đầu bằng số 0');
+                                }
+
+                                // Kiểm tra các quy tắc khác ở đây nếu cần
+
+                                return Promise.resolve();
+                            },
+                        }
+                    ]}
+                >
                     <Input placeholder="Nhập số điện thoại..." />
                 </Form.Item>
+
                 <Row>
                     <Col span={12}>
-                        <Form.Item label="Ngày sinh:" name="birthOfDay">
+                        <Form.Item
+                            label="Ngày sinh:"
+                            name="birthOfDay"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Vui lòng chọn ngày sinh!',
+                                },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        const selectedDate = new Date(value);
+                                        const currentDate = new Date();
+
+                                        if (selectedDate > currentDate) {
+                                            return Promise.reject(new Error('không được chọn tương lai!'));
+                                        }
+                                        return Promise.resolve();
+                                    },
+                                }),
+                            ]}
+                        >
                             <DatePicker placeholder="Chọn ngày sinh" style={{ width: '100%' }} format="DD/MM/YYYY" />
                         </Form.Item>
+
                     </Col>
                     <Col span={1}>
                     </Col>
@@ -484,9 +558,25 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers }) => {
                         </Form.Item>
                     </Col>
                 </Row>
-                {isMode === "add" && <Form.Item label="Mật khẩu:" name="password">
-                    <Input type="password" placeholder="Nhập tên mật khẩu..." />
-                </Form.Item>}
+                {isMode === "add" &&
+                    <Form.Item
+                        label="Mật khẩu:"
+                        name="password"
+                        rules={[
+                            isMode === "add" && { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                            {
+                                validator: (_, value) => {
+                                    if (/\s/.test(value)) {
+                                        return Promise.reject('Mật khẩu không được chứa dấu cách!');
+                                    }
+                                    return Promise.resolve();
+                                },
+                            },
+                        ]}
+                    >
+                        <Input type="password" placeholder="Nhập tên mật khẩu..." />
+                    </Form.Item>
+                }
                 <Form.Item label="Vai trò:" name="role" rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}>
                     <Select
                         allowClear

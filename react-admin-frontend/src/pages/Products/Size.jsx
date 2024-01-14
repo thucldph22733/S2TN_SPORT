@@ -246,7 +246,8 @@ function Size() {
 
             {open.isModal && <SizeModal
                 isMode={open.isMode}
-                reacord={open.reacord}
+                reacord={open.reacord || {}}
+                sizes={sizes}
                 hideModal={hideModal}
                 isModal={open.isModal}
                 fetchSizes={fetchSizes} />}
@@ -256,7 +257,7 @@ function Size() {
 export default Size;
 
 
-const SizeModal = ({ isMode, reacord, hideModal, isModal, fetchSizes }) => {
+const SizeModal = ({ isMode, reacord, hideModal, isModal, fetchSizes, sizes }) => {
 
     const [form] = Form.useForm();
 
@@ -338,7 +339,32 @@ const SizeModal = ({ isMode, reacord, hideModal, isModal, fetchSizes }) => {
                 form={form}
                 initialValues={{ ...reacord }}
             >
-                <Form.Item label="Tên:" name="sizeName" rules={[{ required: true, message: 'Vui lòng nhập tên kích thước!' }]}>
+                <Form.Item label="Tên:" name="sizeName" rules={[{ required: true, message: 'Vui lòng nhập tên kích thước!' }
+                    ,
+                {
+                    validator: (_, value) => {
+                        if (!value) {
+                            return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                        }
+                        const trimmedValue = value.trim();
+                        const lowercaseValue = trimmedValue.toLowerCase();
+                        const isDuplicate = sizes.some(
+                            (size) => size.sizeName.trim().toLowerCase() === lowercaseValue && size.id !== reacord.id
+                        );
+
+                        if (isDuplicate) {
+                            return Promise.reject('Tên kích thước đã tồn tại!');
+                        }
+
+                        if (/^\s|\s$/.test(value)) {
+                            return Promise.reject('Tên kích thước không được chứa dấu cách ở đầu và cuối!');
+                        }
+
+                        return Promise.resolve();
+                    },
+                }
+                    ,
+                ]}>
                     <Input placeholder="Nhập tên kích thước..." />
                 </Form.Item>
 

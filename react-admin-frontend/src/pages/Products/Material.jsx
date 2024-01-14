@@ -246,9 +246,10 @@ function Material() {
 
             {open.isModal && <MaterialModal
                 isMode={open.isMode}
-                reacord={open.reacord}
+                reacord={open.reacord || {}}
                 hideModal={hideModal}
                 isModal={open.isModal}
+                materials={materials}
                 fetchMaterials={fetchMaterials} />}
         </>
     )
@@ -256,7 +257,7 @@ function Material() {
 export default Material;
 
 
-const MaterialModal = ({ isMode, reacord, hideModal, isModal, fetchMaterials }) => {
+const MaterialModal = ({ isMode, reacord, hideModal, isModal, fetchMaterials, materials }) => {
 
     const [form] = Form.useForm();
 
@@ -338,7 +339,29 @@ const MaterialModal = ({ isMode, reacord, hideModal, isModal, fetchMaterials }) 
                 form={form}
                 initialValues={{ ...reacord }}
             >
-                <Form.Item label="Tên:" name="materialName" rules={[{ required: true, message: 'Vui lòng nhập tên chất liệu!' }]}>
+                <Form.Item label="Tên:" name="materialName"
+                    rules={[{ required: true, message: 'Vui lòng nhập tên chất liệu!' },
+                    {
+                        validator: (_, value) => {
+                            if (!value) {
+                                return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                            }
+                            const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                            const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                            const isDuplicate = materials.some(
+                                (material) => material.materialName.trim().toLowerCase() === lowercaseValue && material.id !== reacord.id
+                            );
+                            if (isDuplicate) {
+                                return Promise.reject('Tên chất liệu đã tồn tại!');
+                            }
+                            // Kiểm tra dấu cách ở đầu và cuối
+                            if (/^\s|\s$/.test(value)) {
+                                return Promise.reject('Tên chất liệu không được chứa dấu cách ở đầu và cuối!');
+                            }
+                            return Promise.resolve();
+                        },
+                    },
+                    ]}>
                     <Input placeholder="Nhập tên chất liệu..." />
                 </Form.Item>
 

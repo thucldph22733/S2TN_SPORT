@@ -111,6 +111,11 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return productDetailRepository.findQuantityAndPriceByProductIdAndColorIdAndSizeId(productId,colorId,sizeId);
     }
 
+    @Override
+    public ProductDetail findProductDetailById(Long productId) {
+        return productDetailRepository.findProductDetailById(productId);
+    }
+
 
     @Override
     public Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto, Long id) {

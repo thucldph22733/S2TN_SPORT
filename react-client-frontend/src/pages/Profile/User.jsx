@@ -67,15 +67,69 @@ function User() {
                 form={form}
             >
                 <React.Fragment key={users.id}>
-                    <Form.Item label="Họ và tên:" name='userName' initialValue={users.userName} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}>
+                    <Form.Item label="Họ và tên:" name='userName' initialValue={users.userName}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập họ và tên!',
+                            },
+                            {
+                                validator: (_, value) => {
+                                    // Kiểm tra xem có dấu cách ở đầu và cuối không
+                                    if (value && (value.trim() !== value)) {
+                                        return Promise.reject('Họ và tên không được có dấu cách ở đầu hoặc cuối');
+                                    }
+                                    return Promise.resolve();
+                                },
+                            },
+                        ]}
+                    >
                         <Input placeholder="Nhập tên người dùng..." />
                     </Form.Item>
 
-                    <Form.Item label="Email:" name='email' initialValue={users.email} rules={[{ required: true, message: 'Vui lòng nhập email!' }]}>
+                    <Form.Item
+                        label="Email:"
+                        name='email'
+                        initialValue={users.email}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập email!',
+                            },
+                            {
+                                pattern: /^[a-zA-Z0-9._-]+@gmail\.com$/,
+                                message: 'Email phải có định dạng @gmail.com!',
+                            },
+                        ]}
+                    >
                         <Input placeholder="Nhập email..." />
                     </Form.Item>
 
-                    <Form.Item label="Số điện thoại:" name='phoneNumber' initialValue={users.phoneNumber} rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                    <Form.Item label="Số điện thoại:" name='phoneNumber' initialValue={users.phoneNumber}
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                            { pattern: /^[0-9]+$/, message: 'Số điện thoại chỉ được chứa chữ số' },
+                            { min: 10, message: 'Số điện thoại phải 10 chữ số' },
+                            { max: 10, message: 'Số điện thoại phải 10 chữ số' },
+                            {
+                                validator: async (_, value) => {
+                                    // Kiểm tra giá trị có tồn tại không
+                                    if (!value) {
+                                        return Promise.resolve(); // Bỏ qua kiểm tra nếu giá trị không tồn tại
+                                    }
+
+                                    // Kiểm tra số đầu tiên là số 0
+                                    if (value.charAt(0) !== '0') {
+                                        throw new Error('Số điện thoại phải bắt đầu bằng số 0');
+                                    }
+
+                                    // Kiểm tra các quy tắc khác ở đây nếu cần
+
+                                    return Promise.resolve();
+                                },
+                            }
+                        ]}
+                    >
                         <Input placeholder="Nhập số điện thoại..." />
                     </Form.Item>
                     <Row>
@@ -84,7 +138,23 @@ function User() {
                                 label="Ngày sinh:"
                                 name="birthOfDay"
                                 initialValue={dayjs(users.birthOfDay)}
-                                rules={[{ required: true, message: 'Vui lòng chọn ngày sinh!' }]}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Vui lòng chọn ngày sinh!',
+                                    },
+                                    ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                            const selectedDate = new Date(value);
+                                            const currentDate = new Date();
+
+                                            if (selectedDate > currentDate) {
+                                                return Promise.reject(new Error('không được chọn tương lai!'));
+                                            }
+                                            return Promise.resolve();
+                                        },
+                                    }),
+                                ]}
                             >
                                 <DatePicker placeholder="Chọn ngày sinh" style={{ width: '100%' }} format="DD/MM/YYYY" />
                             </Form.Item>

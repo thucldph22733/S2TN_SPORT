@@ -78,4 +78,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail,Lon
     @Query("SELECT new com.poly.springboot.dto.responseDto.ProductDetailResponseDto(  pd.id, p.productName,i.imageLink, c.colorName,s.sizeName,m.materialName,pd.quantity,pd.price, pd.deleted )from ProductDetail pd join Product p on pd.product.id = p.id join Image i on i.product.id = p.id " +
             "join Color c on i.color.id = c.id join Size s on pd.size.id = s.id join Material m on pd.material.id = m.id where pd.product.id = :productId and i.color.id = pd.color.id and i.deleted = true group by pd.id, i.imageLink, p.productName, c.colorName, m.materialName,s.sizeName,pd.quantity,pd.price, pd.deleted")
     Page<ProductDetailResponseDto> findAllByProductId(@Param("productId") Long productId,Pageable pageable);
+
+    ProductDetail findProductDetailById (Long productId);
 }

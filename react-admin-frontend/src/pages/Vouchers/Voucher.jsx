@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col, Tag, Popconfirm, Card, Switch } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Row, Select, DatePicker, InputNumber, Col, Tag, Popconfirm, Card, Switch, Popover } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
@@ -335,9 +335,10 @@ function Voucher() {
             </Card>
             {open.isModal && <VoucherModal
                 isMode={open.isMode}
-                reacord={open.reacord}
+                reacord={open.reacord || {}}
                 hideModal={hideModal}
                 isModal={open.isModal}
+                vouchers={vouchers}
                 fetchVouchers={fetchVouchers}
             />}
         </>
@@ -346,7 +347,7 @@ function Voucher() {
 export default Voucher;
 
 
-const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) => {
+const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouchers }) => {
 
     const [form] = Form.useForm();
 
@@ -417,6 +418,61 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
         </Select>
     );
 
+    const formatNumber = (value) => {
+        if (value === undefined || value === null) {
+            return value;
+        }
+
+        const stringValue = String(value);
+        const parts = stringValue.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        return parts.join('.');
+    };
+
+    const MyInputNumber = ({ value, onChange, ...restProps }) => {
+        const formattedValue = formatNumber(value);
+
+        // const content = (
+        //     <div style={{ padding: '8px' }}>{formattedValue}</div>
+        // );
+
+        return (
+            // <Popover content={content} trigger="hover" placement="bottom">
+            <InputNumber
+                {...restProps}
+                formatter={(value) => formatNumber(value)}
+                parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số
+                value={formattedValue}  // Đặt giá trị đã định dạng vào InputNumber
+                onChange={onChange}
+            />
+            // </Popover>
+        );
+    };
+
+    const formatNumberToiThieu = (value) => {
+        if (value === undefined || value === null) {
+            return value;
+        }
+
+        const stringValue = String(value);
+        const parts = stringValue.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        return parts.join('.');
+    };
+    const formatNumberToiDa = (value) => {
+        if (value === undefined || value === null) {
+            return value;
+        }
+
+        const stringValue = String(value);
+        const parts = stringValue.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        return parts.join('.');
+    };
+
     return (
         <Row>
             <Col span={24}>
@@ -441,14 +497,52 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                     >
                         <Row>
                             <Col span={11}>
-                                <Form.Item label="Mã:" name="voucherCode" rules={[{ required: true, message: 'Vui lòng nhập mã giảm giá!' }]}>
+                                <Form.Item label="Mã:" name="voucherCode" rules={[{ required: true, message: 'Vui lòng nhập mã giảm giá!' }
+                                    ,
+                                {
+                                    validator: (_, value) => {
+                                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                        const isDuplicate = vouchers.some(
+                                            (voucher) => voucher.voucherCode.trim().toLowerCase() === lowercaseValue && voucher.id !== reacord.id
+                                        );
+                                        if (isDuplicate) {
+                                            return Promise.reject('Mã voucher đã tồn tại!');
+                                        }
+                                        // Kiểm tra dấu cách ở đầu và cuối
+                                        if (/^\s|\s$/.test(value)) {
+                                            return Promise.reject('Mã voucher không được chứa dấu cách ở đầu và cuối!');
+                                        }
+                                        return Promise.resolve();
+                                    },
+                                },
+                                ]}>
                                     <Input placeholder="Nhập mã..." />
                                 </Form.Item>
                             </Col>
                             <Col span={1}>
                             </Col>
                             <Col span={12}>
-                                <Form.Item label="Tên:" name="voucherName" rules={[{ required: true, message: 'Vui lòng nhập tên giảm giá!' }]}>
+                                <Form.Item label="Tên:" name="voucherName" rules={[{ required: true, message: 'Vui lòng nhập tên giảm giá!' }
+                                    ,
+                                {
+                                    validator: (_, value) => {
+                                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                        const isDuplicate = vouchers.some(
+                                            (voucher) => voucher.voucherName.trim().toLowerCase() === lowercaseValue && voucher.id !== reacord.id
+                                        );
+                                        if (isDuplicate) {
+                                            return Promise.reject('Tên voucher đã tồn tại!');
+                                        }
+                                        // Kiểm tra dấu cách ở đầu và cuối
+                                        if (/^\s|\s$/.test(value)) {
+                                            return Promise.reject('Tên voucher không được chứa dấu cách ở đầu và cuối!');
+                                        }
+                                        return Promise.resolve();
+                                    },
+                                },
+                                ]}>
                                     <Input placeholder="Nhập tên..." />
                                 </Form.Item>
                             </Col>
@@ -456,30 +550,71 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
 
                         <Row >
                             <Col span={11}>
-                                <Form.Item label="Giảm giá:" name="discountRate" rules={[
-                                    {
-                                        required: true,
-                                        type: 'number',
-                                        min: 0,
-                                        message: 'Vui lòng nhập múc giảm!'
-                                    }]}>
-                                    <InputNumber style={{ width: '100%' }} addonAfter={selectAfter} />
+                                <Form.Item
+                                    label="Giảm giá:"
+                                    name="discountRate"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            type: 'number',
+                                            min: 0,
+                                            message: 'Vui lòng nhập mức giảm lớn hơn hoặc bằng 0!',
+                                        },
+                                        {
+                                            validator: (_, value) => {
+                                                const intValue = parseInt(value, 10);
+
+                                                if (isNaN(intValue) || intValue <= 0) {
+                                                    return Promise.reject(new Error('Vui lòng nhập số nguyên dương!'));
+                                                }
+
+                                                return Promise.resolve();
+                                            },
+                                        },
+                                    ]}
+                                >
+                                    <MyInputNumber style={{ width: '100%' }} addonAfter={selectAfter} />
                                 </Form.Item>
                             </Col>
                             <Col span={1}></Col>
                             <Col span={12}>
-                                <Form.Item label="Số lượng:" name="quantity" rules={[
-                                    {
-                                        required: true,
-                                        type: 'number',
-                                        min: 1,
-                                    },
-                                ]} >
-                                    <InputNumber style={{ width: '100%' }} />
+                                <Form.Item
+                                    label="Số lượng:"
+                                    name="quantity"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập số lượng!',
+                                        },
+                                    ]}
+                                >
+                                    <Input
+                                        style={{ width: '100%' }}
+                                        onChange={(e) => {
+                                            // Chỉ giữ lại số và loại bỏ dấu cách ở đầu và cuối
+                                            const newValue = e.target.value.replace(/[^\d]/g, '');
+                                            form.setFieldsValue({
+                                                quantity: newValue,
+                                            });
+                                        }}
+                                        onBlur={(e) => {
+                                            // Kiểm tra số nguyên và không có dấu cách ở đầu và cuối
+                                            const value = e.target.value;
+                                            const intValue = parseInt(value, 10);
+
+                                            if (isNaN(intValue) || value.includes(' ') || value[0] === ' ' || value[value.length - 1] === ' ') {
+                                                form.setFields([
+                                                    {
+                                                        name: 'quantity',
+                                                        errors: ['Vui lòng nhập số nguyên và không có dấu cách ở đầu và cuối!'],
+                                                    },
+                                                ]);
+                                            }
+                                        }}
+                                    />
                                 </Form.Item>
                             </Col>
                         </Row>
-
                         <Row>
                             <Col span={11}>
                                 <Form.Item label="Ngày bắt đầu:" name="startDate" rules={[{ required: true, message: 'Vui lòng nhập ngày bắt đầu!' }]}>
@@ -488,28 +623,112 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers }) =>
                             </Col>
                             <Col span={1}></Col>
                             <Col span={12}>
-                                <Form.Item label="Ngày kết thúc:" name="endDate" rules={[{ required: true, message: 'Vui lòng nhập ngày kết thúc!' }]}>
+                                <Form.Item
+                                    label="Ngày kết thúc:"
+                                    name="endDate"
+                                    rules={[
+                                        { required: true, message: 'Vui lòng nhập ngày kết thúc!' },
+                                        ({ getFieldValue }) => ({
+                                            validator(_, endDate) {
+                                                const startDate = getFieldValue('startDate');
+                                                const currentDate = dayjs();
+
+                                                if (!startDate || !endDate) {
+                                                    // Nếu chưa có giá trị, không validate
+                                                    return Promise.resolve();
+                                                }
+
+                                                if (dayjs(startDate).isAfter(endDate)) {
+                                                    // Ngày kết thúc không được trước ngày bắt đầu
+                                                    return Promise.reject(new Error('Ngày kết thúc phải sau ngày bắt đầu!'));
+                                                }
+
+                                                if (dayjs(endDate).isBefore(currentDate, 'day')) {
+                                                    // Ngày kết thúc không được là ngày hiện tại hoặc ngày quá khứ
+                                                    return Promise.reject(new Error('Ngày kết thúc không được là ngày hiện tại hoặc ngày quá khứ!'));
+                                                }
+
+                                                return Promise.resolve();
+                                            },
+                                        }),
+                                    ]}
+                                >
                                     <DatePicker style={{ width: '100%' }} showTime format="HH:mm:ss - DD/MM/YYYY" />
                                 </Form.Item>
                             </Col>
                         </Row>
-
-
-
                         <Row>
                             <Col span={11}>
-                                <Form.Item label="Tối thiểu:" name="orderMinimum" >
-                                    <InputNumber style={{ width: '100%' }} />
+                                <Form.Item
+                                    label="Tối thiểu:"
+                                    name="orderMinimum"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            type: 'number',
+                                            min: 1,
+                                            message: 'Vui lòng nhập tối thiểu!',
+                                        },
+                                        {
+                                            validator: (_, value) => {
+                                                const stringValue = String(value);
+
+                                                if (/^\s|\s$/.test(stringValue)) {
+                                                    return Promise.reject('Vui lòng nhập số nguyên và không có dấu cách ở đầu và cuối!');
+                                                }
+
+                                                const intValue = parseInt(stringValue, 10);
+
+                                                if (isNaN(intValue)) {
+                                                    return Promise.reject('Vui lòng nhập số nguyên!');
+                                                }
+
+                                                return Promise.resolve();
+                                            },
+                                        },
+                                    ]}
+                                >
+                                    <InputNumber
+                                        style={{ width: '100%' }}
+                                        formatter={(value) => formatNumberToiThieu(value)}
+                                        parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số
+                                    />
                                 </Form.Item>
                             </Col>
                             <Col span={1}></Col>
                             <Col span={12}>
-                                <Form.Item label="Giảm max:" name="maxReduce" >
-                                    <InputNumber style={{ width: '100%' }} />
+                                <Form.Item label="Giảm tối đa:" name="maxReduce" rules={[
+                                    {
+                                        required: true,
+                                        type: 'number',
+                                        min: 1,
+                                        message: 'Vui lòng nhập giảm tối đa!'
+                                    },
+                                    {
+                                        validator: (_, value) => {
+                                            const stringValue = String(value);
+
+                                            if (/^\s|\s$/.test(stringValue)) {
+                                                return Promise.reject('Vui lòng nhập số nguyên và không có dấu cách ở đầu và cuối!');
+                                            }
+
+                                            const intValue = parseInt(stringValue, 10);
+
+                                            if (isNaN(intValue)) {
+                                                return Promise.reject('Vui lòng nhập số nguyên!');
+                                            }
+
+                                            return Promise.resolve();
+                                        },
+                                    },
+                                ]}>
+                                    <InputNumber
+                                        style={{ width: '100%' }}
+                                        formatter={(value) => formatNumberToiDa(value)}
+                                        parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số
+                                    />
                                 </Form.Item>
                             </Col>
-
-
                         </Row>
 
 

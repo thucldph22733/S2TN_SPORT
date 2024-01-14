@@ -116,9 +116,10 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
             {addressModal2.isModal && (
                 <AddressModal
                     isMode={addressModal2.isMode}
-                    reacord={addressModal2.reacord}
+                    reacord={addressModal2.reacord || {}}
                     hideModal={hideAddressModal2}
                     isModal={addressModal2.isModal}
+                    address={address}
                     fetchAddress={fetchAddress}
 
                 />
@@ -128,7 +129,7 @@ const ShowAddressModal = ({ reacord, hideModal, isModal }) => {
 };
 export default ShowAddressModal;
 
-const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => {
+const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, address }) => {
     //Đoạn mã lấy api tỉnh thành, quận huyện, phường xã
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -257,10 +258,55 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                         city: reacord.city
                     }}
                 >
-                    <Form.Item label="Họ và tên:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
+                    <Form.Item label="Họ và tên:" name="recipientName"
+                        rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }
+                            ,
+                        {
+                            validator: (_, value) => {
+                                if (!value) {
+                                    return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                                }
+                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                const isDuplicate = address.some(
+                                    (address) => address.addressName.trim().toLowerCase() === lowercaseValue && address.id !== reacord.id
+                                );
+                                // Kiểm tra dấu cách ở đầu và cuối
+                                if (/^\s|\s$/.test(value)) {
+                                    return Promise.reject('Tên người dùng không được chứa dấu cách ở đầu và cuối!');
+                                }
+                                return Promise.resolve();
+                            },
+                        },
+                        ]}
+                    >
                         <Input placeholder="Họ và tên..." />
                     </Form.Item>
-                    <Form.Item label="Số điện thoại:" name="phoneNumber" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                    <Form.Item label="Số điện thoại:" name="phoneNumber"
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                            { pattern: /^[0-9]+$/, message: 'Số điện thoại chỉ được chứa chữ số' },
+                            { min: 10, message: 'Số điện thoại phải 10 chữ số' },
+                            { max: 10, message: 'Số điện thoại phải 10 chữ số' },
+                            {
+                                validator: async (_, value) => {
+                                    // Kiểm tra giá trị có tồn tại không
+                                    if (!value) {
+                                        return Promise.resolve(); // Bỏ qua kiểm tra nếu giá trị không tồn tại
+                                    }
+
+                                    // Kiểm tra số đầu tiên là số 0
+                                    if (value.charAt(0) !== '0') {
+                                        throw new Error('Số điện thoại phải bắt đầu bằng số 0');
+                                    }
+
+                                    // Kiểm tra các quy tắc khác ở đây nếu cần
+
+                                    return Promise.resolve();
+                                },
+                            }
+                        ]}
+                    >
                         <Input placeholder="Số điện thoại..." />
                     </Form.Item>
                     <Row>

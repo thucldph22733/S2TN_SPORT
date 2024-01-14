@@ -36,4 +36,6 @@ public interface ProductDetailService {
             Long sizeId
     );
 
+    ProductDetail findProductDetailById (Long productId);
+
 }

@@ -2,6 +2,7 @@ package com.poly.springboot.service.impl;
 
 import com.poly.springboot.dto.requestDto.ImageRequestDto;
 import com.poly.springboot.entity.Image;
+import com.poly.springboot.entity.Product;
 import com.poly.springboot.entity.ProductDetail;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.ColorRepository;
@@ -23,13 +24,12 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private ColorRepository colorRepository;
     @Override
     public List<Image> getImages() {
         return imageRepository.findAll();
     }
 
+    @Override
     public Boolean createImages(List<ImageRequestDto> imageRequestDtos) {
         List<Image> images = new ArrayList<>();
 
@@ -38,7 +38,6 @@ public class ImageServiceImpl implements ImageService {
         for (ImageRequestDto imageRequestDto : imageRequestDtos) {
             Image image = new Image();
             image.setProduct(productRepository.findById(imageRequestDto.getProductId()).orElse(null));
-            //image.setColor(colorRepository.findById(imageRequestDto.getColorId()).orElse(null));
             image.setImageName(imageRequestDto.getImageName());
             image.setImageLink(imageRequestDto.getImageLink());
             image.setImageType(imageRequestDto.getImageType());
@@ -64,12 +63,13 @@ public class ImageServiceImpl implements ImageService {
         return true;
     }
 
+
+
     @Override
     public Boolean updateImage(ImageRequestDto imageRequestDto, Long id) {
         Image image = imageRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Không tìm thấy id ảnh này!"));
 
-//        image.setColor(colorRepository.findById(imageRequestDto.getColorId()).orElse(null));
         image.setImageName(imageRequestDto.getImageName());
         image.setImageLink(imageRequestDto.getImageLink());
         image.setImageType(imageRequestDto.getImageType());

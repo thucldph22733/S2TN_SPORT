@@ -15,6 +15,8 @@ public interface SizeRepository extends JpaRepository<Size,Long> {
     @Query("SELECT s FROM Size s WHERE s.deleted = true ORDER BY s.createdAt DESC")
 
     List<Size> findAllByDeletedTrue();
+
+    Size findBySizeName(String sizeName);
     Boolean existsBySizeName(String SizeName);
     Page<Size> findBySizeNameContaining(String name, Pageable pageable);
     Page<Size> findByDeletedIn(List<Boolean> status, Pageable pageable);

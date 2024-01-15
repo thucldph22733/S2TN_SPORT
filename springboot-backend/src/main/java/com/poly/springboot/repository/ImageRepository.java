@@ -20,6 +20,4 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
     Optional<Image> findByImageName(String fileName);
 
     List<Image> findByImageLink(String imageLink);
-
 }
-// Lọc nhữ

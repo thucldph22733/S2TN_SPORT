@@ -99,6 +99,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Product findProductById(Long productId) {
+        return productRepository.findById(productId).orElseThrow(()-> new ResourceNotFoundException("Không tìm thấy ihaamr này!"));
+
+    }
+
+    @Override
     public Page<ProductUserResponseDto> findProductsByFilters(List<Long> categoryIds, List<Long> brandIds, List<Long> colorIds, List<Long> materialIds, List<Long> sizeIds,
                                                               Double minPrice, Double maxPrice,String productName,
                                                               Pageable pageable) {

@@ -166,8 +166,7 @@ function ProductAdd() {
     }
     //---------------------------------------------------------------------------------------
     // const [productDetailDataList, setProductDetailDataList] = useState([]);
-    const [productDetailData, setProductDetailData] = useState([]);
-    console.log(productDetailData)
+
     // Trạng thái để lưu thông tin cho mỗi bảng màu sắc
     const [colorTables, setColorTables] = useState({});
 
@@ -198,46 +197,6 @@ function ProductAdd() {
         setSelectedMaterial(material);
     };
 
-
-    useEffect(() => {
-        const generatedColorTables = createColorTable(selectedColors, selectedSizes, selectedProductName, selectedMaterial);
-        setColorTables(generatedColorTables);
-    }, [selectedColors, selectedSizes, selectedProductName, selectedMaterial]);
-
-
-    function findColorNameById(colorId) {
-        const color = colors.find(c => c.id === colorId);
-        return color ? color.colorName : null;
-    }
-
-    function findSizeNameById(sizeId) {
-        const size = sizes.find(s => s.id === sizeId);
-        return size ? size.sizeName : null;
-    }
-    function findMaterialNameById(materialId) {
-        const size = materials.find(s => s.id === materialId);
-        return size ? size.materialName : null;
-    }
-    const [form] = Form.useForm();
-
-    const [formThuocTinh] = Form.useForm();
-
-
-    // const handleQuantityChange = (value, key) => {
-    //     setProductDetailDataList(prevDataSource =>
-    //         prevDataSource.map(item =>
-    //             item.key === key ? { ...item, quantity: value } : item
-    //         )
-    //     );
-    // };
-
-    // const handlePriceChange = (value, key) => {
-    //     setProductDetailDataList(prevDataSource =>
-    //         prevDataSource.map(item =>
-    //             item.key === key ? { ...item, price: value } : item
-    //         )
-    //     );
-    // };
     const [loading, setLoading] = useState(false);
 
     const [modal, contextHolder] = Modal.useModal();
@@ -256,97 +215,124 @@ function ProductAdd() {
             cancelText: 'Hủy bỏ',
         });
     }
-    const handelDelete = (key) => {
+    const [form] = Form.useForm();
 
-        // // Tạo một bản sao của mảng để không làm thay đổi mảng gốc
-        // const updatedProductDataList = [...productDetailData];
+    const [formThuocTinh] = Form.useForm();
 
-        // // Tìm vị trí của phần tử cần xóa trong mảng
-        // const indexToDelete = updatedProductDataList.findIndex(item => item.key === key);
 
-        // // Nếu tìm thấy phần tử, thực hiện xóa
-        // if (indexToDelete !== -1) {
-        //     updatedProductDataList.splice(indexToDelete, 1);
+    const [inputData, setInputData] = useState({});
+    console.log(inputData)
+    const [productDetailData, setProductDetailData] = useState([]);
+    console.log(productDetailData)
 
-        //     // Cập nhật state với mảng đã được cập nhật
-        //     setProductDetailDataList(updatedProductDataList);
+    const handleDelete = (keyToDelete) => {
+        // Tạo một bản sao của productDetailData để tránh thay đổi trực tiếp state
+        const updatedProductDetailData = [...productDetailData];
 
-        //     // Set giá trị mới cho state refreshTable để trigger render lại bảng
-        // } else {
-        //     console.log("Không tìm thấy phần tử để xóa.");
-        // }
+        // Lọc ra các phần tử có key khác với keyToDelete
+        const filteredData = updatedProductDetailData.filter(item => item.key !== keyToDelete);
+
+        // Xóa mục có key tương ứng từ inputData
+        const updatedInputData = { ...inputData };
+        delete updatedInputData[keyToDelete];
+
+        // Cập nhật state
+        setProductDetailData(filteredData);
+        setInputData(updatedInputData);
     };
+    const handleInputChange = (value, key, type) => {
+        setInputData((prevInputData) => ({
+            ...prevInputData,
+            [key]: {
+                ...prevInputData[key],
+                [type]: value,
+            },
+        }));
+    };
+
+    useEffect(() => {
+        const tables = createColorTable(selectedColors, selectedSizes, selectedProductName, selectedMaterial);
+        setColorTables(tables);
+    }, [selectedColors, selectedSizes, selectedProductName, selectedMaterial, inputData]);
+
+    let keyCounter = 1; // Biến đếm key
 
     const createColorTable = (selectedColors, selectedSizes, selectedProductName, selectedMaterial) => {
         const colorSource = [];
         const dataSource = [];
+
         for (const color of selectedColors) {
             const colorGroup = [];
             const dataGroup = [];
+
             for (const size of selectedSizes) {
                 const materialsArray = Array.isArray(selectedMaterial) ? selectedMaterial : [selectedMaterial];
 
                 for (const material of materialsArray) {
-                    const key = `${selectedProductName}_${color}_${size}_${material}`;
+                    const key = keyCounter++;
 
-                    dataGroup.push({
-                        colorId: color,
-                        sizeId: size,
-                        materialId: material,
-                        quantity: 100,
-                        price: 100000,
+                    const inputDataForProduct = inputData[key] ?? {};
+
+                    const dataItem = {
+                        colorName: color,
+                        sizeName: size,
+                        materialName: material,
+                        quantity: inputDataForProduct?.quantity,
+                        price: inputDataForProduct?.price,
                         productId: null,
-                    });
+                        key: key,
+                    };
 
-                    colorGroup.push({
+                    dataGroup.push(dataItem);
+
+                    const colorItem = {
                         key: key,
                         productName: selectedProductName,
-                        size: findSizeNameById(size),
-                        color: findColorNameById(color),
-                        material: findMaterialNameById(material),
-                        quantity: 100,
-                        price: 100000,
-                    });
+                        sizeName: size,
+                        colorName: color,
+                        materialName: material,
+                    };
+
+                    colorGroup.push(colorItem);
                 }
             }
 
             colorSource.push(...colorGroup);
             dataSource.push(...dataGroup);
-
         }
+
         setProductDetailData(dataSource);
 
         const columns = [
-
             {
                 title: 'Sản phẩm',
                 width: '50%',
-                render: (text, record) => (<span>{`${record.productName} [${record.color} - ${record.size} - ${record.material}]`}</span>)
+                render: (record) => (
+                    <span>{`${record.productName} [${record.colorName} - ${record.sizeName} - ${record.materialName}]`}</span>
+                ),
             },
             {
                 title: 'Số lượng',
                 width: '10%',
-                dataIndex: 'quantity',
-                key: 'quantity',
-                render: (text, record) => (
-                    // <Form.Item name={`quantity_${record.key}`} initialValue={text}>
-                    <InputNumber value={text} style={{ width: '100%' }} min={1}
-                    //  onChange={(value) => handleQuantityChange(value, record.key)}
+                render: (record) => (
+                    <InputNumber
+                        value={inputData[record.key]?.quantity}
+                        style={{ width: '100%' }}
+                        min={0}
+                        onChange={(value) => handleInputChange(value, record.key, 'quantity')}
                     />
-                    // </Form.Item>
                 ),
             },
             {
                 title: 'Giá bán',
                 width: '10%',
-                dataIndex: 'price',
-                key: 'price',
-                render: (text, record) => (
-                    // <Form.Item name={`price_${record.key}`} initialValue={text}>
-                    <InputNumber value={text} style={{ width: '100%' }} min={1}
-                    // onChange={(value) => handlePriceChange(value, record.key)}
+                render: (record) => (
+                    <InputNumber
+                        value={inputData[record.key]?.price}
+                        style={{ width: '100%' }}
+                        min={0}
+                        onChange={(value) => handleInputChange(value, record.key, 'price')}
                     />
-                    // </Form.Item>
                 ),
             },
             {
@@ -354,11 +340,15 @@ function ProductAdd() {
                 width: '10%',
                 render: (record) => (
                     <Space size="middle">
-                        <Button type="text" icon={<DeleteOutlined />} style={{ color: 'red' }} onClick={() => handelDelete(record.key)} />
+                        <Button
+                            type="text"
+                            icon={<DeleteOutlined />}
+                            style={{ color: 'red' }}
+                            onClick={() => handleDelete(record.key)}
+                        />
                     </Space>
                 ),
             },
-
         ];
 
         return {
@@ -366,6 +356,8 @@ function ProductAdd() {
             colorSource,
         };
     };
+
+
 
     ////Loại sp
     const [categories, setCategories] = useState([]);
@@ -680,7 +672,7 @@ function ProductAdd() {
                                                 }}
                                                 placeholder="Chọn kích thước"
                                                 onChange={handleSizeChange}
-                                                options={sizes.map(option => ({ value: option.id, label: option.sizeName }))} />
+                                                options={sizes.map(option => ({ value: option.sizeName, label: option.sizeName }))} />
                                         </Form.Item>
                                     </Col>
                                     <Col span={4}>
@@ -709,7 +701,7 @@ function ProductAdd() {
                                                 }}
                                                 placeholder="Chọn màu sắc"
                                                 onChange={handleColorChange}
-                                                options={colors.map(option => ({ value: option.id, label: option.colorName }))}
+                                                options={colors.map(option => ({ value: option.colorName, label: option.colorName }))}
                                             />
                                         </Form.Item>
                                     </Col>
@@ -741,7 +733,7 @@ function ProductAdd() {
                                                 onChange={handleMaterialChange}
                                                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
 
-                                                options={materials.map(option => ({ value: option.id, label: option.materialName }))}
+                                                options={materials.map(option => ({ value: option.materialName, label: option.materialName }))}
                                             />
 
                                         </Form.Item>

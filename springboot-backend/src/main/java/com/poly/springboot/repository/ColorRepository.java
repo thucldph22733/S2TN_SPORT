@@ -17,6 +17,8 @@ public interface ColorRepository extends JpaRepository<Color,Long> {
 
     List<Color> findAllByDeletedTrue();
     Boolean existsByColorName(String ColorName);
+
+    Color findByColorName(String colorName);
     Page<Color> findByColorNameContaining(String name, Pageable pageable);
     Page<Color> findByDeletedIn(List<Boolean> status, Pageable pageable);
     Page<Color> findByColorNameContainingAndDeletedIn(String name, List<Boolean> status, Pageable pageable);

@@ -14,11 +14,11 @@ public class ProductDetailRequestDto {
 
     private Long productId;
 
-    private Long colorId;
+    private String colorName;
 
-    private Long sizeId;
+    private String sizeName;
 
-    private Long materialId;
+    private String materialName;
 
     private Integer quantity;
 

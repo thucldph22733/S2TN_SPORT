@@ -88,6 +88,14 @@ public class ProductController {
                 .body(productList);
     }
 
+    @GetMapping("findProductById")
+    public ResponseEntity<Product> findProductById(@RequestParam Long productId) {
+        Product product = productService.findProductById(productId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(product);
+    }
+
     @PostMapping("create")
     public ResponseEntity<Product> create(@Valid @RequestBody ProductRequestDto productRequestDto) {
         Product  product = productService.createProduct(productRequestDto);

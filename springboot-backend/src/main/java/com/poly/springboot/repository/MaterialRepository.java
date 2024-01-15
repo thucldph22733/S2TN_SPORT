@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface MaterialRepository extends JpaRepository<Material,Long> {
 
-    Material findByMaterialName(String name);
+    Material findByMaterialName(String materialName);
     @Query("SELECT m FROM Material m WHERE m.deleted = true ORDER BY m.createdAt DESC")
     List<Material> findAllByDeletedTrue();
     Boolean existsByMaterialName(String MaterialName);

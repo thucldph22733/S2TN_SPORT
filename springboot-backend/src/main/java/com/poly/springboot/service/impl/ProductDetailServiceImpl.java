@@ -85,9 +85,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         ProductDetail productDetail = new ProductDetail();
 
         productDetail.setProduct(productRepository.findById(requestDto.getProductId()).orElse(null));
-        productDetail.setColor(colorRepository.findById(requestDto.getColorId()).orElse(null));
-        productDetail.setSize(sizeRepository.findById(requestDto.getSizeId()).orElse(null));
-        productDetail.setMaterial(materialRepository.findById(requestDto.getMaterialId()).orElse(null));
+        productDetail.setColor(colorRepository.findByColorName(requestDto.getColorName()));
+        productDetail.setSize(sizeRepository.findBySizeName(requestDto.getSizeName()));
+        productDetail.setMaterial(materialRepository.findByMaterialName(requestDto.getMaterialName()));
         productDetail.setQuantity(requestDto.getQuantity());
         productDetail.setPrice(requestDto.getPrice());
         productDetail.setDeleted(true);
@@ -104,9 +104,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
             ProductDetail productDetail = new ProductDetail();
 
             productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
-            productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
-            productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
-            productDetail.setMaterial(materialRepository.findById(productDetailRequestDto.getMaterialId()).orElse(null));
+            productDetail.setColor(colorRepository.findByColorName(productDetailRequestDto.getColorName()));
+            productDetail.setSize(sizeRepository.findBySizeName(productDetailRequestDto.getSizeName()));
+            productDetail.setMaterial(materialRepository.findByMaterialName(productDetailRequestDto.getMaterialName()));
             productDetail.setQuantity(productDetailRequestDto.getQuantity());
             productDetail.setPrice(productDetailRequestDto.getPrice());
             productDetail.setDeleted(true);
@@ -139,16 +139,17 @@ public class ProductDetailServiceImpl implements ProductDetailService {
 
 
     @Override
-    public Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto, Long id) {
+    public Boolean updateProductDetail(ProductDetailRequestDto requestDto, Long id) {
         ProductDetail productDetail = productDetailRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
 
-        productDetail.setProduct(productRepository.findById(productDetailRequestDto.getProductId()).orElse(null));
-        productDetail.setColor(colorRepository.findById(productDetailRequestDto.getColorId()).orElse(null));
-        productDetail.setSize(sizeRepository.findById(productDetailRequestDto.getSizeId()).orElse(null));
-        productDetail.setMaterial(materialRepository.findById(productDetailRequestDto.getMaterialId()).orElse(null));
-        productDetail.setQuantity(productDetailRequestDto.getQuantity());
-        productDetail.setPrice(productDetailRequestDto.getPrice());
+        productDetail.setProduct(productRepository.findById(requestDto.getProductId()).orElse(null));
+        productDetail.setColor(colorRepository.findByColorName(requestDto.getColorName()));
+        productDetail.setSize(sizeRepository.findBySizeName(requestDto.getSizeName()));
+        productDetail.setMaterial(materialRepository.findByMaterialName(requestDto.getMaterialName()));
+        productDetail.setQuantity(requestDto.getQuantity());
+        productDetail.setPrice(requestDto.getPrice());
+        productDetail.setDeleted(true);
 
         productDetailRepository.save(productDetail);
         return true;

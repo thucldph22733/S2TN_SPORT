@@ -31,7 +31,7 @@ const Login = () => {
         }).catch(err => {
             notification.error({
                 message: 'Thông báo',
-                description: 'Đăng nhập thành công!',
+                description: 'Tài khoản hoặc mật khẩu không đúng!',
             });
         });
     };

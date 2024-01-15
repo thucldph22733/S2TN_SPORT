@@ -19,7 +19,14 @@ const ProductService = {
                 throw error;
             });
     },
-
+    findProductById: (productId) => {
+        return HttpClient.get(`${API_URL}findProductById?productId=${productId}`)
+            .then(response => response)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
     create: (data) => {
         return HttpClient.post(`${API_URL}create`, data)
             .then(response => response.data)

@@ -32,23 +32,23 @@ const ImageService = {
     //         });
     // },
 
-    // delete: (id) => {
-    //     return HttpClient.delete(`${API_URL}delete?id=${id}`)
-    //         .then(response => response.data)
-    //         .catch(error => {
-    //             console.error('Error in delete:', error);
-    //             throw error;
-    //         });
-    // },
+    delete: (id) => {
+        return HttpClient.delete(`${API_URL}delete?id=${id}`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in delete:', error);
+                throw error;
+            });
+    },
 
-    // findAllByDeletedTrue: () => {
-    //     return HttpClient.get(`${API_URL}findAllByDeletedTrue`)
-    //         .then(response => response)
-    //         .catch(error => {
-    //             console.error('Error in findAllByDeletedTrue:', error);
-    //             throw error;
-    //         });
-    // },
+    findImageByProductId: (productId) => {
+        return HttpClient.get(`${API_URL}findImageByProductId?productId=${productId}`)
+            .then(response => response)
+            .catch(error => {
+                console.error('Error in findImageByProductId:', error);
+                throw error;
+            });
+    },
 };
 
 export default ImageService;

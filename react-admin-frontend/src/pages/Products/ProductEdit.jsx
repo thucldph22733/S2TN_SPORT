@@ -22,24 +22,13 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { imageDB } from '~/config/ConfigFirebase';
 import 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
-import { deleteObject, getStorage, getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getStorage, getDownloadURL, listAll, ref, uploadBytes, list } from 'firebase/storage';
 import ProductDetailService from '~/service/ProductDetaiService';
 import SupplierService from '~/service/SupplierService';
 import formatCurrency from '~/utils/format-currency';
 const { TextArea } = Input;
 function ProductEdit() {
-
-    //--------------------------------Mở modal ảnh-------------------------------------
-
-    const [openImage, setOpenImage] = useState(false);
-
-    const showModalImage = () => {
-        setOpenImage(true);
-    };
-
-    const handleCancelImage = () => {
-        setOpenImage(false);
-    };
+    let { id } = useParams();
 
     //-------------------------------Mở modal thương hiệu---------------------------------------
     const [openBrand, setOpenBrand] = useState(false);
@@ -71,25 +60,112 @@ function ProductEdit() {
     const handleCancelCategory = () => {
         setOpenCategory(false);
     };
+    //load sản phẩm
+    const [products, setProducts] = useState([]);
 
-    // const [products, setProducts] = useState([]);
+    useEffect(() => {
+        fetchProduct()
+    }, []);
+    const fetchProduct = async () => {
 
-    // useEffect(() => {
-    //     fetchProduct()
-    // }, []);
-    // const fetchProduct = async () => {
+        await ProductService.findProductById(id)
+            .then(response => {
 
-    //     await ProductService.findAllByDeletedTrue()
-    //         .then(response => {
+                setProducts(response.data)
+                console.log(response.data)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+    //load ảnh
+    const [fileList, setFileList] = useState([]);
+    const [images, setImages] = useState([]);
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState('');
+    const [previewTitle, setPreviewTitle] = useState('')
 
-    //             setProducts(response.data)
-    //             console.log(response.data)
-    //         }).catch(error => {
-    //             console.error(error);
-    //         })
-    // }
+    const getBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
+    useEffect(() => {
+        fetchImages();
+    }, []);
+    const handlePreview = async (file) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setPreviewImage(file.url || file.preview);
+        setPreviewOpen(true);
+        setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
+    };
+    const handleCancel = () => setPreviewOpen(false);
+    const fetchImages = async () => {
+        try {
+            const response = await ImageService.findImageByProductId(id);
+            setImages(response.data);
 
+            // Convert the image data to the format expected by Ant Design Upload component
+            const fileListData = response.data.map((image) => ({
+                id: image.id, // You may need to adjust this based on your image data structure
+                name: image.imageName,
+                status: 'done',
+                url: image.imageLink, // You need to replace this with the actual property name where your image URL is stored
+            }));
 
+            setFileList(fileListData);
+        } catch (error) {
+            console.error('Error fetching images:', error);
+            message.error('Failed to fetch images.');
+        }
+    };
+
+    const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+
+    const customRequest = async ({ file }) => {
+        try {
+
+            const imgRef = ref(imageDB, `files/${uuidv4()}`);
+            await uploadBytes(imgRef, file.originFileObj);
+            const url = await getDownloadURL(imgRef);
+
+            // Thêm thông tin file vào Firebase Database hoặc làm các xử lý khác nếu cần
+            const fileInfo = [{
+                productId: parseInt(id),
+                imageName: file.name,
+                imageLink: url,
+                imageType: file.type,
+            }];
+
+            // Update product with the new image information
+            await ImageService.create(fileInfo);
+            fetchImages();
+        } catch (error) {
+            console.error('Error processing file:', error);
+
+        }
+    };
+
+    const handleDeleteImage = async (id) => {
+
+        await ImageService.delete(id).then(() => {
+            notification.success({
+                message: 'Thông báo',
+                description: 'Xóa ảnh thành công!',
+            });
+            handleChange();
+        }).catch(error => {
+            console.error(error);
+            notification.error({
+                message: 'Thông báo',
+                description: 'Đã có lỗi xảy ra!',
+            });
+        });
+
+    };
     //---------------------------------------------------------------------------------------
     const [form] = Form.useForm();
 
@@ -100,12 +176,12 @@ function ProductEdit() {
         modal.confirm({
             title: 'Thông báo!',
             icon: <ExclamationCircleOutlined />,
-            content: 'Bạn có chắc muốn tạo mới một sản phẩm không?',
+            content: 'Bạn có chắc muốn cập nhật lại sản phẩm không?',
             onOk: () => {
                 setLoading(true);
                 setTimeout(() => {
-                    handleCreate();
-                }, 2000);
+                    handleUpdate();
+                }, 1000);
             },
             okText: 'Đồng ý',
             cancelText: 'Hủy bỏ',
@@ -133,6 +209,7 @@ function ProductEdit() {
     useEffect(() => {
         fetchBrand()
     }, []);
+
     const fetchBrand = async () => {
 
         await BrandService.findAllByDeletedTrue()
@@ -161,80 +238,31 @@ function ProductEdit() {
             })
     }
 
-    const [fileList, setFileList] = useState([]);
+    const handleUpdate = () => {
+        form.validateFields().then(async () => {
+            const data = form.getFieldsValue(true);
+            await ProductService.update(id, data)
+                .then(() => {
+                    notification.success({
+                        message: 'Thông báo',
+                        description: 'Cập nhật thành công!',
+                    });
 
-    const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    notification.error({
+                        message: 'Thông báo',
+                        description: 'Cập nhật thất bại!',
+                    });
+                    console.error(error);
+                });
 
-    // const handleCancel = () => setPreviewOpen(false);
-    const navigate = useNavigate();
-    const handleCreate = async () => {
-        // setLoading(true);
+        }).catch(error => {
+            console.error(error);
+        })
 
-        // try {
-        //     await form.validateFields();
-
-        //     // Tạo mảng promises chứa tất cả các tác vụ upload ảnh
-        //     const uploadPromises = fileList.map(async (file) => {
-        //         const imgRef = ref(imageDB, `files/${uuidv4()}`);
-        //         await uploadBytes(imgRef, file.originFileObj);
-        //         const url = await getDownloadURL(imgRef);
-
-        //         // Thêm thông tin file vào Firebase Database hoặc làm các xử lý khác nếu cần
-        //         return {
-        //             imageName: file.name,
-        //             imageLink: url,
-        //             imageType: file.type,
-        //         };
-        //     });
-
-        //     // Sử dụng Promise.all để đợi tất cả các tác vụ upload ảnh hoàn tất
-        //     const uploadedFiles = await Promise.all(uploadPromises);
-
-        //     // Tạo sản phẩm và lấy productId từ kết quả
-        //     try {
-        //         const data = await form.getFieldsValue();
-        //         data.deleted = true;
-        //         const productId = await ProductService.create(data);
-
-        //         // Thêm productId vào mỗi fileInfo
-        //         uploadedFiles.forEach(fileInfo => fileInfo.productId = productId.id);
-
-        //         // Gọi API để lưu thông tin ảnh vào backend
-        //         await ImageService.create(uploadedFiles);
-
-        //         // const formValues = formThuocTinh.getFieldsValue()
-        //         const productDetail = productDetailData.map(item => ({
-        //             ...item,
-        //             productId: productId.id,
-        //         }));
-        //         console.log(productDetail);
-        //         // Gọi API để lưu thông tin ảnh vào backend
-        //         await ProductDetailService.create(productDetail);
-
-        //         setFileList([]);
-        //         setLoading(false);
-        //         notification.success({
-        //             message: 'Thông báo',
-        //             description: 'Thêm mới sản phẩm thành công!',
-        //         });
-        //         navigate(path_name.product);
-        //     } catch (error) {
-        //         setLoading(false);
-        //         notification.error({
-        //             message: 'Thông báo',
-        //             description: 'Lỗi thêm mới sản phẩm!',
-        //         });
-        //     }
-        // } catch (error) {
-        //     setLoading(false);
-        //     notification.error({
-        //         message: 'Thông báo',
-        //         description: 'Lỗi thêm mới sản phẩm!',
-        //     });
-        // }
-    };
-
-    let { id } = useParams();
+    }
 
     const [open, setOpen] = useState({ isModal: false, isMode: '', reacord: null });
 
@@ -394,10 +422,12 @@ function ProductEdit() {
                         name="validateOnly" layout="vertical" autoComplete="off"
                         style={{ marginTop: '25px' }}
                         form={form}
+                        key={products?.id}
                     >
-                        <Row>
+                        <Row >
                             <Col span={12} style={{ paddingRight: '20px' }}>
                                 <Form.Item
+                                    initialValue={products?.productName}
                                     label="Tên sản phẩm:"
                                     name="productName"
                                     rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }]}
@@ -414,9 +444,13 @@ function ProductEdit() {
 
                                 <Row>
                                     <Col span={22}>
-                                        <Form.Item label="Danh mục:" name="categoryName" rules={[{ required: true, message: 'Vui lòng chọn danh mục !' }]}>
+                                        <Form.Item label="Danh mục:"
+                                            name="categoryName"
+                                            initialValue={products.category?.categoryName}
+                                            rules={[{ required: true, message: 'Vui lòng chọn danh mục !' }]}>
                                             <Select
                                                 showSearch
+
                                                 style={{
                                                     width: '100%',
                                                     height: '35px'
@@ -432,7 +466,7 @@ function ProductEdit() {
                                         <Button type="primary"
                                             icon={<PlusOutlined />}
                                             onClick={showModalCategory}
-                                            style={{ marginTop: '31px', width: '35px', height: '35px', float: 'right', borderRadius: '2px' }}
+                                            style={{ marginTop: '30px', width: '35px', height: '35px', float: 'right', borderRadius: '2px' }}
                                         >
                                         </Button>
                                     </Col>
@@ -443,16 +477,20 @@ function ProductEdit() {
                             <Col span={12} style={{ paddingRight: '20px' }}>
                                 <Row>
                                     <Col span={22}>
-                                        <Form.Item label="Thương hiệu:" name="brandName" rules={[{ required: true, message: 'Vui lòng chọn thương hiệu !' }]}>
+                                        <Form.Item label="Thương hiệu:"
+                                            name="brandName"
+                                            initialValue={products.brand?.brandName}
+                                            rules={[{ required: true, message: 'Vui lòng chọn thương hiệu !' }]}>
                                             <Select
                                                 showSearch
                                                 style={{
                                                     width: '100%',
                                                     height: '35px'
                                                 }}
+
                                                 placeholder="Chọn thương hiệu"
                                                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                                                options={brands.map(option => ({ value: option.brandName, label: option.brandName }))}
+                                                options={brands.map(option => ({ value: option?.brandName, label: option.brandName }))}
                                             />
                                         </Form.Item>
                                     </Col>
@@ -461,7 +499,7 @@ function ProductEdit() {
                                         <Button type="primary"
                                             icon={<PlusOutlined />}
                                             onClick={showModalBrand}
-                                            style={{ marginTop: '31px', width: '35px', height: '35px', float: 'right', borderRadius: '2px' }}
+                                            style={{ marginTop: '30px', width: '35px', height: '35px', float: 'right', borderRadius: '2px' }}
                                         >
                                         </Button>
                                     </Col>
@@ -470,13 +508,17 @@ function ProductEdit() {
                             <Col span={12} style={{ paddingLeft: '20px' }}>
                                 <Row>
                                     <Col span={22}>
-                                        <Form.Item label="Nhà cung cấp:" name="supplierName" rules={[{ required: true, message: 'Vui lòng chọn nhà cung cấp !' }]}>
+                                        <Form.Item label="Nhà cung cấp:"
+                                            name="supplierName"
+                                            initialValue={products.supplier?.supplierName}
+                                            rules={[{ required: true, message: 'Vui lòng chọn nhà cung cấp !' }]}>
                                             <Select
                                                 showSearch
                                                 style={{
                                                     width: '100%',
                                                     height: '35px'
                                                 }}
+
                                                 placeholder="Chọn nhà cung cấp"
                                                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
                                                 options={suppliers.map(option => ({ value: option.supplierName, label: option.supplierName }))}
@@ -487,7 +529,7 @@ function ProductEdit() {
                                         <Button type="primary"
                                             icon={<PlusOutlined />}
                                             onClick={showModalSupplier}
-                                            style={{ marginTop: '31px', width: '35px', height: '35px', float: 'right', borderRadius: '2px' }}
+                                            style={{ marginTop: '30px', width: '35px', height: '35px', float: 'right', borderRadius: '2px' }}
                                         >
                                         </Button>
                                     </Col>
@@ -497,7 +539,7 @@ function ProductEdit() {
 
                             </Col>
                         </Row>
-                        <Form.Item label="Mô tả:" name="productDescribe" >
+                        <Form.Item label="Mô tả:" name="productDescribe" initialValue={products?.productDescribe}>
                             <TextArea rows={4} placeholder="Nhập mô tả..." style={{ borderRadius: '10px' }} />
                         </Form.Item>
                     </Form >
@@ -507,28 +549,15 @@ function ProductEdit() {
                     style={{ marginTop: '10px', borderRadius: '10px' }} >
 
                     <Upload
-                        customRequest={async ({ file, onSuccess, onError }) => {
-                            try {
-                                const isImage = file.type.startsWith('files/');
-                                if (!isImage) {
-                                    throw new Error('Only images are allowed.');
-                                }
-
-                                const reader = new FileReader();
-                                reader.onload = (e) => {
-                                    onSuccess();
-                                };
-                                reader.readAsDataURL(file);
-                            } catch (error) {
-                                console.error('Error processing file:', error);
-                                onError(error);
-                            }
-                        }}
+                        customRequest={customRequest}
                         listType="picture-card"
                         fileList={fileList}
                         onChange={handleChange}
                         maxCount={5}
                         multiple
+                        onPreview={handlePreview}
+                        onRemove={(image) => handleDeleteImage(image.id)}
+
                     >
                         {fileList?.length >= 5 ? null : (
                             <div>
@@ -537,7 +566,15 @@ function ProductEdit() {
                             </div>
                         )}
                     </Upload>
-
+                    <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+                        <img
+                            alt="example"
+                            style={{
+                                width: '100%',
+                            }}
+                            src={previewImage}
+                        />
+                    </Modal>
                 </Card>
                 <Card title={<span style={{ color: '#5a76f3' }}>Danh sách sản phẩm chi tiết</span>}
                     style={{ borderRadius: '10px', marginTop: '10px' }} >
@@ -760,7 +797,7 @@ const ProductDetailModal = ({ isMode, reacord, hideModal, isModal, fetchProductD
             >
                 <Row>
                     <Col span={22}>
-                        <Form.Item label="Kích thước" name="sizeId" rules={[{ required: true, message: 'Vui lòng chọn kích thước !' }]}>
+                        <Form.Item label="Kích thước" name="sizeName" rules={[{ required: true, message: 'Vui lòng chọn kích thước !' }]}>
                             <Select
                                 allowClear
                                 showSearch
@@ -768,7 +805,7 @@ const ProductDetailModal = ({ isMode, reacord, hideModal, isModal, fetchProductD
                                     width: '100%',
                                 }}
                                 placeholder="Chọn kích thước"
-                                options={sizes.map(option => ({ value: option.id, label: option.sizeName }))} />
+                                options={sizes.map(option => ({ value: option.sizeName, label: option.sizeName }))} />
                         </Form.Item>
                     </Col>
                     <Col span={2}>
@@ -783,7 +820,7 @@ const ProductDetailModal = ({ isMode, reacord, hideModal, isModal, fetchProductD
                 </Row>
                 <Row>
                     <Col span={22}>
-                        <Form.Item label="Màu sắc" name="colorId" rules={[{ required: true, message: 'Vui lòng chọn màu sắc !' }]}>
+                        <Form.Item label="Màu sắc" name="colorName" rules={[{ required: true, message: 'Vui lòng chọn màu sắc !' }]}>
                             <Select
                                 showSearch
                                 allowClear
@@ -791,7 +828,7 @@ const ProductDetailModal = ({ isMode, reacord, hideModal, isModal, fetchProductD
                                     width: '100%',
                                 }}
                                 placeholder="Chọn màu sắc"
-                                options={colors.map(option => ({ value: option.id, label: option.colorName }))}
+                                options={colors.map(option => ({ value: option.colorName, label: option.colorName }))}
                             />
                         </Form.Item>
                     </Col>
@@ -808,7 +845,7 @@ const ProductDetailModal = ({ isMode, reacord, hideModal, isModal, fetchProductD
 
                 <Row>
                     <Col span={22}>
-                        <Form.Item label="Chất liệu:" name="materialId" rules={[{ required: true, message: 'Vui lòng chọn chất liệu !' }]} >
+                        <Form.Item label="Chất liệu:" name="materialName" rules={[{ required: true, message: 'Vui lòng chọn chất liệu !' }]} >
                             <Select
                                 showSearch
                                 style={{
@@ -817,8 +854,7 @@ const ProductDetailModal = ({ isMode, reacord, hideModal, isModal, fetchProductD
                                 allowClear
                                 placeholder="Chọn chất liệu"
                                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
-
-                                options={materials.map(option => ({ value: option.id, label: option.materialName }))}
+                                options={materials.map(option => ({ value: option.materialName, label: option.materialName }))}
                             />
 
                         </Form.Item>

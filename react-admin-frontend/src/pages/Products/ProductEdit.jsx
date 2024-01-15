@@ -63,6 +63,7 @@ function ProductEdit() {
     //load sản phẩm
     const [products, setProducts] = useState([]);
 
+<<<<<<< Updated upstream
     useEffect(() => {
         fetchProduct()
     }, []);
@@ -107,6 +108,24 @@ function ProductEdit() {
         try {
             const response = await ImageService.findImageByProductId(id);
             setImages(response.data);
+=======
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        fetchProduct()
+    }, []);
+    const fetchProduct = async () => {
+
+        await ProductService.findAllByDeletedTrue()
+            .then(response => {
+
+                setProducts(response.data)
+                console.log(response.data)
+            }).catch(error => {
+                console.error(error);
+            })
+    }
+>>>>>>> Stashed changes
 
             // Convert the image data to the format expected by Ant Design Upload component
             const fileListData = response.data.map((image) => ({
@@ -430,7 +449,31 @@ function ProductEdit() {
                                     initialValue={products?.productName}
                                     label="Tên sản phẩm:"
                                     name="productName"
-                                    rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }]}
+                                    rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }
+                                        ,
+                                    {
+                                        validator: (_, value) => {
+                                            const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                            const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+
+                                            // Lấy giá trị của trường 'voucherCode' từ form
+                                            const productNameFieldValue = form.getFieldValue('productName');
+
+                                            const isDuplicate = products.some(
+                                                (product) => product.productName.trim().toLowerCase() === lowercaseValue && product.id !== productNameFieldValue
+                                            );
+
+                                            if (isDuplicate) {
+                                                return Promise.reject('Sản phẩm đã tồn tại!');
+                                            }
+                                            // Kiểm tra xem có dấu cách ở đầu và cuối không
+                                            if (value && (value.trim() !== value)) {
+                                                return Promise.reject('Tên sản phẩm không được có dấu cách ở đầu hoặc cuối');
+                                            }
+                                            return Promise.resolve();
+                                        },
+                                    },
+                                    ]}
                                 >
                                     <Input
                                         placeholder="Nhập tên sản phẩm..."

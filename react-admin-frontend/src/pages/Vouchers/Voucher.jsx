@@ -418,37 +418,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
         </Select>
     );
 
-    const formatNumber = (value) => {
-        if (value === undefined || value === null) {
-            return value;
-        }
 
-        const stringValue = String(value);
-        const parts = stringValue.split('.');
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-        return parts.join('.');
-    };
-
-    const MyInputNumber = ({ value, onChange, ...restProps }) => {
-        const formattedValue = formatNumber(value);
-
-        // const content = (
-        //     <div style={{ padding: '8px' }}>{formattedValue}</div>
-        // );
-
-        return (
-            // <Popover content={content} trigger="hover" placement="bottom">
-            <InputNumber
-                {...restProps}
-                formatter={(value) => formatNumber(value)}
-                parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số
-                value={formattedValue}  // Đặt giá trị đã định dạng vào InputNumber
-                onChange={onChange}
-            />
-            // </Popover>
-        );
-    };
 
     const formatNumberToiThieu = (value) => {
         if (value === undefined || value === null) {
@@ -472,6 +442,19 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
 
         return parts.join('.');
     };
+
+    const formatGiamGia = (value) => {
+        if (value === undefined || value === null) {
+            return value;
+        }
+
+        const stringValue = String(value);
+        const parts = stringValue.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        return parts.join('.');
+    };
+
 
     return (
         <Row>
@@ -573,7 +556,12 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                         },
                                     ]}
                                 >
-                                    <MyInputNumber style={{ width: '100%' }} addonAfter={selectAfter} />
+                                    <InputNumber
+                                        style={{ width: '100%' }}
+                                        addonAfter={selectAfter}
+                                        formatter={(value) => formatGiamGia(value)}
+                                        parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số
+                                    />
                                 </Form.Item>
                             </Col>
                             <Col span={1}></Col>

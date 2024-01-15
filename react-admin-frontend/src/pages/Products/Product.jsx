@@ -225,14 +225,38 @@ function Product() {
     };
 
     const [searchKeyword, setSearchKeyword] = useState(null);
-    const handleSearch = () => {
-        setFilters({
-            ...filters,
-            keyword: searchKeyword,
-            pageNo: 0,
-            pageSize: 5
-        });
+
+    const validateInput = (value) => {
+        const trimmedValue = value.trim();
+
+        if (value !== trimmedValue) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Giá trị không được có dấu cách ở đầu hoặc cuối',
+            });
+            return false;
+        }
+
+        // Thực hiện các xử lý cần thiết khi validate thành công
+        return true;
     };
+
+    const handleSearch = () => {
+        // Kiểm tra giá trị trước khi gọi hàm setSearchKeyword
+        if (validateInput(searchKeyword)) {
+            setFilters({
+                ...filters,
+                keyword: searchKeyword,
+                pageNo: 0,
+                pageSize: 5
+            });
+        } else {
+            // Nếu giá trị không hợp lệ, có thể thực hiện các xử lý cần thiết
+            console.error('Giá trị không hợp lệ');
+        }
+    };
+
+
     //lọc theo khoảng giá
     const [priceRange, setPriceRange] = useState(null);
 

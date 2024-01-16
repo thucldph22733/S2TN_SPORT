@@ -155,35 +155,6 @@ public class ProductDetailServiceImpl implements ProductDetailService {
         return true;
     }
 
-    @Override
-    public List<Map<String, Object>> getTop10BestSellingProducts() {
-        List<Map<String, Object>> bestSellingProductsList = productDetailRepository.findTop10BestSellingProducts();
-        List<Map<String, Object>> formattedList = new ArrayList<>();
-
-        for (Map<String, Object> product : bestSellingProductsList) {
-            // Chuyển đổi kiểu dữ liệu khi cần thiết
-            Long productId = (Long) product.get("productId");
-            String productName = (String) product.get("productName");
-            String colorName = (String) product.get("colorName");
-            String sizeName = (String) product.get("sizeName");
-            Integer totalQuantitySold = ((Number) product.get("totalQuantitySold")).intValue();
-            Double totalRevenue = (Double) product.get("totalRevenue");
-
-            // Xử lý dữ liệu theo nhu cầu của bạn
-            // Ví dụ: Chuyển đổi sang cấu trúc mới và thêm vào danh sách định dạng
-            Map<String, Object> formattedProduct = new HashMap<>();
-            formattedProduct.put("productId", productId);
-            formattedProduct.put("productName", productName);
-            formattedProduct.put("colorName", colorName);
-            formattedProduct.put("sizeName", sizeName);
-            formattedProduct.put("totalQuantitySold", totalQuantitySold);
-            formattedProduct.put("totalRevenue", totalRevenue);
-
-            formattedList.add(formattedProduct);
-        }
-
-        return formattedList;
-    }
 
     @Override
     public List<SizeInfoResponseDto> getSizeNamesByProductId(Long productId) {

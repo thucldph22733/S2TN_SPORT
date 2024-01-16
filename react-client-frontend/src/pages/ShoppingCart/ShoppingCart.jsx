@@ -177,7 +177,6 @@ const ShoppingCart = () => {
             dataIndex: 'key',
             key: 'key',
             with: '5%',
-
         },
         {
             title: 'Sản phẩm',

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import DashboardService from "~/service/DashboardService";
 
-function PieChart() {
+function PieChart({ filter }) {
     const [data, setData] = useState({
         labels: [],
         datasets: [
@@ -24,7 +24,7 @@ function PieChart() {
 
     const getTotalOrdersByStatus = async () => {
         try {
-            const response = await DashboardService.getTotalOrdersByStatus();
+            const response = await DashboardService.getTotalOrdersByStatus(filter);
 
             // Kiểm tra xem response có tồn tại và có thuộc tính map không
             if (Array.isArray(response)) {
@@ -36,7 +36,6 @@ function PieChart() {
                             data: response.map((item) => item.orderCount),
                             backgroundColor: [
                                 "#5a76f3",
-                                "#f7f5f6",
                                 "#f28c5b",
                                 "#37c7a1",
                                 "#f3ba2f",
@@ -59,7 +58,7 @@ function PieChart() {
 
     useEffect(() => {
         getTotalOrdersByStatus();
-    }, []);
+    }, [filter]);
 
     return <Pie data={data}
         options={{ maintainAspectRatio: false }} />;

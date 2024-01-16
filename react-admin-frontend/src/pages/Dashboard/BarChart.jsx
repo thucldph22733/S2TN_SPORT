@@ -4,7 +4,7 @@ import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 import DashboardService from "~/service/DashboardService";
 
-function BarChart() {
+function BarChart({ year }) {
     const [data, setData] = useState({
         labels: [],
         datasets: [
@@ -29,10 +29,9 @@ function BarChart() {
         ],
     });
 
-
     const getRevenueByMonthForCurrentYear = async () => {
         try {
-            const response = await DashboardService.getRevenueByMonthForCurrentYear();
+            const response = await DashboardService.getRevenueByMonthForCurrentYear(year);
 
             // Kiểm tra xem response có tồn tại và có thuộc tính map không
             if (response && response.map) {
@@ -65,7 +64,7 @@ function BarChart() {
 
     useEffect(() => {
         getRevenueByMonthForCurrentYear();
-    }, []);
+    }, [year]);
 
     return <Bar data={data} width={"100%"} height={'500px'}
         options={{ maintainAspectRatio: false }} />;

@@ -150,6 +150,8 @@ function User() {
             dataIndex: 'key',
             key: 'key',
             width: '5%',
+            render: (value, item, index) => (pagination.current - 1) * pagination.pageSize + index + 1
+
         },
         {
             title: 'Tên',
@@ -457,8 +459,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
                     ...(reacord?.birthOfDay && { birthOfDay: dayjs(reacord.birthOfDay, "DD/MM/YYYY") }),
                 }}
             >
-                <Form.Item label="Tên:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }
-                    ,
+                <Form.Item label="Tên:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' },
                 {
                     validator: (_, value) => {
                         if (!value) {
@@ -525,17 +526,14 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
                             label="Ngày sinh:"
                             name="birthOfDay"
                             rules={[
-                                {
-                                    required: true,
-                                    message: 'Vui lòng chọn ngày sinh!',
-                                },
+
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
                                         const selectedDate = new Date(value);
                                         const currentDate = new Date();
 
                                         if (selectedDate > currentDate) {
-                                            return Promise.reject(new Error('không được chọn tương lai!'));
+                                            return Promise.reject(new Error('Không được chọn tương lai!'));
                                         }
                                         return Promise.resolve();
                                     },
@@ -601,7 +599,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
                     />
 
                 </Form.Item>
-                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]} >
+                <Form.Item label="Trạng thái:" name="deleted" initialValue={true} >
                     <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                         <Radio value={true}>Hoạt động</Radio>
                         <Radio value={false}>Tạm khóa</Radio>

@@ -136,6 +136,7 @@ function Brand() {
             dataIndex: 'key',
             key: 'key',
             width: '5%',
+            render: (value, item, index) => (pagination.current - 1) * pagination.pageSize + index + 1
         },
         {
             title: 'Tên thương hiệu',

@@ -16,17 +16,20 @@ const Login = () => {
         console.log(data);
         AuthService.login(data).then((response) => {
             console.log(response)
-            localStorage.setItem('access_token1', response.access_token)
-            localStorage.setItem('refresh_token2', response.refresh_token)
-            const user = JSON.stringify(response.user);
-            localStorage.setItem('user1', user)
+            if (response.user.role === "USER") {
+                notification.warning({
+                    message: 'Thông báo',
+                    description: 'Bạn không có quyền vào trang này!',
+                });
+            } else {
+                localStorage.setItem('access_token1', response.access_token)
+                localStorage.setItem('refresh_token2', response.refresh_token)
+                const user = JSON.stringify(response.user);
+                localStorage.setItem('user1', user)
 
-            notification.success({
-                message: 'Thông báo',
-                description: 'Đăng nhập thành công!',
-            });
-            navigate(path_name.newSell)
 
+                navigate(path_name.newSell)
+            }
         }).catch(err => {
             notification.error({
                 message: 'Thông báo',
@@ -34,7 +37,6 @@ const Login = () => {
             });
         });
     };
-
     return (
         <Form
             name="normal_login"

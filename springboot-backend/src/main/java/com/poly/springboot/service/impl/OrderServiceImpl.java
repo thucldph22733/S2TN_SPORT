@@ -8,12 +8,17 @@ import com.poly.springboot.entity.*;
 import com.poly.springboot.exception.ResourceNotFoundException;
 import com.poly.springboot.repository.*;
 import com.poly.springboot.service.OrderService;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -82,8 +87,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Map<String, Object>> getRevenueByMonthForCurrentYear() {
-        List<Map<String, Object>> revenueList = orderRepository.getRevenueByMonthForCurrentYear();
+    public List<Map<String, Object>> getRevenueByMonthForCurrentYear(Integer year) {
+        List<Map<String, Object>> revenueList = orderRepository.getRevenueByMonthForYear(year);
 
         for (Map<String, Object> revenue : revenueList) {
             Integer month = (Integer) revenue.get("month");
@@ -94,9 +99,10 @@ public class OrderServiceImpl implements OrderService {
         return revenueList;
     }
 
+
     @Override
-    public List<Map<String, Object>> getTotalOrdersByStatus() {
-        List<Object[]> ordersByStatusList = orderRepository.getTotalOrdersByStatus();
+    public List<Map<String, Object>> getTotalOrdersByStatus(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Object[]> ordersByStatusList = orderRepository.getTotalOrdersByStatus(startDate, endDate);
         List<Map<String, Object>> transformedList = new ArrayList<>();
 
         for (Object[] orderStatus : ordersByStatusList) {
@@ -108,7 +114,15 @@ public class OrderServiceImpl implements OrderService {
 
         return transformedList;
     }
+    @Override
+    public Double getRevenue(LocalDateTime startDate, LocalDateTime endDate) {
+        return orderRepository.getRevenue(startDate, endDate);
+    }
 
+    @Override
+    public Long countCompletedOrdersInDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return orderRepository.countCompletedOrdersInDateRange(startDate, endDate);
+    }
     @Override
     public Order findOrderById(Long id) {
 
@@ -116,6 +130,48 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn này"));
 
         return order;
+    }
+
+    @Override
+    public void generateExcel(HttpServletResponse response) throws IOException {
+        List<Order> orders = orderRepository.findAll();
+
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet("Orders Info");
+        HSSFRow row = sheet.createRow(0);
+
+        row.createCell(0).setCellValue("Mã HD");
+        row.createCell(1).setCellValue("Tên khách hàng");
+        row.createCell(2).setCellValue("Loại đơn hàng");
+        row.createCell(3).setCellValue("Ngày tạo");
+        row.createCell(4).setCellValue("Tiền giảm");
+        row.createCell(5).setCellValue("Phí giao hàng");
+        row.createCell(6).setCellValue("Tổng tiền");
+        row.createCell(7).setCellValue("Địa chỉ giao");
+        row.createCell(8).setCellValue("Ghi chú");
+
+
+        int dataRowIndex = 1;
+
+        for (Order order : orders) {
+            HSSFRow dataRow = sheet.createRow(dataRowIndex);
+            dataRow.createCell(0).setCellValue(order.getId());
+            dataRow.createCell(1).setCellValue(order.getUser() != null ? order.getUser().getUsersName() : "Khách lẻ");
+            dataRow.createCell(2).setCellValue(order.getOrderType());
+            dataRow.createCell(3).setCellValue(order.getCreatedAt());
+            dataRow.createCell(4).setCellValue(order.getVoucher() != null ? order.getVoucher().getDiscountRate() : 0);
+            dataRow.createCell(5).setCellValue(order.getTransportFee() == null ? 0 : order.getTransportFee());
+            dataRow.createCell(6).setCellValue(order.getOrderTotal() == null ? 0 : order.getOrderTotal());
+            dataRow.createCell(7).setCellValue(order.getRecipientName()+ order.getPhoneNumber() + order.getAddressDetail() + order.getWard() + order.getDistrict() + order.getCity());
+            dataRow.createCell(8).setCellValue(order.getNote());
+
+            dataRowIndex++;
+        }
+
+        ServletOutputStream ops = response.getOutputStream();
+        workbook.write(ops);
+        workbook.close();
+        ops.close();
     }
 
 
@@ -304,15 +360,6 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
-    @Override
-    public Double monthlyRevenue() {
-        return orderRepository.monthlyRevenue();
-    }
-
-    @Override
-    public Double revenueToday() {
-        return orderRepository.revenueToday();
-    }
 
     @Override
     public Page<Order> findAllOrdersByUserId(Long userId, String orderStatusName, Pageable pageable) {

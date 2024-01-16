@@ -10,6 +10,7 @@ import com.poly.springboot.dto.responseDto.ResponseHandler;
 import com.poly.springboot.entity.Order;
 import com.poly.springboot.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -141,6 +143,18 @@ public class OrderController {
         }
     }
 
+    @GetMapping("export-excel")
+    public void exportExcel(HttpServletResponse response) {
+        try {
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment; filename=orders.xlsx");
+
+            orderService.generateExcel(response);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
 

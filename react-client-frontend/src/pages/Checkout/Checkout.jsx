@@ -367,7 +367,6 @@ function Checkout() {
                                     >
                                         <Input
                                             placeholder="Nhập họ và tên..."
-                                            disabled={user ? true : false}
                                             className='checkout__input'
                                         />
                                     </Form.Item>
@@ -405,7 +404,7 @@ function Checkout() {
                                         <Input
                                             className='checkout__input'
                                             placeholder="Nhập số điện thoại..."
-                                            disabled={user ? true : false} />
+                                        />
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -430,7 +429,7 @@ function Checkout() {
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                             }
                                             options={cities.map(city => ({ value: city.code, label: city.name }))}
-                                            disabled={user ? true : false}
+
                                         />
 
                                     </Form.Item>
@@ -492,7 +491,7 @@ function Checkout() {
                                         rules={[{ required: true, message: 'Vui lòng nhập địa chỉ cụ thể!' }]}>
                                         <Input
                                             placeholder="Địa chỉ cụ thể..."
-                                            disabled={user ? true : false}
+
                                             className='checkout__input' />
                                     </Form.Item>
                                 </Col>

@@ -21,6 +21,15 @@ const OrderService = {
                 throw error;
             });
     },
+
+    excel: () => {
+        return HttpClient.get(`${API_URL}excel`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error in getAll:', error);
+                throw error;
+            });
+    },
     getAllOrderByStatusName: () => {
         return HttpClient.get(`${API_URL}getAllOrderByStatusName`)
             .then(response => response.data)

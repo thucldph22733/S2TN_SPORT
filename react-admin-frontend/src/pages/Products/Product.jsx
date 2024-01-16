@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Button, Input, Form, Modal, notification, Radio, Popconfirm, Tag, Select, Row, Col, Checkbox, Card, Switch, Image } from 'antd';
+import { Table, Space, Button, Input, Form, Modal, notification, Radio, Tag, Select, Row, Col, Checkbox, Card, Switch, Image } from 'antd';
 import {
     PlusOutlined,
     RedoOutlined,
     FormOutlined,
-    DeleteOutlined,
-    SearchOutlined,
-    EyeOutlined,
     FilterOutlined,
     FileDoneOutlined,
 } from '@ant-design/icons';
@@ -21,7 +18,6 @@ import ColorService from '~/service/ColorService';
 import SizeService from '~/service/SizeService';
 import path_name from '~/constants/routers';
 import { Link, useNavigate } from 'react-router-dom';
-import ShowProductDetailModal from './ProductDetail';
 
 const { TextArea } = Input;
 
@@ -317,6 +313,7 @@ function Product() {
             dataIndex: 'key',
             key: 'key',
             width: '5%',
+            render: (value, item, index) => (pagination.current - 1) * pagination.pageSize + index + 1
         },
         {
             title: 'Ảnh',
@@ -387,11 +384,7 @@ function Product() {
                         defaultChecked={record.deleted}
                         onClick={() => handleDelete(record.id)}
                     />
-                    {/* <Button type="text"
-                        icon={<EyeOutlined />}
-                        style={{ color: '#5a76f3', fontSize: '16px' }}
-                        onClick={() => showProductDetalModal(record)}
-                    /> */}
+
                 </Space>
             }
 
@@ -625,11 +618,6 @@ function Product() {
                 isModal={open.isModal}
                 fetchProducts={fetchProducts} />}
 
-            {productDetalModal.isModal && <ShowProductDetailModal
-                record={productDetalModal.reacord}
-                hideModal={hideProductDetalModal}
-                isModal={productDetalModal.isModal}
-            />}
         </>
     )
 };

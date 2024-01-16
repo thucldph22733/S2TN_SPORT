@@ -39,18 +39,6 @@ export default function Sell() {
             [tabKey]: checked,
         }));
     };
-    // ------------------------Mở modal thanh toan----------------------------------------------
-
-    const [openPayment, setOpenPayment] = useState(false);
-
-    const showModalPayment = () => {
-        setOpenPayment(true);
-
-    };
-
-    const handlePaymentCansel = () => {
-        setOpenPayment(false);
-    };
 
     //Mở modal hiển thị voucher
     const [voucherModal, setVoucherModal] = useState(false);
@@ -456,6 +444,23 @@ export default function Sell() {
                 });
             } else {
                 if (tabStates[orderId]) {
+
+                    if (selectedMethod !== "") {
+                        formPayment.validateFields().then(async () => {
+                            const dataPayment = {
+                                orderId: orderId,
+                                status: 'Đã thanh toán',
+                                paymentDate: new Date(),
+                                amount: calculateTotal(),
+                                paymentMethod: selectedMethod,
+
+                            }
+                            await PaymentService.create(dataPayment);
+                        }).catch(error => {
+                            console.error(error);
+                        })
+                    }
+
                     const values = await form.validateFields();
 
                     // Do something with the form values
@@ -469,6 +474,7 @@ export default function Sell() {
                         values.ward = wards.find(ward => ward.code === Number(values.ward))?.name ?? '';
                     }
                     handleUpdateOrder(values);
+
                 } else {
                     if (selectedMethod === "") {
                         notification.error({
@@ -476,24 +482,29 @@ export default function Sell() {
                             description: 'Vui lòng chọn phương thức thanh toán!',
                         });
                     } else {
-                        const dataPayment = {
-                            orderId: orderId,
-                            status: 'Đã thanh toán',
-                            paymentDate: new Date(),
-                            amount: calculateTotal(),
-                            paymentMethod: selectedMethod,
-                            note: 'Không có'
-                        }
-                        await PaymentService.create(dataPayment);
 
-                        const data = await formPayment.validateFields();
-                        data.orderId = orderId;
-                        data.statusName = 'Hoàn thành';
-                        data.orderTotal = calculateTotal();
-                        data.transportFee = 0;
+                        formPayment.validateFields().then(async () => {
 
-                        // Perform the update
-                        handleUpdateOrder(data);
+                            const dataPayment = {
+                                orderId: orderId,
+                                status: 'Đã thanh toán',
+                                paymentDate: new Date(),
+                                amount: calculateTotal(),
+                                paymentMethod: selectedMethod,
+
+                            }
+                            await PaymentService.create(dataPayment);
+                            const data = await formPayment.validateFields();
+                            data.orderId = orderId;
+                            data.statusName = 'Hoàn thành';
+                            data.orderTotal = calculateTotal();
+                            data.transportFee = 0;
+
+                            // Perform the update
+                            handleUpdateOrder(data);
+                        }).catch(error => {
+                            console.error(error);
+                        })
 
                     }
                 }
@@ -502,7 +513,6 @@ export default function Sell() {
             console.error(error);
         }
     };
-
 
     const tabContent = (tabKey) => (
         <>
@@ -590,7 +600,6 @@ export default function Sell() {
                                     style={{ float: 'right', backgroundColor: '#5a76f3', borderRadius: '5px', display: tabStates[tabKey] ? 'block' : 'none' }}
                                 >Chọn địa chỉ</Button>
                             </Col>}
-
                         </Row>
                         <div style={{ display: tabStates[tabKey] ? 'block' : 'none' }} key={address.id} >
                             <Row>
@@ -608,7 +617,7 @@ export default function Sell() {
                                     >
                                         <Input
                                             placeholder="Nhập họ và tên..."
-                                            disabled={order.user ? true : false}
+
                                             style={{ height: '40px', borderRadius: '5px' }} />
                                     </Form.Item>
                                 </Col>
@@ -646,9 +655,8 @@ export default function Sell() {
                                         <Input
                                             className='checkout__input'
                                             placeholder="Nhập số điện thoại..."
-                                            disabled={order.user ? true : false}
-                                            style={{ height: '40px', borderRadius: '5px' }}
-                                        />
+
+                                            style={{ height: '40px', borderRadius: '5px' }} />
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -673,7 +681,7 @@ export default function Sell() {
                                                 (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                                             }
                                             options={cities.map(city => ({ value: city.code, label: city.name }))}
-                                            disabled={order.user ? true : false}
+
                                         />
 
                                     </Form.Item>
@@ -734,7 +742,6 @@ export default function Sell() {
                                         rules={[{ required: true, message: 'Vui lòng nhập địa chỉ cụ thể!' }]}>
                                         <Input
                                             placeholder="Địa chỉ cụ thể..."
-                                            disabled={order.user ? true : false}
                                             style={{ height: '40px', borderRadius: '5px' }} />
 
                                     </Form.Item>
@@ -814,7 +821,7 @@ export default function Sell() {
                             </span>
                         </Col>
                     </Row>
-                    {!tabStates[tabKey] && <Row>
+                    <Row>
                         <Col span={12}>
                             <div
                                 style={{
@@ -845,8 +852,8 @@ export default function Sell() {
                                 <p style={{ textAlign: 'center', margin: '10px 0', fontWeight: '550' }}>Chuyển khoản</p>
                             </div>
                         </Col>
-                    </Row>}
-                    {!tabStates[tabKey] && <Row style={{ marginTop: '10px' }}>
+                    </Row>
+                    <Row style={{ marginTop: '10px' }}>
                         <Col span={12}>
 
                             <p style={{ fontWeight: '600', marginTop: '10px' }}>Tiền khách đưa:</p>
@@ -896,8 +903,8 @@ export default function Sell() {
                                 </Form.Item>
                             </Form>
                         </Col>
-                    </Row>}
-                    {!tabStates[tabKey] && <Row style={{ marginTop: '10px' }}>
+                    </Row>
+                    <Row style={{ marginTop: '10px' }}>
                         <Col span={10}>
                             <p style={{ fontWeight: '600' }}>Tiền thừa:</p>
                         </Col>
@@ -906,7 +913,7 @@ export default function Sell() {
                                 {formatCurrency(change)}
                             </span>
                         </Col>
-                    </Row>}
+                    </Row>
 
                     <Button
                         onClick={confirmPlaceOrder}
@@ -1348,6 +1355,7 @@ const ProductModal = ({ isModal, hideModal, orderId, fetchOrderDetail }) => {
             message.success("Thêm sản phẩm vào đơn hàng thành công !");
 
             fetchOrderDetail();
+            fetchProductDetails();
             handleQuantityCancel();
         } catch (error) {
             message.error("Thêm sản phẩm vào đơn hàng thất bại !");

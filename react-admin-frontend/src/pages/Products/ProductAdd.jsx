@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Space, Card, Button, Input, Form, Modal, notification, Select, Row, Col, Checkbox, InputNumber, Upload, message, Radio, Image, Spin } from 'antd';
+import { Table, Space, Card, Button, Input, Form, Modal, notification, Select, Row, Col, InputNumber, Upload, message, Radio, Image, Spin } from 'antd';
 import {
     DeleteOutlined,
     DoubleLeftOutlined,
@@ -13,14 +13,13 @@ import BrandService from '~/service/BrandService';
 import MaterialService from '~/service/MaterialService';
 import ColorService from '~/service/ColorService';
 import SizeService from '~/service/SizeService';
-import { v4 } from 'uuid';
 import ImageService from '~/service/ImageService';
 import path_name from '~/constants/routers';
 import { Link, useNavigate } from 'react-router-dom';
 import { imageDB } from '~/config/ConfigFirebase';
 import 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
-import { deleteObject, getStorage, getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import ProductDetailService from '~/service/ProductDetaiService';
 import SupplierService from '~/service/SupplierService';
 const { TextArea } = Input;
@@ -165,7 +164,6 @@ function ProductAdd() {
             })
     }
     //---------------------------------------------------------------------------------------
-    // const [productDetailDataList, setProductDetailDataList] = useState([]);
 
     // Trạng thái để lưu thông tin cho mỗi bảng màu sắc
     const [colorTables, setColorTables] = useState({});
@@ -200,6 +198,9 @@ function ProductAdd() {
     const [loading, setLoading] = useState(false);
 
     const [modal, contextHolder] = Modal.useModal();
+    const [form] = Form.useForm();
+    const [formThuocTinh] = Form.useForm();
+
     const confirm = () => {
         modal.confirm({
             title: 'Thông báo!',
@@ -207,6 +208,16 @@ function ProductAdd() {
             content: 'Bạn có chắc muốn tạo mới một sản phẩm không?',
             onOk: () => {
                 setLoading(true);
+                if (fileList.length == 0) {
+                    form.validateFields();
+                    formThuocTinh.validateFields();
+                    notification.warning({
+                        message: 'Thông báo',
+                        description: 'Ảnh không được để trống!',
+                    });
+                    setLoading(false);
+                    return;
+                }
                 setTimeout(() => {
                     handleCreate();
                 }, 2000);
@@ -215,31 +226,15 @@ function ProductAdd() {
             cancelText: 'Hủy bỏ',
         });
     }
-    const [form] = Form.useForm();
-
-    const [formThuocTinh] = Form.useForm();
 
 
     const [inputData, setInputData] = useState({});
-    console.log(inputData)
     const [productDetailData, setProductDetailData] = useState([]);
-    console.log(productDetailData)
 
     const handleDelete = (keyToDelete) => {
-        // Tạo một bản sao của productDetailData để tránh thay đổi trực tiếp state
-        const updatedProductDetailData = [...productDetailData];
-
-        // Lọc ra các phần tử có key khác với keyToDelete
-        const filteredData = updatedProductDetailData.filter(item => item.key !== keyToDelete);
-
-        // Xóa mục có key tương ứng từ inputData
-        const updatedInputData = { ...inputData };
-        delete updatedInputData[keyToDelete];
-
-        // Cập nhật state
-        setProductDetailData(filteredData);
-        setInputData(updatedInputData);
+        setProductDetailData(prev => prev.filter(item => item.key !== keyToDelete))
     };
+
     const handleInputChange = (value, key, type) => {
         setInputData((prevInputData) => ({
             ...prevInputData,
@@ -255,14 +250,59 @@ function ProductAdd() {
         setColorTables(tables);
     }, [selectedColors, selectedSizes, selectedProductName, selectedMaterial, inputData]);
 
-    let keyCounter = 1; // Biến đếm key
 
+    const columns = [
+        {
+            title: 'Sản phẩm',
+            width: '50%',
+            render: (record) => (
+                <span>{`${record.productName} [${record.colorName} - ${record.sizeName} - ${record.materialName}]`}</span>
+            ),
+        },
+        {
+            title: 'Số lượng',
+            width: '10%',
+            render: (record) => (
+                <InputNumber
+                    value={inputData[record.key]?.quantity}
+                    style={{ width: '100%' }}
+                    min={0}
+                    onChange={(value) => handleInputChange(value, record.key, 'quantity')}
+                />
+            ),
+        },
+        {
+            title: 'Giá bán',
+            width: '10%',
+            render: (record) => (
+                <InputNumber
+                    value={inputData[record.key]?.price}
+                    style={{ width: '100%' }}
+                    min={0}
+                    onChange={(value) => handleInputChange(value, record.key, 'price')}
+                />
+            ),
+        },
+        {
+            title: 'Thao tác',
+            width: '10%',
+            render: (record) => (
+                <Space size="middle">
+                    <Button
+                        type="text"
+                        icon={<DeleteOutlined />}
+                        style={{ color: 'red' }}
+                        onClick={() => handleDelete(record.key)}
+                    />
+                </Space>
+            ),
+        },
+    ];
+    let keyCounter = 1;
     const createColorTable = (selectedColors, selectedSizes, selectedProductName, selectedMaterial) => {
-        const colorSource = [];
         const dataSource = [];
 
         for (const color of selectedColors) {
-            const colorGroup = [];
             const dataGroup = [];
 
             for (const size of selectedSizes) {
@@ -281,80 +321,16 @@ function ProductAdd() {
                         price: inputDataForProduct?.price,
                         productId: null,
                         key: key,
-                    };
+                        productName: selectedProductName,
+                    }
 
                     dataGroup.push(dataItem);
-
-                    const colorItem = {
-                        key: key,
-                        productName: selectedProductName,
-                        sizeName: size,
-                        colorName: color,
-                        materialName: material,
-                    };
-
-                    colorGroup.push(colorItem);
                 }
             }
-
-            colorSource.push(...colorGroup);
             dataSource.push(...dataGroup);
         }
 
         setProductDetailData(dataSource);
-
-        const columns = [
-            {
-                title: 'Sản phẩm',
-                width: '50%',
-                render: (record) => (
-                    <span>{`${record.productName} [${record.colorName} - ${record.sizeName} - ${record.materialName}]`}</span>
-                ),
-            },
-            {
-                title: 'Số lượng',
-                width: '10%',
-                render: (record) => (
-                    <InputNumber
-                        value={inputData[record.key]?.quantity}
-                        style={{ width: '100%' }}
-                        min={0}
-                        onChange={(value) => handleInputChange(value, record.key, 'quantity')}
-                    />
-                ),
-            },
-            {
-                title: 'Giá bán',
-                width: '10%',
-                render: (record) => (
-                    <InputNumber
-                        value={inputData[record.key]?.price}
-                        style={{ width: '100%' }}
-                        min={0}
-                        onChange={(value) => handleInputChange(value, record.key, 'price')}
-                    />
-                ),
-            },
-            {
-                title: 'Thao tác',
-                width: '10%',
-                render: (record) => (
-                    <Space size="middle">
-                        <Button
-                            type="text"
-                            icon={<DeleteOutlined />}
-                            style={{ color: 'red' }}
-                            onClick={() => handleDelete(record.key)}
-                        />
-                    </Space>
-                ),
-            },
-        ];
-
-        return {
-            columns,
-            colorSource,
-        };
     };
 
 
@@ -408,8 +384,6 @@ function ProductAdd() {
             })
     }
 
-
-
     const [fileList, setFileList] = useState([]);
 
     const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
@@ -418,9 +392,7 @@ function ProductAdd() {
     const navigate = useNavigate();
     const handleCreate = async () => {
         setLoading(true);
-
         try {
-            await form.validateFields();
 
             // Tạo mảng promises chứa tất cả các tác vụ upload ảnh
             const uploadPromises = fileList.map(async (file) => {
@@ -428,7 +400,6 @@ function ProductAdd() {
                 await uploadBytes(imgRef, file.originFileObj);
                 const url = await getDownloadURL(imgRef);
 
-                // Thêm thông tin file vào Firebase Database hoặc làm các xử lý khác nếu cần
                 return {
                     imageName: file.name,
                     imageLink: url,
@@ -445,10 +416,9 @@ function ProductAdd() {
                 data.deleted = true;
                 const productId = await ProductService.create(data);
 
-                // Thêm productId vào mỗi fileInfo
+
                 uploadedFiles.forEach(fileInfo => fileInfo.productId = productId.id);
 
-                // Gọi API để lưu thông tin ảnh vào backend
                 await ImageService.create(uploadedFiles);
 
                 // const formValues = formThuocTinh.getFieldsValue()
@@ -776,12 +746,12 @@ function ProductAdd() {
                         </Row>
                     </Form>
                 </Card>
-                {colorTables.length !== 0 &&
+                {productDetailData.length !== 0 &&
                     <Card title={<span style={{ color: '#5a76f3' }}>Các biến thể sản phẩm</span>}
                         style={{ marginTop: '15px', borderRadius: '10px' }}>
                         <Table
-                            columns={colorTables.columns}
-                            dataSource={colorTables.colorSource}
+                            columns={columns}
+                            dataSource={productDetailData}
                             pagination={false}
                             style={{ height: '350px', overflowY: 'auto', }}
                         />

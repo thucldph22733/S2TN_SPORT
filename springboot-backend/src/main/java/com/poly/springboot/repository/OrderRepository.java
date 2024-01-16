@@ -24,8 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.orderStatus.statusName = 'Tạo đơn hàng' ")
     List<Order> findAllOrderByStatusName();
 
-
-
     @Query("SELECT o FROM Order o WHERE " +
             " (:orderStatusName IS NULL OR o.orderStatus.statusName = :orderStatusName) " +
             "AND (:orderId IS NULL OR CAST(o.id AS STRING) = :orderId) " +
@@ -45,26 +43,36 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT COALESCE(SUM(o.orderTotal), 0) " +
             "FROM Order o " +
-            "WHERE MONTH(o.createdAt) = MONTH(CURRENT_DATE) AND YEAR(o.createdAt) = YEAR(CURRENT_DATE) " +
-            "AND o.orderStatus.id = 5")
-    Double monthlyRevenue();
-    @Query("SELECT COALESCE(SUM(o.orderTotal), 0) " +
-            "FROM Order o " +
-            "WHERE DATE(o.createdAt) = CURRENT_DATE " +
-            "AND o.orderStatus.id = 5")
-    Double revenueToday();
-
+            "WHERE (:startDate IS NULL OR o.createdAt BETWEEN :startDate AND :endDate) " +
+            "AND o.orderStatus.statusName = 'Hoàn thành'")
+    Double getRevenue(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.orderStatus.statusName = 'Hoàn thành' " +
+            "AND (:startDate IS NULL OR o.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR o.createdAt <= :endDate)")
+    Long countCompletedOrdersInDateRange(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
     @Query("SELECT MONTH(o.createdAt) AS month, COALESCE(SUM(o.orderTotal), 0) AS totalRevenue " +
             "FROM Order o " +
-            "WHERE YEAR(o.createdAt) = YEAR(CURRENT_DATE) AND o.orderStatus.id = 5 " +
+            "WHERE YEAR(o.createdAt) = YEAR(CURRENT_DATE) AND o.orderStatus.statusName = 'Hoàn thành' " +
+            "AND (:year IS NULL OR YEAR(o.createdAt) = :year) " +
             "GROUP BY MONTH(o.createdAt) " +
             "ORDER BY MONTH(o.createdAt)")
-    List<Map<String, Object>> getRevenueByMonthForCurrentYear();
+    List<Map<String, Object>> getRevenueByMonthForYear(@Param("year") Integer year);
 
     @Query("SELECT o.orderStatus.statusName, COUNT(o) " +
             "FROM Order o " +
+            "WHERE (:startDate IS NULL OR o.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR o.createdAt <= :endDate) " +
             "GROUP BY o.orderStatus.statusName")
-    List< Object[]> getTotalOrdersByStatus();
+    List<Object[]> getTotalOrdersByStatus(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
     @Query("SELECT o FROM Order o WHERE o.user.id = :userId AND (:orderStatusName IS NULL OR o.orderStatus.statusName = :orderStatusName ) ORDER BY o.createdAt DESC")
     Page<Order> findAllOrdersByUserId(@Param("userId") Long userId,@Param("orderStatusName") String orderStatusName,Pageable pageable);
 

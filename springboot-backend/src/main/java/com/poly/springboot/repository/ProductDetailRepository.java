@@ -16,15 +16,15 @@ import java.util.Map;
 @Repository
 public interface ProductDetailRepository extends JpaRepository<ProductDetail,Long> {
 
-    @Query("SELECT pd.id AS productId, pd.product.productName as productName, pd.color.colorName as colorName, pd.size.sizeName as sizeName, " +
-            "SUM(od.quantity) AS totalQuantitySold, " +
-            "SUM(od.quantity * od.price) AS totalRevenue " +
-            "FROM OrderDetail od " +
-            "JOIN od.productDetail pd " +
-            "GROUP BY productId, productName, colorName, sizeName " +
-            "ORDER BY totalQuantitySold DESC " +
-            "LIMIT 5")
-    List<Map<String, Object>> findTop10BestSellingProducts();
+//    @Query("SELECT pd.id AS productId, pd.product.productName as productName, pd.color.colorName as colorName, pd.size.sizeName as sizeName, " +
+//            "SUM(od.quantity) AS totalQuantitySold, " +
+//            "SUM(od.quantity * od.price) AS totalRevenue " +
+//            "FROM OrderDetail od " +
+//            "JOIN od.productDetail pd " +
+//            "GROUP BY productId, productName, colorName, sizeName " +
+//            "ORDER BY totalQuantitySold DESC " +
+//            "LIMIT 10")
+//    List<Map<String, Object>> findTop10BestSellingProducts();
 
     @Query("SELECT new com.poly.springboot.dto.responseDto.ColorInfoResponseDto(pd.color.id, pd.color.colorName) " +
             "FROM ProductDetail pd WHERE pd.product.id = :productId " +
@@ -105,4 +105,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail,Lon
     Page<ProductDetailResponseDto> findAllByProductId(@Param("productId") Long productId,Pageable pageable);
 
     ProductDetail findProductDetailById (Long productId);
+
+
 }

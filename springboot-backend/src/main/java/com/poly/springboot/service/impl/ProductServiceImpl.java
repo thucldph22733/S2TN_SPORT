@@ -5,6 +5,7 @@ import com.poly.springboot.dto.requestDto.ProductRequestDto;
 import com.poly.springboot.dto.responseDto.ProductFilterResponseDto;
 import com.poly.springboot.dto.responseDto.ProductResponseDto;
 import com.poly.springboot.dto.responseDto.ProductUserResponseDto;
+import com.poly.springboot.dto.responseDto.Top10SaleResponseDto;
 import com.poly.springboot.entity.Product;
 import com.poly.springboot.exception.AlreadyExistsException;
 import com.poly.springboot.exception.ResourceNotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -37,7 +39,15 @@ public class ProductServiceImpl implements ProductService {
         this.supplierRepository = supplierRepository;
     }
 
+    @Override
+    public List<Top10SaleResponseDto> findTop10BestSellingProducts() {
+        return productRepository.findTop10BestSellingProducts();
+    }
 
+    @Override
+    public Integer getTotalStockQuantityInDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return productRepository.getTotalStockQuantityInDateRange(startDate, endDate);
+    }
     @Override
     public Page<ProductFilterResponseDto> findProductsAdminByFilters(ProductDetailFilterRequestDto requestDto) {
         Pageable pageable = PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize());

@@ -803,6 +803,7 @@ function ProductAdd() {
                     isModal={openBrand}
                     hideModal={handleCancelBrand}
                     fetchBrands={fetchBrand}
+                    brands={brands || {}}
                 />
             }
             {
@@ -810,6 +811,7 @@ function ProductAdd() {
                     isModal={openCategory}
                     hideModal={handleCancelCategory}
                     fetchCategorys={fetchCategory}
+                    categories={categories || {}}
                 />
             }
             {
@@ -817,6 +819,7 @@ function ProductAdd() {
                     isModal={openSupplier}
                     hideModal={handleCancelSupplier}
                     fetchSuppliers={fetchSupplier}
+                    suppliers={suppliers || {}}
                 />
             }
             {
@@ -824,6 +827,7 @@ function ProductAdd() {
                     isModal={openMaterial}
                     hideModal={handleCancelMaterial}
                     fetchMaterials={fetchMaterial}
+                    materials={materials || {}}
                 />
             }
             {
@@ -831,6 +835,7 @@ function ProductAdd() {
                     isModal={openColor}
                     hideModal={handleCancelColor}
                     fetchColors={fetchColor}
+                    colors={colors || {}}
                 />
             }
             {
@@ -838,6 +843,7 @@ function ProductAdd() {
                     isModal={openSize}
                     hideModal={handleCancelSize}
                     fetchSizes={fetchSize}
+                    sizes={sizes || {}}
                 />
             }
         </>
@@ -1052,7 +1058,7 @@ const ProductModal = ({ hideModal, isModal, fetchProducts }) => {
     );
 };
 
-const MaterialModal = ({ hideModal, isModal, fetchMaterials }) => {
+const MaterialModal = ({ hideModal, isModal, fetchMaterials, materials }) => {
 
     const [form] = Form.useForm();
 
@@ -1099,7 +1105,29 @@ const MaterialModal = ({ hideModal, isModal, fetchMaterials }) => {
                 name="validateOnly" layout="vertical" autoComplete="off"
                 form={form}
             >
-                <Form.Item label="Tên" name="materialName" rules={[{ required: true, message: 'Vui lòng nhập tên chất liệu!' }]}>
+                <Form.Item label="Tên" name="materialName" rules={[{ required: true, message: 'Vui lòng nhập tên chất liệu!' }
+                    ,
+                {
+                    validator: (_, value) => {
+                        if (!value) {
+                            return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                        }
+                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const isDuplicate = materials.some(
+                            (material) => material.materialName.trim().toLowerCase() === lowercaseValue && material.id !== reacord.id
+                        );
+                        if (isDuplicate) {
+                            return Promise.reject('Tên chất liệu đã tồn tại!');
+                        }
+                        // Kiểm tra dấu cách ở đầu và cuối
+                        if (/^\s|\s$/.test(value)) {
+                            return Promise.reject('Tên chất liệu không được chứa dấu cách ở đầu và cuối!');
+                        }
+                        return Promise.resolve();
+                    },
+                },
+                ]}>
                     <Input placeholder="Nhập tên chất liệu..." />
                 </Form.Item>
 
@@ -1111,7 +1139,7 @@ const MaterialModal = ({ hideModal, isModal, fetchMaterials }) => {
     );
 };
 
-const ColorModal = ({ hideModal, isModal, fetchColors }) => {
+const ColorModal = ({ hideModal, isModal, fetchColors, colors }) => {
 
     const [form] = Form.useForm();
 
@@ -1158,7 +1186,29 @@ const ColorModal = ({ hideModal, isModal, fetchColors }) => {
                 name="validateOnly" layout="vertical" autoComplete="off"
                 form={form}
             >
-                <Form.Item label="Tên:" name="colorName" rules={[{ required: true, message: 'Vui lòng nhập tên màu sắc!' }]}>
+                <Form.Item label="Tên:" name="colorName" rules={[{ required: true, message: 'Vui lòng nhập tên màu sắc!' }
+                    ,
+                {
+                    validator: (_, value) => {
+                        if (!value) {
+                            return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                        }
+                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const isDuplicate = colors.some(
+                            (color) => color.colorName.trim().toLowerCase() === lowercaseValue && color.id !== reacord.id
+                        );
+                        if (isDuplicate) {
+                            return Promise.reject('Tên màu sắc đã tồn tại!');
+                        }
+                        // Kiểm tra dấu cách ở đầu và cuối
+                        if (/^\s|\s$/.test(value)) {
+                            return Promise.reject('Tên màu sắc không được chứa dấu cách ở đầu và cuối!');
+                        }
+                        return Promise.resolve();
+                    },
+                },
+                ]}>
                     <Input placeholder="Nhập tên màu sắc..." />
                 </Form.Item>
 
@@ -1171,7 +1221,7 @@ const ColorModal = ({ hideModal, isModal, fetchColors }) => {
     );
 };
 
-const SizeModal = ({ hideModal, isModal, fetchSizes }) => {
+const SizeModal = ({ hideModal, isModal, fetchSizes, sizes }) => {
 
     const [form] = Form.useForm();
 
@@ -1218,7 +1268,31 @@ const SizeModal = ({ hideModal, isModal, fetchSizes }) => {
                 name="validateOnly" layout="vertical" autoComplete="off"
                 form={form}
             >
-                <Form.Item label="Tên:" name="sizeName" rules={[{ required: true, message: 'Vui lòng nhập tên kích thước!' }]}>
+                <Form.Item label="Tên:" name="sizeName" rules={[{ required: true, message: 'Vui lòng nhập tên kích thước!' }
+                    ,
+                {
+                    validator: (_, value) => {
+                        if (!value) {
+                            return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                        }
+                        const trimmedValue = value.trim();
+                        const lowercaseValue = trimmedValue.toLowerCase();
+                        const isDuplicate = sizes.some(
+                            (size) => size.sizeName.trim().toLowerCase() === lowercaseValue && size.id !== reacord.id
+                        );
+
+                        if (isDuplicate) {
+                            return Promise.reject('Tên kích thước đã tồn tại!');
+                        }
+
+                        if (/^\s|\s$/.test(value)) {
+                            return Promise.reject('Tên kích thước không được chứa dấu cách ở đầu và cuối!');
+                        }
+
+                        return Promise.resolve();
+                    },
+                }
+                ]}>
                     <Input placeholder="Nhập tên kích thước..." />
                 </Form.Item>
 
@@ -1231,7 +1305,7 @@ const SizeModal = ({ hideModal, isModal, fetchSizes }) => {
     );
 };
 
-const BrandModal = ({ hideModal, isModal, fetchBrands }) => {
+const BrandModal = ({ hideModal, isModal, fetchBrands, brands }) => {
 
     const [form] = Form.useForm();
 
@@ -1279,7 +1353,29 @@ const BrandModal = ({ hideModal, isModal, fetchBrands }) => {
                 form={form}
 
             >
-                <Form.Item label="Tên:" name="brandName" rules={[{ required: true, message: 'Vui lòng nhập tên thương hiệu!' }]}>
+                <Form.Item label="Tên:" name="brandName" rules={[{ required: true, message: 'Vui lòng nhập tên thương hiệu!' }
+                    ,
+                {
+                    validator: (_, value) => {
+                        if (!value) {
+                            return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                        }
+                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const isDuplicate = brands.some(
+                            (brand) => brand.brandName.trim().toLowerCase() === lowercaseValue && brand.id !== reacord.id
+                        );
+                        if (isDuplicate) {
+                            return Promise.reject('Tên thương hiệu đã tồn tại!');
+                        }
+                        // Kiểm tra dấu cách ở đầu và cuối
+                        if (/^\s|\s$/.test(value)) {
+                            return Promise.reject('Tên thương hiệu không được chứa dấu cách ở đầu và cuối!');
+                        }
+                        return Promise.resolve();
+                    },
+                },
+                ]}>
                     <Input placeholder="Nhập tên thương hiệu..." />
                 </Form.Item>
 
@@ -1292,7 +1388,7 @@ const BrandModal = ({ hideModal, isModal, fetchBrands }) => {
     );
 };
 
-const CategoryModal = ({ hideModal, isModal, fetchCategorys }) => {
+const CategoryModal = ({ hideModal, isModal, fetchCategorys, categories }) => {
 
     const [form] = Form.useForm();
 
@@ -1340,7 +1436,29 @@ const CategoryModal = ({ hideModal, isModal, fetchCategorys }) => {
                 form={form}
 
             >
-                <Form.Item label="Tên:" name="categoryName" rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}>
+                <Form.Item label="Tên:" name="categoryName" rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }
+                    ,
+                {
+                    validator: (_, value) => {
+                        if (!value) {
+                            return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                        }
+                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const isDuplicate = categories.some(
+                            (category) => category.categoryName.trim().toLowerCase() === lowercaseValue && category.id !== reacord.id
+                        );
+                        if (isDuplicate) {
+                            return Promise.reject('Tên danh mục đã tồn tại!');
+                        }
+                        // Kiểm tra dấu cách ở đầu và cuối
+                        if (/^\s|\s$/.test(value)) {
+                            return Promise.reject('Tên danh mục không được chứa dấu cách ở đầu và cuối!');
+                        }
+                        return Promise.resolve();
+                    },
+                },
+                ]}>
                     <Input placeholder="Nhập tên loại sản phẩm..." />
                 </Form.Item>
 
@@ -1353,7 +1471,7 @@ const CategoryModal = ({ hideModal, isModal, fetchCategorys }) => {
     );
 };
 
-const SupplierModal = ({ hideModal, isModal, fetchSuppliers }) => {
+const SupplierModal = ({ hideModal, isModal, fetchSuppliers, suppliers }) => {
 
     const [form] = Form.useForm();
 
@@ -1400,7 +1518,30 @@ const SupplierModal = ({ hideModal, isModal, fetchSuppliers }) => {
                 form={form}
 
             >
-                <Form.Item label="Tên:" name="supplierName" rules={[{ required: true, message: 'Vui lòng nhập tên nhà cung cấp!' }]}>
+                <Form.Item label="Tên:" name="supplierName" rules={[{ required: true, message: 'Vui lòng nhập tên nhà cung cấp!' }
+                    ,
+                {
+
+                    validator: (_, value) => {
+                        if (!value) {
+                            return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                        }
+                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const isDuplicate = suppliers.some(
+                            (supplier) => supplier.supplierName.trim().toLowerCase() === lowercaseValue && supplier.id !== reacord.id
+                        );
+                        if (isDuplicate) {
+                            return Promise.reject('Tên nhà cung cấp đã tồn tại!');
+                        }
+                        // Kiểm tra dấu cách ở đầu và cuối
+                        if (/^\s|\s$/.test(value)) {
+                            return Promise.reject('Tên nhà cung cấp không được chứa dấu cách ở đầu và cuối!');
+                        }
+                        return Promise.resolve();
+                    },
+                },
+                ]}>
                     <Input placeholder="Nhập tên..." />
                 </Form.Item>
 

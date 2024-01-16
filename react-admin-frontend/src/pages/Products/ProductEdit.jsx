@@ -63,7 +63,7 @@ function ProductEdit() {
     //load sản phẩm
     const [products, setProducts] = useState([]);
 
-<<<<<<< Updated upstream
+
     useEffect(() => {
         fetchProduct()
     }, []);
@@ -108,24 +108,6 @@ function ProductEdit() {
         try {
             const response = await ImageService.findImageByProductId(id);
             setImages(response.data);
-=======
-    const [products, setProducts] = useState([]);
-
-    useEffect(() => {
-        fetchProduct()
-    }, []);
-    const fetchProduct = async () => {
-
-        await ProductService.findAllByDeletedTrue()
-            .then(response => {
-
-                setProducts(response.data)
-                console.log(response.data)
-            }).catch(error => {
-                console.error(error);
-            })
-    }
->>>>>>> Stashed changes
 
             // Convert the image data to the format expected by Ant Design Upload component
             const fileListData = response.data.map((image) => ({

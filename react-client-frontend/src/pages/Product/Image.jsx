@@ -20,7 +20,7 @@ const App = () => {
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
     const [fileList, setFileList] = useState([]);
-    console.log(fileList)
+    
     const handleCancel = () => setPreviewOpen(false);
 
     const handlePreview = async (file) => {

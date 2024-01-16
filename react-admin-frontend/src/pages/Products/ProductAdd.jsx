@@ -803,7 +803,7 @@ function ProductAdd() {
                     isModal={openBrand}
                     hideModal={handleCancelBrand}
                     fetchBrands={fetchBrand}
-                    brands={brands || {}}
+                    brands={brands}
                 />
             }
             {
@@ -811,7 +811,7 @@ function ProductAdd() {
                     isModal={openCategory}
                     hideModal={handleCancelCategory}
                     fetchCategorys={fetchCategory}
-                    categories={categories || {}}
+                    categories={categories}
                 />
             }
             {
@@ -819,7 +819,7 @@ function ProductAdd() {
                     isModal={openSupplier}
                     hideModal={handleCancelSupplier}
                     fetchSuppliers={fetchSupplier}
-                    suppliers={suppliers || {}}
+                    suppliers={suppliers}
                 />
             }
             {
@@ -827,7 +827,7 @@ function ProductAdd() {
                     isModal={openMaterial}
                     hideModal={handleCancelMaterial}
                     fetchMaterials={fetchMaterial}
-                    materials={materials || {}}
+                    materials={materials}
                 />
             }
             {
@@ -835,7 +835,7 @@ function ProductAdd() {
                     isModal={openColor}
                     hideModal={handleCancelColor}
                     fetchColors={fetchColor}
-                    colors={colors || {}}
+                    colors={colors}
                 />
             }
             {
@@ -843,7 +843,7 @@ function ProductAdd() {
                     isModal={openSize}
                     hideModal={handleCancelSize}
                     fetchSizes={fetchSize}
-                    sizes={sizes || {}}
+                    sizes={sizes}
                 />
             }
         </>
@@ -1114,8 +1114,9 @@ const MaterialModal = ({ hideModal, isModal, fetchMaterials, materials }) => {
                         }
                         const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
                         const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const productNameFieldValue = form.getFieldValue('materialName');
                         const isDuplicate = materials.some(
-                            (material) => material.materialName.trim().toLowerCase() === lowercaseValue && material.id !== reacord.id
+                            (material) => material.materialName.trim().toLowerCase() === lowercaseValue && material.id !== productNameFieldValue
                         );
                         if (isDuplicate) {
                             return Promise.reject('Tên chất liệu đã tồn tại!');
@@ -1195,8 +1196,9 @@ const ColorModal = ({ hideModal, isModal, fetchColors, colors }) => {
                         }
                         const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
                         const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const productNameFieldValue = form.getFieldValue('colorName');
                         const isDuplicate = colors.some(
-                            (color) => color.colorName.trim().toLowerCase() === lowercaseValue && color.id !== reacord.id
+                            (color) => color.colorName.trim().toLowerCase() === lowercaseValue && color.id !== productNameFieldValue
                         );
                         if (isDuplicate) {
                             return Promise.reject('Tên màu sắc đã tồn tại!');
@@ -1277,8 +1279,9 @@ const SizeModal = ({ hideModal, isModal, fetchSizes, sizes }) => {
                         }
                         const trimmedValue = value.trim();
                         const lowercaseValue = trimmedValue.toLowerCase();
+                        const productNameFieldValue = form.getFieldValue('sizeName');
                         const isDuplicate = sizes.some(
-                            (size) => size.sizeName.trim().toLowerCase() === lowercaseValue && size.id !== reacord.id
+                            (size) => size.sizeName.trim().toLowerCase() === lowercaseValue && size.id !== productNameFieldValue
                         );
 
                         if (isDuplicate) {
@@ -1362,8 +1365,9 @@ const BrandModal = ({ hideModal, isModal, fetchBrands, brands }) => {
                         }
                         const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
                         const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const productNameFieldValue = form.getFieldValue('brandName');
                         const isDuplicate = brands.some(
-                            (brand) => brand.brandName.trim().toLowerCase() === lowercaseValue && brand.id !== reacord.id
+                            (brand) => brand.brandName.trim().toLowerCase() === lowercaseValue && brand.id !== productNameFieldValue
                         );
                         if (isDuplicate) {
                             return Promise.reject('Tên thương hiệu đã tồn tại!');
@@ -1445,8 +1449,9 @@ const CategoryModal = ({ hideModal, isModal, fetchCategorys, categories }) => {
                         }
                         const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
                         const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const productNameFieldValue = form.getFieldValue('categoryName');
                         const isDuplicate = categories.some(
-                            (category) => category.categoryName.trim().toLowerCase() === lowercaseValue && category.id !== reacord.id
+                            (category) => category.categoryName.trim().toLowerCase() === lowercaseValue && category.id !== productNameFieldValue
                         );
                         if (isDuplicate) {
                             return Promise.reject('Tên danh mục đã tồn tại!');
@@ -1528,8 +1533,9 @@ const SupplierModal = ({ hideModal, isModal, fetchSuppliers, suppliers }) => {
                         }
                         const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
                         const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                        const productNameFieldValue = form.getFieldValue('supplierName');
                         const isDuplicate = suppliers.some(
-                            (supplier) => supplier.supplierName.trim().toLowerCase() === lowercaseValue && supplier.id !== reacord.id
+                            (supplier) => supplier.supplierName.trim().toLowerCase() === lowercaseValue && supplier.id !== productNameFieldValue
                         );
                         if (isDuplicate) {
                             return Promise.reject('Tên nhà cung cấp đã tồn tại!');

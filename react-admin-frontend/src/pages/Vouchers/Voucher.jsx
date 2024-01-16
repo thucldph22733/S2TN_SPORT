@@ -560,7 +560,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                         style={{ width: '100%' }}
                                         addonAfter={selectAfter}
                                         formatter={(value) => formatGiamGia(value)}
-                                        parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số
+                                        parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số    
                                     />
                                 </Form.Item>
                             </Col>

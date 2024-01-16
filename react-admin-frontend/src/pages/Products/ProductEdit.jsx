@@ -984,7 +984,7 @@ const ProductDetailModal = ({ isMode, reacord, hideModal, isModal, fetchProductD
                     ]}
                 >
                     <InputNumber style={{ width: '100%' }}
-                        formatter={(value) => formatNumberSoLuong(value)}
+                        formatter={(value) => formatNumberDonGia(value)}
                         parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số
                     />
                 </Form.Item>

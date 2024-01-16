@@ -95,6 +95,7 @@ function Voucher() {
         });
     };
     const [searchKeywordVoucher, setSearchKeywordVoucher] = useState(null);
+
     const handleSearchVoucher = () => {
         setFilterVoucher({
             ...filterVoucher,

@@ -233,6 +233,7 @@ function Product() {
             notification.error({
                 message: 'Lỗi',
                 description: 'Giá trị không được có dấu cách ở đầu hoặc cuối',
+                duration: 3,
             });
             return false;
         }

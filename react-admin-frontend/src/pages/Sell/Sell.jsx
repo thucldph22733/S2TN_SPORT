@@ -27,6 +27,7 @@ import voucher_icon from '~/assets/images/voucher_logo.png';
 import { keyboard } from '@testing-library/user-event/dist/keyboard';
 import PaymentService from '~/service/PaymentService';
 import { useNavigate } from 'react-router-dom';
+import User from '../User/User';
 
 export default function Sell() {
 
@@ -1059,6 +1060,7 @@ export default function Sell() {
                 hideModal={hideAddressModal}
                 isModal={addressModal.isModal}
                 findAddressesByUserIdAnDeletedTrue={findAddressesByUserIdAnDeletedTrue}
+                address={address}
 
             />}
             {voucherModal && <ModalVoucher
@@ -1257,13 +1259,35 @@ const ProductModal = ({ isModal, hideModal, orderId, fetchOrderDetail }) => {
     // Hàm xử lý sự kiện khi nhấn nút Tìm kiếm
     const [searchKeyword, setSearchKeyword] = useState(null);
 
+    const validateInput = (value) => {
+        const trimmedValue = value.trim();
+
+        if (value !== trimmedValue) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Giá trị không được có dấu cách ở đầu hoặc cuối',
+                duration: 3,
+            });
+            return false;
+        }
+
+        // Thực hiện các xử lý cần thiết khi validate thành công
+        return true;
+    };
+
     const handleSearch = () => {
-        setFilterProduct({
-            ...filterProduct,
-            keyword: searchKeyword,
-            pageNo: 0,
-            pageSize: 5
-        });
+        if (validateInput(searchKeyword)) {
+            setFilterProduct({
+                ...filterProduct,
+                keyword: searchKeyword,
+                pageNo: 0,
+                pageSize: 5
+            });
+        } else {
+            // Nếu giá trị không hợp lệ, có thể thực hiện các xử lý cần thiết
+            console.error('Giá trị không hợp lệ');
+        }
+
     };
     const handleReset = () => {
         setSearchKeyword(null)
@@ -1692,12 +1716,34 @@ const UserModal = ({ isModal, hideModal, orderId, findOrderById }) => {
         hideModal();
     };
     const [searchKeywordUser, setSearchKeywordUser] = useState(null)
+
+    const validateInput = (value) => {
+        const trimmedValue = value.trim();
+
+        if (value !== trimmedValue) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Giá trị không được có dấu cách ở đầu hoặc cuối',
+                duration: 3,
+            });
+            return false;
+        }
+
+        // Thực hiện các xử lý cần thiết khi validate thành công
+        return true;
+    };
     const handleSearchUser = () => {
-        setFilterUser({
-            ...filterUser,
-            keyword: searchKeywordUser,
-            pageNo: 0,
-        });
+        if (validateInput(searchKeywordUser)) {
+            setFilterUser({
+                ...filterUser,
+                keyword: searchKeywordUser,
+                pageNo: 0,
+            });
+        } else {
+            // Nếu giá trị không hợp lệ, có thể thực hiện các xử lý cần thiết
+            console.error('Giá trị không hợp lệ');
+        }
+
     };
     const handleResetUser = () => {
         setSearchKeywordUser(null)

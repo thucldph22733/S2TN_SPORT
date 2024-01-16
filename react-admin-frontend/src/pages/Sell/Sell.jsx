@@ -621,6 +621,25 @@ export default function Sell() {
                                                 required: true,
                                                 message: 'Vui lòng nhập số điện thoại!',
                                             },
+                                            ({ getFieldValue }) => ({
+                                                validator(_, value) {
+                                                    const phoneNumberRegex = /^[0-9]{10,12}$/;
+
+                                                    if (!value) {
+                                                        return Promise.resolve();
+                                                    }
+
+                                                    if (!phoneNumberRegex.test(value)) {
+                                                        // notification.error({
+                                                        //     message: 'Lỗi',
+                                                        //     description: 'Số điện thoại không đúng định dạng!',
+                                                        // });
+                                                        return Promise.reject('Số điện thoại không đúng định dạng!');
+                                                    }
+
+                                                    return Promise.resolve();
+                                                },
+                                            }),
                                         ]}
                                         initialValue={address?.phoneNumber}
                                     >
@@ -628,7 +647,8 @@ export default function Sell() {
                                             className='checkout__input'
                                             placeholder="Nhập số điện thoại..."
                                             disabled={order.user ? true : false}
-                                            style={{ height: '40px', borderRadius: '5px' }} />
+                                            style={{ height: '40px', borderRadius: '5px' }}
+                                        />
                                     </Form.Item>
                                 </Col>
                             </Row>

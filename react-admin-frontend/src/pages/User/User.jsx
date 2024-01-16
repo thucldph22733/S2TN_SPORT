@@ -495,26 +495,25 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
                     name="phoneNumber"
                     rules={[
                         { required: true, message: 'Vui lòng nhập số điện thoại!' },
-                        { pattern: /^[0-9]+$/, message: 'Số điện thoại chỉ được chứa chữ số' },
-                        { min: 10, message: 'Số điện thoại phải 10 chữ số' },
-                        { max: 10, message: 'Số điện thoại phải 10 chữ số' },
-                        {
-                            validator: async (_, value) => {
-                                // Kiểm tra giá trị có tồn tại không
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                const phoneNumberRegex = /^[0-9]{10,12}$/;
+
                                 if (!value) {
-                                    return Promise.resolve(); // Bỏ qua kiểm tra nếu giá trị không tồn tại
+                                    return Promise.resolve();
                                 }
 
-                                // Kiểm tra số đầu tiên là số 0
-                                if (value.charAt(0) !== '0') {
-                                    throw new Error('Số điện thoại phải bắt đầu bằng số 0');
+                                if (!phoneNumberRegex.test(value)) {
+                                    // notification.error({
+                                    //     message: 'Lỗi',
+                                    //     description: 'Số điện thoại không đúng định dạng!',
+                                    // });
+                                    return Promise.reject('Số điện thoại không đúng định dạng!');
                                 }
-
-                                // Kiểm tra các quy tắc khác ở đây nếu cần
 
                                 return Promise.resolve();
                             },
-                        }
+                        }),
                     ]}
                 >
                     <Input placeholder="Nhập số điện thoại..." />

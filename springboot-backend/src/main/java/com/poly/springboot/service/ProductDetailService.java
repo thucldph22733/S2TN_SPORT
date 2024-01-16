@@ -20,9 +20,6 @@ public interface ProductDetailService {
 
     Boolean updateProductDetail(ProductDetailRequestDto productDetailRequestDto, Long id);
 
-    List<Map<String, Object>> getTop10BestSellingProducts();
-
-
     List<SizeInfoResponseDto> getSizeNamesByProductId(Long productId);
     List<MaterialInfoResponseDto> getMaterialNamesByProductId(Long productId);
 

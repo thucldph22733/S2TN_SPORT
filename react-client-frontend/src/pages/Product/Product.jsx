@@ -9,7 +9,7 @@ import banner4 from '~/assets/images/banner/banner_4.jpg'
 import { GiBurningRoundShot } from "react-icons/gi";
 import { FaSalesforce } from "react-icons/fa";
 import { MdFiberNew } from "react-icons/md";
-import { Breadcrumb, Card, Checkbox, Col, Collapse, Empty, Image, Pagination, Radio, Row, Space } from 'antd';
+import { AutoComplete, Breadcrumb, Card, Checkbox, Col, Collapse, Empty, Image, Input, Pagination, Radio, Row, Space } from 'antd';
 import { ExclamationCircleOutlined, FilterOutlined, FrownOutlined, HomeOutlined } from '@ant-design/icons';
 import path_name from '~/core/constants/routers';
 import CategoryService from '~/service/CategoryService';
@@ -152,10 +152,16 @@ function Product() {
     useEffect(() => {
         findProductsByFilters();
     }, [filterProduct]);
-
+    const [productName, setProductName] = useState(null);
+    const handleSearch = () => {
+        setFilterProduct({
+            ...filterProduct,
+            productName: productName,
+            pageNo: 0,
+        });
+    };
     // lọc danh mục
     const handleCategoryChange = (checkedValues) => {
-        console.log(checkedValues)
         setFilterProduct({
             ...filterProduct,
             categoryIds: checkedValues.length == 0 ? null : checkedValues,
@@ -248,7 +254,7 @@ function Product() {
 
                     items={[
                         {
-                            title: <Link to=""><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
+                            title: <Link to="/"><HomeOutlined style={{ marginRight: '5px' }} />Trang chủ</Link>,
                         },
                         {
                             title: <Link to="">Sản phẩm</Link>,
@@ -260,6 +266,15 @@ function Product() {
                 <h6><FilterOutlined style={{ marginRight: '7px' }} />Bộ lọc </h6>
                 <Row>
                     <Col span={5} style={{ paddingRight: '15px' }}>
+
+                        <Input.Search
+                            style={{ width: '100%' }}
+                            placeholder="Tìm tên sản phẩm..."
+                            enterButton
+                            value={productName}
+                            onChange={(e) => setProductName(e.target.value)}
+                            onSearch={handleSearch}
+                        />
                         <Collapse
                             size="small"
                             style={{ border: 'none' }}

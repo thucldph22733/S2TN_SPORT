@@ -139,8 +139,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer countDeletedUsersInDateRange() {
-        return userRepository.countDeletedUsersInDateRange();
+    public Integer countDeletedUsersInDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return userRepository.countDeletedUsersInDateRange(startDate, endDate);
     }
 
 }

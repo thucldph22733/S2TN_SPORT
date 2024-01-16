@@ -14,8 +14,8 @@ const DashboardService = {
     },
 
 
-    getRevenueByMonthForCurrentYear: () => {
-        return HttpClient.get(`${API_URL}getRevenueByMonthForCurrentYear`)
+    getRevenueByMonthForCurrentYear: (year) => {
+        return HttpClient.get(`${API_URL}getRevenueByMonthForCurrentYear?year=${year}`)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);
@@ -23,16 +23,16 @@ const DashboardService = {
             });
     },
 
-    getTotalOrdersByStatus: () => {
-        return HttpClient.get(`${API_URL}getTotalOrdersByStatus`)
+    getTotalOrdersByStatus: (data) => {
+        return HttpClient.post(`${API_URL}getTotalOrdersByStatus`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);
                 throw error;
             });
     },
-    getCountDeletedUsers: () => {
-        return HttpClient.get(`${API_URL}getCountDeletedUsers`)
+    getCountDeletedUsers: (data) => {
+        return HttpClient.post(`${API_URL}deleted-users/count`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);
@@ -40,16 +40,16 @@ const DashboardService = {
             });
     }
     ,
-    getRevenueToday: () => {
-        return HttpClient.get(`${API_URL}getRevenueToday`)
+    getTotalStockQuantityOrder: (data) => {
+        return HttpClient.post(`${API_URL}completed-orders/count`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);
                 throw error;
             });
     },
-    getMonthlyRevenue: () => {
-        return HttpClient.get(`${API_URL}getMonthlyRevenue`)
+    getRevenue: (data) => {
+        return HttpClient.post(`${API_URL}revenue`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);
@@ -57,8 +57,8 @@ const DashboardService = {
             });
     },
 
-    getTotalQuantitySoldThisMonth: () => {
-        return HttpClient.get(`${API_URL}getTotalQuantitySoldThisMonth`)
+    getTotalStockQuantityProduct: (data) => {
+        return HttpClient.post(`${API_URL}total-stock-quantity`, data)
             .then(response => response.data)
             .catch(error => {
                 console.error('Error in getAll:', error);

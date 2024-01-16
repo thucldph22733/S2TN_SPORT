@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserService {
@@ -25,5 +26,5 @@ public interface UserService {
 
     UserResponseDto getUserById(Long id);
 
-    Integer countDeletedUsersInDateRange();
+    Integer countDeletedUsersInDateRange(LocalDateTime startDate, LocalDateTime endDate);
 }

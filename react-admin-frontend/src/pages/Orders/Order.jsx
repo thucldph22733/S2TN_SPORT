@@ -18,6 +18,7 @@ function Order() {
             dataIndex: 'key',
             key: 'key',
             width: "5%",
+            render: (value, item, index) => (pagination.current - 1) * pagination.pageSize + index + 1
         },
         {
             title: 'Mã HD',
@@ -117,6 +118,7 @@ function Order() {
     const [selectedOrderType, setSelectedOrderType] = useState(null);
     const [selectedStartDate, setSelectedStartDate] = useState(null);
     const [selectedEndDate, setSelectedEndDate] = useState(null);
+
     const [filterOrder, setFilterOrder] = useState({
         pageNo: 0,
         pageSize: 5,
@@ -257,6 +259,37 @@ function Order() {
             endDate: adjustedEndDate,
         });
     };
+    const handleExportExcel = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/orders/export-excel', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/vnd.ms-excel',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to download Excel file');
+            }
+
+            const buffer = await response.arrayBuffer();
+            const blob = new Blob([buffer], { type: 'application/vnd.ms-excel' });
+            const blobUrl = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = 'HoaDon.xlsx';
+
+            document.body.appendChild(link);
+            link.click();
+
+            document.body.removeChild(link);
+
+            URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('Error exporting Excel:', error);
+        }
+    };
     return (
         <>
             <Card
@@ -342,6 +375,19 @@ function Order() {
                         float: 'right',
                         borderRadius: '4px',
                         margin: '15px 50px 0 6px',
+                        backgroundColor: '#5a76f3',
+                    }}
+                    onClick={handleExportExcel}
+                >
+                    Xuất Excel
+                </Button>
+                <Button
+                    type="primary"
+                    style={{
+                        marginBottom: '16px',
+                        float: 'right',
+                        borderRadius: '4px',
+                        margin: '15px 0px 0 6px',
                         backgroundColor: '#5a76f3',
                     }}
                     onClick={handleSearch}

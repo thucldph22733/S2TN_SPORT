@@ -1,9 +1,6 @@
 package com.poly.springboot.repository;
 
-import com.poly.springboot.dto.responseDto.OrderDetailResponseDto;
-import com.poly.springboot.dto.responseDto.ProductDetailResponseDto;
-import com.poly.springboot.dto.responseDto.ProductFilterResponseDto;
-import com.poly.springboot.dto.responseDto.ProductUserResponseDto;
+import com.poly.springboot.dto.responseDto.*;
 import com.poly.springboot.entity.Product;
 import com.poly.springboot.entity.Size;
 import org.springframework.data.domain.Page;
@@ -13,7 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Long> {
@@ -49,8 +48,6 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             @Param("categoryId") Long categoryId,
             @Param("keyword") String keyword,
             Pageable pageable);
-
-
 
     @Query("SELECT new com.poly.springboot.dto.responseDto.ProductUserResponseDto(" +
             "p.id, p.productName, i.imageLink, MIN(pd.price)) " +
@@ -96,4 +93,31 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     @Query("SELECT p FROM Product p WHERE p.deleted = true ORDER BY p.createdAt DESC")
     List<Product> findAllByDeletedTrue();
+
+
+    @Query("SELECT COALESCE(SUM(pd.quantity), 0) " +
+            "FROM Product p " +
+            "JOIN ProductDetail pd ON pd.product.id = p.id " +
+            "WHERE p.deleted = true " +
+            "AND pd.deleted = true " +
+            "AND (:startDate IS NULL OR pd.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR pd.createdAt <= :endDate)")
+    Integer getTotalStockQuantityInDateRange(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+
+
+    @Query("SELECT new com.poly.springboot.dto.responseDto.Top10SaleResponseDto( i.imageLink, p.productName,SUM(od.quantity),SUM(od.quantity * od.price)) " +
+            "FROM OrderDetail od " +
+            "JOIN ProductDetail pd on pd.id = od.productDetail.id " +
+            "JOIN Product p on p.id = pd.product.id " +
+            "JOIN Image i on i.product.id = p.id " +
+            "JOIN Order o on o.id = od.order.id " +
+            "WHERE  i.deleted = true AND o.orderStatus.statusName = 'Hoàn thành' " +
+            "GROUP BY i.imageLink, p.productName " +
+            "ORDER BY SUM(od.quantity) DESC " +
+            "LIMIT 10")
+    List<Top10SaleResponseDto> findTop10BestSellingProducts();
 }

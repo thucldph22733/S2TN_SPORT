@@ -55,6 +55,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.deleted IN :status AND u.role = 'USER'" )
     Page<User> findAllUserByRoleUser(@Param("name") String name,@Param("phoneNumber") String phoneNumber,@Param("email") String email,@Param("status") List<Boolean> status, Pageable pageable);
 
-    @Query("SELECT COUNT(u) FROM User u WHERE u.deleted = true ")
-    Integer countDeletedUsersInDateRange();
+    @Query("SELECT COUNT(u) FROM User u WHERE u.deleted = true " +
+            "AND (:startDate IS NULL OR u.createdAt >= :startDate) " +
+            "AND (:endDate IS NULL OR u.createdAt <= :endDate)")
+    Integer countDeletedUsersInDateRange(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
 }

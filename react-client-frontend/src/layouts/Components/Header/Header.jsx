@@ -100,12 +100,12 @@ function Header({ setFilterProduct }) {
     return (
         <header className={`header ${isHeaderFixed ? 'fixed' : ''}`}>
             <Row >
-                <Col span={4} >
+                <Col span={7} >
                     <Link to={path_name.home} style={{ float: 'right', margin: '8px 0' }}>
                         <img className='logo' src={logo} alt="" />
                     </Link>
                 </Col>
-                <Col span={13}>
+                <Col span={10}>
                     <nav className="header__menu">
                         <ul>
                             <li className={activeMenu === 'home' ? 'active' : ''}>
@@ -114,7 +114,7 @@ function Header({ setFilterProduct }) {
                             <li className={activeMenu === 'product' ? 'active' : ''}>
                                 <Link to={path_name.product}>Sản phẩm</Link>
                             </li>
-                            <li className={activeMenu === 'about' ? 'active' : ''}>
+                            {/* <li className={activeMenu === 'about' ? 'active' : ''}>
                                 <Link to={path_name.about}>Giới thiệu</Link>
                             </li>
                             <li className={activeMenu === 'blog' ? 'active' : ''}>
@@ -122,21 +122,27 @@ function Header({ setFilterProduct }) {
                             </li>
                             <li className={activeMenu === 'contact' ? 'active' : ''}>
                                 <Link to={path_name.contact}>Liên hệ</Link>
-                            </li>
+                            </li> */}
                         </ul>
                     </nav>
                 </Col>
                 <Col span={7}>
                     <Row>
-                        <AutoComplete
+                        {/* <AutoComplete
                             popupMatchSelectWidth={252}
                             style={{
                                 margin: '10px 0'
                             }}
 
                         >
-                            <Search />
-                        </AutoComplete>
+                            <Input.Search
+                                style={{ width: 200 }}
+                                placeholder="Tìm tên sản phẩm..."
+                                enterButton
+                            // value={searchValue}
+                            // onChange={(e) => setSearchValue(e.target.value)}
+                            />
+                        </AutoComplete> */}
 
                         <Link to={path_name.shopping_cart} style={{ margin: '15px' }}>
                             <Badge count={0} size='small' >

@@ -329,22 +329,12 @@ function ProductEdit() {
             dataIndex: 'index',
             key: 'index',
             width: '5%',
-            render: (text, record, index) => (
-                <span>{index + 1}</span>
-            ),
-        },
-        {
-            title: 'Ảnh',
-            dataIndex: 'productAvatar',
-            key: 'productAvatar',
-            width: '5%',
-            render: (text) => (
-                <Image width={60} height={60} src={text} alt="Avatar" />
-            ),
+            render: (value, item, index) => (pagination.current - 1) * pagination.pageSize + index + 1
+
         },
         {
             title: 'Sản phẩm',
-            width: '40%',
+            width: '45%',
             render: (record) => (
                 <>
                     <span>{`${record.productName}`}</span>

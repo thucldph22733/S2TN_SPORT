@@ -138,6 +138,7 @@ function Voucher() {
             dataIndex: 'key',
             key: 'key',
             width: '4%',
+            render: (value, item, index) => (pagination.current - 1) * pagination.pageSize + index + 1
         },
         {
             title: 'Mã',
@@ -455,7 +456,6 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
         return parts.join('.');
     };
 
-
     return (
         <Row>
             <Col span={24}>
@@ -560,7 +560,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                         style={{ width: '100%' }}
                                         addonAfter={selectAfter}
                                         formatter={(value) => formatGiamGia(value)}
-                                        parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số    
+                                        parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số
                                     />
                                 </Form.Item>
                             </Col>

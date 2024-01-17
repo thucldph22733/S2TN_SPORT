@@ -17,5 +17,5 @@ public class Top10SaleResponseDto {
 
     private Long totalQuantitySold;
 
-    private Double totalRevenue;
+    private Long totalRevenue;
 }

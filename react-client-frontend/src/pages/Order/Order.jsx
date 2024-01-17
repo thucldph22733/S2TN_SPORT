@@ -257,34 +257,41 @@ const OrderModal = ({ hideModal, isModal, fetchOrders, reacord }) => {
 
     const handleOrderCancel = () => {
         form.validateFields().then(async () => {
-
             const data = form.getFieldsValue();
-            data.newStatusName = 'Đã hủy'; //6 là trạng thái đã hủy
-            data.orderId = reacord.id
 
-            await OrderService.updateOrderStatus(data)
-                .then(() => {
-                    notification.success({
-                        message: 'Thông báo',
-                        description: 'Hủy đơn hàng thành công!',
+            // Kiểm tra trạng thái của đơn hàng trước khi hủy
+            if (reacord.statusName === 'Chờ xác nhận' || reacord.statusName === 'Chờ lấy hàng') {
+                data.newStatusName = 'Đã hủy'; //6 là trạng thái đã hủy
+                data.orderId = reacord.id;
+
+                await OrderService.updateOrderStatus(data)
+                    .then(() => {
+                        notification.success({
+                            message: 'Thông báo',
+                            description: 'Hủy đơn hàng thành công!',
+                        });
+                        fetchOrders();
+                        // Đóng modal
+                        hideModal();
+                    })
+                    .catch(error => {
+                        notification.error({
+                            message: 'Thông báo',
+                            description: 'Hủy đơn thất bại!',
+                        });
+                        console.error(error);
                     });
-                    fetchOrders();
-                    // Đóng modal
-                    hideModal();
-                })
-                .catch(error => {
-                    notification.error({
-                        message: 'Thông báo',
-                        description: 'Hủy đơn thất bại!',
-                    });
-                    console.error(error);
+            } else {
+                notification.warning({
+                    message: 'Thông báo',
+                    description: 'Không thể hủy đơn hàng với trạng thái hiện tại!',
                 });
-
+            }
         }).catch(error => {
             console.error(error);
-        })
+        });
+    };
 
-    }
 
 
     const onRadioChange = (e) => {

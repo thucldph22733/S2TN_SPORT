@@ -190,7 +190,6 @@ function Product() {
     const handleDelete = async (id) => {
 
         await ProductService.delete(id).then(() => {
-
             fetchProducts();
         }).catch(error => {
             console.error(error);
@@ -201,6 +200,7 @@ function Product() {
         });
 
     };
+    console.log("products", products);
 
     const handleFilterChange = (property, value) => {
         if (property === 'priceRange') {

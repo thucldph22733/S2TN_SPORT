@@ -284,7 +284,7 @@ function ProductDetail() {
 
                 message.success('Sản phẩm đã được thêm vào giỏ hàng!');
             }).catch(err => {
-                message.error('Lỗi thêm sản phẩm vào giỏ hàng!');
+                message.error(err.response.data.errorMessage);
             });
         } else {
             addToLocalStorageCart();

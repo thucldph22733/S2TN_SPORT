@@ -107,8 +107,6 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             @Param("endDate") LocalDateTime endDate
     );
 
-
-
     @Query("SELECT new com.poly.springboot.dto.responseDto.Top10SaleResponseDto( i.imageLink, p.productName,SUM(od.quantity),SUM(od.quantity * od.price)) " +
             "FROM OrderDetail od " +
             "JOIN ProductDetail pd on pd.id = od.productDetail.id " +
@@ -120,4 +118,6 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
             "ORDER BY SUM(od.quantity) DESC " +
             "LIMIT 10")
     List<Top10SaleResponseDto> findTop10BestSellingProducts();
+
+
 }

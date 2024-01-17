@@ -82,7 +82,7 @@ const ChangePassword = () => {
                     <Form.Item
                         label="Xác nhận mật khẩu:"
                         name="confirmationPassword"
-                        dependencies={['newPassword']}
+                        y
                         rules={[
                             {
                                 required: true,

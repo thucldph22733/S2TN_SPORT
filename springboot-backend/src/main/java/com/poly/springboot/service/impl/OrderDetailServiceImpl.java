@@ -130,23 +130,30 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     public Boolean updateQuantityOrderDetail(Integer quantity, Long id) {
         OrderDetail orderDetail = orderDetailRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id hóa đơn chi tiết này!"));
-
         // Get the associated ProductDetail
         ProductDetail productDetail = orderDetail.getProductDetail();
 
-        // Calculate the difference in quantity
-        int quantityDifference = quantity - orderDetail.getQuantity();
 
-        // Update the quantity in OrderDetail
-        orderDetail.setQuantity(quantity);
-        orderDetailRepository.save(orderDetail);
+        System.out.println("quantity" + quantity);
+        System.out.println("productDetail.getQuantity" + productDetail.getQuantity());
+        System.out.println("(productDetail.getQuantity) " + (productDetail.getQuantity() - quantity));
+        if ( productDetail.getQuantity() - quantity <= 0 ){
+            throw new IllegalArgumentException("Số lượng sản phẩm không đủ");
+        }else {
+            // Calculate the difference in quantity
+            int quantityDifference = quantity - orderDetail.getQuantity() + quantity;
 
-        // Check if ProductDetail is not null (just to be safe)
-        if (productDetail != null) {
-            // Update the quantity in ProductDetail
-            productDetail.setQuantity(productDetail.getQuantity() - quantityDifference);
-            // Save the updated ProductDetail
-            productDetailRepository.save(productDetail);
+            // Update the quantity in OrderDetail
+            orderDetail.setQuantity(quantity);
+            orderDetailRepository.save(orderDetail);
+
+            // Check if ProductDetail is not null (just to be safe)
+            if (productDetail != null) {
+                // Update the quantity in ProductDetail
+                productDetail.setQuantity(productDetail.getQuantity() - quantityDifference);
+                // Save the updated ProductDetail
+                productDetailRepository.save(productDetail);
+            }
         }
 
         return true;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Checkout.css';
-import { Breadcrumb, Button, Checkbox, Col, Collapse, Form, Input, Modal, Popconfirm, Radio, Row, Select, Tag, notification } from 'antd';
+import { Breadcrumb, Button, Checkbox, Col, Collapse, Form, Input, Modal, Popconfirm, Radio, Row, Select, Tag, message, notification } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { getDistrictsByCity, getProvinces, getWardsByDistrict } from '~/service/ApiService';
 import { DeleteOutlined, FormOutlined, HomeOutlined, PlusOutlined, TagsOutlined } from '@ant-design/icons';
@@ -17,6 +17,7 @@ import VoucherService from '~/service/VoucherService';
 import FormatDate from '~/utils/format-date';
 import voucher_icon from '~/assets/images/voucher_logo.png';
 import vnpay from '~/assets/images/vnpayy.webp';
+import axios, { Axios, AxiosError } from 'axios';
 function Checkout() {
 
     const [cities, setCities] = useState([]);
@@ -258,7 +259,12 @@ function Checkout() {
                 }
             }
         } catch (error) {
-            console.error(error);
+
+            if (error?.outOfDate === false) {
+                console.error("error", error);
+            } else {
+                message.error(error.response.data.errorMessage);
+            }
         }
     };
 

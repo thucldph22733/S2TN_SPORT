@@ -236,8 +236,16 @@ export default function Sell() {
     }, []);
 
     const handleQuantityChange = async (key, value) => {
-        await OrderDetailService.updateQuantityOrderDetail(value, key);
-        fetchOrderDetail();
+        try {
+            await OrderDetailService.updateQuantityOrderDetail(value, key);
+            fetchOrderDetail();
+        } catch (error) {
+            if (error?.outOfDate === false) {
+                console.error("error", error);
+            } else {
+                message.error(error.response.data.errorMessage);
+            }
+        }
     };
     const columnOrderDetail = [
 
@@ -1366,8 +1374,11 @@ const ProductModal = ({ isModal, hideModal, orderId, fetchOrderDetail }) => {
             fetchProductDetails();
             handleQuantityCancel();
         } catch (error) {
-            message.error("Thêm sản phẩm vào đơn hàng thất bại !");
-            console.error(error);
+            if (error?.outOfDate === false) {
+                console.error("error", error);
+            } else {
+                message.error(error.response.data.errorMessage);
+            }
         }
     };
 
@@ -1674,7 +1685,7 @@ const ProductModal = ({ isModal, hideModal, orderId, fetchOrderDetail }) => {
                 >
                     <p>{quantityModal.record.productName}</p>
                     <p>[ Màu: {quantityModal.record.colorName} - Kích thước: {quantityModal.record.sizeName} ]</p>
-                    <InputNumber min={1} max={10} defaultValue={1} onChange={handleQuantityChange} />
+                    <InputNumber min={1} max={quantityModal.record.quantity} defaultValue={1} onChange={handleQuantityChange} />
                 </Modal>
             }
 

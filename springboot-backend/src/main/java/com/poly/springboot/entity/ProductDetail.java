@@ -43,6 +43,6 @@ public class ProductDetail extends BaseEntity{
     private Double price;
 
     @Column(name = "is_deleted")
-    private Boolean deleted = false;   // xóa mềm (trạng thái)
+    private Boolean deleted = false;
 
 }

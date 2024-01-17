@@ -485,6 +485,9 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                     ,
                                 {
                                     validator: (_, value) => {
+                                        if (!value) {
+                                            return Promise.resolve();
+                                        }
                                         const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
                                         const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
                                         const isDuplicate = vouchers.some(
@@ -511,6 +514,9 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                     ,
                                 {
                                     validator: (_, value) => {
+                                        if (!value) {
+                                            return Promise.resolve();
+                                        }
                                         const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
                                         const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
                                         const isDuplicate = vouchers.some(
@@ -547,7 +553,9 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                         {
                                             validator: (_, value) => {
                                                 const intValue = parseInt(value, 10);
-
+                                                if (!value) {
+                                                    return Promise.resolve();
+                                                }
                                                 if (isNaN(intValue) || intValue <= 0) {
                                                     return Promise.reject(new Error('Vui lòng nhập số nguyên dương!'));
                                                 }
@@ -653,7 +661,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                     name="orderMinimum"
                                     rules={[
                                         {
-                                            required: true,
+                                            required: false,
                                             type: 'number',
                                             min: 1,
                                             message: 'Vui lòng nhập tối thiểu!',
@@ -661,7 +669,9 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                         {
                                             validator: (_, value) => {
                                                 const stringValue = String(value);
-
+                                                if (!value) {
+                                                    return Promise.resolve();
+                                                }
                                                 if (/^\s|\s$/.test(stringValue)) {
                                                     return Promise.reject('Vui lòng nhập số nguyên và không có dấu cách ở đầu và cuối!');
                                                 }
@@ -688,7 +698,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                             <Col span={12}>
                                 <Form.Item label="Giảm tối đa:" name="maxReduce" rules={[
                                     {
-                                        required: true,
+                                        required: false,
                                         type: 'number',
                                         min: 1,
                                         message: 'Vui lòng nhập giảm tối đa!'
@@ -696,7 +706,9 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                     {
                                         validator: (_, value) => {
                                             const stringValue = String(value);
-
+                                            if (!value) {
+                                                return Promise.resolve();
+                                            }
                                             if (/^\s|\s$/.test(stringValue)) {
                                                 return Promise.reject('Vui lòng nhập số nguyên và không có dấu cách ở đầu và cuối!');
                                             }

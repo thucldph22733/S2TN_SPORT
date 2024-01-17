@@ -19,7 +19,7 @@ const ChangePassword = () => {
                 console.error('Error:', error);
                 notification.error({
                     message: 'Lỗi',
-                    description: 'Đã có lỗi xảy ra khi thay đổi mật khẩu!',
+                    description: 'Mật khẩu không chính xác!',
                 });
             });
 

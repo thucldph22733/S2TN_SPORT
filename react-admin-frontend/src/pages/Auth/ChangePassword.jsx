@@ -19,7 +19,7 @@ const ChangePassword = () => {
                 console.error('Error:', error);
                 notification.error({
                     message: 'Lỗi',
-                    description: 'Đã có lỗi xảy ra khi thay đổi mật khẩu!',
+                    description: 'Mật khẩu không chính xác!',
                 });
             });
 
@@ -46,6 +46,15 @@ const ChangePassword = () => {
                                 required: true,
                                 message: 'Vui lòng nhập mật khẩu hiện tại!',
                             },
+                            {
+                                validator: (_, value) => {
+                                    // Kiểm tra xem có dấu cách ở đầu và cuối không
+                                    if (value && (value.trim() !== value)) {
+                                        return Promise.reject('Mật khẩu không được có dấu cách ở đầu hoặc cuối');
+                                    }
+                                    return Promise.resolve();
+                                },
+                            },
                         ]}
                     >
                         <Input.Password style={{ height: '40px', width: '100%', borderRadius: '5px' }} />
@@ -58,6 +67,15 @@ const ChangePassword = () => {
                                 required: true,
                                 message: 'Vui lòng nhập mật khẩu mới!',
                             },
+                            {
+                                validator: (_, value) => {
+                                    // Kiểm tra xem có dấu cách ở đầu và cuối không
+                                    if (value && (value.trim() !== value)) {
+                                        return Promise.reject('Mật khẩu không được có dấu cách ở đầu hoặc cuối');
+                                    }
+                                    return Promise.resolve();
+                                },
+                            },
                         ]}
                     >
                         <Input.Password style={{ height: '40px', width: '100%', borderRadius: '5px' }} />
@@ -65,11 +83,23 @@ const ChangePassword = () => {
                     <Form.Item
                         label="Xác nhận mật khẩu:"
                         name="confirmationPassword"
+                        dependencies={['newPassword']}
                         rules={[
                             {
                                 required: true,
                                 message: 'Vui lòng xác nhận mật khẩu!',
                             },
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    if (value && (value.trim() !== value)) {
+                                        return Promise.reject('Mật khẩu không được có dấu cách ở đầu hoặc cuối');
+                                    }
+                                    if (!value || getFieldValue('newPassword') === value) {
+                                        return Promise.resolve();
+                                    }
+                                    return Promise.reject('Mật khẩu xác nhận không khớp mật khẩu mới!');
+                                },
+                            }),
                         ]}
                     >
                         <Input.Password style={{ height: '40px', width: '100%', borderRadius: '5px' }} />

@@ -437,7 +437,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
     return (
 
         <Modal
-            width={650}
+            width={750}
             title={isMode === "edit" ? "Cập nhật tài khoản người dùng" : "Thêm mới một tài khoản người dùng"}
             open={isModal}
             onOk={isMode === "edit" ? handleUpdate : handleCreate}
@@ -452,7 +452,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
                 labelWrap
                 wrapperCol={{ flex: 1 }}
                 colon={false}
-                style={{ maxWidth: 600, marginTop: '25px' }}
+                style={{ marginTop: '25px' }}
                 form={form}
                 initialValues={{
                     ...reacord,
@@ -465,14 +465,7 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
                         if (!value) {
                             return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
                         }
-                        const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
-                        const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
-                        const isDuplicate = users.some(
-                            (user) => user.userName.trim().toLowerCase() === lowercaseValue && user.id !== reacord.id
-                        );
-                        if (isDuplicate) {
-                            return Promise.reject('Tên người dùng đã tồn tại!');
-                        }
+
                         // Kiểm tra dấu cách ở đầu và cuối
                         if (/^\s|\s$/.test(value)) {
                             return Promise.reject('Tên người dùng không được chứa dấu cách ở đầu và cuối!');
@@ -486,8 +479,31 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
 
                 <Form.Item label="Email:" name="email"
                     rules={[
-                        { type: 'email', message: 'Email không hợp lệ' },
-                        { max: 320, message: 'Email không được dài quá 320 ký tự' },
+                        { required: true, type: 'email', message: 'Vui lòng nhập email!' },
+                        {
+                            pattern: /^[a-zA-Z0-9._-]+@gmail\.com$/,
+                            message: 'Email không đúng định dạng!',
+                        },
+                        // { max: 320, message: 'Email không đúng định dạng' },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+
+                                if (!value) {
+                                    return Promise.resolve();
+                                }
+
+                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                const isDuplicate = users.some(
+                                    (user) => user.email.trim().toLowerCase() === lowercaseValue && user.id !== reacord.id
+                                );
+                                if (isDuplicate) {
+                                    return Promise.reject('Email đã tồn tại!');
+                                }
+
+                                return Promise.resolve();
+                            },
+                        }),
                     ]}>
                     <Input placeholder="Nhập email..." />
                 </Form.Item>
@@ -502,6 +518,15 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
 
                                 if (!value) {
                                     return Promise.resolve();
+                                }
+
+                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                const isDuplicate = users.some(
+                                    (user) => user.phoneNumber.trim().toLowerCase() === lowercaseValue && user.id !== reacord.id
+                                );
+                                if (isDuplicate) {
+                                    return Promise.reject('Số điện thoại đã tồn tại!');
                                 }
 
                                 if (!phoneNumberRegex.test(value)) {
@@ -526,14 +551,17 @@ const UserModal = ({ isMode, reacord, hideModal, isModal, fetchUsers, users }) =
                             label="Ngày sinh:"
                             name="birthOfDay"
                             rules={[
-
+                                {
+                                    required: false,
+                                    message: 'Vui lòng chọn ngày sinh!',
+                                },
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
                                         const selectedDate = new Date(value);
                                         const currentDate = new Date();
 
                                         if (selectedDate > currentDate) {
-                                            return Promise.reject(new Error('Không được chọn tương lai!'));
+                                            return Promise.reject(new Error('Ngày sinh không lớn hơn ngày hiện tại!'));
                                         }
                                         return Promise.resolve();
                                     },

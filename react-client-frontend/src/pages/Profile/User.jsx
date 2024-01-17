@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Input, Form, notification, Radio, DatePicker, Row, Col } from 'antd';
 import UserService from '~/service/UserService';
 import dayjs from 'dayjs';
+import { FaLessThan } from 'react-icons/fa';
 
 
 function User() {
@@ -98,7 +99,7 @@ function User() {
                             },
                             {
                                 pattern: /^[a-zA-Z0-9._-]+@gmail\.com$/,
-                                message: 'Email phải có định dạng @gmail.com!',
+                                message: 'Email không đúng định dạng!',
                             },
                         ]}
                     >
@@ -108,26 +109,25 @@ function User() {
                     <Form.Item label="Số điện thoại:" name='phoneNumber' initialValue={users.phoneNumber}
                         rules={[
                             { required: true, message: 'Vui lòng nhập số điện thoại!' },
-                            { pattern: /^[0-9]+$/, message: 'Số điện thoại chỉ được chứa chữ số' },
-                            { min: 10, message: 'Số điện thoại phải 10 chữ số' },
-                            { max: 10, message: 'Số điện thoại phải 10 chữ số' },
-                            {
-                                validator: async (_, value) => {
-                                    // Kiểm tra giá trị có tồn tại không
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    const phoneNumberRegex = /^[0-9]{10,12}$/;
+
                                     if (!value) {
-                                        return Promise.resolve(); // Bỏ qua kiểm tra nếu giá trị không tồn tại
+                                        return Promise.resolve();
                                     }
 
-                                    // Kiểm tra số đầu tiên là số 0
-                                    if (value.charAt(0) !== '0') {
-                                        throw new Error('Số điện thoại phải bắt đầu bằng số 0');
+                                    if (!phoneNumberRegex.test(value)) {
+                                        // notification.error({
+                                        //     message: 'Lỗi',
+                                        //     description: 'Số điện thoại không đúng định dạng!',
+                                        // });
+                                        return Promise.reject('Số điện thoại không đúng định dạng!');
                                     }
-
-                                    // Kiểm tra các quy tắc khác ở đây nếu cần
 
                                     return Promise.resolve();
                                 },
-                            }
+                            }),
                         ]}
                     >
                         <Input placeholder="Nhập số điện thoại..." />
@@ -140,7 +140,7 @@ function User() {
                                 initialValue={dayjs(users.birthOfDay)}
                                 rules={[
                                     {
-                                        required: true,
+                                        required: false,
                                         message: 'Vui lòng chọn ngày sinh!',
                                     },
                                     ({ getFieldValue }) => ({
@@ -149,7 +149,7 @@ function User() {
                                             const currentDate = new Date();
 
                                             if (selectedDate > currentDate) {
-                                                return Promise.reject(new Error('không được chọn tương lai!'));
+                                                return Promise.reject(new Error('Ngày sinh không lớn hơn ngày hiện tại!'));
                                             }
                                             return Promise.resolve();
                                         },
@@ -161,7 +161,7 @@ function User() {
                         </Col>
                         <Col span={1}></Col>
                         <Col span={11}>
-                            <Form.Item label="Giới tính:" name='gender' initialValue={users.gender} rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
+                            <Form.Item label="Giới tính:" name='gender' initialValue={users.gender} rules={[{ required: false, message: 'Vui lòng chọn giới tính!' }]}>
                                 <Radio.Group name="radiogroup" style={{ float: 'left' }}>
                                     <Radio value={true}>Nam</Radio>
                                     <Radio value={false}>Nữ</Radio>

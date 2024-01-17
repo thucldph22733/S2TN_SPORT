@@ -266,11 +266,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress, addre
                                 if (!value) {
                                     return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
                                 }
-                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
-                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
-                                const isDuplicate = address.some(
-                                    (address) => address.addressName.trim().toLowerCase() === lowercaseValue && address.id !== reacord.id
-                                );
+
                                 // Kiểm tra dấu cách ở đầu và cuối
                                 if (/^\s|\s$/.test(value)) {
                                     return Promise.reject('Tên người dùng không được chứa dấu cách ở đầu và cuối!');

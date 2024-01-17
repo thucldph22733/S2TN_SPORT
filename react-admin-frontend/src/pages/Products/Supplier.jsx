@@ -422,9 +422,34 @@ const SupplierModal = ({ isMode, reacord, hideModal, isModal, fetchSuppliers, su
                     name="phoneNumber"
                     rules={[
                         { required: true, message: 'Vui lòng nhập số điện thoại!' },
-                        { pattern: /^[0-9]+$/, message: 'Số điện thoại chỉ được chứa chữ số' },
-                        { min: 10, message: 'Số điện thoại phải 10 chữ số' },
-                        { max: 10, message: 'Số điện thoại phải 10 chữ số' },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                const phoneNumberRegex = /^[0-9]{10,12}$/;
+
+                                if (!value) {
+                                    return Promise.resolve();
+                                }
+
+                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                const isDuplicate = suppliers.some(
+                                    (s) => s.phoneNumber.trim().toLowerCase() === lowercaseValue && s.id !== reacord.id
+                                );
+                                if (isDuplicate) {
+                                    return Promise.reject('Số điện thoại đã tồn tại!');
+                                }
+
+                                if (!phoneNumberRegex.test(value)) {
+                                    // notification.error({
+                                    //     message: 'Lỗi',
+                                    //     description: 'Số điện thoại không đúng định dạng!',
+                                    // });
+                                    return Promise.reject('Số điện thoại không đúng định dạng!');
+                                }
+
+                                return Promise.resolve();
+                            },
+                        }),
                     ]}
                 >
                     <Input placeholder="Nhập số điện thoại..." />
@@ -434,6 +459,9 @@ const SupplierModal = ({ isMode, reacord, hideModal, isModal, fetchSuppliers, su
                     ,
                 {
                     validator: (_, value) => {
+                        if (!value) {
+                            return Promise.resolve();
+                        }
                         const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
                         const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
                         const isDuplicate = suppliers.some(

@@ -607,17 +607,25 @@ export default function Sell() {
                                     <Form.Item
                                         label="Họ và tên"
                                         name="recipientName"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng nhập họ và tên!',
+                                        rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' },
+                                        {
+                                            validator: (_, value) => {
+                                                if (!value) {
+                                                    return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                                                }
+
+                                                // Kiểm tra dấu cách ở đầu và cuối
+                                                if (/^\s|\s$/.test(value)) {
+                                                    return Promise.reject('Họ và tên không được chứa dấu cách ở đầu và cuối!');
+                                                }
+                                                return Promise.resolve();
                                             },
+                                        },
                                         ]}
                                         initialValue={address?.recipientName}
                                     >
                                         <Input
                                             placeholder="Nhập họ và tên..."
-
                                             style={{ height: '40px', borderRadius: '5px' }} />
                                     </Form.Item>
                                 </Col>
@@ -1976,7 +1984,8 @@ const UserModal = ({ isModal, hideModal, orderId, findOrderById }) => {
                             }}></Table >
 
                         {open && <UserCreateModal
-                            hideModal={hideModal}
+                            hideModal={hideModalUser}
+                            users={users}
                             isModal={open}
                             fetchUsers={fetchUsers} />}
 
@@ -1987,7 +1996,7 @@ const UserModal = ({ isModal, hideModal, orderId, findOrderById }) => {
     );
 };
 
-const UserCreateModal = ({ isModal, hideModal, fetchUsers }) => {
+const UserCreateModal = ({ isModal, hideModal, fetchUsers, users }) => {
 
     const [form] = Form.useForm();
 
@@ -2036,13 +2045,86 @@ const UserCreateModal = ({ isModal, hideModal, fetchUsers }) => {
                 form={form}
 
             >
-                <Form.Item label="Tên:" name="userName" rules={[{ required: true, message: 'Vui lòng nhập tên khách hàng!' }]}>
+                <Form.Item label="Tên:" name="userName"
+                    rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' },
+                    {
+                        validator: (_, value) => {
+                            if (!value) {
+                                return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                            }
+
+                            // Kiểm tra dấu cách ở đầu và cuối
+                            if (/^\s|\s$/.test(value)) {
+                                return Promise.reject('Tên người dùng không được chứa dấu cách ở đầu và cuối!');
+                            }
+                            return Promise.resolve();
+                        },
+                    },
+                    ]}
+                >
                     <Input placeholder="Nhập tên người dùng..." />
                 </Form.Item>
-                <Form.Item label="Email:" name="email" >
+                <Form.Item label="Email:" name="email"
+                    rules={[
+                        { required: false, type: 'email', message: 'Vui lòng nhập email!' },
+                        {
+                            pattern: /^[a-zA-Z0-9._-]+@gmail\.com$/,
+                            message: 'Email không đúng định dạng!',
+                        },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value) {
+                                    return Promise.resolve();
+                                }
+                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                const emailFieldValue = form.getFieldValue('email');
+                                const isDuplicate = users.some(
+                                    (user) => user.email.trim().toLowerCase() === lowercaseValue && user.id !== emailFieldValue
+                                );
+                                if (isDuplicate) {
+                                    return Promise.reject('Email đã tồn tại!');
+                                }
+
+                                return Promise.resolve();
+                            },
+                        }),
+                    ]}
+                >
                     <Input placeholder="Nhập email..." />
                 </Form.Item>
-                <Form.Item label="Số điện thoại:" name="phoneNumber" >
+                <Form.Item label="Số điện thoại:" name="phoneNumber"
+                    rules={[
+                        { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                const phoneNumberRegex = /^[0-9]{10,12}$/;
+
+                                if (!value) {
+                                    return Promise.resolve();
+                                }
+                                const trimmedValue = value.trim(); // Loại bỏ dấu cách ở đầu và cuối
+                                const lowercaseValue = trimmedValue.toLowerCase(); // Chuyển về chữ thường
+                                const phoneNumberFieldValue = form.getFieldValue('phoneNumber');
+                                const isDuplicate = users.some(
+                                    (user) => user.phoneNumber.trim().toLowerCase() === lowercaseValue && user.id !== phoneNumberFieldValue
+                                );
+                                if (isDuplicate) {
+                                    return Promise.reject('Số điện thoại đã tồn tại!');
+                                }
+                                if (!phoneNumberRegex.test(value)) {
+                                    // notification.error({
+                                    //     message: 'Lỗi',
+                                    //     description: 'Số điện thoại không đúng định dạng!',
+                                    // });
+                                    return Promise.reject('Số điện thoại không đúng định dạng!');
+                                }
+
+                                return Promise.resolve();
+                            },
+                        }),
+                    ]}
+                >
                     <Input placeholder="Nhập số điện thoại..." />
                 </Form.Item>
 
@@ -2314,10 +2396,48 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
                         city: reacord.city
                     }}
                 >
-                    <Form.Item label="Họ và tên:" name="recipientName" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
+                    <Form.Item label="Họ và tên:" name="recipientName"
+                        rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' },
+                        {
+                            validator: (_, value) => {
+                                if (!value) {
+                                    return Promise.resolve(); // Không thực hiện validate khi giá trị rỗng
+                                }
+
+                                // Kiểm tra dấu cách ở đầu và cuối
+                                if (/^\s|\s$/.test(value)) {
+                                    return Promise.reject('Họ và tên không được chứa dấu cách ở đầu và cuối!');
+                                }
+                                return Promise.resolve();
+                            },
+                        },
+                        ]}
+                    >
                         <Input placeholder="Họ và tên..." />
                     </Form.Item>
-                    <Form.Item label="Số điện thoại:" name="phoneNumber" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}>
+                    <Form.Item label="Số điện thoại:" name="phoneNumber"
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    const phoneNumberRegex = /^[0-9]{10,12}$/;
+
+                                    if (!value) {
+                                        return Promise.resolve();
+                                    }
+                                    if (!phoneNumberRegex.test(value)) {
+                                        // notification.error({
+                                        //     message: 'Lỗi',
+                                        //     description: 'Số điện thoại không đúng định dạng!',
+                                        // });
+                                        return Promise.reject('Số điện thoại không đúng định dạng!');
+                                    }
+
+                                    return Promise.resolve();
+                                },
+                            }),
+                        ]}
+                    >
                         <Input placeholder="Số điện thoại..." />
                     </Form.Item>
                     <Row>

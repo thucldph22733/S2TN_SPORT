@@ -548,7 +548,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                             required: true,
                                             type: 'number',
                                             min: 0,
-                                            message: 'Vui lòng nhập mức giảm lớn hơn hoặc bằng 0!',
+                                            message: 'Vui lòng nhập mức giảm lớn hơn 0!',
                                         },
                                         {
                                             validator: (_, value) => {
@@ -655,7 +655,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                             </Col>
                         </Row>
                         <Row>
-                            <Col span={11}>
+                            <Col span={24}>
                                 <Form.Item
                                     label="Tối thiểu:"
                                     name="orderMinimum"
@@ -694,7 +694,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                     />
                                 </Form.Item>
                             </Col>
-                            <Col span={1}></Col>
+                            {/* <Col span={1}></Col>
                             <Col span={12}>
                                 <Form.Item label="Giảm tối đa:" name="maxReduce" rules={[
                                     {
@@ -729,7 +729,7 @@ const VoucherModal = ({ isMode, reacord, hideModal, isModal, fetchVouchers, vouc
                                         parser={(value) => value.replace(/[^\d]/g, '')} // Chỉ giữ lại số
                                     />
                                 </Form.Item>
-                            </Col>
+                            </Col> */}
                         </Row>
 
 

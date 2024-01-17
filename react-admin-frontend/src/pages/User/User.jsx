@@ -21,6 +21,9 @@ const { TextArea } = Input;
 
 function User() {
 
+    const userString = localStorage.getItem('user1');
+    const user = userString ? JSON.parse(userString) : null;
+    console.log("user:", user.role);
     const [loading, setLoading] = useState(false);
     //Mở modal hiển thị address
     const [addressModal, setAddressModal] = useState({ isModal: false, reacord: null });
@@ -51,6 +54,7 @@ function User() {
     };
 
     const handleDelete = async (id) => {
+        const status = users.map((item) => item.role === "ADMIN")
 
         await UserService.delete(id).then(response => {
             console.log(response.ata);
@@ -222,10 +226,12 @@ function User() {
                         cancelText="Hủy bỏ"
                     >
                         <Button
+                            disabled={record.role === "ADMIN" ? true : false}
                             type="text"
                             icon={record.deleted ? <PiLockKeyOpenFill style={{ color: '#7859f2', fontSize: '17px' }} /> : <PiLockKeyFill style={{ color: '#7859f2', fontSize: '17px' }} />}
                         />
                     </Popconfirm>
+
                     <Button type="text"
                         icon={<FaMapMarkedAlt />}
                         style={{ color: '#5a76f3', fontSize: '16px' }}

@@ -1109,6 +1109,7 @@ export default function Sell() {
             {voucherModal && <ModalVoucher
                 hideModal={hideVoucherModal}
                 isModal={voucherModal}
+                calculateTotalAmount={calculateTotalAmount()}
                 order={order}
                 findOrderById={findOrderById}
             />}
@@ -2525,7 +2526,7 @@ const AddressModal = ({ isMode, reacord, hideModal, isModal, fetchAddress }) => 
     );
 };
 
-const ModalVoucher = ({ hideModal, isModal, order, findOrderById }) => {
+const ModalVoucher = ({ hideModal, isModal, order, findOrderById, calculateTotalAmount }) => {
     const [vouchers, setVouchers] = useState([]);
     const [selectedVoucher, setSelectedVoucher] = useState(null);
     const [inputVoucherCode, setInputVoucherCode] = useState(null);
@@ -2549,11 +2550,22 @@ const ModalVoucher = ({ hideModal, isModal, order, findOrderById }) => {
         setSelectedVoucher(cartVoucherId);
     }, [order]);
 
+    const cs = vouchers.find((item) => item.voucherCode === selectedVoucher);
+
+
     const handleOkInput = async () => {
+
         setErrorText(''); // Reset error text
         const selectedVoucherData = vouchers.find(
             (voucher) => voucher.voucherCode === inputVoucherCode
         );
+        if (calculateTotalAmount < selectedVoucherData?.orderMinimum) {
+            notification.warning({
+                message: 'Thông báo',
+                description: 'Đơn hàng không đủ điều kiện!',
+            });
+            return;
+        }
         if (selectedVoucherData) {
             await OrderService.updateOrderVoucher(order.id, inputVoucherCode).then(() => {
                 findOrderById()
@@ -2577,13 +2589,16 @@ const ModalVoucher = ({ hideModal, isModal, order, findOrderById }) => {
 
     // Hàm xử lý khi ấn "OK" trên Modal
     const handleOk = async () => {
-
+        if (calculateTotalAmount < cs?.orderMinimum) {
+            notification.warning({
+                message: 'Thông báo',
+                description: 'Đơn hàng không đủ điều kiện!',
+            });
+            return;
+        }
         await OrderService.updateOrderVoucher(order.id, selectedVoucher).then(() => {
             findOrderById()
-            notification.success({
-                message: 'Thông báo',
-                description: 'Áp dụng mã giảm giá thành công!',
-            });
+
             hideModal();
         }).catch(err => {
             console.log(err)
@@ -2633,7 +2648,7 @@ const ModalVoucher = ({ hideModal, isModal, order, findOrderById }) => {
                             </Col>
                             <Col span={17} style={{ fontSize: '13px', paddingLeft: '10px' }}>
                                 <p style={{ marginBottom: '0' }}>{item.voucherName}</p>
-                                <p style={{ marginBottom: '0' }}>Giảm: {formatCurrency(item.discountRate)} | <span>Giảm tối đa:{formatCurrency(item.maxReduce)}</span></p>
+                                <p style={{ marginBottom: '0' }}>Giảm: {formatCurrency(item.discountRate)}</p>
                                 <p style={{ marginBottom: '0' }}>Đơn tối thiểu: {formatCurrency(item.orderMinimum)}</p>
                                 <p style={{ marginBottom: '0' }}>HSD: {FormatDate(item.endDate)}</p>
                             </Col>

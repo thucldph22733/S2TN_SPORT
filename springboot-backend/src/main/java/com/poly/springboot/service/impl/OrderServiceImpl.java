@@ -195,84 +195,88 @@ public class OrderServiceImpl implements OrderService {
 
         // Tìm đối tượng OrderStatus (set luôn là null nếu không tìm thấy)
         OrderStatus orderStatus = (orderRequestDto.getStatusName() != null) ? orderStatusRepository.findByStatusName(orderRequestDto.getStatusName()).orElse(null) : null;
+        if(user.getDeleted()){
+            // Tạo đối tượng Order và set các giá trị đã tìm được
+            Order order = new Order();
+            order.setUser(user);
 
-        // Tạo đối tượng Order và set các giá trị đã tìm được
-        Order order = new Order();
-        order.setUser(user);
+            order.setOrderStatus(orderStatus);
+            order.setVoucher(voucher);
+            order.setOrderTotal(orderRequestDto.getOrderTotal());
+            order.setNote(orderRequestDto.getNote());
+            order.setOrderType("Online");
+            order.setTransportFee(orderRequestDto.getTransportFee());
 
-        order.setOrderStatus(orderStatus);
-        order.setVoucher(voucher);
-        order.setOrderTotal(orderRequestDto.getOrderTotal());
-        order.setNote(orderRequestDto.getNote());
-        order.setOrderType("Online");
-        order.setTransportFee(orderRequestDto.getTransportFee());
+            //dịa chỉ giao
+            order.setRecipientName(orderRequestDto.getRecipientName());
+            order.setPhoneNumber(orderRequestDto.getPhoneNumber());
+            order.setAddressDetail(orderRequestDto.getAddressDetail());
+            order.setWard(orderRequestDto.getWard());
+            order.setDistrict(orderRequestDto.getDistrict());
+            order.setCity(orderRequestDto.getCity());
 
-        //dịa chỉ giao
-        order.setRecipientName(orderRequestDto.getRecipientName());
-        order.setPhoneNumber(orderRequestDto.getPhoneNumber());
-        order.setAddressDetail(orderRequestDto.getAddressDetail());
-        order.setWard(orderRequestDto.getWard());
-        order.setDistrict(orderRequestDto.getDistrict());
-        order.setCity(orderRequestDto.getCity());
+            // Lưu vào cơ sở dữ liệu
+            orderRepository.save(order);
 
-        // Lưu vào cơ sở dữ liệu
-        orderRepository.save(order);
-
-        // Đối với trường hợp người dùng không đăng nhập, sử dụng dữ liệu từ orderRequestDto
-        if (user == null) {
-            List<OrderDetailRequestDto> orderDetails = orderRequestDto.getOrderDetail();
-            for (OrderDetailRequestDto detailDto : orderDetails) {
-                OrderDetail orderDetail = new OrderDetail();
-                //tìm ra sản phẩm rồi trừ đi số lượng
-                ProductDetail productDetail = productDetailRepository.findById(detailDto.getProductDetailId()).orElse(null);
-                productDetail.setQuantity(productDetail.getQuantity() - detailDto.getQuantity());
-                productDetailRepository.save(productDetail);
-
-                orderDetail.setProductDetail(productDetail);
-                orderDetail.setOrder(order);
-                orderDetail.setQuantity(detailDto.getQuantity());
-                orderDetail.setPrice(detailDto.getPrice());
-
-                // Lưu hóa đơn chi tiết
-                orderDetailRepository.save(orderDetail);
-            }
-        } else {
-            // Lấy giỏ hàng của người dùng
-            Optional<Cart> optionalCart = cartRepository.findByUserId(orderRequestDto.getUserId());
-
-            if (optionalCart.isPresent()) {
-                Cart cart = optionalCart.get();
-
-                // Lưu danh sách chi tiết đơn hàng từ giỏ hàng
-                List<CartDetail> cartDetails = cart.getCartDetails();
-                for (CartDetail cartDetail : cartDetails) {
+            // Đối với trường hợp người dùng không đăng nhập, sử dụng dữ liệu từ orderRequestDto
+            if (user == null) {
+                List<OrderDetailRequestDto> orderDetails = orderRequestDto.getOrderDetail();
+                for (OrderDetailRequestDto detailDto : orderDetails) {
                     OrderDetail orderDetail = new OrderDetail();
-                    orderDetail.setProductDetail(cartDetail.getProductDetail());
+                    //tìm ra sản phẩm rồi trừ đi số lượng
+                    ProductDetail productDetail = productDetailRepository.findById(detailDto.getProductDetailId()).orElse(null);
+                    productDetail.setQuantity(productDetail.getQuantity() - detailDto.getQuantity());
+                    productDetailRepository.save(productDetail);
+
+                    orderDetail.setProductDetail(productDetail);
                     orderDetail.setOrder(order);
-                    orderDetail.setQuantity(cartDetail.getQuantity());
-                    orderDetail.setPrice(cartDetail.getProductDetail().getPrice()); // Bạn có thể sửa giá cả theo logic của bạn
+                    orderDetail.setQuantity(detailDto.getQuantity());
+                    orderDetail.setPrice(detailDto.getPrice());
 
                     // Lưu hóa đơn chi tiết
                     orderDetailRepository.save(orderDetail);
-
-                    // Trừ số lượng sản phẩm trong kho (hoặc cập nhật trạng thái nếu có thêm logic cụ thể)
-                    ProductDetail productDetail = cartDetail.getProductDetail();
-                    productDetail.setQuantity(productDetail.getQuantity() - cartDetail.getQuantity());
-                    productDetailRepository.save(productDetail);
                 }
+            } else {
+                // Lấy giỏ hàng của người dùng
+                Optional<Cart> optionalCart = cartRepository.findByUserId(orderRequestDto.getUserId());
 
-                // Xóa giỏ hàng sau khi đã tạo đơn hàng thành công
-                cartRepository.delete(cart);
+                if (optionalCart.isPresent()) {
+                    Cart cart = optionalCart.get();
+
+                    // Lưu danh sách chi tiết đơn hàng từ giỏ hàng
+                    List<CartDetail> cartDetails = cart.getCartDetails();
+                    for (CartDetail cartDetail : cartDetails) {
+                        OrderDetail orderDetail = new OrderDetail();
+                        orderDetail.setProductDetail(cartDetail.getProductDetail());
+                        orderDetail.setOrder(order);
+                        orderDetail.setQuantity(cartDetail.getQuantity());
+                        orderDetail.setPrice(cartDetail.getProductDetail().getPrice()); // Bạn có thể sửa giá cả theo logic của bạn
+
+                        // Lưu hóa đơn chi tiết
+                        orderDetailRepository.save(orderDetail);
+
+                        // Trừ số lượng sản phẩm trong kho (hoặc cập nhật trạng thái nếu có thêm logic cụ thể)
+                        ProductDetail productDetail = cartDetail.getProductDetail();
+                        productDetail.setQuantity(productDetail.getQuantity() - cartDetail.getQuantity());
+                        productDetailRepository.save(productDetail);
+                    }
+
+                    // Xóa giỏ hàng sau khi đã tạo đơn hàng thành công
+                    cartRepository.delete(cart);
+                }
             }
+
+
+            OrderHistory timeLine = new OrderHistory();
+            timeLine.setOrder(order);
+            timeLine.setStatus(orderStatus);
+            timeLine.setNote(orderRequestDto.getNote());
+            orderHistoryRepository.save(timeLine);
+            return order;
+        }else {
+            throw new IllegalStateException("Tài khoản của bạn đã bị khóa");
         }
 
-
-        OrderHistory timeLine = new OrderHistory();
-        timeLine.setOrder(order);
-        timeLine.setStatus(orderStatus);
-        timeLine.setNote(orderRequestDto.getNote());
-        orderHistoryRepository.save(timeLine);
-        return order;
     }
 
     @Override

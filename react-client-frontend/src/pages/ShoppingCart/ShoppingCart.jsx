@@ -374,6 +374,7 @@ const ShoppingCart = () => {
                         hideModal={hideVoucherModal}
                         isModal={voucherModal}
                         voucher={localVouchers}
+                        calculateTotalAmount={calculateTotalAmount()}
                     // getCartByUserId={getCartByUserId}
                     // user={user}
                     />}
@@ -383,7 +384,7 @@ const ShoppingCart = () => {
     );
 };
 
-const ModalVoucher = ({ hideModal, isModal, voucher }) => {
+const ModalVoucher = ({ hideModal, isModal, voucher, calculateTotalAmount }) => {
     const [vouchers, setVouchers] = useState([]);
     const [selectedVoucher, setSelectedVoucher] = useState(null);
     const [inputVoucherCode, setInputVoucherCode] = useState('');
@@ -420,6 +421,16 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
     const handleOkInput = async () => {
         try {
             setErrorText(''); // Reset error text
+            const selectedVoucherData = vouchers.find(
+                (voucher) => voucher.voucherCode === inputVoucherCode
+            );
+            if (calculateTotalAmount < selectedVoucherData?.orderMinimum) {
+                notification.warning({
+                    message: 'Thông báo',
+                    description: 'Đơn hàng không đủ điều kiện!',
+                });
+                return;
+            }
             if (!inputVoucherCode) {
                 hideModal();
             } else {
@@ -437,9 +448,18 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
             console.error('Error updating voucher:', error);
         }
     };
+
+    const cs = vouchers.find((item) => item.voucherCode === selectedVoucher);
     // Hàm xử lý khi ấn "OK" trên Modal
     const handleOk = async () => {
         try {
+            if (calculateTotalAmount < cs?.orderMinimum) {
+                notification.warning({
+                    message: 'Thông báo',
+                    description: 'Đơn hàng không đủ điều kiện!',
+                });
+                return;
+            }
             if (selectedVoucher == null) {
                 hideModal();
             } else {
@@ -488,7 +508,7 @@ const ModalVoucher = ({ hideModal, isModal, voucher }) => {
                             </Col>
                             <Col span={17} style={{ fontSize: '13px', paddingLeft: '10px' }}>
                                 <p style={{ marginBottom: '0' }}>{item.voucherName}</p>
-                                <p style={{ marginBottom: '0' }}>Giảm: {formatCurrency(item.discountRate)} | <span>Giảm tối đa:{formatCurrency(item.maxReduce)}</span></p>
+                                <p style={{ marginBottom: '0' }}>Giảm: {formatCurrency(item.discountRate)}</p>
                                 <p style={{ marginBottom: '0' }}>Đơn tối thiểu: {formatCurrency(item.orderMinimum)}</p>
                                 <p style={{ marginBottom: '0' }}>HSD: {FormatDate(item.endDate)}</p>
                             </Col>

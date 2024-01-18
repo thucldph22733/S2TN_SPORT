@@ -280,7 +280,7 @@ function Dashboard() {
             </Row>
             <Row style={{ marginTop: '25px', height: '300px' }}>
                 <Col span={14}>
-                    <h3 style={{ fontWeight: '600', textAlign: 'center' }}>Top 10 sản phẩm bán chạy</h3>
+                    <h3 style={{ fontWeight: '600', textAlign: 'center' }}>Top 10 sản phẩm bán nhiều nhất</h3>
                     <Table
                         dataSource={top10BestSelling.map((top10Best, index) => ({
                             ...top10Best,

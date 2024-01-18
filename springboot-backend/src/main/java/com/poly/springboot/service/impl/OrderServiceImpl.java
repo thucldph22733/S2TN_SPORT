@@ -239,8 +239,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setOrder(orderRepository.save(order));
                 orderDetail.setQuantity(detailDto.getQuantity());
                 orderDetail.setPrice(detailDto.getPrice());
-
-                // Save order detail
+// Save order detail
                 orderDetailRepository.save(orderDetail);
             }
         } else {
@@ -274,23 +273,10 @@ public class OrderServiceImpl implements OrderService {
                     // Deduct the quantity of products in stock (or update status if you have specific logic)
 
                 }
-            } else {
-                // Lấy giỏ hàng của người dùng
-                Optional<Cart> optionalCart = cartRepository.findByUserId(orderRequestDto.getUserId());
 
                 // Delete the cart after successfully creating the order
                 cartRepository.delete(cart);
             }
-
-
-            OrderHistory timeLine = new OrderHistory();
-            timeLine.setOrder(order);
-            timeLine.setStatus(orderStatus);
-            timeLine.setNote(orderRequestDto.getNote());
-            orderHistoryRepository.save(timeLine);
-            return order;
-        }else {
-            throw new IllegalStateException("Tài khoản của bạn đã bị khóa");
         }
 
         OrderHistory timeLine = new OrderHistory();
@@ -300,8 +286,8 @@ public class OrderServiceImpl implements OrderService {
         orderHistoryRepository.save(timeLine);
         return order;
 
-}
-
+    }
+    
     @Override
     public Order updateOrder(OrderInStoreRequestDto requestDto) {
         // Tìm đối tượng Order theo ID

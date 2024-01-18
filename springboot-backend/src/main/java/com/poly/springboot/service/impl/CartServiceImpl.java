@@ -43,62 +43,57 @@ public class CartServiceImpl implements CartService {
 
         ProductDetail productDetails = productDetailRepository.findById(cartRequestDto.getProductDetailId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
+
         Product product = this.productRepository.findById(productDetails.getProduct().getId()).get();
-        if (productDetails.getDeleted() ==  false || product.getDeleted() == false) {
+
+        if (productDetails.getDeleted() == false || product.getDeleted() == false) {
             throw new ResourceNotFoundException("Sản phẩm này đã bị xóa!");
 
-        }else{
+        } else {
             User user = userRepository.findById(cartRequestDto.getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại!"));
 
-        Optional<CartDetail> existingCartDetail = cartDetailRepository.findByProductDetailIdAndCartsId(
-                cartRequestDto.getProductDetailId(), cart.getId());
-        ProductDetail productDetail = productDetailRepository.findById(cartRequestDto.getProductDetailId())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
+            Optional<Cart> existingCart = cartRepository.findByUserId(cartRequestDto.getUserId());
 
-        if (existingCartDetail.isPresent()) {
-            // Nếu cartDetail đã tồn tại, cập nhật số lượng
-            CartDetail cartDetail = existingCartDetail.get();
-
-            // Check if the total quantity in the cart after adding is greater than the available quantity
-            if (productDetail.getQuantity() < cartDetail.getQuantity() + cartRequestDto.getQuantity()) {
-                throw new ResourceNotFoundException("Số lượng sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!");
-            }
-
-            cartDetail.setQuantity(cartDetail.getQuantity() + cartRequestDto.getQuantity());
-            cartDetailRepository.save(cartDetail);
-        } else {
-            // Nếu cartDetail không tồn tại, tạo mới
-
-            // Check if the total quantity in the cart after adding is greater than the available quantity
-            if (productDetail.getQuantity() < cartRequestDto.getQuantity()) {
-                throw new ResourceNotFoundException("Số lượng sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!");
-            }
-
+            Cart cart = existingCart.orElseGet(() -> {
+                Cart newCart = new Cart();
+                newCart.setUser(user);
+                return cartRepository.save(newCart);
+            });
             Optional<CartDetail> existingCartDetail = cartDetailRepository.findByProductDetailIdAndCartsId(
                     cartRequestDto.getProductDetailId(), cart.getId());
+
+            ProductDetail productDetail = productDetailRepository.findById(cartRequestDto.getProductDetailId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
 
             if (existingCartDetail.isPresent()) {
                 // Nếu cartDetail đã tồn tại, cập nhật số lượng
                 CartDetail cartDetail = existingCartDetail.get();
+
+                // Check if the total quantity in the cart after adding is greater than the available quantity
+                if (productDetail.getQuantity() < cartDetail.getQuantity() + cartRequestDto.getQuantity()) {
+                    throw new ResourceNotFoundException("Số lượng sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!");
+                }
+
                 cartDetail.setQuantity(cartDetail.getQuantity() + cartRequestDto.getQuantity());
                 cartDetailRepository.save(cartDetail);
             } else {
                 // Nếu cartDetail không tồn tại, tạo mới
-                ProductDetail productDetail = productDetailRepository.findById(cartRequestDto.getProductDetailId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
+
+                // Check if the total quantity in the cart after adding is greater than the available quantity
+                if (productDetail.getQuantity() < cartRequestDto.getQuantity()) {
+                    throw new ResourceNotFoundException("Số lượng sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!");
+                }
 
                 CartDetail newCartDetail = new CartDetail();
                 newCartDetail.setProductDetail(productDetail);
                 newCartDetail.setCarts(cart);
                 newCartDetail.setQuantity(cartRequestDto.getQuantity());
                 cartDetailRepository.save(newCartDetail);
+
             }
             return true;
         }
-
-
-
     }
 
 

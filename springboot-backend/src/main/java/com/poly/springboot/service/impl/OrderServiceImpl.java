@@ -243,39 +243,43 @@ public class OrderServiceImpl implements OrderService {
                 orderDetailRepository.save(orderDetail);
             }
         } else {
-            // Retrieve the user's cart
-            Optional<Cart> optionalCart = cartRepository.findByUserId(orderRequestDto.getUserId());
+            if(user.getDeleted()) {
+                // Retrieve the user's cart
+                Optional<Cart> optionalCart = cartRepository.findByUserId(orderRequestDto.getUserId());
 
-            if (optionalCart.isPresent()) {
-                Cart cart = optionalCart.get();
+                if (optionalCart.isPresent()) {
+                    Cart cart = optionalCart.get();
 
-                // Save the list of order details from the cart
-                List<CartDetail> cartDetails = cart.getCartDetails();
-                for (CartDetail cartDetail : cartDetails) {
-                    OrderDetail orderDetail = new OrderDetail();
-                    ProductDetail productDetail = cartDetail.getProductDetail();
+                    // Save the list of order details from the cart
+                    List<CartDetail> cartDetails = cart.getCartDetails();
+                    for (CartDetail cartDetail : cartDetails) {
+                        OrderDetail orderDetail = new OrderDetail();
+                        ProductDetail productDetail = cartDetail.getProductDetail();
 
-                    if (productDetail.getQuantity() < cartDetail.getQuantity()) {
-                        throw new ResourceNotFoundException("Số lượng sản phẩm trong kho không đủ!");
-                        // Không cần return ở đây vì đã ném ngoại lệ
+                        if (productDetail.getQuantity() < cartDetail.getQuantity()) {
+                            throw new ResourceNotFoundException("Số lượng sản phẩm trong kho không đủ!");
+                            // Không cần return ở đây vì đã ném ngoại lệ
+                        }
+                        productDetail.setQuantity(productDetail.getQuantity() - cartDetail.getQuantity());
+                        productDetailRepository.save(productDetail);
+
+                        orderDetail.setProductDetail(cartDetail.getProductDetail());
+                        orderDetail.setOrder(orderRepository.save(order));
+                        orderDetail.setQuantity(cartDetail.getQuantity());
+                        orderDetail.setPrice(cartDetail.getProductDetail().getPrice()); // You can adjust the price logic as needed
+
+                        // Save order detail
+                        orderDetailRepository.save(orderDetail);
+
+                        // Deduct the quantity of products in stock (or update status if you have specific logic)
+
                     }
-                    productDetail.setQuantity(productDetail.getQuantity() - cartDetail.getQuantity());
-                    productDetailRepository.save(productDetail);
 
-                    orderDetail.setProductDetail(cartDetail.getProductDetail());
-                    orderDetail.setOrder(orderRepository.save(order));
-                    orderDetail.setQuantity(cartDetail.getQuantity());
-                    orderDetail.setPrice(cartDetail.getProductDetail().getPrice()); // You can adjust the price logic as needed
-
-                    // Save order detail
-                    orderDetailRepository.save(orderDetail);
-
-                    // Deduct the quantity of products in stock (or update status if you have specific logic)
-
+                    // Delete the cart after successfully creating the order
+                    cartRepository.delete(cart);
                 }
-
-                // Delete the cart after successfully creating the order
-                cartRepository.delete(cart);
+            } else {
+                throw new IllegalStateException("Tài khoản của bạn đã bị khóa");
             }
         }
 
@@ -287,7 +291,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
 
     }
-    
+
     @Override
     public Order updateOrder(OrderInStoreRequestDto requestDto) {
         // Tìm đối tượng Order theo ID

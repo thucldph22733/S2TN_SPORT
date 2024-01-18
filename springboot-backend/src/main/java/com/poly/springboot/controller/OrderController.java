@@ -144,14 +144,15 @@ public class OrderController {
     }
 
     @GetMapping("export-excel")
-    public void exportExcel(HttpServletResponse response) {
+    public void generateExcelReport(HttpServletResponse response) throws Exception {
         try {
-            response.setContentType("application/vnd.ms-excel");
-            response.setHeader("Content-Disposition", "attachment; filename=orders.xlsx");
+            response.setContentType("application/octet-stream");
+            String headerKey = "Content-Disposition";
+            String headerValue = "attachment; filename=courses.xls";
+            response.setHeader(headerKey, headerValue);
 
             orderService.generateExcel(response);
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

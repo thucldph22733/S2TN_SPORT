@@ -50,16 +50,27 @@ public class CartServiceImpl implements CartService {
 
         Optional<CartDetail> existingCartDetail = cartDetailRepository.findByProductDetailIdAndCartsId(
                 cartRequestDto.getProductDetailId(), cart.getId());
+        ProductDetail productDetail = productDetailRepository.findById(cartRequestDto.getProductDetailId())
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
 
         if (existingCartDetail.isPresent()) {
             // Nếu cartDetail đã tồn tại, cập nhật số lượng
             CartDetail cartDetail = existingCartDetail.get();
+
+            // Check if the total quantity in the cart after adding is greater than the available quantity
+            if (productDetail.getQuantity() < cartDetail.getQuantity() + cartRequestDto.getQuantity()) {
+                throw new ResourceNotFoundException("Số lượng sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!");
+            }
+
             cartDetail.setQuantity(cartDetail.getQuantity() + cartRequestDto.getQuantity());
             cartDetailRepository.save(cartDetail);
         } else {
             // Nếu cartDetail không tồn tại, tạo mới
-            ProductDetail productDetail = productDetailRepository.findById(cartRequestDto.getProductDetailId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
+
+            // Check if the total quantity in the cart after adding is greater than the available quantity
+            if (productDetail.getQuantity() < cartRequestDto.getQuantity()) {
+                throw new ResourceNotFoundException("Số lượng sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!");
+            }
 
             CartDetail newCartDetail = new CartDetail();
             newCartDetail.setProductDetail(productDetail);
@@ -70,6 +81,7 @@ public class CartServiceImpl implements CartService {
 
         return true;
     }
+
 
     @Override
     public List<CartDetailResponseDto> getAllCartDetailByCartId(Long userId) {

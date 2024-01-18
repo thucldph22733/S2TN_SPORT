@@ -26,7 +26,6 @@ public class Cart extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
-
     @JsonIgnore
     @OneToMany(mappedBy = "carts", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartDetail> cartDetails;

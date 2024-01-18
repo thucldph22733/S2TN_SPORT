@@ -51,13 +51,29 @@ public class CartServiceImpl implements CartService {
             User user = userRepository.findById(cartRequestDto.getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("Người dùng không tồn tại!"));
 
-            Optional<Cart> existingCart = cartRepository.findByUserId(cartRequestDto.getUserId());
+        Optional<CartDetail> existingCartDetail = cartDetailRepository.findByProductDetailIdAndCartsId(
+                cartRequestDto.getProductDetailId(), cart.getId());
+        ProductDetail productDetail = productDetailRepository.findById(cartRequestDto.getProductDetailId())
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy id sản phẩm chi tiết này!"));
 
-            Cart cart = existingCart.orElseGet(() -> {
-                Cart newCart = new Cart();
-                newCart.setUser(user);
-                return cartRepository.save(newCart);
-            });
+        if (existingCartDetail.isPresent()) {
+            // Nếu cartDetail đã tồn tại, cập nhật số lượng
+            CartDetail cartDetail = existingCartDetail.get();
+
+            // Check if the total quantity in the cart after adding is greater than the available quantity
+            if (productDetail.getQuantity() < cartDetail.getQuantity() + cartRequestDto.getQuantity()) {
+                throw new ResourceNotFoundException("Số lượng sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!");
+            }
+
+            cartDetail.setQuantity(cartDetail.getQuantity() + cartRequestDto.getQuantity());
+            cartDetailRepository.save(cartDetail);
+        } else {
+            // Nếu cartDetail không tồn tại, tạo mới
+
+            // Check if the total quantity in the cart after adding is greater than the available quantity
+            if (productDetail.getQuantity() < cartRequestDto.getQuantity()) {
+                throw new ResourceNotFoundException("Số lượng sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!");
+            }
 
             Optional<CartDetail> existingCartDetail = cartDetailRepository.findByProductDetailIdAndCartsId(
                     cartRequestDto.getProductDetailId(), cart.getId());
@@ -84,6 +100,7 @@ public class CartServiceImpl implements CartService {
 
 
     }
+
 
     @Override
     public List<CartDetailResponseDto> getAllCartDetailByCartId(Long userId) {
